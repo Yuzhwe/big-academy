@@ -1,0 +1,35 @@
+{
+  "name": "big-academy",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @big-academy/writing",
+    "build": "npm run build -w @big-academy/design-system && npm run build -w @big-academy/writing && npm run build-storybook -w @big-academy/writing",
+    "typecheck": "npm run typecheck -w @big-academy/design-system && npm run typecheck -w @big-academy/writing && tsc -p tsconfig.pilot.json --noEmit",
+    "test": "vitest run",
+    "test:layout": "npm run test:layout -w @big-academy/writing",
+    "storybook": "npm run storybook -w @big-academy/writing",
+    "build-storybook": "npm run build-storybook -w @big-academy/writing"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@storybook/addon-a11y": "^10.6.2",
+    "@storybook/addon-docs": "^10.6.2",
+    "@storybook/react-vite": "^10.6.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.0.4",
+    "jsdom": "^27.0.0",
+    "storybook": "^10.6.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.10",
+    "vitest": "^3.2.4"
+  }
+}

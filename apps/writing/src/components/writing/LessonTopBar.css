@@ -1,0 +1,138 @@
+.lesson-topbar {
+  --ba-topbar-progress-max: min(36rem, 52cqw);
+  --ba-topbar-side-max: calc(50cqw - min(18rem, 26cqw) - 1rem);
+  position: relative;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  min-height: 80px;
+  padding: 8px 16px;
+  background: var(--ba-surface-warm, #fef9ef);
+  border-bottom: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
+  color: var(--ba-brand-dark, #133547);
+  font-family: var(--ba-font-sans, sans-serif);
+  container-type: inline-size;
+}
+
+.lesson-topbar__start {
+  grid-column: 1;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: max(44px, var(--ba-topbar-side-max));
+  z-index: 1;
+}
+
+.lesson-topbar__identity {
+  min-width: 0;
+}
+
+.lesson-topbar__title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.lesson-topbar__number {
+  flex: none;
+}
+
+.lesson-topbar__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lesson-topbar__tags {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lesson-topbar__tags li {
+  border: 1px solid var(--ba-control-border, #133547);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+  background: var(--ba-paper, #ffffff);
+}
+
+.lesson-topbar__center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  width: max-content;
+  max-width: var(--ba-topbar-progress-max);
+  z-index: 2;
+}
+
+.lesson-topbar__end {
+  grid-column: 2;
+  justify-self: end;
+  width: 44px;
+  height: 44px;
+}
+
+.lesson-topbar__back-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  flex: none;
+}
+
+@container (max-width: 1279px) {
+  .lesson-topbar {
+    min-height: 76px;
+  }
+
+  .lesson-topbar__back-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@container (max-width: 1359px) {
+  .lesson-topbar__tags {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-topbar,
+  .lesson-topbar * {
+    transition: none;
+    animation: none;
+  }
+}

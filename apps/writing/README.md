@@ -6,4 +6,4 @@
 - [Top Bar brief](docs/TOPBAR_PILOT_BRIEF.md): first UI/UX trial
 - [Original reference prompts](source/): not an alternate authority for Alex's learning progression
 
-**Implementation pending.** Current GitHub branch contains no built React runtime yet. Refer to the latest local starter bundle and [handoff](../../docs/HANDOFF.md) for migration steps.
+`BA-WR-001` LessonTopBar is implemented against `BAButton` and `BATaskProgress`. Preview: `npm run dev`. Stories: `npm run storybook`. Runtime notes: [docs/PILOT_RUNTIME.md](docs/PILOT_RUNTIME.md). The preview fixture is not Alex course state, and the theme is not visually approved.

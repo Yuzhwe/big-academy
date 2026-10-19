@@ -33,4 +33,4 @@ Source code doesn't prove its styling rendered correctly, that fonts/assets load
 
 ## Current stage
 
-Selection: React Aria Components. **Not installed in this provided package**. No generated React component or Storybook project is claimed runnable. Current contract validator checks only metadata. Next slice should build and verify the first 3 components: `BA-UI-001`, `BA-UI-006`, `BA-WR-001`, with product navigation mocked or connected to Alex engine; then expand on-demand to WordGrid/Overlay and StairLessonCard/Milestone.
+Selection: React Aria Components, now installed and locked. `BA-UI-001`, `BA-UI-006`, and `BA-WR-001` have source, stories, unit tests, and browser layout evidence. Their registry status is `implemented` with a temporary foundation theme. That is not visual approval and not `validated`. Product navigation is still a fixture, not the Alex engine. Next: designer review, then a real `Pages.canOpen` adapter, then WordGrid/Overlay and StairLessonCard/Milestone on demand.

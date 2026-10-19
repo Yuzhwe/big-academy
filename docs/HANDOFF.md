@@ -10,15 +10,17 @@
 - React Aria chosen for headless interaction foundation; component tokens, registry, validation, Storybook and UI/UX designer sign-off are required.
 
 ## Status of this GitHub branch
-This commit contains the first foundation documents and reference prompts, **not** a compiled or browser-tested React implementation. Component Registry entries are deliberately `planned` until actual code is present and validated. `PRODUCT.md` and `DESIGN.md` are drafts, not frozen v1.0.
+`feat/writing-lesson-topbar` began as foundation documents. The pilot implementation lives on `feat/grokbot-writing-topbar` and is recorded in `apps/writing/docs/PILOT_RUNTIME.md`.
+
+`BA-UI-001`, `BA-UI-006`, and `BA-WR-001` are `implemented` with a temporary foundation theme. They are not `validated` and not visually approved. The other ten registry entries stay `planned`. `PRODUCT.md` and `DESIGN.md` are still drafts, not frozen v1.0.
+
+`alex-original.html` is in `apps/writing/source/` as a read-only product reference. The Top Bar preview does not call `Pages.canOpen`. The canonical Skill v0.2 is still not imported.
 
 ## Next steps (do in this order)
-1. Import `source/alex-original.html`, verified v0.2 prototype-to-hifi Skill and the independent TopBar starter source from the previous handoff bundle; do not reuse old completed lesson HTML styling.
-2. Bring up a minimal TypeScript + React app and shared design-system package. Fix known BAButton pilot duplicate prop/aria-busy declarations before TypeScript validation.
-3. Install dependencies and lock versions; run typecheck/build; make Storybook stories for BA-UI-001, BA-UI-006 and BA-WR-001.
-4. Browser QA at 1440x900, 1024x768, 834x1112, 390x844, including EN/ZH and task counts; keyboard, touch, aria current and skipped distinction.
-5. Bind `BATaskProgress` to actual Alex `Pages.canOpen` through a product adapter; verify no bypass.
-6. Designer approves visually. Open a PR; do not merge until runtime evidence exists.
+1. Import the verified v0.2 prototype-to-hifi Skill. Do not reuse old completed lesson HTML styling.
+2. Designer reviews the Storybook stories and the screenshots in `apps/writing/docs/evidence/` before any visual approval.
+3. Bind `BATaskProgress` to actual Alex `Pages.canOpen` through a product adapter; verify no bypass. Re-home Index / Analytics / Menu behaviors that are no longer on the bar.
+4. Do not merge to `main` until runtime evidence and explicit designer sign-off both exist.
 
 ## Known open issues
 Level Goal exact criterion, concurrent new milestones, skip revocation and celebration receipts, removal/re-homing of former menu features, and remaining 52-activity visual QA.
