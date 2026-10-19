@@ -10,6 +10,6 @@ describe('BA-UI-TYPE typography semantics', () => {
   });
   it('renders UI numerals as text rather than converting authored content', () => {
     render(<BANumber>2026</BANumber>);
-    expect(screen.getByText('2026').getAttribute('data-component')).toBe('BA-UI-NUMBER');
+    expect(screen.getByText('2026').getAttribute('data-component')).toBe('BA-UI-010');
   });
 });

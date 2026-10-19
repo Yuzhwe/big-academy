@@ -1,4 +1,4 @@
-/** BA-UI-ICON · small official Iconoir regular SVG subset (MIT).
+/** BA-UI-008 · small official Iconoir regular SVG subset (MIT).
  * Source: github.com/iconoir-icons/iconoir, Copyright (c) 2021 Luca Burgio.
  * See packages/design-system/THIRD_PARTY_NOTICES.md.
  * Existing official SVG path geometry is preserved. Default sizing [E].
@@ -56,7 +56,7 @@ export function BAIcon({ name, size = 20, strokeWidth = 1.5, className, style, d
   const label = 'label' in rest ? rest.label : undefined;
   return <svg
     className={['ba-icon', className].filter(Boolean).join(' ')}
-    data-component="BA-UI-ICON"
+    data-component="BA-UI-008"
     data-icon-name={name}
     viewBox="0 0 24 24"
     width={size}
