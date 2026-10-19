@@ -14,8 +14,10 @@ test('shared React Aria components adapt to Writing semantic theme without chang
 
   await page.getByRole('button', { name: 'Neutral' }).click();
   await expect(frame).toHaveAttribute('data-ba-product', 'neutral');
-  const after = await primary.evaluate(el => getComputedStyle(el).backgroundColor);
-  expect(after).not.toBe(before);
+  // BAButton intentionally animates its semantic fill for 120ms.
+  // Wait for the committed neutral theme instead of sampling the first animation frame.
+  await expect.poll(async () => primary.evaluate(el => getComputedStyle(el).backgroundColor))
+    .not.toBe(before);
   await primary.click();
   await expect(page.getByTestId('press-count')).toHaveText('2');
 
