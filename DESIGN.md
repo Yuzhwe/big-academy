@@ -100,6 +100,18 @@ The UI/UX Designer has explicitly selected the following **font roles**. These a
 
 ## 4. Layout & Spacing
 
+### Spatial, Grid & Layout System v0.2 [A principles, E values · 2026-10-19]
+
+The UI/UX Designer approved **combining Vercel Geist-style regularized spacing with Figma's spatial organization method**. Full reference and review statuses: `docs/design-system/SPATIAL_GRID_LAYOUT_SYSTEM_v0.2.md`.
+
+- **[A] 4px base / 8px predominant rhythm**. Prefer reusable spacing decisions and a small documented scale over arbitrary `gap`, `margin` or `padding`.
+- **[A] Element First** for predictable interactive controls; **Content First** for variable learning content, Coach and writing passages.
+- **[A] Column, Modular and typographic grids** may be used where they solve real layout needs; do not require 12 columns universally.
+- **[A] Responsive, Adaptive and Strict** are complementary behaviors that may coexist in one page. Product layout/learning logic overrides generic grid samples.
+- **[E] Candidate CSS scale:** `--ba-space-0/1/2/3/4/6/8/12/16` maps to 0/4/8/12/16/24/32/48/64px in `packages/design-system/src/tokens.css`. Exact semantic mappings, breakpoints, gutters, padding and component dimensions are **not designer-approved** by this decision.
+- **Exceptions:** 44px touch-target minimum is a separate size concern; ordinary 0.5px borders, typographic metrics, focus rings, optical alignment and staircase world geometry do not need to be multiples of 4px. Do not rewrite existing Writing layouts or component contracts during this documentation phase.
+- **Engineering state:** candidate spacing variables are unused until separately integrated and verified. Design-principle approval is **not** product, accessibility, or rendering signoff.
+
 **Shared rules:**
 - Prioritize usable task content above decoration. Remove duplicate nonfunctional section labels while retaining task prompts, feedback, progress, essential controls and accessible names [A].
 - Layout tokens should document container padding, compact/regular/comfortable gaps, hit target sizing, response to narrow width and browser zoom [Q scale; [T] min hit target 44px in pilot].
