@@ -9,7 +9,7 @@ for (const variant of ['A', 'B'] as const) {
     test.setTimeout(60_000);
     mkdirSync(evidenceDir, { recursive: true });
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/?explore=staircase');
     const scene = page.locator('.staircase-viewport');
 
     await page.getByRole('button', { name: new RegExp('^' + variant + ' ·') }).click();
@@ -36,7 +36,7 @@ for (const variant of ['A', 'B'] as const) {
     // Permission checks belong to the course session, not this A/B visual switch.
     await page.locator('[data-lesson-focus="G2-O:2"]').click();
     await expect(page.getByTestId('locked-note')).toContainText(/Lesson 1/);
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/\?explore=staircase$/);
 
     await page.setViewportSize({ width: 834, height: 1112 });
     await page.getByRole('button', { name: '中文' }).click();

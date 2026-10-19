@@ -39,8 +39,11 @@ function cardState(courseState: string, action: string): StairLessonState {
 export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const [session] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
-  // Visual A/B state is a review-only control, not saved to Alex's learning state.
+  // Dusk variant A is not student chrome. It stays behind ?explore=staircase for the
+  // Agent A review history. The product path is Warm Frame (B) only.
+  const exploreStaircase = new URLSearchParams(window.location.search).get('explore') === 'staircase';
   const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('B');
+  const staircaseShown: StaircaseVariant = exploreStaircase ? staircaseVariant : 'B';
   const locale = session.locale;
   const zh = locale === 'zh';
 
@@ -67,11 +70,18 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   }, [session, revision]);
 
   return (
-    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ab-variant={staircaseVariant}>
+    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ab-variant={staircaseShown} data-explore-staircase={exploreStaircase ? 'true' : 'false'}>
       <a className="course-skip" href="#course-main">
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
-      {session.view === 'path' ? <PathView session={session} variant={staircaseVariant} onVariantChange={setStaircaseVariant} /> : null}
+      {session.view === 'path' ? (
+        <PathView
+          session={session}
+          variant={staircaseShown}
+          explore={exploreStaircase}
+          onVariantChange={setStaircaseVariant}
+        />
+      ) : null}
       {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
       {session.view === 'preview' ? <PreviewView session={session} /> : null}
       {session.celebration ? <Celebration session={session} /> : null}
@@ -79,7 +89,17 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   );
 }
 
-function PathView({ session, variant, onVariantChange }: { session: CourseSession; variant: StaircaseVariant; onVariantChange: (next: StaircaseVariant) => void }) {
+function PathView({
+  session,
+  variant,
+  explore,
+  onVariantChange,
+}: {
+  session: CourseSession;
+  variant: StaircaseVariant;
+  explore: boolean;
+  onVariantChange: (next: StaircaseVariant) => void;
+}) {
   const zh = session.zh;
   const level = session.level();
   const nodes = session.pathNodes();
@@ -123,15 +143,17 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             {session.openNotice}
           </p>
         ) : null}
-        <div className="course-ab-controls" role="group" aria-label={zh ? '阶梯视觉方案' : 'Staircase visual variants'}>
-          <button type="button" className="course-ab-button" aria-pressed={variant === 'A'} onClick={() => onVariantChange('A')}>
-            {zh ? 'A · 立体台面 + 光柱' : 'A · Platform + light beam'}
-          </button>
-          <button type="button" className="course-ab-button" aria-pressed={variant === 'B'} onClick={() => onVariantChange('B')}>
-            {zh ? 'B · 暖色框架 + 白色卡片' : 'B · Warm frame + white cards'}
-          </button>
-          <span className="course-ab-hint">{zh ? '探索方案，均未获得视觉批准' : 'Visual exploration only — not approved'}</span>
-        </div>
+        {explore ? (
+          <div className="course-ab-controls" role="group" aria-label={zh ? '阶梯视觉方案' : 'Staircase visual variants'}>
+            <button type="button" className="course-ab-button" aria-pressed={variant === 'A'} onClick={() => onVariantChange('A')}>
+              {zh ? 'A · 立体台面 + 光柱' : 'A · Platform + light beam'}
+            </button>
+            <button type="button" className="course-ab-button" aria-pressed={variant === 'B'} onClick={() => onVariantChange('B')}>
+              {zh ? 'B · 暖色框架 + 白色卡片' : 'B · Warm frame + white cards'}
+            </button>
+            <span className="course-ab-hint">{zh ? '探索方案，均未获得视觉批准' : 'Visual exploration only — not approved'}</span>
+          </div>
+        ) : null}
         <StaircaseScene key={level.id} variant={variant} locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
         <ol className="course-nodes">
           {nodes.map((node, index) => {
@@ -213,11 +235,19 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
           })}
         </ol>
         </StaircaseScene>
-        <p className="course-candidate">
-          {zh
-            ? 'E-01 A/B 方案对比：两版共享相同的课程数据、斜向浏览和解锁逻辑。A 为历史立体视觉探索；B 为 Warm Frame 候选。均未视觉签核。'
-            : 'E-01 visual A/B test: same Alex course data and diagonal navigation in both. A explores the historical platform/beam treatment; B explores Warm Frame. Neither is visually approved.'}
-        </p>
+        {explore ? (
+          <p className="course-candidate">
+            {zh
+              ? '探索入口（?explore=staircase）：A 为历史立体视觉，B 为 Warm Frame。都不是学生默认界面，也都未视觉签核。'
+              : 'Explore path (?explore=staircase): A is the historical platform treatment and B is Warm Frame. Neither is the student default, and neither is visually approved.'}
+          </p>
+        ) : (
+          <p className="course-candidate">
+            {zh
+              ? '暖色框架是候选外观，还没有视觉签核。'
+              : 'Warm Frame is a candidate appearance. It is not visually approved.'}
+          </p>
+        )}
       </main>
     </div>
   );
@@ -234,6 +264,12 @@ function LessonView({ session }: { session: CourseSession }) {
   useEffect(() => {
     setGridOverlayOpen(false);
   }, [screenId]);
+  useEffect(() => {
+    if (!gridOverlayOpen) return;
+    document
+      .querySelector<HTMLElement>('.hamburger-layer[data-focused="true"], .hamburger-layer[data-editable="true"]')
+      ?.scrollIntoView({ block: 'nearest' });
+  }, [gridOverlayOpen]);
   if (!bar || !activity) return null;
   const hintLabel =
     activity.hintAction === 'hint'

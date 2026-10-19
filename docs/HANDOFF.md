@@ -48,6 +48,8 @@ Branch `cursor/writing-hifi-from-agent-a-e01-8539` starts from `feat/agent-a-e01
 
 `BA-WR-003` WordGrid and `BA-WR-004` HamburgerLayer are `implemented` with `visualStatus: candidate-warm-frame`. Contract `0.1.1` only adds optional props. `BA-UI-001`, `BA-UI-006`, and `BA-WR-001` were not rewritten.
 
-The student path still uses Alex `Pages.canOpen`. Lesson 6 plan topic and plan layers can be completed for real. `plan.check`, P4, P5, P7, and P1 are not marked done. Tech status is ready for UI/UX Designer review. It is not visually complete.
+The student path still uses Alex `Pages.canOpen`. Lesson 6 plan topic and plan layers can be completed for real. `plan.check`, P4, P5, P7, and P1 are not marked done.
+
+BA UI Designer review of draft PR #7 requested changes and did not approve the visuals. The follow-up on this same branch gates the dusk A/B switch off student chrome (`?explore=staircase` only), keeps long titles from displacing the centered task chips at 834, and keeps the tablet word grid from covering the active plan entry, Coach, or Footer. `BA-UI-001`, `BA-UI-006`, and `BA-WR-001` stay temporary foundation. Candidate values stay candidate. This is still awaiting designer re-review. It is not visually complete.
 
 Audit: `apps/writing/docs/PHASE_A_HIFI_AUDIT.md`. Runtime: `apps/writing/docs/HIFI_RUNTIME.md`. Global design copy: `/DESIGN.md` and `docs/reference/unified-design/`.

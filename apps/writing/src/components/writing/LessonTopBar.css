@@ -22,12 +22,16 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
+  /* Cap the cluster before the centered chips. Ink is clipped, not painted across them. */
   max-width: max(44px, var(--ba-topbar-side-max));
+  overflow: hidden;
   z-index: 1;
 }
 
 .lesson-topbar__identity {
+  flex: 1 1 auto;
   min-width: 0;
+  overflow: hidden;
 }
 
 .lesson-topbar__title {
@@ -36,20 +40,27 @@
   gap: 8px;
   min-width: 0;
   margin: 0;
+  overflow: hidden;
   font-size: 18px;
   font-weight: 700;
   line-height: 1.25;
 }
 
-.lesson-topbar__number {
-  flex: none;
-}
-
+.lesson-topbar__number,
 .lesson-topbar__name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* The lesson number keeps its width. The name takes what is left and is the first to truncate. */
+.lesson-topbar__number {
+  flex: 0 1 auto;
+}
+
+.lesson-topbar__name {
+  flex: 1 1 0px;
 }
 
 .lesson-topbar__tags {

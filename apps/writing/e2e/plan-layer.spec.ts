@@ -68,6 +68,53 @@ test('lesson 6 plan layer after real earlier completion', async ({ page }) => {
   await page.setViewportSize({ width: 834, height: 1112 });
   await page.getByRole('button', { name: 'Open the grid' }).click();
   await expect(page.getByRole('tab', { name: 'Opinion' })).toBeVisible();
+  const coverage = await page.evaluate(() => {
+    const box = (selector: string) => document.querySelector(selector)?.getBoundingClientRect() ?? null;
+    const clip = (node: DOMRect, frame: DOMRect) => {
+      const top = Math.max(node.top, frame.top);
+      const bottom = Math.min(node.bottom, frame.bottom);
+      const left = Math.max(node.left, frame.left);
+      const right = Math.min(node.right, frame.right);
+      if (bottom - top <= 1 || right - left <= 1) return null;
+      return { top, bottom, left, right };
+    };
+    const hits = (
+      a: { top: number; bottom: number; left: number; right: number },
+      b: DOMRect,
+    ) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+    const grid = box('.word-grid--expanded');
+    const activity = box('.course-activity');
+    const coach = box('.lesson-workspace__coach');
+    const footer = box('.lesson-workspace__footer');
+    const layers = [...document.querySelectorAll('.hamburger-layer')].map((node) =>
+      node.getBoundingClientRect(),
+    );
+    const active = box('.hamburger-layer[data-part="top"]');
+    const activeVisible = active && activity ? clip(active, activity) : null;
+    return {
+      presentation: document.querySelector('.word-grid--expanded')?.getAttribute('data-presentation'),
+      activeVisible: Boolean(activeVisible && activeVisible.bottom - activeVisible.top >= 24),
+      gridCoversEntry: Boolean(
+        grid &&
+          activity &&
+          layers.some((layer) => {
+            const visible = clip(layer, activity);
+            return visible ? hits(visible, grid) : false;
+          }),
+      ),
+      gridCoversCoach: Boolean(grid && coach && hits(coach, grid)),
+      gridCoversFooter: Boolean(grid && footer && hits(footer, grid)),
+    };
+  });
+  expect(coverage.presentation).toBe('overlay');
+  expect(coverage.activeVisible).toBe(true);
+  expect(coverage.gridCoversEntry).toBe(false);
+  expect(coverage.gridCoversCoach).toBe(false);
+  expect(coverage.gridCoversFooter).toBe(false);
+  const field = page.getByRole('textbox', { name: /Top bun/ });
+  await field.click();
+  await field.pressSequentially(' still open');
+  await expect(field).toHaveValue(/still open/);
   await shot('plan-layer-834');
 
   await page.keyboard.press('Escape');

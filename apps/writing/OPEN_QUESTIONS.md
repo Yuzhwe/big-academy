@@ -4,7 +4,7 @@ Not decided here. Candidate visuals are labeled candidate. Nothing in this list 
 
 ## Conflicts (do not silently pick a winner)
 
-- **Warm Frame only vs Agent A A/B switch.** Approved Writing direction is A · Warm Frame + White Canvas, and `apps/writing/DESIGN.md` says not to build a comparison. Agent A’s `feat/agent-a-e01-staircase-ab` added an explore-only switch: variant A is the historical dusk platform/beam, variant B is Warm Frame. This branch keeps that switch, defaults to B, and does not treat A as the product theme. Removing it would overwrite Agent A’s review artifact; promoting A would overturn the approved direction.
+- **Warm Frame only vs Agent A A/B switch.** Approved Writing direction is A · Warm Frame + White Canvas, and `apps/writing/DESIGN.md` says not to build a comparison. Agent A’s `feat/agent-a-e01-staircase-ab` added an explore-only switch: variant A is the historical dusk platform/beam, variant B is Warm Frame. BA UI Designer review of PR #7 (requested changes, not approved) said that switch must not appear in normal student chrome. This branch now shows Warm Frame only on the student path. Variant A remains only at `?explore=staircase`, so the Agent A history is still reachable without becoming the student theme. Neither treatment is visually approved. Designer re-review is still open.
 - **One root DESIGN.md vs `apps/writing/DESIGN.md`.** `docs/unified-design-and-token-audit` says the only design spec is `/DESIGN.md` and product apps should not keep their own. This lineage already had `apps/writing/DESIGN.md`. Both now exist. Approved `[A]` text in `/DESIGN.md` wins. The Writing file still records the slice.
 - **Root AGENTS.md was not replaced.** The audit-branch copy is `docs/reference/unified-design/AGENTS.md`.
 - **Shared button tokens.** `/DESIGN.md` asks shared components to read semantic aliases such as `--ba-color-action-primary`. `BAButton` on this branch still uses `--ba-writing-accent` directly. That file was not edited here, because it is a shared Agent A / pilot component.
@@ -24,6 +24,7 @@ Not decided here. Candidate visuals are labeled candidate. Nothing in this list 
 
 ## Pending designer
 
+- **PR #7 must-fix, addressed 2026-10-19, still awaiting re-review.** Not approved. The dusk switch is off the student path. At 834×1112 a long title truncates in the left cluster and the task chips stay centered on the bar. The tablet word grid is an on-demand overlay inside the writing column; the open list does not cover the active plan entry, Coach, or Footer. `#FEF9EF`, hamburger tints, Word Grid radius, shadow, and the 42% overlay max height stay candidate. `BAButton` still reads `--ba-writing-accent`. `BA-UI-001`, `BA-UI-006`, and `BA-WR-001` stay temporary foundation. Do not treat this note as visual sign-off.
 - `#FEF9EF`, card radius, milestone shape, and 0.5px borders on the new path and workspace. Candidate only.
 - Top bar height, tag clipping, and whether Dosis on the title is the final treatment. `BA-WR-001` stays temporary foundation, not validated.
 - Douyin Sans is not shipped. Chinese titles use the fallback stack `Douyin Sans, PingFang SC, Noto Sans SC, Microsoft YaHei`.

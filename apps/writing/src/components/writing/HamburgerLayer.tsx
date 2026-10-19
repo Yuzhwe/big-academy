@@ -77,6 +77,7 @@ export function HamburgerLayer({
           onFocus={(event) => {
             setFocused(true);
             onFocusField?.(layerId, event.currentTarget.selectionStart ?? value.length);
+            event.currentTarget.closest('.hamburger-layer')?.scrollIntoView({ block: 'nearest' });
           }}
           onBlur={() => setFocused(false)}
           onSelect={(event) => {

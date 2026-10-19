@@ -14,6 +14,9 @@ test('E-01 to lesson 1 check and back', async ({ page }) => {
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
+  await expect(page.locator('[data-ab-variant="B"]')).toBeVisible();
+  await expect(page.locator('[data-explore-staircase="false"]')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Platform \+ light beam|立体台面/ })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: /Level 2/ })).toBeVisible();
   await expect(page.getByTestId('level-goal')).toBeVisible();
   await shot('path-1440');

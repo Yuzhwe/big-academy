@@ -6,6 +6,7 @@
     "progressCenter": 720,
     "deltaPx": 0,
     "overlapPx": -144.55,
+    "titleHitsProgress": false,
     "backHeight": 44,
     "taskHeight": 44
   },
@@ -16,6 +17,7 @@
     "progressCenter": 720,
     "deltaPx": 0,
     "overlapPx": -34.23,
+    "titleHitsProgress": false,
     "backHeight": 44,
     "taskHeight": 44
   },
@@ -26,6 +28,7 @@
     "progressCenter": 512,
     "deltaPx": 0,
     "overlapPx": -78.4,
+    "titleHitsProgress": false,
     "backHeight": 44,
     "taskHeight": 44
   },
@@ -36,6 +39,7 @@
     "progressCenter": 512,
     "deltaPx": 0,
     "overlapPx": -122.34,
+    "titleHitsProgress": false,
     "backHeight": 44,
     "taskHeight": 44
   },
@@ -46,6 +50,7 @@
     "progressCenter": 417,
     "deltaPx": 0,
     "overlapPx": -32.53,
+    "titleHitsProgress": false,
     "backHeight": 44,
     "taskHeight": 44
   },
@@ -56,6 +61,7 @@
     "progressCenter": 417,
     "deltaPx": 0,
     "overlapPx": -16.02,
+    "titleHitsProgress": false,
     "backHeight": 44,
     "taskHeight": 44
   },
@@ -66,6 +72,7 @@
     "progressCenter": 195,
     "deltaPx": 0,
     "overlapPx": -16.02,
+    "titleHitsProgress": false,
     "backHeight": 44,
     "taskHeight": 44
   }

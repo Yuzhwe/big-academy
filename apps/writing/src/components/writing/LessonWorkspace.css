@@ -21,6 +21,13 @@
   padding: 28px 24px 40px;
 }
 
+/* The lesson sheet splits writing and the word grid. The grid is a sibling, not a cover. */
+.lesson-workspace__paper:has(.course-sheet) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .lesson-workspace__rail {
   min-width: 0;
   min-height: 0;

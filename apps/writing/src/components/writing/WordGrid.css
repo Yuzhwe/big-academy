@@ -104,22 +104,26 @@
   font-size: 13px;
 }
 
-.word-grid--docked {
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
-  margin-top: 16px;
+.word-grid--docked,
+.word-grid--overlay {
+  position: static;
+  flex: 0 1 auto;
+  min-height: 0;
+  margin-top: 12px;
   background: var(--ba-paper, #ffffff);
 }
 
-.word-grid--overlay .word-grid__panel {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-  max-height: 46%;
+/* [E] candidate max height. Not an approved overlay size. */
+.word-grid--expanded {
+  max-height: 42%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.word-grid--expanded .word-grid__panel {
+  min-height: 0;
   overflow: auto;
-  /* [E] candidate elevation so the open list separates from the paper */
-  box-shadow: 0 -8px 18px color-mix(in srgb, var(--ba-brand-dark, #133547) 12%, transparent);
 }
 
 .word-grid--overlay > .word-grid__text-button {

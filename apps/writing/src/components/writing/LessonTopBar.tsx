@@ -26,7 +26,9 @@ export interface LessonTopBarProps {
 /**
  * BA-WR-001 · lesson header.
  * The task group is absolutely centered on this header, so a long title
- * cannot push it into leftover space. The end slot is intentionally empty.
+ * cannot push it into leftover space. A long name truncates in the left
+ * cluster. Temporary foundation theme. Not visually approved.
+ * The end slot is intentionally empty.
  */
 export function LessonTopBar({
   lessonTitle,

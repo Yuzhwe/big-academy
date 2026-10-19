@@ -45,4 +45,4 @@
 
 ## Conflicts left explicit
 
-See `OPEN_QUESTIONS.md`. The largest one: approved Warm Frame-only direction versus Agent A’s explore-only dusk variant A. The switch remains, default B, and A is not the product theme.
+See `OPEN_QUESTIONS.md`. The largest one: approved Warm Frame-only direction versus Agent A’s explore-only dusk variant A. After the PR #7 must-fix, the student path is Warm Frame only. The dusk switch stays behind `?explore=staircase`. It is not approved, and designer re-review is still open.

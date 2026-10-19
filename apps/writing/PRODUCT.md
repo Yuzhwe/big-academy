@@ -48,7 +48,7 @@
 
 ### A/B internal review protocol
 
-One interactive demo offers a **visible A / B switch**. It changes only the visual treatment; both options use the same React path nodes, geometry and course-session adapter. Default **B** for the approved family direction. The comparison is a **designer review**, not a deployed randomized A/B experiment or evidence of K–12 learner preferences.
+The Agent A comparison is a **designer review**, not a deployed randomized A/B experiment or evidence of K–12 learner preferences. It changes only the visual treatment; both options use the same React path nodes, geometry and course-session adapter. On the Writing hi-fi student path the switch is not shown: Warm Frame is the only student staircase. The A/B controls remain only at `?explore=staircase`. Neither variant is visually approved.
 
 Review at 1440px, 1024px, 834px (plus a narrow viewport): (1) recognizable lower-left → upper-right hierarchy, (2) drag/wheel/keyboard/snap/navigation functionality, (3) card legibility, center of visual attention and reduced-motion behavior, (4) Start/Continue/Review/Locked/Skipped and milestone states, (5) foreground/background contrast and keyboard focus, (6) whether A's platform/beam helps learning orientation or distracts. Collect matched viewport screenshots and a short interaction recording for both before requesting designer approval.
 

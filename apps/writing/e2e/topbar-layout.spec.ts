@@ -23,6 +23,7 @@ test('task progress stays centered on the header', async ({ page }) => {
     progressCenter: number;
     deltaPx: number;
     overlapPx: number;
+    titleHitsProgress: boolean;
     backHeight: number;
     taskHeight: number;
   }[] = [];
@@ -39,18 +40,26 @@ test('task progress stays centered on the header', async ({ page }) => {
       const headerEl = document.querySelector('[data-component="BA-WR-001"]');
       const progressEl = document.querySelector('[data-component="BA-UI-006"]');
       const startEl = document.querySelector('.lesson-topbar__start');
+      const nameEl = document.querySelector('.lesson-topbar__name');
       const backEl = document.querySelector('.lesson-topbar__back');
       const taskEl = document.querySelector('.ba-task-progress__button');
-      if (!headerEl || !progressEl || !startEl || !backEl || !taskEl) return null;
+      if (!headerEl || !progressEl || !startEl || !nameEl || !backEl || !taskEl) return null;
       const headerBox = headerEl.getBoundingClientRect();
       const progressBox = progressEl.getBoundingClientRect();
       const startBox = startEl.getBoundingClientRect();
+      const nameBox = nameEl.getBoundingClientRect();
       const backBox = backEl.getBoundingClientRect();
       const taskBox = taskEl.getBoundingClientRect();
+      const titleHitsProgress =
+        nameBox.right > progressBox.left + 1 &&
+        nameBox.left < progressBox.right - 1 &&
+        nameBox.bottom > progressBox.top + 1 &&
+        nameBox.top < progressBox.bottom - 1;
       return {
         headerCenter: headerBox.left + headerBox.width / 2,
         progressCenter: progressBox.left + progressBox.width / 2,
-        overlapPx: startBox.right - progressBox.left,
+        overlapPx: Math.max(startBox.right, nameBox.right) - progressBox.left,
+        titleHitsProgress,
         backHeight: backBox.height,
         taskHeight: taskBox.height,
       };
@@ -64,6 +73,7 @@ test('task progress stays centered on the header', async ({ page }) => {
       progressCenter: Number(boxes?.progressCenter.toFixed(2)),
       deltaPx: Number(deltaPx.toFixed(2)),
       overlapPx: Number((boxes?.overlapPx ?? 0).toFixed(2)),
+      titleHitsProgress: boxes?.titleHitsProgress ?? true,
       backHeight: Number((boxes?.backHeight ?? 0).toFixed(2)),
       taskHeight: Number((boxes?.taskHeight ?? 0).toFixed(2)),
     });
@@ -74,6 +84,7 @@ test('task progress stays centered on the header', async ({ page }) => {
   for (const result of results) {
     expect(result.deltaPx, result.name).toBeLessThanOrEqual(1);
     expect(result.overlapPx, `${result.name} overlap`).toBeLessThanOrEqual(1);
+    expect(result.titleHitsProgress, `${result.name} title`).toBe(false);
     expect(result.backHeight, `${result.name} back target`).toBeGreaterThanOrEqual(44);
     expect(result.taskHeight, `${result.name} task target`).toBeGreaterThanOrEqual(44);
   }
