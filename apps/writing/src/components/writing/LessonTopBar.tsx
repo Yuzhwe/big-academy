@@ -1,5 +1,5 @@
 import { I18nProvider } from 'react-aria-components';
-import { BAButton, BATaskProgress, localeTag, taskChrome } from '@big-academy/design-system';
+import { BAButton, BAIcon, BATaskProgress, localeTag, taskChrome } from '@big-academy/design-system';
 import type { BALocale, TaskProgressItem } from '@big-academy/design-system';
 import './LessonTopBar.css';
 
@@ -58,16 +58,7 @@ export function LessonTopBar({
             aria-label={copy.back}
             onPress={() => onBack?.()}
           >
-            <svg className="lesson-topbar__back-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M14.5 5.5 8 12l6.5 6.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <BAIcon name="arrow-left" size={20} className="lesson-topbar__back-icon" />
             <span className="lesson-topbar__back-label">{copy.backShort}</span>
           </BAButton>
           <div className="lesson-topbar__identity">

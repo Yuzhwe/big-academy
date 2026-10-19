@@ -1,16 +1,16 @@
 /*
  * Candidate Warm Frame for the E-01 → lesson slice.
  * Approved ink: #133547, accent #B25415, paper #FFFFFF, ordinary borders 0.5px.
- * #FEF9EF is a candidate surface, not a signed-off token.
+ * #FEF9EF approved as Writing warm-1; page geometry still candidate.
  * Dosis ExtraBold and Jost and Noto Sans SC load from Google Fonts when the
  * network allows. Douyin Sans is not redistributed; Chinese titles fall back.
  */
 
 .course-app {
-  --ba-font-en-title: "Dosis", "Arial Narrow", "Nimbus Sans Narrow", sans-serif;
-  --ba-font-en-body: "Jost", "Noto Sans", "Segoe UI", sans-serif;
-  --ba-font-zh-title: "Douyin Sans", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
-  --ba-font-zh-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ba-font-en-title: var(--ba-type-heading-family);
+  --ba-font-en-body: var(--ba-type-body-family);
+  --ba-font-zh-title: var(--ba-font-heading-zh);
+  --ba-font-zh-body: var(--ba-font-body-zh);
   --ba-font-sans: var(--ba-font-en-body);
   min-height: 100%;
   background: var(--ba-surface-warm, #fef9ef);

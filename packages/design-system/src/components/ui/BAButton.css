@@ -14,7 +14,7 @@
   border-radius: 999px;
   background: var(--ba-button-bg);
   color: var(--ba-button-ink);
-  font: 700 16px/1.2 var(--ba-font-sans, sans-serif);
+  font: var(--ba-type-control-weight, 700) var(--ba-type-control-size, 16px)/var(--ba-type-control-leading, 1.2) var(--ba-type-control-family, sans-serif);
   letter-spacing: 0;
   text-decoration: none;
   cursor: pointer;

@@ -63,8 +63,9 @@
   border-radius: 50%;
   background: var(--ba-color-surface-canvas, #ffffff);
   color: var(--ba-color-content-primary, #133547);
+  font-family: var(--ba-type-numeric-family);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
 }
 
