@@ -28,3 +28,7 @@ Level Goal exact criterion, concurrent new milestones, skip revocation and celeb
 ## Unified DESIGN.md decision (2026-10-19)
 
 Designer approved exactly **one** repository-root `DESIGN.md` spanning all products. Product identity is primarily expressed by colors via semantic product theme tokens; unique product components/layouts remain distinct. Old `apps/writing/DESIGN.md` is moved into the root document on `docs/unified-design-and-token-audit`, with research & token gap audit at `docs/design-system/BENCHMARK_AND_TOKEN_GAP_AUDIT_v0.1.md`. This documents an architecture decision, not a visual v1.0 signoff. Grokbot's TopBar engineering branch remains untouched and must reconcile paths/semantic token aliases before integration.
+
+## Product Theme decision B (approved, 2026-10-19)
+
+The UI/UX Designer selected **B: Product accent + subtle tinted backgrounds**. This approves the *scope* of thematic differences, **not** new palette values or complete theme tokens. Shared neutrals, functional statuses, readability and component interaction remain unified. `#B25415` is Writing's approved accent, `#FEF9EF` remains a candidate warm surface, and Reading colors are unset. Decision recorded in repository-root `DESIGN.md` on the documentation branch. **Next:** decide Token Architecture (Primitive → Semantic → optional Component Tokens, single source of truth, runtime theme mechanism); do not yet modify Grokbot's live CSS without an agreed contract. Existing independent implementation branch is untouched.
