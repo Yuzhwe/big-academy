@@ -1,5 +1,6 @@
 import { CourseApp } from './course/CourseApp';
 import { PilotPreview } from './PilotPreview';
+import { DesignSystemPreview } from './DesignSystemPreview';
 
 /**
  * `?fixture=` keeps the Top Bar pilot.
@@ -7,6 +8,7 @@ import { PilotPreview } from './PilotPreview';
  */
 export function App() {
   const params = new URLSearchParams(window.location.search);
+  if (params.has('system')) return <DesignSystemPreview />;
   if (params.has('fixture')) return <PilotPreview />;
   return <CourseApp />;
 }

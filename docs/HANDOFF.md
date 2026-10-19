@@ -50,3 +50,14 @@
 - **Before main:** source-path uniqueness; actual test evidence; no course logic regression; Visual status remains candidate; explicit owner approval for substantive visual/product changes; hub deployment separately verified.
 
 See [P1-A integration readiness](docs/integration/P1-A_READINESS.md) and [P1 implementation plan](docs/design-system/P1_IMPLEMENTATION_PLAN_v0.1.md).
+
+## P1-B system-first vertical slice (2026-10-19)
+
+The UI/UX Designer reprioritized work toward **design-system completeness, accessible React Aria component foundations, semantic CSS token mapping, and high-fidelity pages rendered from PRODUCT.md + DESIGN.md**. GitHub logistics, Delivery Hub synchronization and broad documentation work are secondary.
+
+On Agent A's isolated branch `feat/agent-a-semantic-tokens-component-preview`:
+- Semantic CSS aliases now separate global primitive values and Writing's approved accent mapping. The Writing shell selects `data-ba-product="writing"`; shared BAButton and BATaskProgress consume semantic color roles, **not Writing-only primitives**.
+- A new real React `/?system` experience demonstrates theme change (Writing / neutral foundation), typography roles, tokens, keyboard-accessible BAButton states, BATaskProgress statuses, and a link into the actual Writing E-01 prototype. This is not a new product page or replacement for Storybook.
+- Existing BAButton Storybook gets two-theme side-by-side visual verification. Playwright coverage demonstrates the same React Aria button changes CSS colors with a semantic theme switch.
+- No Reading theme has been invented, and no unapproved visual styles have been presented as final. Iconoir is the approved source; full BAIcon integration, missing reusable components and approved font asset loading remain follow-up work.
+- Validate with `npm run typecheck`, `npm test`, `npm run test:layout`; latest implementation is independent from Grokbot and PR #7.
