@@ -55,7 +55,25 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 
 **Implementation handoff:** Grokbot pilot CSS on `feat/grokbot-writing-topbar` still directly uses `--ba-writing-accent` in shared BAButton. Migrate it to semantic aliases without intentional visual changes; add verification in stories and browser testing. That implementation branch was not modified by this architecture decision.
 
-## 3. Typography
+## 3. Typography — Foundation A [A, 2026-10-19]
+
+**Approved direction:** One coherent typography system across **all** Big Academy products, with **expressive display/heading typography plus highly readable body/learning text**. UI labels use the shared text-role system rather than a separate product-specific font identity. The display and body roles **may** use different typefaces; two separate families are not mandatory.
+
+### Shared text roles (architecture approved; exact style values pending)
+
+- **Display:** expressive brand/learning headlines, used selectively; preserve legibility for younger learners.
+- **Heading:** lesson, page and sectional hierarchy, consistent with display intent without excessive decoration.
+- **Body / Learning content:** optimized for reading, writing, task instructions and longer passages; legibility takes priority over style.
+- **Label / Control:** buttons, tabs, task status, short interface labels; remain legible at practical sizes.
+- **Supporting / Caption:** metadata and secondary copy that must remain accessible; not automatically "tiny."
+
+### English and Chinese
+
+Both languages share the **same semantic text roles and hierarchy**, but can select different font families or fallbacks for correct CJK coverage, balance and rendering. A localized screen should be monolingual rather than duplicating EN/ZH side-by-side. Verify line breaks, CJK punctuation, long lesson names, zoom/text scaling and mixed-language input.
+
+**Explicitly deferred [Q]:** final font families, exact sizes, weights, line heights, letter spacing, type scale, bundled assets and licensing. The working implementation may continue to use a clearly marked **temporary system-font/fallback stack [T]**; no visual approval is implied.
+
+### Existing typeface inspiration (reference only)
 
 Reference font direction **[R]** (not installed/approved final distribution):
 
@@ -64,9 +82,7 @@ Reference font direction **[R]** (not installed/approved final distribution):
 | Display/expressive headings | Dosis ExtraBold | Douyin Sans |
 | Body / extended reading | Jost | Noto Sans SC |
 
-Font licensing, actual asset sourcing, browser fallbacks, line-height, letter spacing, and complete text scale are [Q]. Never distribute proprietary font files by assumption. The temporary runtime uses a system-sans fallback stack [T].
-
-Ensure EN/ZH is **monolingual per view**; do not place doubled bilingual strings side by side. Support CJK wrapping, long task titles and user font scaling.
+These are examples for future font exploration, **not a commitment to Dosis, Jost, Douyin Sans or Noto Sans SC**. Do not ship font binaries without reviewing their license and distribution rights.
 
 ## 4. Layout & Spacing
 
@@ -122,5 +138,6 @@ When changing a token, run its affected component stories, accessibility/contras
 - **Actual temporary token source:** `packages/design-system/src/tokens.css` on Grokbot's **separate** `feat/grokbot-writing-topbar` branch. This docs branch does **not** yet include that code and must not pretend it does.
 - **Approved theme scope:** B · product accent + light tinted surfaces; exact tint values pending.
 - **Approved Token Architecture:** Primitive → Semantic → optional Component; shared CSS Variables as the single current executable source; themes set by the app/shell and consumed semantically by shared components.
+- **Approved Typography Foundation:** A · expressive display/heading + readable body/learning content; shared roles across products, EN/ZH can use appropriate family/fallback; numeric scale and final font selection deferred.
 - **Current token gaps:** semantic palette aliases/theme contract, spacing/typography/radii/elevation/motion scale, responsive sizes, accessible feedback color pairs, and status token conventions.
 - **Gate:** root DESIGN.md draft requires UI/UX Designer approval; proof requires a running component, Storybook states and browser QA. Component contract and product docs remain authoritative for UI interfaces and learning rules.
