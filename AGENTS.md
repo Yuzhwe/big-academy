@@ -1,5 +1,13 @@
 # Big Academy — Agent Operating Rules
 
+## Agent Role Allocation (2026-10-19)
+
+- **Agent A — Big Academy System Builder (ChatGPT):** Leads **actual shared-system construction**, not just architectural advice: root `DESIGN.md`, token foundations and product theme contract, reusable shared UI component foundations, registry/contracts, repository tooling/validation, Storybook foundations, QA gates, and cross-agent integration reviews. Work on independent GitHub branches; create reviewable artifacts and PRs. Agent A may implement system code directly when appropriate. This role does **not** replace the UI/UX Designer's visual authority or Alex's Writing business-logic authority.
+- **Grokbot — Product Engineering Agent:** Owns active Writing feature integration / `feat/grokbot-writing-topbar`, production adapters and product-side runtime QA. It may propose shared-component changes through separately reviewed PRs; avoid simultaneous edits to files owned by Agent A without coordination.
+- **UI/UX Designer:** Owns final UX/visual decisions and approvals. **Alex:** owns Writing learning rules and business behavior.
+- **Boundaries:** Agent A/Grokbot coordinate through GitHub Contract, branch and PR evidence; no direct automatic communications or background execution are implied by these names.
+
+
 1. Owner and target: `Yuzhwe/big-academy` only. Never touch `RaoJing414` repositories, branches or forks.
 2. Design authority: the UI/UX designer approves visual and UX changes. Alex's original Writing prototype remains the product-logic authority; read `apps/writing/PRODUCT.md` and its recorded source references. Approved later decisions take precedence over conflicting demo guidance.
 3. The sole Writing visual direction is **A / Warm Frame + White Canvas**. No dark wood B design.
