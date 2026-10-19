@@ -26,3 +26,8 @@
 - `apps/writing/source/alex-original.html` is the original Alex reference. Do not invent P4–P7 completion, pretend all 52 screens are built, or claim Skill v0.2 is imported if it is not.
 - **Current integration branch:** `integration/p1-a-unified-baseline` combines code ancestry from PR #4/#6 and global specs from PR #2; it is a **candidate**. PR #5 Delivery Hub has a separate pinned source snapshot and must be synchronized/tested separately.
 - Before review: `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run test:layout`, relevant Storybook/browser screenshot/interaction checks, and an explicit record of remaining uncertainties in `docs/HANDOFF.md`.
+
+
+## Radius and Motion from PR #14
+14. **Radius v0.1 [A method / E numbers]:** read `docs/design-system/SHAPE_RADIUS_SYSTEM_v0.1.md`. Choose by surface (base/raised/floating), control size, nested geometry, focus/overflow and Writing-specific composition. The candidate 0/4/6/8/12/16/24/full/circle scale and semantic aliases are in `tokens.css` but do not silently restyle existing components or override 0.5px borders.
+15. **Motion v0.1 [A/T interim spring adoption]:** read `docs/design-system/MOTION_SYSTEM_v0.1.md`. Use exact spring parameter groups from upstream `Caho1/open-claude-ui/code-examples/ClaudeMotionPresets.ts`, not its conflicting AGENTS.md; all six groups (4 named, 2 inline) are in `tokens.css`. Inline masses are unspecified upstream. Do not hardcode copied TS numeric tables, invent a Motion dependency, or claim runtime animation/testing from CSS values alone. Honor reduced motion, protect typing/reading, and keep designer/engineering signoff separate.

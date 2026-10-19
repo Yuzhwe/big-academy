@@ -40,3 +40,28 @@ test('Spatial v0.2 candidate primitives and component semantic mapping retain th
   const progressGap = await page.locator('.ba-task-progress__list').evaluate(el => getComputedStyle(el).gap);
   expect(progressGap).toBe('4px');
 });
+
+
+test('Radius v0.1 and six interim spring groups use shared CSS tokens only', async ({ page }) => {
+  await page.goto('/?system');
+  await expect(page.getByRole('heading', { name: 'Shape & Radius v0.1 · Candidate Scale' })).toBeVisible();
+  await expect(page.locator('.ba-showcase__radius-item')).toHaveCount(9);
+  await expect(page.locator('.ba-showcase__motion-row')).toHaveCount(6);
+  await expect(page.locator('.ba-showcase__radius-shape').nth(3)).toHaveCSS('border-radius', '8px');
+  const data = await page.locator('.ba-showcase').evaluate(el => {
+    const s = getComputedStyle(el);
+    const v = (token:string) => s.getPropertyValue(token).trim();
+    return {
+      control:v('--ba-radius-control-regular'),
+      bouncy:[v('--ba-motion-spring-bouncy-stiffness'), v('--ba-motion-spring-bouncy-damping'), v('--ba-motion-spring-bouncy-mass')],
+      heavy:[v('--ba-motion-spring-heavy-snap-stiffness'), v('--ba-motion-spring-heavy-snap-damping'), v('--ba-motion-spring-heavy-snap-mass')],
+      bubbleMass:v('--ba-motion-spring-bubble-enter-mass'),
+      modalMass:v('--ba-motion-spring-modal-enter-mass')
+    };
+  });
+  expect(data.control).toBe('8px');
+  expect(data.bouncy).toEqual(['600','30','1.0']);
+  expect(data.heavy).toEqual(['1200','80','0.1']);
+  expect(data.bubbleMass).toBe('');
+  expect(data.modalMass).toBe('');
+});
