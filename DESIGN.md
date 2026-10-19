@@ -34,6 +34,15 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 
 `#B25415` on white has approximately **5.03:1** contrast and is suitable for normal-size AA text. White on `#B25415` also passes AA normal text. On `#133547` (2.56:1) or `#4E3B24` (2.11:1), it does not pass AA for normal text. Recalculate for hover, disabled, focus and actual tinted backgrounds; do not assume one contrast result validates every combination.
 
+### 2.2 Approved theme scope — Decision B [A, 2026-10-19]
+
+**Product Color Themes use accent colors plus subtle tinted backgrounds.** This is the approved architectural direction, not approval of any new individual hex values, color ramps or CSS selector API.
+
+- **Product-themed:** primary action backgrounds and on-action foreground pairings, interactive selection, links and relevant emphasis; **allowed** low-intensity surface tints for product atmosphere and shell/background zones.
+- **Shared:** neutral foundations, white functional content canvas where needed, text/readability, component geometry/behavior, spacing, typography principles and functional state meanings (success/error/warning/disabled/focus). Product identity must not silently recolor semantic success/error or reduce contrast.
+- **Boundaries:** Writing remains A · Warm Frame + White Canvas; its background candidate `#FEF9EF` stays [E]. Reading accent and all Reading tint values remain [Q]. The amount/placement of tints and exact colors are chosen by the UI/UX Designer in later visual review.
+- **Implementation implication:** shared reusable components read semantic aliases such as `--ba-color-action-primary`, not a Writing-specific primitive. App-level product theme resolves those aliases. Exact token spelling/theme selector remains an [E] proposal until Token Architecture approval.
+
 ### 2.2 Token model
 
 1. **Primitive** — raw values, e.g. `--ba-color-ink-900`, `--ba-color-writing-600`.
@@ -42,7 +51,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 
 **Product theme contract:** applications attach a product identity (candidate API: `data-ba-product="writing"`) and resolve semantic accent tokens to product-specific primitive values. Components consume **semantic roles**, not the literal `--ba-writing-accent`. State semantics (success/error/disabled/focus) must remain legible across all product themes and never be signaled through color alone.
 
-Only Writing's accent is approved. Reading / other theme values, exact aliases, and multi-theme runtime implementation remain [E/Q], not production contracts. The current Grokbot pilot uses `--ba-writing-accent` directly; this is a known migration item, not evidence of shared theme support.
+Theme **scope B** (accent + subtle tinted surfaces) is [A]. Only Writing's **specific accent value** is approved. Reading / other theme values, exact aliases, surface-tint values and multi-theme runtime implementation remain [E/Q], not production contracts. The current Grokbot pilot uses `--ba-writing-accent` directly; this is a known migration item, not evidence of shared theme support.
 
 ## 3. Typography
 
@@ -109,5 +118,5 @@ When changing a token, run its affected component stories, accessibility/contras
 
 - **Benchmark:** `docs/design-system/BENCHMARK_AND_TOKEN_GAP_AUDIT_v0.1.md`.
 - **Actual temporary token source:** `packages/design-system/src/tokens.css` on Grokbot's **separate** `feat/grokbot-writing-topbar` branch. This docs branch does **not** yet include that code and must not pretend it does.
-- **Current token gaps:** semantic palette aliases/theme contract, spacing/typography/radii/elevation/motion scale, responsive sizes, accessible feedback color pairs, and status token conventions.
+- **Approved theme scope:** B · product accent + light tinted surfaces; token implementation details pending.\n- **Current token gaps:** semantic palette aliases/theme contract, spacing/typography/radii/elevation/motion scale, responsive sizes, accessible feedback color pairs, and status token conventions.
 - **Gate:** root DESIGN.md draft requires UI/UX Designer approval; proof requires a running component, Storybook states and browser QA. Component contract and product docs remain authoritative for UI interfaces and learning rules.
