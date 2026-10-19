@@ -326,7 +326,8 @@
       "name": "LessonWorkspace",
       "kind": "composite",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
+      "visualStatus": "candidate-warm-frame",
       "implementation": "apps/writing/src/components/writing/LessonWorkspace.tsx",
       "story": "apps/writing/src/components/writing/LessonWorkspace.stories.tsx",
       "props": {
@@ -353,7 +354,8 @@
         "CoachOverflow"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
+      "notes": "Candidate Warm Frame layout for the E-01 lesson slice. Not validated and not visually approved. Footer is outside the scrolling coach."
     },
     {
       "id": "BA-WR-003",
@@ -438,7 +440,8 @@
       "name": "StairLessonCard",
       "kind": "composite",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
+      "visualStatus": "candidate-warm-frame",
       "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx",
       "props": {
@@ -471,14 +474,16 @@
         "Skipped"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
+      "notes": "Candidate Warm Frame. Not validated and not visually approved. Lesson number stays top left. Action labels are Start / Continue / Review / Locked. Skipped keeps Review plus a mastered label. The card does not grant unlock."
     },
     {
       "id": "BA-WR-006",
       "name": "UnitMilestone",
       "kind": "composite",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
+      "visualStatus": "candidate-warm-frame",
       "implementation": "apps/writing/src/components/writing/UnitMilestone.tsx",
       "story": "apps/writing/src/components/writing/UnitMilestone.stories.tsx",
       "props": {
@@ -507,7 +512,8 @@
         "ManualReplay"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
+      "notes": "Candidate Warm Frame. Not validated and not visually approved. Completed state is injected from Alex lesson states. Confetti receipt is UI-only and does not unlock anything. Level Goal formula stays open."
     }
   ]
 }

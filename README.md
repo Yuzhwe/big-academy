@@ -14,7 +14,9 @@ Code-first product workspace owned by **Yuzhwe**. This private repository starts
 
 ## Status
 
-`BA-UI-001` BAButton, `BA-UI-006` BATaskProgress, and `BA-WR-001` LessonTopBar now have a runnable pilot on `feat/grokbot-writing-topbar`. The theme is a temporary foundation for review. It is not visually approved. See `apps/writing/docs/PILOT_RUNTIME.md`.
+`BA-UI-001` BAButton, `BA-UI-006` BATaskProgress, and `BA-WR-001` LessonTopBar have a temporary foundation theme. It is not visually approved. See `apps/writing/docs/PILOT_RUNTIME.md`.
+
+`npm run dev` opens an E-01 → G2-O Lesson 1 slice backed by Alex course state. The new workspace, lesson card, and milestone are candidate Warm Frame, not validated. See `apps/writing/docs/SLICE_RUNTIME.md`.
 
 Active review target: `feat/writing-lesson-topbar`. Request designer review before merging to `main`.
 

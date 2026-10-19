@@ -10,17 +10,20 @@
 - React Aria chosen for headless interaction foundation; component tokens, registry, validation, Storybook and UI/UX designer sign-off are required.
 
 ## Status of this GitHub branch
-`feat/writing-lesson-topbar` began as foundation documents. The pilot implementation lives on `feat/grokbot-writing-topbar` and is recorded in `apps/writing/docs/PILOT_RUNTIME.md`.
+`feat/writing-lesson-topbar` holds the Top Bar pilot (`apps/writing/docs/PILOT_RUNTIME.md`). This change adds the E-01 lesson slice (`apps/writing/docs/SLICE_RUNTIME.md`).
 
-`BA-UI-001`, `BA-UI-006`, and `BA-WR-001` are `implemented` with a temporary foundation theme. They are not `validated` and not visually approved. The other ten registry entries stay `planned`. `PRODUCT.md` and `DESIGN.md` are still drafts, not frozen v1.0.
+`BA-UI-001`, `BA-UI-006`, and `BA-WR-001` stay `implemented` with a temporary foundation theme. They were not rewritten for the slice. They are not `validated`.
 
-`alex-original.html` is in `apps/writing/source/` as a read-only product reference. The Top Bar preview does not call `Pages.canOpen`. The canonical Skill v0.2 is still not imported.
+`BA-WR-002` LessonWorkspace, `BA-WR-005` StairLessonCard, and `BA-WR-006` UnitMilestone are `implemented` with `visualStatus: candidate-warm-frame`. They are not `validated`. The other registry entries stay `planned`.
+
+The slice calls Alex `Pages.canOpen`, `Pages.done`, `Skip`, `Home.lessonStates`, and `Stairs` ordering through `apps/writing/src/product/courseSession.ts`. `?fixture=` remains the fixture-only Top Bar preview. `PRODUCT.md` and `DESIGN.md` are still drafts. The canonical Skill v0.2 is still not imported.
 
 ## Next steps (do in this order)
-1. Import the verified v0.2 prototype-to-hifi Skill. Do not reuse old completed lesson HTML styling.
-2. Designer reviews the Storybook stories and the screenshots in `apps/writing/docs/evidence/` before any visual approval.
-3. Bind `BATaskProgress` to actual Alex `Pages.canOpen` through a product adapter; verify no bypass. Re-home Index / Analytics / Menu behaviors that are no longer on the bar.
-4. Do not merge to `main` until runtime evidence and explicit designer sign-off both exist.
+1. Designer reviews the path and lesson screenshots in `apps/writing/docs/evidence/slice/` before any visual approval. Candidate values stay candidate.
+2. Import the verified v0.2 prototype-to-hifi Skill. Do not reuse old completed lesson HTML styling.
+3. Port the remaining G2-O templates from real `SCR` rows: P4, P5, P6, P7, then P1. Do not mark a screen done with a placeholder.
+4. Re-home Index / Analytics / Menu behaviors that are no longer on the bar.
+5. Do not merge to `main` until runtime evidence and explicit designer sign-off both exist.
 
 ## Known open issues
 Level Goal exact criterion, concurrent new milestones, skip revocation and celebration receipts, removal/re-homing of former menu features, and remaining 52-activity visual QA.
