@@ -5,7 +5,7 @@ Code-first product workspace owned by **Yuzhwe**. This private repository starts
 ## What is here
 
 - `apps/writing/PRODUCT.md`: product behavior and approved UX decisions (draft)
-- `apps/writing/DESIGN.md`: design intention and visual rules (draft)
+- `DESIGN.md`: single cross-product visual design source (draft)
 - `apps/writing/contracts/components.json`: stable component IDs and implementation contracts
 - `apps/writing/source/`: user-supplied design reference prompts
 - `packages/design-system/`: shared code-first components (implementation pending)
@@ -19,3 +19,5 @@ Code-first product workspace owned by **Yuzhwe**. This private repository starts
 Active review target: `feat/writing-lesson-topbar`. Request designer review before merging to `main`.
 
 Private repo: https://github.com/Yuzhwe/big-academy. Do not use RaoJing414 repositories or branches.
+
+Design policy: **one root DESIGN.md**; each app has its own PRODUCT.md and product-specific components, differentiated primarily by theme color.

@@ -1,6 +1,6 @@
 # Big Academy Writing — Minimum Component Scope v0.1
 
-**目标**：本次高保真开发只创建所需最小组件，不为“设计系统完整”而预建无关的 DatePicker/Table/Tree/Toast。与 `HEADLESS_COMPONENT_SELECTION_v0.1.md`、`DESIGN.md` 配合。状态 `[SCOPE]`＝下一轮开发必须实现，**不是已经写完**。
+**目标**：本次高保真开发只创建所需最小组件，不为“设计系统完整”而预建无关的 DatePicker/Table/Tree/Toast。与 `HEADLESS_COMPONENT_SELECTION_v0.1.md`、`../../DESIGN.md` 配合。状态 `[SCOPE]`＝下一轮开发必须实现，**不是已经写完**。
 
 ## 1. BA 基础组件（可跨课程复用）
 
