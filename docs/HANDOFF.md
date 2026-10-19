@@ -29,6 +29,7 @@
 | #4 | `cursor/writing-e01-lesson-slice-7d6c` | Alex-backed partial E-01 → Lesson 1 | inherited with product logic unchanged |
 | #6 | `feat/agent-a-e01-staircase-ab` | diagonal interactive E-01 A/B proof | direct parent; exploratory/unverified |
 | #5 | `feat/delivery-hub` | independent delivery portal/site | **not imported into baseline yet**; pinned Writing snapshot is from earlier #4 code |
+| #7 | `cursor/writing-hifi-from-agent-a-e01-8539` | new WordGrid/HamburgerLayer P6/partial hi-fi with reported passing tests | **new upstream product candidate; not automatically included**; review runtime changes and registry before integration |
 
 `integration/p1-a-unified-baseline` was branched from #6. Agent A must not modify the original PR branches or touch `main` without reviewed approval. Delivery Hub may be integrated later as an isolated app once its snapshot importer and browser display are checked; site publication does not automatically follow GitHub merges.
 
@@ -44,6 +45,7 @@
 - **Completed:** repository branches/trees audited, integration branch created; root design specification and P0 documentation reconciled with Writing PRODUCT E-01 compact model; old app-level DESIGN removed; source pointers and cross-agent rules refreshed.
 - **Not yet verified:** clean npm install/build, typecheck, Vitest, browser Playwright tests, touch/scroll camera verification, screenshot comparisons and reviewer approval. Do not infer test passage from authored tests.
 - **Next:** verify `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run test:layout`; inspect browser A/B at 1440/1024/834/390 and both locales, fix failures. Then review the resulting integration Draft PR and plan a controlled base merge to main.
+- **P1-A additional incoming branch:** Draft [PR #7](https://github.com/Yuzhwe/big-academy/pull/7), based on #6, was found during integration. Its author reports passing unit/browser checks and adds WordGrid/HamburgerLayer; these tests were not independently run on **this** integration branch. Review the feature code and registry conflict before merging to the unified baseline. Do not overwrite the product agent's branch.
 - **P1-B / P1-C:** semantic Token migration/BAIcon/font follow-up; Delivery Hub latest-source compatibility and safe preview update, separate from P1-A product behavior.
 - **Before main:** source-path uniqueness; actual test evidence; no course logic regression; Visual status remains candidate; explicit owner approval for substantive visual/product changes; hub deployment separately verified.
 
