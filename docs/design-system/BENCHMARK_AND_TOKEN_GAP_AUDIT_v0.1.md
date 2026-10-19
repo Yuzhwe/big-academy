@@ -23,6 +23,10 @@ One `/DESIGN.md` for all Big Academy products; product identity primarily driven
 
 **[A] Confirmed: Progressive Componentization.** Implement required shared primitives, keep product-specific composites in app scope, and extract shared Patterns only after demonstrated cross-product reuse and an explicit contract/consumer review. Do not prebuild an entire pattern catalog. A shared physical package does not itself establish cross-product reuse (current `BA-UI-006 BATaskProgress` needs further validation). Existing Component IDs and code paths are not changed by this documentation decision. **Next P0:** Design Governance.
 
+## Design Governance approval — P0-5 (2026-10-19)
+
+**[A] Confirmed: lightweight governance.** Agent routine implementation proceeds independently. Significant UX, product, component API or approved token changes require owner review; tests and visual approval are **different axes**. Engineering states: planned, implemented, verified; Visual states: temporary, in-review, approved. Record changes and evidence through GitHub branches/PRs and HANDOFF, without building a heavy approval platform. Registry dual-axis fields/CI policy are still P1 proposals, not yet implemented. **All five P0 architecture choices are now decided; proceed with `P1_IMPLEMENTATION_PLAN_v0.1.md`.**
+
 ## 1. External benchmark (what to learn, not what to copy)
 
 | Reference | Verified structure/principle | Big Academy adaptation |
