@@ -7,7 +7,7 @@ export type StaircaseVariant = 'A' | 'B';
 const STEP_GAP = 290;
 const CARD_WIDTH = 260;
 const INSET = 40;
-const CARD_CENTER_Y = 155;
+export const ANCHOR_BASE_Y = 356; // Absolute bottom/pedestal datum, never measured from card size.
 const MAX_RISE = 120;
 const MIN_RISE = 48;
 
@@ -23,6 +23,11 @@ export function stepRise(viewWidth: number, viewHeight: number): number {
   const clearance = clamp(viewHeight * 0.4, 220, 280);
   const spanX = Math.max(viewWidth - 2 * INSET, STEP_GAP);
   return Math.round(clamp((Math.max(0, viewHeight - clearance) * STEP_GAP) / spanX, MIN_RISE, MAX_RISE));
+}
+
+/** Identical platform/anchor baseline for A and B, independent of card dimensions. */
+export function pedestalAnchorY(index: number, count: number, rise: number): number {
+  return ANCHOR_BASE_Y + (count - 1 - index) * rise;
 }
 
 export function cameraForStep(index: number, viewportWidth: number, count: number): number {
@@ -55,8 +60,8 @@ export function StaircaseScene({
   const boundedX = clamp(cameraX, 0, maxX);
   // A single camera relation preserves the left-bottom to right-top diagonal as the user drags.
   const visibleIndex = (boundedX + view.width / 2 - CARD_WIDTH / 2) / STEP_GAP;
-  const cameraYRaw = 36 + (count - 1 - visibleIndex) * rise + CARD_CENTER_Y - view.height / 2;
-  const railHeight = Math.max(460, (count - 1) * rise + 460);
+  const cameraYRaw = ANCHOR_BASE_Y + (count - 1 - visibleIndex) * rise - view.height * 0.7; // Follow anchor line, not card center.
+  const railHeight = Math.max(460, pedestalAnchorY(0, count, rise) + 120);
   const cameraY = clamp(cameraYRaw, 0, Math.max(0, railHeight - view.height));
   const cameraXRef = useRef(boundedX);
   cameraXRef.current = boundedX;
@@ -136,9 +141,14 @@ export function StaircaseScene({
     setCameraX(cameraForStep(clamp(target, 0, count - 1), view.width, count));
   };
 
+  const railWidth = Math.max(CARD_WIDTH, (count - 1) * STEP_GAP + CARD_WIDTH);
+  const pathD = Array.from({ length: count }, (_, i) =>
+    (i === 0 ? 'M ' : 'L ') + (i * STEP_GAP + CARD_WIDTH / 2) + ' ' + pedestalAnchorY(i, count, rise)
+  ).join(' ');
   const style = {
     '--step-count': count,
     '--step-rise': String(rise) + 'px',
+    '--anchor-base-y': String(ANCHOR_BASE_Y) + 'px',
     '--rail-height': String(railHeight) + 'px',
     transform: 'translate3d(' + (-boundedX) + 'px, ' + (-cameraY) + 'px, 0)',
   } as CSSProperties;
@@ -150,6 +160,7 @@ export function StaircaseScene({
       data-variant={variant}
       data-camera-x={Math.round(boundedX)}
       data-rise-px={rise}
+      data-anchor-basis="pedestal-y"
       data-dragging={dragging ? 'true' : 'false'}
       role="region"
       tabIndex={0}
@@ -161,6 +172,11 @@ export function StaircaseScene({
       onKeyDown={keyDown}
     >
       <div className="staircase-rail" style={style}>
+        {variant === 'B' ? (
+          <svg className="staircase-continuous-path" width={railWidth} height={railHeight} aria-hidden="true">
+            <path d={pathD} />
+          </svg>
+        ) : null}
         {children}
       </div>
     </div>
