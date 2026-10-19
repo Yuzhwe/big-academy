@@ -27,3 +27,16 @@ test('shared React Aria components adapt to Writing semantic theme without chang
   await expect(page.getByText('BA-UI-006 · BATaskProgress')).toBeVisible();
   await expect(page.getByRole('button', { name: '禁用' })).toBeDisabled();
 });
+
+test('Spatial v0.2 candidate primitives and component semantic mapping retain the measured spacing', async ({ page }) => {
+  await page.goto('/?system');
+  await expect(page.getByRole('heading', { name: 'Spatial v0.2 · Spacing Scale' })).toBeVisible();
+  await expect(page.locator('.ba-showcase__spacing-row')).toHaveCount(9);
+  const metrics = await page.getByRole('button', { name: 'Test primary' }).evaluate(el => {
+    const s = getComputedStyle(el);
+    return { gap:s.gap, padLeft:s.paddingLeft, padRight:s.paddingRight };
+  });
+  expect(metrics).toEqual({ gap:'8px', padLeft:'16px', padRight:'16px' });
+  const progressGap = await page.locator('.ba-task-progress__list').evaluate(el => getComputedStyle(el).gap);
+  expect(progressGap).toBe('4px');
+});

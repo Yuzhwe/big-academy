@@ -100,6 +100,17 @@ The UI/UX Designer has explicitly selected the following **font roles**. These a
 
 ## 4. Layout & Spacing
 
+### Spatial, Grid & Layout System v0.2 [A principles, E values · 2026-10-19]
+
+The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, supported by **Element First / Content First** sizing, context-sensitive **Column / Modular / Baseline Grid**, and **Responsive / Adaptive / Strict** layout strategies. Full rules and statuses: `docs/design-system/SPATIAL_GRID_LAYOUT_SYSTEM_v0.2.md`.
+
+- **[A]** Spacing records relationships between elements; it must not be confused with interactive hit targets, border widths, typography metrics or path/world geometry.
+- **[A]** Page-level grids and overall placement belong to the application; shared components own only their internal layout. E-01's separately approved bottom-to-anchor staircase behavior in Writing PRODUCT.md overrides generic grid guidance.
+- **[E]** Initial 0/4/8/12/16/24/32/48/64px primitives exist in shared CSS Tokens, along with three provisional semantic relationships for BAButton/BATaskProgress. Exact gutters, breakpoints, radii and large page spacings are not approved by this decision.
+- **[T]** BAButton and BATaskProgress consume only token references whose current values reproduce their pre-existing 8px/16px/4px sizing. This is an integration proof, not a redesign.
+- **Validation:** browser and Storybook evidence for touch/keyboard/zoom/long EN/ZH text is required for future numeric approvals. Do not round approved 0.5px borders or E-01 anchor positions to a 4px grid.
+
+
 **Shared rules:**
 - Prioritize usable task content above decoration. Remove duplicate nonfunctional section labels while retaining task prompts, feedback, progress, essential controls and accessible names [A].
 - Layout tokens should document container padding, compact/regular/comfortable gaps, hit target sizing, response to narrow width and browser zoom [Q scale; [T] min hit target 44px in pilot].

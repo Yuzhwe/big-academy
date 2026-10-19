@@ -50,3 +50,11 @@
 .ba-showcase__palette-steps { display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:6px; }
 .ba-showcase__palette-step { text-align:center; min-width:0; font-size:12px; }
 .ba-showcase__palette-chip { display:block; height:48px; border:1px solid var(--ba-color-border-default); border-radius:6px; margin-bottom:4px; }
+
+/* Spatial v0.2 [E] gallery: values are imported exclusively from shared tokens.css. */
+.ba-showcase__spacing-gallery { display:grid; gap:10px; margin-block:16px; }
+.ba-showcase__spacing-row { display:grid; grid-template-columns:minmax(140px,210px) minmax(0,1fr) 44px; align-items:center; gap:12px; font-size:13px; }
+.ba-showcase__spacing-row code { overflow-wrap:anywhere; }
+.ba-showcase__spacing-measure { height:15px; max-width:100%; min-width:0; display:block; background:var(--ba-color-action-primary); border-radius:2px; }
+.ba-showcase__spacing-number { font-family:var(--ba-font-digit); font-weight:800; }
+@media(max-width:500px) { .ba-showcase__spacing-row { grid-template-columns:minmax(120px,160px) minmax(0,1fr) 37px; gap:8px; } }

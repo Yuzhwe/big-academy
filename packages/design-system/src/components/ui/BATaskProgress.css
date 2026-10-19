@@ -20,7 +20,7 @@
 .ba-task-progress__list {
   display: flex;
   align-items: stretch;
-  gap: 4px;
+  gap: var(--ba-spacing-progress-items-gap, 4px);
   margin: 0;
   padding: 2px;
   list-style: none;
