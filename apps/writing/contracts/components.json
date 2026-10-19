@@ -243,7 +243,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Temporary foundation theme only. Not validated and not visually approved. Does not call Pages.canOpen or Skip.skipped. Locked never navigates; every other status navigates only when canOpen(index) is true. Indexes are lesson-local."
+      "notes": "Temporary foundation theme only. Not validated and not visually approved. Numeric chips confirmed for this round. Visible status caption is skipped only (dashed circle + number + skipped/已跳过). Other states use check, number, lock, or current fill and ring, plus the accessible name. Does not call Pages.canOpen or Skip.skipped. Locked never navigates; every other status navigates only when canOpen(index) is true. Indexes are lesson-local."
     },
     {
       "id": "BA-UI-007",

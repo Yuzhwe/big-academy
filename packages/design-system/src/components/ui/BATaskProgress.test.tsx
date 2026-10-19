@@ -34,6 +34,11 @@ describe('BATaskProgress', () => {
     expect(screen.getByRole('button', { name: 'Task 4: Build a topic sentence, available' })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Task 5: Check, locked' })).toBeDisabled();
     expect(screen.getByRole('button', { name: /skipped/ })).not.toHaveAccessibleName(/done/);
+    expect(screen.getByText('skipped')).toBeVisible();
+    expect(screen.queryByText('done', { selector: '.ba-task-progress__caption' })).not.toBeInTheDocument();
+    expect(screen.queryByText('current', { selector: '.ba-task-progress__caption' })).not.toBeInTheDocument();
+    expect(screen.queryByText('available', { selector: '.ba-task-progress__caption' })).not.toBeInTheDocument();
+    expect(screen.queryByText('locked', { selector: '.ba-task-progress__caption' })).not.toBeInTheDocument();
   });
 
   it('names every state in Chinese', () => {
@@ -47,6 +52,11 @@ describe('BATaskProgress', () => {
       'step',
     );
     expect(screen.getByRole('button', { name: '任务 5：小测，未解锁' })).toBeDisabled();
+    expect(screen.getByText('已跳过')).toBeVisible();
+    expect(screen.queryByText('已完成', { selector: '.ba-task-progress__caption' })).not.toBeInTheDocument();
+    expect(screen.queryByText('当前', { selector: '.ba-task-progress__caption' })).not.toBeInTheDocument();
+    expect(screen.queryByText('可进入', { selector: '.ba-task-progress__caption' })).not.toBeInTheDocument();
+    expect(screen.queryByText('未解锁', { selector: '.ba-task-progress__caption' })).not.toBeInTheDocument();
   });
 
   it('navigates only when the row is not locked and canOpen allows it', async () => {

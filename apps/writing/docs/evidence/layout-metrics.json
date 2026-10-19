@@ -5,9 +5,9 @@
     "headerCenter": 720,
     "progressCenter": 720,
     "deltaPx": 0,
-    "overlapPx": -128.13,
+    "overlapPx": -144.55,
     "backHeight": 44,
-    "taskHeight": 55
+    "taskHeight": 44
   },
   {
     "name": "desktop-1440-en-many",
@@ -17,7 +17,7 @@
     "deltaPx": 0,
     "overlapPx": -34.23,
     "backHeight": 44,
-    "taskHeight": 55
+    "taskHeight": 44
   },
   {
     "name": "tablet-1024-en-long",
@@ -25,9 +25,9 @@
     "headerCenter": 512,
     "progressCenter": 512,
     "deltaPx": 0,
-    "overlapPx": -61.98,
+    "overlapPx": -78.4,
     "backHeight": 44,
-    "taskHeight": 55
+    "taskHeight": 44
   },
   {
     "name": "tablet-1024-zh-mixed",
@@ -37,7 +37,7 @@
     "deltaPx": 0,
     "overlapPx": -122.34,
     "backHeight": 44,
-    "taskHeight": 55
+    "taskHeight": 44
   },
   {
     "name": "tablet-834-zh-long",
@@ -47,7 +47,7 @@
     "deltaPx": 0,
     "overlapPx": -32.53,
     "backHeight": 44,
-    "taskHeight": 55
+    "taskHeight": 44
   },
   {
     "name": "tablet-834-en-many",
@@ -57,7 +57,7 @@
     "deltaPx": 0,
     "overlapPx": -16.02,
     "backHeight": 44,
-    "taskHeight": 55
+    "taskHeight": 44
   },
   {
     "name": "phone-390-zh-long",
@@ -67,6 +67,6 @@
     "deltaPx": 0,
     "overlapPx": -16.02,
     "backHeight": 44,
-    "taskHeight": 55
+    "taskHeight": 44
   }
 ]

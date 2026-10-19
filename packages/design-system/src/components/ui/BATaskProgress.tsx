@@ -85,9 +85,9 @@ export function BATaskProgress({
                   <span className="ba-task-progress__marker" aria-hidden="true">
                     <Marker status={task.status} number={number} />
                   </span>
-                  <span className="ba-task-progress__caption" aria-hidden="true">
-                    {statusWord}
-                  </span>
+                  {task.status === 'skipped' ? (
+                    <span className="ba-task-progress__caption">{statusWord}</span>
+                  ) : null}
                 </Button>
               </li>
             );
