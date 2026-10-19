@@ -5,8 +5,7 @@
   max-width: none;
   padding: 16px 0 0;
 }
-.course-path:has(.staircase-viewport) > .course-path__bar,
-.course-path:has(.staircase-viewport) > .course-levels {
+.course-path:has(.staircase-viewport) > .course-path__bar {
   margin-inline: clamp(16px, 3vw, 32px);
 }
 .course-path__main:has(.staircase-viewport) > .course-message,
@@ -76,7 +75,9 @@
   box-sizing: border-box;
   width: 260px;
   left: calc(var(--step-index) * 290px);
-  top: calc(36px + (var(--step-count) - 1 - var(--step-index)) * var(--step-rise));
+  /* top is the absolute pedestal/anchor Y, not the visual card top. */
+  top: calc(var(--anchor-base-y) + (var(--step-count) - 1 - var(--step-index)) * var(--step-rise));
+  transform:translateY(-100%);
   z-index: calc(var(--step-index) + 1);
 }
 .staircase-rail .course-nodes :is(.course-intro, .course-unit, .course-goal, .unit-milestone) {
@@ -99,67 +100,6 @@
 .staircase-rail .stair-lesson-card__action { align-self: stretch; }
 .staircase-rail .course-unit h2 { overflow-wrap: anywhere; }
 .staircase-rail :is(.course-intro, .course-unit, .course-goal, .unit-milestone, .stair-lesson-card) { position: relative; z-index: 2; }
-
-/* A — historical dimensional treatment, comparison only: not approved Writing visual. */
-.staircase-viewport[data-variant='A'] {
-  background: linear-gradient(180deg, #411c0a 0%, #b39c6b 100%);
-}
-.staircase-viewport[data-variant='A'] .course-nodes > li::before {
-  content: '';
-  position: absolute;
-  z-index: -2;
-  left: -58px;
-  right: -58px;
-  top: 100%;
-  height: 290px;
-  background: linear-gradient(180deg, rgba(255,255,255,.40), rgba(255,255,255,0));
-  clip-path: polygon(18% 0%,82% 0%,100% 100%,0 100%);
-  filter: blur(12px);
-  pointer-events: none;
-}
-.staircase-viewport[data-variant='A'] .course-nodes > li::after {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  left: -10px;
-  width: 280px;
-  top: calc(100% + 6px);
-  height: 31px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #fff7e1, #e2d4ae);
-  box-shadow: 0 4px 10px rgba(40,30,10,.22);
-  pointer-events: none;
-}
-.staircase-viewport[data-variant='A'] .stair-lesson-card {
-  border-radius: 45px;
-  color: #752403;
-  border-color: #5e4b35;
-  box-shadow: 1px 3px 0 #5e4b35, inset 0 0 4px rgba(255,255,255,.4);
-  background: #fffdfa;
-}
-.staircase-viewport[data-variant='A'] .course-unit,
-.staircase-viewport[data-variant='A'] .course-intro,
-.staircase-viewport[data-variant='A'] .unit-milestone,
-.staircase-viewport[data-variant='A'] .course-goal {
-  border-color: #5e4b35;
-  background: #fff7e1;
-  box-shadow: 1px 3px 0 #5e4b35;
-}
-
-/* B — approved general direction, but this exact page styling remains candidate. */
-.staircase-viewport[data-variant='B'] {
-  background: var(--ba-surface-warm, #fef9ef);
-}
-.staircase-viewport[data-variant='B'] .stair-lesson-card {
-  background: var(--ba-paper, #fff);
-  border-radius: 24px;
-  box-shadow: 0 8px 24px rgba(19,53,71,.08);
-}
-.staircase-viewport[data-variant='B'] .course-nodes > li::before,
-.staircase-viewport[data-variant='B'] .course-nodes > li::after { content: none; }
-.staircase-viewport[data-variant='B'] .course-nodes :is(.course-unit, .course-intro, .course-goal, .unit-milestone) {
-  box-shadow: 0 6px 18px rgba(19,53,71,.06);
-}
 
 @media (prefers-reduced-motion: reduce) {
   .staircase-rail, .staircase-viewport * { animation: none !important; transition: none !important; }
