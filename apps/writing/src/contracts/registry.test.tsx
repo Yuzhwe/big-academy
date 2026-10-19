@@ -18,13 +18,17 @@ describe('component registry', () => {
     }
     expect(byId['BA-UI-001']?.status).not.toBe('approved');
     expect(byId['BA-WR-001']?.status).not.toBe('validated');
-    for (const id of ['BA-WR-002', 'BA-WR-005', 'BA-WR-006']) {
+    for (const id of ['BA-WR-002', 'BA-WR-003', 'BA-WR-004', 'BA-WR-005', 'BA-WR-006']) {
       expect(byId[id]?.status).toBe('implemented');
       expect(byId[id]?.visualStatus).toBe('candidate-warm-frame');
       expect(byId[id]?.status).not.toBe('validated');
     }
     for (const component of registry.components) {
-      if (!['BA-UI-001', 'BA-UI-006', 'BA-WR-001', 'BA-WR-002', 'BA-WR-005', 'BA-WR-006'].includes(component.id)) {
+      if (
+        !['BA-UI-001', 'BA-UI-006', 'BA-WR-001', 'BA-WR-002', 'BA-WR-003', 'BA-WR-004', 'BA-WR-005', 'BA-WR-006'].includes(
+          component.id,
+        )
+      ) {
         expect(component.status).toBe('planned');
       }
       expect(component.status).not.toBe('validated');

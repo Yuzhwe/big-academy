@@ -1,5 +1,7 @@
 # Big Academy Writing — DESIGN.md
 
+**Reconciliation:** The global spec from `docs/unified-design-and-token-audit` is now also at `/DESIGN.md` (copy in `docs/reference/unified-design/`). This file is the Writing working draft already on the lesson-slice lineage. Approved `[A]` items in `/DESIGN.md` win if the two disagree. Neither file is visual sign-off of the running UI.
+
 **版本**：v0.2 · DRAFT（Code-First / Component Registry pilot，2026-10-19）  
 **不是**已经冻结的 v1.0。以 `PRODUCT.md` v1.0 之前的 `PHASE1_ALIGNMENT_REPORT_v0.3.md` 为业务状态权威索引；Alex 原始 HTML 仍为功能源。  
 **本轮架构**：**DESIGN.md + CSS Design Tokens + React Aria Components + 最小 Big Academy Components**。组件实施范围见 `COMPONENT_SCOPE_v0.1.md`；具体库证据见 `HEADLESS_COMPONENT_SELECTION_v0.1.md`。
@@ -52,5 +54,5 @@
 
 - 本项目允许 **不依赖 Figma 设计文件即可移交给 Agent**：以本 `DESIGN.md` 传递设计意图，`tokens.css` 提供实际数值，`contracts/components.json` 提供稳定 ID / Props / Events / States，未来的 `*.tsx` 和 `*.stories.tsx` 为实际渲染和交互证据。
 - 组件 ID 约定：`BA-UI-001`～`BA-UI-007` 基础层，`BA-WR-001`～`BA-WR-006` Writing 专属层；正式视觉引用组件 ID，而不是只凭中文名称或页面坐标定位。
-- **现状**：`BA-UI-001`、`BA-UI-006`、`BA-WR-001` 为 `implemented`，使用临时 foundation theme，不是 `validated`，也未经视觉签核。其余 10 项仍为 `planned`。绝不可把 implemented 改写成 validated。详细边界见 `CODE_FIRST_COMPONENT_WORKFLOW_v0.1.md` 与 `docs/PILOT_RUNTIME.md`。
+- **现状**：`BA-UI-001`、`BA-UI-006`、`BA-WR-001` 为 `implemented`，使用临时 foundation theme，不是 `validated`，也未经视觉签核。`BA-WR-002`、`BA-WR-003`、`BA-WR-004`、`BA-WR-005`、`BA-WR-006` 为 `implemented`，`visualStatus: candidate-warm-frame`，不是 `validated`。`BA-UI-002`、`BA-UI-003`、`BA-UI-004`、`BA-UI-005`、`BA-UI-007` 仍为 `planned`。绝不可把 implemented 改写成 validated。详细边界见 `CODE_FIRST_COMPONENT_WORKFLOW_v0.1.md`、`docs/PILOT_RUNTIME.md` 与 `docs/HIFI_RUNTIME.md`。
 - Figma/示意图仍可作为探索和审核证据，但 **不是项目构建运行的必要依赖**；最终审美仍需要设计师对浏览器中的实际组件和页面签核。

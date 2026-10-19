@@ -3,15 +3,32 @@ import { StaircaseScene, type StaircaseVariant } from './StaircaseScene';
 import { useSyncExternalStore } from 'react';
 import { Checkbox, Radio, RadioGroup } from 'react-aria-components';
 import { BAButton, localeTag } from '@big-academy/design-system';
+import { HamburgerLayer } from '../components/writing/HamburgerLayer';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { LessonWorkspace } from '../components/writing/LessonWorkspace';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
+import { WordGrid } from '../components/writing/WordGrid';
 import alexHtml from '../../source/alex-original.html?raw';
 import { CourseSession } from '../product/courseSession';
 import './course.css';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
+const TABLET_OVERLAY = '(max-width: 1112px)';
+
+function useTabletOverlay() {
+  const [tablet, setTablet] = useState(() =>
+    typeof window.matchMedia === 'function' ? window.matchMedia(TABLET_OVERLAY).matches : false,
+  );
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const media = window.matchMedia(TABLET_OVERLAY);
+    const onChange = () => setTablet(media.matches);
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, []);
+  return tablet;
+}
 
 function cardState(courseState: string, action: string): StairLessonState {
   if (courseState === 'skipped') return 'skipped';
@@ -210,6 +227,13 @@ function LessonView({ session }: { session: CourseSession }) {
   const bar = session.topBar();
   const activity = session.activity();
   const footer = session.footer();
+  const grid = session.gridView();
+  const tablet = useTabletOverlay();
+  const screenId = session.screens[session.inspect().screen]?.screen.id ?? '';
+  const [gridOverlayOpen, setGridOverlayOpen] = useState(false);
+  useEffect(() => {
+    setGridOverlayOpen(false);
+  }, [screenId]);
   if (!bar || !activity) return null;
   const hintLabel =
     activity.hintAction === 'hint'
@@ -241,6 +265,7 @@ function LessonView({ session }: { session: CourseSession }) {
       />
       <LessonWorkspace
         activity={
+          <div className="course-sheet">
           <article className="course-activity" data-template={activity.template} data-kind={activity.kind}>
             {activity.learn ? (
               <>
@@ -262,6 +287,49 @@ function LessonView({ session }: { session: CourseSession }) {
                 ) : null}
                 {activity.learn.nextUp ? <p>{activity.learn.nextUp}</p> : null}
               </>
+            ) : null}
+            {activity.topics ? (
+              <>
+                <h1 className="course-title">{activity.ask}</h1>
+                <RadioGroup
+                  className="course-choices"
+                  aria-label={activity.ask}
+                  value={activity.topics.find((topic) => topic.selected)?.id ?? ''}
+                  onChange={(value) => session.selectTopic(value)}
+                >
+                  {activity.topics.map((topic) => (
+                    <Radio key={topic.id} className="course-choice" value={topic.id}>
+                      <span className="course-choice__letter">{topic.letter}</span>
+                      <span>
+                        {topic.text}
+                        {topic.note ? <span className="course-topic-note"> {topic.note}</span> : null}
+                      </span>
+                    </Radio>
+                  ))}
+                </RadioGroup>
+              </>
+            ) : null}
+            {activity.layers ? (
+              <div data-testid="burger">
+                {activity.ask ? <h1 className="course-title">{activity.ask}</h1> : null}
+                <div className="course-layers">
+                  {activity.layers.map((layer) => (
+                    <HamburgerLayer
+                      key={layer.field}
+                      layerId={layer.field}
+                      label={layer.label}
+                      value={layer.value}
+                      editable={layer.editable}
+                      part={layer.part}
+                      placeholder={layer.placeholder}
+                      caret={layer.caret}
+                      locale={session.locale}
+                      onChange={(value, caret) => session.setPlanField(layer.field, value, caret)}
+                      onFocusField={(field, caret) => session.focusPlanField(field, caret)}
+                    />
+                  ))}
+                </div>
+              </div>
             ) : null}
             {activity.pick ? (
               <>
@@ -323,13 +391,18 @@ function LessonView({ session }: { session: CourseSession }) {
                 </p>
               </>
             ) : null}
-            {!activity.supported && !activity.learn ? (
+            {!activity.supported && !activity.learn && !activity.layers && !activity.topics ? (
               <>
                 <h1 className="course-title">{activity.ask || activity.title}</h1>
                 <p className="course-message" data-testid="unsupported-template">
                   {activity.unsupportedReason}
                 </p>
               </>
+            ) : null}
+            {!activity.supported && activity.layers ? (
+              <p className="course-message" data-testid="unsupported-template">
+                {activity.unsupportedReason}
+              </p>
             ) : null}
             {activity.skip?.mode === 'note' ? <p data-testid="skip-note">{activity.skip.text}</p> : null}
             {activity.skip?.mode === 'offer' ? (
@@ -344,6 +417,37 @@ function LessonView({ session }: { session: CourseSession }) {
               </div>
             ) : null}
           </article>
+          {grid ? (
+            <WordGrid
+              groups={grid.groups}
+              activeGroup={grid.activeGroup}
+              presentation={tablet && grid.mode === 'expanded' ? 'overlay' : 'docked'}
+              mode={grid.mode}
+              open={gridOverlayOpen}
+              locale={session.locale}
+              messages={{
+                locked: grid.lockedMessage,
+                collapsed: grid.collapsedMessage,
+                empty: grid.emptyMessage,
+                open: grid.openLabel,
+                fold: grid.foldLabel,
+              }}
+              onGroupChange={(key) => session.setGridTab(key)}
+              onInsert={(word) => session.insertGridWord(word)}
+              onOpenChange={(next) => {
+                if (grid.mode === 'collapsed') {
+                  if (next) session.toggleGrid();
+                  return;
+                }
+                if (tablet && grid.mode === 'expanded') {
+                  setGridOverlayOpen(next);
+                  return;
+                }
+                if (!next) session.toggleGrid();
+              }}
+            />
+          ) : null}
+          </div>
         }
         coach={
           <div>

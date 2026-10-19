@@ -178,6 +178,43 @@ describe('Alex course session', () => {
     expect(course.celebration).toBeNull();
     expect(course.openNotice).toMatch(/still open/);
   });
+
+  it('refuses lesson 6 by URL until the earlier lessons are done', () => {
+    const blocked = session('?lesson=6');
+    expect(blocked.view).toBe('path');
+    expect(blocked.canOpen(blocked.liveIdx(5)[0])).toBe(false);
+  });
+
+  it('runs the real plan topic and hamburger layers, then keeps lesson 7 locked', () => {
+    const course = session();
+    for (let lesson = 0; lesson < 5; lesson += 1) satisfyAll(course, lesson);
+    expect(course.openLesson('G2-O', 6)).toBe(true);
+    expect(course.screens[course.inspect().screen].screen.id).toBe('plan.topic');
+    expect(course.gridView()).toBeNull();
+    course.selectTopic('recess');
+    course.pressPrimary();
+    expect(course.screens[course.inspect().screen].screen.id).toBe('plan.top');
+    expect(course.gridView()?.mode).toBe('expanded');
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/each part|每个部分/);
+    course.setPlanField('opinion', 'I think recess should be longer');
+    course.pressPrimary();
+    expect(course.screens[course.inspect().screen].screen.id).toBe('plan.r1');
+    expect(course.screenDone(course.screens.findIndex((ref) => ref.screen.id === 'plan.top'))).toBe(true);
+    course.insertGridWord('because');
+    const reason = course.inspect().regions['plan.reason1']?.map((part) => part.t).join('') ?? '';
+    expect(reason).toMatch(/Because/);
+    expect(course.inspect().regions['plan.reason1']?.some((part) => part.s === 'grid')).toBe(true);
+    course.pressPrimary();
+    expect(course.screens[course.inspect().screen].screen.id).toBe('plan.r1');
+    course.setPlanField('detail1', 'A longer recess gives us time to play.');
+    course.pressPrimary();
+    expect(course.screens[course.inspect().screen].screen.id).toBe('plan.r2');
+    course.backToPath();
+    expect(course.cardAction(course.playUnit(), 5, course.liveState(5))).toBe('continue');
+    expect(course.liveState(6)).toBe('locked');
+    expect(course.openLesson('G2-O', 7)).toBe(false);
+  });
 });
 
 describe('course slice UI', () => {

@@ -150,6 +150,49 @@ export interface ActivityModel {
   coach: string[];
   coachMore: boolean;
   feedback: string;
+  topics?: {
+    id: string;
+    letter: string;
+    text: string;
+    selected: boolean;
+    note: string;
+  }[];
+  layers?: {
+    field: string;
+    part: 'top' | 'fill' | 'bottom';
+    label: string;
+    placeholder: string;
+    value: string;
+    editable: boolean;
+    focused: boolean;
+    caret: number;
+  }[];
+}
+
+export interface GridCellModel {
+  id: string;
+  text: string;
+  gloss?: string;
+  caption?: string;
+}
+
+export interface GridGroupModel {
+  id: string;
+  label: string;
+  cells: GridCellModel[];
+}
+
+export type GridMode = 'expanded' | 'collapsed' | 'locked' | 'empty';
+
+export interface GridViewModel {
+  mode: GridMode;
+  groups: GridGroupModel[];
+  activeGroup: string;
+  lockedMessage: string;
+  collapsedMessage: string;
+  emptyMessage: string;
+  openLabel: string;
+  foldLabel: string;
 }
 
 export interface FooterModel {
@@ -233,6 +276,7 @@ export class CourseSession {
   readonly config: AlexConfig;
   readonly levelPath: LevelPath;
   readonly engine: EngineApi;
+  readonly prov: ReturnType<typeof loadAlexSource>['prov'];
   readonly screens: ScreenRef[];
 
   private readonly storage: Storage;
@@ -241,6 +285,9 @@ export class CourseSession {
   private yesCount = 0;
   private coachBeat: Record<string, number> = {};
   private receipt: CelebrationReceipt;
+  private planFocusField: string | null = null;
+  private planCarets: Record<string, number> = {};
+  private lastPlanScreen = '';
 
   state: AlexState;
   view: CourseView = 'path';
@@ -258,6 +305,7 @@ export class CourseSession {
     this.config = source.config;
     this.levelPath = source.levelPath;
     this.engine = source.engine;
+    this.prov = source.prov;
     this.screens = this.engine.screens(this.config);
     this.storage = options.storage ?? localStorage;
     this.levelId = this.levelPath.current_level;
@@ -343,6 +391,11 @@ export class CourseSession {
   /** Live Alex state object. Tests may arrange fields that `Pages.done` reads. */
   inspect(): AlexState {
     return this.state;
+  }
+
+  /** Writes arranged Alex state. Not a student control and not an unlock. */
+  saveArrangedState(): void {
+    this.save();
   }
 
   screenDone(index: number): boolean {
@@ -842,6 +895,57 @@ export class CourseSession {
       }
     }
 
+    if (screen.kind === 'plan_topic') {
+      const plan = this.planPage();
+      return {
+        ...base,
+        supported: true,
+        ask: this.zh ? '选一个问题' : 'Choose a question',
+        topics: (plan?.topics ?? []).map((topic, index) => ({
+          id: topic.id,
+          letter: this.engine.choiceLetter(index),
+          text: topic.text,
+          selected: (this.state.plan.topic || plan?.topics?.[0]?.id) === topic.id,
+          note: topic.final ? (this.zh ? '我们班的问题' : 'Our class question') : '',
+        })),
+      };
+    }
+
+    if (screen.kind === 'plan_layer' || screen.kind === 'plan_check') {
+      const plan = this.planPage();
+      const topic = plan?.topics?.find((item) => item.id === this.state.plan.topic) ?? plan?.topics?.[0];
+      const editable = new Set(this.editablePlanFields());
+      const focus = this.focusedPlanField(editable);
+      const question = focus ? plan?.questions?.[focus]?.[0] : undefined;
+      const coachLines = question ? [this.text(question), ...coach] : coach;
+      return {
+        ...base,
+        supported: screen.kind === 'plan_layer',
+        ask: topic?.text ?? this.text(screen.title),
+        coach: coachLines,
+        layers: (plan?.slots ?? []).map((slot) => {
+          const value = regionText(this.state.regions[`plan.${slot.field}`]);
+          const part = slot.part === 'top' || slot.part === 'bottom' ? slot.part : 'fill';
+          return {
+            field: slot.field,
+            part,
+            label: this.zh && slot.zh ? slot.zh : slot.label,
+            placeholder: slot.ph ?? '',
+            value,
+            editable: editable.has(slot.field),
+            focused: focus === slot.field,
+            caret: this.planCarets[slot.field] ?? value.length,
+          };
+        }),
+        unsupportedReason:
+          screen.kind === 'plan_check'
+            ? this.zh
+              ? '计划检查要等原来的读稿结果。这一轮没有接上，所以不能把这一页标成完成。'
+              : 'Checking the plan waits for the original read-through. That step is not connected in this slice, so this page cannot be marked done.'
+            : undefined,
+      };
+    }
+
     return {
       ...base,
       supported: false,
@@ -923,6 +1027,11 @@ export class CourseSession {
         }
         return;
       }
+      if (screen.kind === 'plan_check') {
+        this.feedback = this.activity()?.unsupportedReason ?? this.lockedMsg(index);
+        this.emit();
+        return;
+      }
       this.feedback = this.lockedMsg(index);
       this.emit();
       return;
@@ -993,6 +1102,141 @@ export class CourseSession {
       this.log('coach_beat', { screen: screen.id });
       this.emit();
     }
+  }
+
+  selectTopic(id: string): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind !== 'plan_topic') return;
+    const topics = this.planPage()?.topics ?? [];
+    if (!topics.some((topic) => topic.id === id)) return;
+    this.state.plan.topic = id;
+    this.log('topic', { id });
+    this.save();
+    this.emit();
+  }
+
+  focusPlanField(field: string, caret?: number): void {
+    if (!this.editablePlanFields().includes(field)) return;
+    const sameField = this.planFocusField === field;
+    const sameCaret = caret == null || this.planCarets[field] === caret;
+    this.planFocusField = field;
+    if (caret != null) this.planCarets[field] = caret;
+    if (sameField && sameCaret) return;
+    this.emit();
+  }
+
+  setPlanField(field: string, value: string, caret?: number): void {
+    if (!this.editablePlanFields().includes(field)) return;
+    const key = `plan.${field}`;
+    this.state.regions[key] = this.prov.update(this.state.regions[key], value, 'typed');
+    this.planFocusField = field;
+    this.planCarets[field] = caret ?? value.length;
+    this.save();
+    this.emit();
+  }
+
+  /**
+   * Inserts a word-grid cell at the focused plan field.
+   * Spacing and capitals come from Alex `Engine.smartInsert`.
+   * Provenance of the new characters is `grid`.
+   */
+  insertGridWord(word: string): void {
+    const field = this.planFocusField;
+    if (!field || !this.editablePlanFields().includes(field)) {
+      this.feedback = this.zh
+        ? '先点你要写的地方。'
+        : 'Tap the place where you want to write first.';
+      this.emit();
+      return;
+    }
+    const key = `plan.${field}`;
+    const current = regionText(this.state.regions[key]);
+    const caret = this.planCarets[field] ?? current.length;
+    const kind = /^[.,!?]$/.test(word) || /^,/.test(word) ? 'mark' : /\s/.test(word) ? 'phrase' : 'word';
+    const inserted = this.engine.smartInsert(current, caret, caret, word, kind);
+    this.state.regions[key] = this.prov.update(this.state.regions[key], inserted.value, 'grid');
+    this.planFocusField = field;
+    this.planCarets[field] = inserted.caret;
+    this.feedback = '';
+    this.log('grid_insert', { field });
+    this.save();
+    this.emit();
+  }
+
+  setGridTab(id: string): void {
+    const view = this.gridView();
+    if (!view?.groups.some((group) => group.id === id)) return;
+    this.state.grid.tab[this.gridKey()] = id;
+    this.save();
+    this.emit();
+  }
+
+  toggleGrid(): void {
+    const view = this.gridView();
+    if (!view || view.mode === 'locked') return;
+    const screen = this.screens[this.state.screen]?.screen;
+    const page = screen ? this.pageOf(screen.page) : null;
+    const task = screen?.task ? this.task(screen.task) : null;
+    const grid = this.engine.gridFor(this.config, page, task);
+    const pageId = screen?.page ?? '';
+    if (grid.collapsed) {
+      this.state.grid.open = this.state.grid.open ?? {};
+      this.state.grid.open[pageId] = !this.state.grid.open[pageId];
+    } else {
+      this.state.grid.collapsed = !this.state.grid.collapsed;
+    }
+    this.save();
+    this.emit();
+  }
+
+  gridView(): GridViewModel | null {
+    if (this.view !== 'lesson') return null;
+    const screen = this.screens[this.state.screen]?.screen;
+    if (!screen) return null;
+    const lockedMessage = this.zh
+      ? '这次检查关掉了词表。请用键盘。'
+      : 'The word grid is off for this check. Use the keyboard.';
+    const collapsedMessage = this.zh ? '词表折起来了。' : 'The grid is folded away.';
+    const emptyMessage = this.zh ? '这里用键盘。' : 'Use the keyboard here.';
+    const openLabel = this.zh ? '打开词表' : 'Open the grid';
+    const foldLabel = this.zh ? '折起词表' : 'Fold away';
+    const chrome = { lockedMessage, collapsedMessage, emptyMessage, openLabel, foldLabel };
+    if (screen.kind === 'check') {
+      return { mode: 'locked', groups: [], activeGroup: '', ...chrome };
+    }
+    const hiddenKinds = [
+      'learn',
+      'model_read',
+      'model_task',
+      'plan_topic',
+      'draft_ready',
+      'rev_final',
+      'rep_paragraph',
+      'rep_grew',
+      'rep_reflect',
+    ];
+    if (hiddenKinds.includes(screen.kind)) return null;
+    const task = screen.task ? this.task(screen.task) : null;
+    if (task && (task.type === 'pick' || task.type === 'tapword')) return null;
+    if (!this.editablePlanFields().length) return null;
+    const page = this.pageOf(screen.page);
+    const grid = this.engine.gridFor(this.config, page, task);
+    if (grid.level === 'tap') return null;
+    if (grid.locked || grid.level === 'off') {
+      return { mode: 'locked', groups: [], activeGroup: '', ...chrome };
+    }
+    const pageId = screen.page;
+    const collapsed = grid.collapsed ? !this.state.grid.open?.[pageId] : !!this.state.grid.collapsed;
+    if (collapsed) {
+      return { mode: 'collapsed', groups: [], activeGroup: '', ...chrome };
+    }
+    if (!grid.tabs.length) {
+      return { mode: 'empty', groups: [], activeGroup: '', ...chrome };
+    }
+    const groups = grid.tabs.map((id) => this.gridGroup(id, grid.level, task));
+    const stored = this.state.grid.tab[this.gridKey()];
+    const activeGroup = groups.some((group) => group.id === stored) ? stored : groups[0].id;
+    return { mode: 'expanded', groups, activeGroup, ...chrome };
   }
 
   chooseSkip(choice: 'skip' | 'review'): void {
@@ -1100,6 +1344,7 @@ export class CourseSession {
     this.state.page = this.pageIndex(this.screens[index].screen.page);
     this.view = 'lesson';
     this.feedback = '';
+    this.preparePlanScreen();
     this.log('screen');
     this.save();
     this.emit();
@@ -1359,6 +1604,96 @@ export class CourseSession {
     return skipped;
   }
 
+  private planPage() {
+    return this.config.pages.find((page) => page.kind === 'plan') ?? null;
+  }
+
+  private editablePlanFields(): string[] {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (!screen) return [];
+    if (screen.kind === 'plan_layer') return screen.fields ?? [];
+    if (screen.kind === 'plan_check') return this.planPage()?.slots?.map((slot) => slot.field) ?? [];
+    return [];
+  }
+
+  private focusedPlanField(editable: Set<string>): string | null {
+    if (this.planFocusField && editable.has(this.planFocusField)) return this.planFocusField;
+    return [...editable][0] ?? null;
+  }
+
+  private preparePlanScreen(): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (!screen || screen.kind !== 'plan_layer' || !screen.fields?.length) return;
+    if (this.lastPlanScreen === screen.id) return;
+    this.lastPlanScreen = screen.id;
+    this.planFocusField = screen.fields[0];
+    const key = `${screen.page}:${screen.task ?? ''}`;
+    this.state.grid.tab[key] = /reason|detail/.test(screen.fields[0]) ? 'reasons' : 'opinion';
+  }
+
+  private gridKey(): string {
+    const screen = this.screens[this.state.screen]?.screen;
+    return `${screen?.page ?? ''}:${screen?.task ?? ''}`;
+  }
+
+  private gridGroup(id: string, level: string, task: AlexTask | null): GridGroupModel {
+    return {
+      id,
+      label: this.gridTabLabel(id, task),
+      cells: this.gridCells(id, level, task),
+    };
+  }
+
+  private gridTabLabel(id: string, task: AlexTask | null): string {
+    if (id === 'task') return this.zh ? '本题词块' : 'This task';
+    if (id === 'set') {
+      return task?.set === 'connect'
+        ? this.zh
+          ? '连接拼搭'
+          : 'Connect set'
+        : this.zh
+          ? '句子拼搭'
+          : 'Sentence set';
+    }
+    if (id === 'myplan') return this.zh ? '我的计划' : 'My plan';
+    const tab = this.config.grids?.tabs[id];
+    if (this.zh && tab?.zh) return tab.zh;
+    return tab?.label ?? id;
+  }
+
+  private gridCells(id: string, level: string, task: AlexTask | null): GridCellModel[] {
+    if (id === 'myplan') {
+      return (this.planPage()?.slots ?? [])
+        .map((slot) => {
+          const text = this.engine.stripPictures(regionText(this.state.regions[`plan.${slot.field}`])).trim();
+          return {
+            id: `myplan:${slot.field}`,
+            text,
+            caption: this.zh && slot.zh ? slot.zh : slot.label,
+          };
+        })
+        .filter((cell) => cell.text && !/^\p{Extended_Pictographic}+$/u.test(cell.text));
+    }
+    if (id === 'task') {
+      return (task?.cells ?? []).map((cell, index) => this.gridCellModel('task', index, cell));
+    }
+    if (id === 'set') {
+      const pieces = [...(task?.cells ?? []), ...((task?.distractors ?? []).map((item) => ({ t: item })) )];
+      return pieces.map((cell, index) => this.gridCellModel('set', index, cell));
+    }
+    return this.engine.cellsFor(this.config, id, level).map((cell, index) => this.gridCellModel(id, index, cell));
+  }
+
+  private gridCellModel(groupId: string, index: number, cell: { t: string; zh?: string; cap?: string; pic?: string }): GridCellModel {
+    const text = cell.t || cell.pic || '';
+    return {
+      id: `${groupId}:${index}:${text}`,
+      text,
+      gloss: this.zh && cell.zh ? cell.zh : undefined,
+      caption: cell.cap,
+    };
+  }
+
   private planFields(fields: string[] | undefined): boolean {
     if (!fields?.length) return false;
     return fields.every((field) => this.engine.stripPictures(regionText(this.state.regions[`plan.${field}`])).trim());
@@ -1368,6 +1703,7 @@ export class CourseSession {
     const kind = this.screens[index].screen.kind;
     if (kind === 'task' || kind === 'model_task') return this.zh ? '检查' : 'Check';
     if (kind === 'check') return this.zh ? '交卷' : 'Hand in';
+    if (kind === 'plan_check') return this.zh ? '检查我的计划' : 'Check my plan';
     return this.zh ? '下一页' : 'Next';
   }
 

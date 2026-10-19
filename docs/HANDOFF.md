@@ -41,3 +41,13 @@ The original Cursor Writing PR #4 and Agent A documentation PR #2 are still sepa
 - [Draft PR #6](https://github.com/Yuzhwe/big-academy/pull/6) — implementation preview based on Cursor E-01 Draft PR #4, **not merged**. The interactive A/B switch uses the same diagonal scene geometry and the same `CourseSession` for both visual versions.
 - Proposed browser assertions and matching screenshot capture are now in `apps/writing/e2e/staircase-ab.spec.ts`. **These tests have been authored but not executed in this chat/runtime**; no deployed URL or approved visual evidence yet. Run typecheck, Vitest, Playwright and collect results before treating this as delivered/validated.
 - This branch includes E-01-specific Requirements + Specification in `apps/writing/PRODUCT.md`. Product-level features/shared rules are not duplicated into a separate page spec. The root `/DESIGN.md` on Draft PR #2 still requires a reviewed documentation reconciliation; no false claim of already having two identical finalized docs.
+
+## Writing hi-fi slice after Agent A E-01 (2026-10-19)
+
+Branch `cursor/writing-hifi-from-agent-a-e01-8539` starts from `feat/agent-a-e01-staircase-ab`. It does not push that branch or `main`.
+
+`BA-WR-003` WordGrid and `BA-WR-004` HamburgerLayer are `implemented` with `visualStatus: candidate-warm-frame`. Contract `0.1.1` only adds optional props. `BA-UI-001`, `BA-UI-006`, and `BA-WR-001` were not rewritten.
+
+The student path still uses Alex `Pages.canOpen`. Lesson 6 plan topic and plan layers can be completed for real. `plan.check`, P4, P5, P7, and P1 are not marked done. Tech status is ready for UI/UX Designer review. It is not visually complete.
+
+Audit: `apps/writing/docs/PHASE_A_HIFI_AUDIT.md`. Runtime: `apps/writing/docs/HIFI_RUNTIME.md`. Global design copy: `/DESIGN.md` and `docs/reference/unified-design/`.

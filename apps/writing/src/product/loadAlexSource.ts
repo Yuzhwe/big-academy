@@ -30,6 +30,10 @@ export interface AlexTask {
     words?: Record<string, Bilingual>;
   };
   fields?: string[];
+  cells?: GridCell[];
+  distractors?: string[];
+  set?: string;
+  grid?: { level?: string; tabs?: string[] };
 }
 
 export interface AlexScreen {
@@ -56,6 +60,36 @@ export interface AlexLesson {
   screens: AlexScreen[];
 }
 
+export interface GridCell {
+  t: string;
+  zh?: string;
+  pic?: string;
+  cap?: string;
+}
+
+export interface GridTabDef {
+  label: string;
+  zh?: string;
+  color?: string;
+  pictures?: boolean;
+  words?: (GridCell | string)[];
+  chunks?: (GridCell | string)[];
+}
+
+export interface PlanSlot {
+  field: string;
+  part?: string;
+  label: string;
+  zh?: string;
+  ph?: string;
+}
+
+export interface PlanTopic {
+  id: string;
+  text: string;
+  final?: boolean;
+}
+
 export interface AlexPage {
   id: string;
   kind: string;
@@ -64,6 +98,10 @@ export interface AlexPage {
   teach?: Bilingual | string;
   tasks?: string[];
   task?: string;
+  grid?: { level?: string; tabs?: string[] };
+  slots?: PlanSlot[];
+  topics?: PlanTopic[];
+  questions?: Record<string, Bilingual[]>;
 }
 
 export interface AlexSkill {
@@ -100,6 +138,7 @@ export interface AlexConfig {
   step_tags?: StepTag[];
   unit_goals?: Bilingual[];
   unit?: { skill_skip?: { merge_below_min?: number } };
+  grids?: { tabs: Record<string, GridTabDef> };
 }
 
 export interface PathLesson {
@@ -159,12 +198,35 @@ export interface EngineApi {
   tokens: (text: string) => { w: string; start: number; end: number }[];
   skipMode: (status: string, allow: boolean) => 'auto' | 'offer' | 'none';
   stripPictures: (text: string) => string;
+  gridFor: (
+    config: AlexConfig,
+    page: AlexPage | null,
+    task: AlexTask | null,
+  ) => { level: string; tabs: string[]; locked: boolean; collapsed: boolean };
+  cellsFor: (config: AlexConfig, tabId: string, level: string) => GridCell[];
+  smartInsert: (
+    value: string,
+    start: number | null,
+    end: number | null,
+    insert: string,
+    kind: string,
+  ) => { value: string; start: number; inserted: string; caret: number };
+}
+
+export interface ProvApi {
+  text: (segs: { t: string; s: string }[] | undefined) => string;
+  update: (
+    segs: { t: string; s: string }[] | undefined,
+    newText: string,
+    src: string,
+  ) => { t: string; s: string }[];
 }
 
 export interface AlexSource {
   config: AlexConfig;
   levelPath: LevelPath;
   engine: EngineApi;
+  prov: ProvApi;
 }
 
 const cache = new Map<string, AlexSource>();
@@ -196,6 +258,17 @@ export function extractAssignedJson(source: string, name: string): unknown {
   throw new Error(`Alex source has an unclosed ${name} object`);
 }
 
+export function loadProv(source: string): ProvApi {
+  const start = source.indexOf('var Prov = (function () {');
+  const end = source.indexOf('var Engine = (function () {');
+  if (start < 0 || end < 0 || end <= start) {
+    throw new Error('Alex Prov script was not found in the source HTML');
+  }
+  const script = source.slice(start, end);
+  const factory = new Function(`${script}\nreturn Prov;`) as () => ProvApi;
+  return factory();
+}
+
 export function loadEngine(source: string): EngineApi {
   const start = source.indexOf('var Engine = (function () {');
   const endMarker =
@@ -217,7 +290,7 @@ export function loadAlexSource(html: string): AlexSource {
   for (const level of levelPath.levels) {
     for (const unit of level.units) unit.level = level.id;
   }
-  const loaded = { config, levelPath, engine: loadEngine(html) };
+  const loaded = { config, levelPath, engine: loadEngine(html), prov: loadProv(html) };
   cache.set(html, loaded);
   return loaded;
 }

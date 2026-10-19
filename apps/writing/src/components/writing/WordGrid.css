@@ -1,0 +1,127 @@
+/*
+ * BA-WR-003 candidate Warm Frame.
+ * Approved ink #133547, accent #B25415, paper #FFFFFF, 0.5px ordinary borders.
+ * Tab fill, elevation, and radius are [E] candidates. Not validated.
+ * Alex per-tab hex colors are not reused; several fail white-text contrast.
+ */
+
+.word-grid {
+  color: var(--ba-brand-dark, #133547);
+  font-family: inherit;
+}
+
+.word-grid--locked,
+.word-grid--bar,
+.word-grid__panel {
+  background: var(--ba-paper, #ffffff);
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
+  border-radius: 12px; /* [E] candidate */
+}
+
+.word-grid--locked,
+.word-grid--bar,
+.word-grid__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
+.word-grid--locked p,
+.word-grid--bar p,
+.word-grid__bar p,
+.word-grid__empty {
+  margin: 0;
+}
+
+.word-grid__text-button,
+.word-grid__cell,
+.word-grid__tab {
+  min-height: 44px;
+  min-width: 44px;
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-brand-dark, #133547);
+  border-radius: 10px; /* [E] candidate */
+  background: var(--ba-paper, #ffffff);
+  color: var(--ba-brand-dark, #133547);
+  font: inherit;
+  cursor: pointer;
+}
+
+.word-grid__text-button {
+  padding: 8px 12px;
+}
+
+.word-grid__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 12px 8px;
+}
+
+.word-grid__tab {
+  padding: 8px 12px;
+}
+
+.word-grid__tab[data-selected='true'],
+.word-grid__tab[data-selected] {
+  border-color: var(--ba-writing-accent, #b25415);
+  box-shadow: inset 0 0 0 1px var(--ba-writing-accent, #b25415);
+}
+
+.word-grid__tab[data-focus-visible='true'],
+.word-grid__cell:focus-visible,
+.word-grid__text-button:focus-visible {
+  outline: 2px solid var(--ba-brand-dark, #133547);
+  outline-offset: 2px;
+}
+
+.word-grid__cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 220px;
+  overflow: auto;
+  padding: 0 12px 12px;
+}
+
+.word-grid__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.word-grid__word {
+  font-family: "Dosis", "Arial Narrow", sans-serif;
+  font-weight: 800;
+}
+
+.word-grid__gloss {
+  font-size: 13px;
+}
+
+.word-grid--docked {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin-top: 16px;
+  background: var(--ba-paper, #ffffff);
+}
+
+.word-grid--overlay .word-grid__panel {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  max-height: 46%;
+  overflow: auto;
+  /* [E] candidate elevation so the open list separates from the paper */
+  box-shadow: 0 -8px 18px color-mix(in srgb, var(--ba-brand-dark, #133547) 12%, transparent);
+}
+
+.word-grid--overlay > .word-grid__text-button {
+  margin-top: 12px;
+}

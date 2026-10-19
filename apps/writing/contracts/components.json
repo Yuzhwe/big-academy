@@ -361,18 +361,24 @@
       "id": "BA-WR-003",
       "name": "WordGrid",
       "kind": "composite",
-      "contractVersion": "0.1.0",
-      "status": "planned",
+      "contractVersion": "0.1.1",
+      "status": "implemented",
+      "visualStatus": "candidate-warm-frame",
       "implementation": "apps/writing/src/components/writing/WordGrid.tsx",
       "story": "apps/writing/src/components/writing/WordGrid.stories.tsx",
       "props": {
         "groups": "WordGroup[]",
         "activeGroup": "string",
-        "presentation": "docked | overlay"
+        "presentation": "docked | overlay",
+        "mode": "expanded | collapsed | locked | empty, optional additive",
+        "open": "boolean, optional, overlay on-demand",
+        "locale": "en | zh, optional",
+        "messages": "optional localized chrome strings"
       },
       "events": {
         "onGroupChange": "(key) => void",
-        "onInsert": "(word) => void"
+        "onInsert": "(word) => void",
+        "onOpenChange": "(open) => void, optional additive"
       },
       "states": [
         "hidden",
@@ -394,24 +400,31 @@
         "Chinese"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/HIFI_RUNTIME.md",
+      "notes": "Contract 0.1.1 is additive (mode, open, locale, messages, onOpenChange). Candidate Warm Frame. Not validated and not visually approved. Shown only when Alex Grid would show a grid and this slice has a plan field to insert into, or when the screen is a check (locked, no words). P4/P5 editors are not connected, so their grids stay hidden. Alex per-tab colors are not used."
     },
     {
       "id": "BA-WR-004",
       "name": "HamburgerLayer",
       "kind": "composite",
-      "contractVersion": "0.1.0",
-      "status": "planned",
+      "contractVersion": "0.1.1",
+      "status": "implemented",
+      "visualStatus": "candidate-warm-frame",
       "implementation": "apps/writing/src/components/writing/HamburgerLayer.tsx",
       "story": "apps/writing/src/components/writing/HamburgerLayer.stories.tsx",
       "props": {
         "layerId": "string",
         "label": "string",
         "value": "string",
-        "editable": "boolean"
+        "editable": "boolean",
+        "part": "top | fill | bottom, optional additive",
+        "placeholder": "string, optional additive",
+        "caret": "number, optional additive",
+        "locale": "en | zh, optional additive"
       },
       "events": {
-        "onChange": "(value) => void"
+        "onChange": "(value, caret?) => void",
+        "onFocusField": "(layerId, caret?) => void, optional additive"
       },
       "states": [
         "idle",
@@ -433,7 +446,8 @@
         "LongContent"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/HIFI_RUNTIME.md",
+      "notes": "Contract 0.1.1 is additive. Candidate layer tints, not the old demo bun hex values. Label and entry share one surface. Focus changes the whole layer and underlines the entry. No nested white field. Not validated and not visually approved. Does not score the plan."
     },
     {
       "id": "BA-WR-005",
