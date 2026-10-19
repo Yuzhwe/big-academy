@@ -27,3 +27,17 @@ The slice calls Alex `Pages.canOpen`, `Pages.done`, `Skip`, `Home.lessonStates`,
 
 ## Known open issues
 Level Goal exact criterion, concurrent new milestones, skip revocation and celebration receipts, removal/re-homing of former menu features, and remaining 52-activity visual QA.
+
+## E-01 diagonal staircase A/B proof — Agent A (2026-10-19)
+
+Branch \`feat/agent-a-e01-staircase-ab\` (from \`cursor/writing-e01-lesson-slice-7d6c\`) implements a **draft designer-review-only** A/B variant switch: **A** historical cream card/280px thin platform/under-platform light beam on old dusk backdrop, **B** contemporary Warm Frame white-card treatment; **both** use the same left-bottom → right-top staircase positioning, responsive rise, pointer/wheel/keyboard camera, and Alex course session/state. Neither is visually approved; historic dark palette is not reinstated as the product design standard.
+
+The UI/UX Designer proposed merging requirement and page-level Specification **inside each product's PRODUCT.md** and keeping one shared root DESIGN.md (two documentation sources rather than a third E-01 spec file). E-01 details have been appended to the existing Writing PRODUCT.md for this proof; the more global governance/source-of-truth change remains subject to PR review and reconciliation with the unified DESIGN.md branch. Do not create redundant per-page DESIGN.md files.
+
+The original Cursor Writing PR #4 and Agent A documentation PR #2 are still separate; this branch depends on the Cursor E-01 slice and must be merged in a reviewed order. Do not claim layout tests or screenshots have been performed solely because component/unit-test source was added.
+
+### Agent A A/B review artifact (2026-10-19)
+
+- [Draft PR #6](https://github.com/Yuzhwe/big-academy/pull/6) — implementation preview based on Cursor E-01 Draft PR #4, **not merged**. The interactive A/B switch uses the same diagonal scene geometry and the same `CourseSession` for both visual versions.
+- Proposed browser assertions and matching screenshot capture are now in `apps/writing/e2e/staircase-ab.spec.ts`. **These tests have been authored but not executed in this chat/runtime**; no deployed URL or approved visual evidence yet. Run typecheck, Vitest, Playwright and collect results before treating this as delivered/validated.
+- This branch includes E-01-specific Requirements + Specification in `apps/writing/PRODUCT.md`. Product-level features/shared rules are not duplicated into a separate page spec. The root `/DESIGN.md` on Draft PR #2 still requires a reviewed documentation reconciliation; no false claim of already having two identical finalized docs.

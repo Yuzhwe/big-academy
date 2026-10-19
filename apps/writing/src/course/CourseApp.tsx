@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
+import { StaircaseScene, type StaircaseVariant } from './StaircaseScene';
 import { useSyncExternalStore } from 'react';
 import { Checkbox, Radio, RadioGroup } from 'react-aria-components';
 import { BAButton, localeTag } from '@big-academy/design-system';
@@ -21,6 +22,8 @@ function cardState(courseState: string, action: string): StairLessonState {
 export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const [session] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
+  // Visual A/B state is a review-only control, not saved to Alex's learning state.
+  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('B');
   const locale = session.locale;
   const zh = locale === 'zh';
 
@@ -47,11 +50,11 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   }, [session, revision]);
 
   return (
-    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view}>
+    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ab-variant={staircaseVariant}>
       <a className="course-skip" href="#course-main">
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
-      {session.view === 'path' ? <PathView session={session} /> : null}
+      {session.view === 'path' ? <PathView session={session} variant={staircaseVariant} onVariantChange={setStaircaseVariant} /> : null}
       {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
       {session.view === 'preview' ? <PreviewView session={session} /> : null}
       {session.celebration ? <Celebration session={session} /> : null}
@@ -59,11 +62,12 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   );
 }
 
-function PathView({ session }: { session: CourseSession }) {
+function PathView({ session, variant, onVariantChange }: { session: CourseSession; variant: StaircaseVariant; onVariantChange: (next: StaircaseVariant) => void }) {
   const zh = session.zh;
   const level = session.level();
   const nodes = session.pathNodes();
   const freshMilestone = session.celebration && !session.celebration.replay ? session.celebration.unitId : null;
+  const focusIndex = Math.max(0, nodes.findIndex((node) => node.kind === 'lesson' && node.lesson && (node.lesson.action === 'start' || node.lesson.action === 'continue')));
 
   return (
     <div className="course-path">
@@ -102,11 +106,21 @@ function PathView({ session }: { session: CourseSession }) {
             {session.openNotice}
           </p>
         ) : null}
+        <div className="course-ab-controls" role="group" aria-label={zh ? '阶梯视觉方案' : 'Staircase visual variants'}>
+          <button type="button" className="course-ab-button" aria-pressed={variant === 'A'} onClick={() => onVariantChange('A')}>
+            {zh ? 'A · 立体台面 + 光柱' : 'A · Platform + light beam'}
+          </button>
+          <button type="button" className="course-ab-button" aria-pressed={variant === 'B'} onClick={() => onVariantChange('B')}>
+            {zh ? 'B · 暖色框架 + 白色卡片' : 'B · Warm frame + white cards'}
+          </button>
+          <span className="course-ab-hint">{zh ? '探索方案，均未获得视觉批准' : 'Visual exploration only — not approved'}</span>
+        </div>
+        <StaircaseScene key={level.id} variant={variant} locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
         <ol className="course-nodes">
-          {nodes.map((node) => {
+          {nodes.map((node, index) => {
             if (node.kind === 'intro') {
               return (
-                <li key={node.id}>
+                <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
                   <p className="course-intro" data-testid="level-intro">
                     {node.intro}
                   </p>
@@ -115,7 +129,7 @@ function PathView({ session }: { session: CourseSession }) {
             }
             if (node.kind === 'unit' && node.unit) {
               return (
-                <li key={node.id}>
+                <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
                   <section className="course-unit" data-testid="unit" data-unit={node.unit.id}>
                     <p className="course-kicker">
                       {zh ? `第 ${node.unit.index} 单元` : `Unit ${node.unit.index}`} · {node.unit.typeLabel}
@@ -136,7 +150,7 @@ function PathView({ session }: { session: CourseSession }) {
             if (node.kind === 'lesson' && node.lesson) {
               const lesson = node.lesson;
               return (
-                <li key={node.id}>
+                <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
                   <StairLessonCard
                     lessonId={lesson.lessonId}
                     number={lesson.number}
@@ -151,7 +165,7 @@ function PathView({ session }: { session: CourseSession }) {
             }
             if (node.kind === 'milestone' && node.milestone) {
               return (
-                <li key={node.id}>
+                <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
                   <UnitMilestone
                     unitId={node.milestone.unitId}
                     title={node.milestone.title}
@@ -165,7 +179,7 @@ function PathView({ session }: { session: CourseSession }) {
             }
             if (node.kind === 'goal' && node.goal) {
               return (
-                <li key={node.id}>
+                <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
                   <section className="course-goal" data-testid="level-goal" data-formula="open">
                     <p className="course-kicker">{node.goal.title}</p>
                     <h2>{node.goal.detail}</h2>
@@ -181,10 +195,11 @@ function PathView({ session }: { session: CourseSession }) {
             return null;
           })}
         </ol>
+        </StaircaseScene>
         <p className="course-candidate">
           {zh
-            ? '视觉候选：暖色框架 + 白纸。#FEF9EF、卡片几何和 0.5px 描边尚未视觉签核。抖音美好体未随项目分发。'
-            : 'Candidate visual: Warm Frame + White Canvas. #FEF9EF, card geometry, and 0.5px borders are not signed off. Douyin Sans is not shipped.'}
+            ? 'E-01 A/B 方案对比：两版共享相同的课程数据、斜向浏览和解锁逻辑。A 为历史立体视觉探索；B 为 Warm Frame 候选。均未视觉签核。'
+            : 'E-01 visual A/B test: same Alex course data and diagonal navigation in both. A explores the historical platform/beam treatment; B explores Warm Frame. Neither is visually approved.'}
         </p>
       </main>
     </div>
