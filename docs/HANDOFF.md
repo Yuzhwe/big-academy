@@ -70,3 +70,9 @@ The UI/UX Designer assigned this ChatGPT collaborator the name **Agent A**, resp
 ## Icon library selection (2026-10-19)
 
 The UI/UX Designer chose **Iconoir (https://iconoir.com/#icons)** as the Big Academy **standard UI icon family**. Agent A owns the shared icon foundation and selection rules; implementations should prefer `iconoir-react` wrapped by BAIcon where useful. Preserve MIT license requirements. Do not automatically replace E-01 platform/light-beam decorative assets with Iconoir icons. Precise icon sizes, stroke weights, individual glyph mappings, and migration of existing UI are P1 review/implementation work. `main` and active Writing engineering branch remain untouched by this documentation commit.
+
+## Color System v0.2 — direct design approval (2026-10-19)
+
+The UI/UX Designer explicitly approved proceeding without further preview/testing: eight solid 10-step role palettes (`neutral`, `warm`, `brand`, `writing`, `success`, `danger`, `warning`, `info`), stable 1–3/4–6/7–8/9–10 responsibilities, semantic feedback/action mapping, and Writing warm frame `#FEF9EF`. Executable color values are in `packages/design-system/src/tokens.css` on the independent color branch; the rules are in `docs/design-system/COLOR_SYSTEM_v0.2.md` and root `DESIGN.md`. Reading theme is still TBD.
+
+**Explicit separation:** Designer approval: YES (color system). Engineering verified: NO (tests skipped on request). Existing component visual approval: NO. No assertions about live theme application or WCAG certification. Changes are on independent `design/approved-color-scales-v0.2-20261019`; do not merge without the repository's reviewed integration path and applicable engineering gates. Coordinate with Agent A before consuming semantic action variables; current pilot components still use old aliases.
