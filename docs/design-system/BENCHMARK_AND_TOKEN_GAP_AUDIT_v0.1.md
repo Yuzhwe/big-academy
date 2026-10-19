@@ -19,6 +19,10 @@ One `/DESIGN.md` for all Big Academy products; product identity primarily driven
 
 **[A] Confirmed:** one cross-product semantic text-role hierarchy: expressive **Display/Heading** and readability-first **Body/Learning**, with Label/Control and Caption/Supporting roles for interface text. English/Chinese share roles; font families/fallbacks can differ to support CJK. Final fonts, numerical typography tokens, license/bundling choices and visual signoff are [Q]. Existing Dosis/Jost/Douyin Sans/Noto Sans SC are **reference-only**.
 
+## Component Architecture approval — P0-4 (2026-10-19)
+
+**[A] Confirmed: Progressive Componentization.** Implement required shared primitives, keep product-specific composites in app scope, and extract shared Patterns only after demonstrated cross-product reuse and an explicit contract/consumer review. Do not prebuild an entire pattern catalog. A shared physical package does not itself establish cross-product reuse (current `BA-UI-006 BATaskProgress` needs further validation). Existing Component IDs and code paths are not changed by this documentation decision. **Next P0:** Design Governance.
+
 ## 1. External benchmark (what to learn, not what to copy)
 
 | Reference | Verified structure/principle | Big Academy adaptation |
