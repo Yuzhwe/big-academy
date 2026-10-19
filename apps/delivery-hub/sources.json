@@ -1,0 +1,10 @@
+{
+  "repository": "Yuzhwe/big-academy",
+  "portalBranch": "feat/delivery-hub",
+  "primaryBranch": "docs/unified-design-and-token-audit",
+  "variants": [
+    { "branch": "feat/grokbot-writing-topbar", "paths": ["apps/writing/DESIGN.md", "docs/HANDOFF.md"] },
+    { "branch": "cursor/writing-e01-lesson-slice-7d6c", "paths": ["apps/writing/DESIGN.md", "apps/writing/docs/SLICE_RUNTIME.md", "apps/writing/docs/PHASE_A_AUDIT.md", "docs/HANDOFF.md", "apps/writing/contracts/components.json"] }
+  ],
+  "note": "Explicit source branches; review this map after merges. Do not silently promote branch documents to main or visual approval."
+}

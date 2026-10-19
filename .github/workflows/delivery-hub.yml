@@ -1,0 +1,32 @@
+name: Delivery Hub
+
+on:
+  push:
+    branches: [main, feat/delivery-hub]
+    paths: ['apps/delivery-hub/**', '.github/workflows/delivery-hub.yml']
+  pull_request:
+    paths: ['apps/delivery-hub/**', '.github/workflows/delivery-hub.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-and-package:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/delivery-hub
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - run: npm run check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: big-academy-delivery-hub
+          path: apps/delivery-hub/dist
+          retention-days: 14

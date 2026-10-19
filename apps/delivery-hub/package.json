@@ -1,0 +1,12 @@
+{
+  "name": "@big-academy/delivery-hub",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "sync:github": "node scripts/sync-github.mjs"
+  },
+  "dependencies": { "marked": "17.0.5" }
+}
