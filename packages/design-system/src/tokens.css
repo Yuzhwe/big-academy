@@ -231,6 +231,28 @@
   --ba-motion-spring-modal-enter-stiffness: 400; /* [A/T] */
   --ba-motion-spring-modal-enter-damping: 32; /* [A/T] */
 
+  /* Typography: approved families [A], existing/pilot numerical metrics [T/E].
+     Dosis ExtraBold 800 exclusively; Douyin font asset still unverified. */
+  --ba-type-display-family: var(--ba-font-heading-en);
+  --ba-type-heading-family: var(--ba-font-heading-en);
+  --ba-type-body-family: var(--ba-font-body-en);
+  --ba-type-control-family: var(--ba-font-body-en);
+  --ba-type-supporting-family: var(--ba-font-body-en);
+  --ba-type-numeric-family: var(--ba-font-digit);
+  --ba-type-display-size: 48px; /* [E] */
+  --ba-type-heading-size: 32px; /* [T] */
+  --ba-type-body-size: 18px; /* [T] */
+  --ba-type-control-size: 16px; /* [T] */
+  --ba-type-supporting-size: 14px; /* [T] */
+  --ba-type-caption-size: 13px; /* [E] */
+  --ba-type-numeric-size: 32px; /* [T] */
+  --ba-type-display-leading: 1.15; /* [E] */
+  --ba-type-heading-leading: 1.2; /* [T] */
+  --ba-type-body-leading: 1.5; /* [T] */
+  --ba-type-control-leading: 1.2; /* [T] */
+  --ba-type-supporting-leading: 1.4; /* [E] */
+  --ba-type-control-weight: 700; /* [T] Jost / Noto Sans, not Dosis */
+
   /* [T] pilot disabled semantics, unchanged values; not part of Color v0.2 approval. */
   --ba-color-disabled-surface: var(--ba-muted-surface);
   --ba-color-disabled-content: var(--ba-muted);
@@ -251,3 +273,13 @@
 }
 
 /* Reading: no tokens or selectors until its brand accent is explicitly selected. */
+
+/* Same semantic text hierarchy, different locale font families. */
+:lang(zh) {
+  --ba-type-display-family: var(--ba-font-heading-zh);
+  --ba-type-heading-family: var(--ba-font-heading-zh);
+  --ba-type-body-family: var(--ba-font-body-zh);
+  --ba-type-control-family: var(--ba-font-body-zh);
+  --ba-type-supporting-family: var(--ba-font-body-zh);
+  /* Numeral remains Dosis 800 in either locale. */
+}

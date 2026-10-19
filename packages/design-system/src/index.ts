@@ -5,3 +5,8 @@ export type { BATaskProgressProps } from './components/ui/BATaskProgress';
 export { localeTag, taskChrome } from './i18n/chrome';
 export type { TaskChrome } from './i18n/chrome';
 export type { BALocale, TaskProgressItem, TaskProgressStatus } from './types/task';
+
+export { BAIcon, baIconPaths } from './components/ui/BAIcon';
+export type { BAIconName, BAIconProps } from './components/ui/BAIcon';
+export { BAText, BANumber } from './components/ui/BATypography';
+export type { BATextProps, BATextRole } from './components/ui/BATypography';
