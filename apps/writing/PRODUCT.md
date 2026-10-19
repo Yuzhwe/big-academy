@@ -33,8 +33,8 @@
 
 - **Confirmed experience requirement:** E-01 is a **diagonal staircase learning path running lower-left → upper-right**, **not** a conventional vertical lesson list. Users browse by diagonal drag, mouse wheel, keyboard arrows, Home/End, with snapping to steps and a viewport-adaptive incline. The staircase's UI layout implementation cannot decide course permissions.
 - The same Alex course state, URL handling, language, progress, lesson navigation, unit milestones and level goals are used in **both** A and B. No mock unlock, alternate scoring rules or independent study-progress stores.
-- **A · Dimensional platform staircase [EXPLORE ONLY]:** historical stacked card + thin platform + subdued downward light beam; the archival dusk gradient \`#411C0A → #B39C6B\` is a **comparison candidate only** and is not a reversal of the approved product visual direction. It requires designer sign-off before any final adoption.
-- **B · Warm Frame staircase [EXPLORE ONLY]:** same diagonal composition/behaviors, simpler white cards on a light warm frame; no platform or light beam. It aligns conceptually with approved Warm Frame + White Canvas, but specific appearance/colors/radii remain unapproved.
+- **A · Separate stepped platforms [REQUIRED A/B]:** one independent thin platform per node along the diagonal. Card bottom equals platform top at that node's anchor Y. Use approved Writing Warm Frame palette, not historical dusk colors.
+- **B · Continuous slope with anchor ticks [REQUIRED A/B]:** same content, permissions, geometry and Writing palette as A. Only the path form differs: a single continuous diagonal line with an individual tick/platform at each level anchor. Card bottom equals anchor Y.
 - **Icon family:** use the global /DESIGN.md choice (Iconoir) for UI symbols; the old platform/beam is decorative media, not a replacement UI-icon family.
 
 ### Shared diagonal geometry and access rules
@@ -48,8 +48,23 @@
 
 ### A/B internal review protocol
 
-One interactive demo offers a **visible A / B switch**. It changes only the visual treatment; both options use the same React path nodes, geometry and course-session adapter. Default **B** for the approved family direction. The comparison is a **designer review**, not a deployed randomized A/B experiment or evidence of K–12 learner preferences.
+One interactive demo offers a **visible A / B path-shape switch**. A uses separate pedestals, B a continuous slope plus local anchors. Both use exactly the same geometry, colors, data, and course-session adapter; B remains the default review convenience, not a signed-off winner. The comparison is a **designer review**, not a deployed randomized A/B experiment or evidence of K–12 learner preferences.
 
-Review at 1440px, 1024px, 834px (plus a narrow viewport): (1) recognizable lower-left → upper-right hierarchy, (2) drag/wheel/keyboard/snap/navigation functionality, (3) card legibility, center of visual attention and reduced-motion behavior, (4) Start/Continue/Review/Locked/Skipped and milestone states, (5) foreground/background contrast and keyboard focus, (6) whether A's platform/beam helps learning orientation or distracts. Collect matched viewport screenshots and a short interaction recording for both before requesting designer approval.
+Review at 1440px, 1024px, 834px (plus a narrow viewport): (1) recognizable lower-left → upper-right hierarchy, (2) drag/wheel/keyboard/snap/navigation functionality, (3) card legibility, center of visual attention and reduced-motion behavior, (4) Start/Continue/Review/Locked/Skipped and milestone states, (5) foreground/background contrast and keyboard focus, (6) path rhythm, density and readability; never alignment of card tops. Collect matched viewport screenshots and a short interaction recording for both before requesting designer approval.
 
-**Implementation status:** \`feat/agent-a-e01-staircase-ab\` is an Agent A experimental PR. React source and unit tests are provisional until automated checks and browser screenshots are run; neither variant is an approved final visual design.
+**Implementation status:** Updated by the later designer directive on branch \`feat/agent-a-e01-anchor-tabs-ab\`; supersedes PR #6's earlier A/B color-based definitions. React source and unit tests are provisional until automated checks and browser screenshots are run; neither variant is an approved final visual design.
+
+
+### Mandatory E-01 bottom-anchor + Level Tabs rules [DESIGNER DIRECTIVE, 2026-10-19]
+
+**Priority:** This section supersedes earlier E-01 A/B path definitions. The single Writing PRODUCT.md contains its page-specific Specification; do not duplicate this in DESIGN.md or a separate E-01 file.
+
+**1. Bottom-anchored vertical invariant.** Set `anchorY(i) = anchorBaseY + (nodeCount - 1 - i) × viewportAdaptiveRise`. Calculate it from only step index and shared viewport/path geometry. Both platform (A) and local anchor (B) use exactly that Y. The card **bottom** equals pedestal top or anchor Y. Implement with `position:absolute; top:anchorY(i); transform:translateY(-100%)` or an equivalent invariant. Card height or content changes ONLY its top position; it never alters anchor Y, camera Y or slope. Do not top/center align cards or normalize Milestone and Lesson heights to fake step alignment.
+
+**2. A/B path shapes, same geometry and Warm Frame palette.** A: one separate platform per diagonal step, with platform top exactly at card bottom. B: a single continuous ascending path through the SAME anchors plus a small platform/tick at each, with card bottom at that anchor. Use approved Color System v0.2 for both. Compare path rhythm/density/readability, NOT visually aligned card tops. Path shape and page visual details remain unapproved until designer review.
+
+**3. Level navigation = accessible Tablist.** Use React Aria `Tabs` + `TabList` + `Tab` + associated `TabPanel` with exactly one selected tab, Left/Right keyboard selection, correct aria semantics. Changing the Level changes the E-01 path content ONLY, never navigates into a Lesson or changes learner progress/score.
+
+**4. One geometric three-zone header.** At desktop and approximately 834 CSS px, keep a SINGLE ROW: left current Level title (truncate inside its area), center the Tablist relative to the ENTIRE header midpoint, right language toggle. Symmetric flexible left/right columns maintain center regardless of unequal side content. No row wrap and no detached language/Level controls. On narrow phones a scrollable internal Tablist is acceptable if all controls remain reachable.
+
+**Acceptance:** interactive A/B with same anchor formula; programmatically change a Lesson card's content height, prove its bottom and anchor Y remain unchanged within 1 CSS px; screenshots at 1440 and 834; test keyboard tabs and exactly one selected item with path-only navigation. Alex course unlocking, skip and scoring remain unchanged. Never label unapproved page visuals Final.
