@@ -1,7 +1,7 @@
 .ba-button {
-  --ba-button-bg: var(--ba-color-surface-primary, #ffffff);
+  --ba-button-bg: var(--ba-color-surface-canvas, #ffffff);
   --ba-button-ink: var(--ba-color-content-primary, #133547);
-  --ba-button-border: var(--ba-color-control-border, #133547);
+  --ba-button-border: var(--ba-control-border, #133547);
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -23,7 +23,7 @@
 
 .ba-button[data-variant='primary'] {
   --ba-button-bg: var(--ba-color-action-primary, #133547);
-  --ba-button-ink: var(--ba-color-action-on-primary, #ffffff);
+  --ba-button-ink: var(--ba-color-on-action-primary, #ffffff);
   --ba-button-border: var(--ba-color-action-primary, #133547);
 }
 
@@ -39,11 +39,11 @@
 
 .ba-button[data-variant='secondary'][data-hovered='true']:not([data-disabled='true']):not([data-pending='true']),
 .ba-button[data-variant='ghost'][data-hovered='true']:not([data-disabled='true']):not([data-pending='true']) {
-  background: color-mix(in srgb, var(--ba-color-content-primary, #133547) 8%, var(--ba-color-surface-primary, #ffffff));
+  background: color-mix(in srgb, var(--ba-color-content-primary, #133547) 8%, var(--ba-color-surface-canvas, #ffffff));
 }
 
 .ba-button[data-focus-visible='true'] {
-  outline: var(--ba-focus-width, 2px) solid var(--ba-color-focus-visible, #133547);
+  outline: var(--ba-focus-width, 2px) solid var(--ba-color-focus, #133547);
   outline-offset: 2px;
 }
 

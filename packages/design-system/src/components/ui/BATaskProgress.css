@@ -59,9 +59,9 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border: 1px solid var(--ba-color-control-border, #133547);
+  border: 1px solid var(--ba-control-border, #133547);
   border-radius: 50%;
-  background: var(--ba-color-surface-primary, #ffffff);
+  background: var(--ba-color-surface-canvas, #ffffff);
   color: var(--ba-color-content-primary, #133547);
   font-size: 14px;
   font-weight: 700;
@@ -77,18 +77,18 @@
 }
 
 .ba-task-progress__button[data-state='done'] .ba-task-progress__marker {
-  background: var(--ba-color-surface-primary, #ffffff);
+  background: var(--ba-color-surface-canvas, #ffffff);
 }
 
 .ba-task-progress__button[data-state='current'] .ba-task-progress__marker {
   background: var(--ba-color-action-primary, #133547);
   border-color: var(--ba-color-action-primary, #133547);
-  color: var(--ba-color-surface-primary, #ffffff);
-  box-shadow: 0 0 0 2px var(--ba-color-surface-primary, #ffffff), 0 0 0 4px var(--ba-color-action-primary, #133547);
+  color: var(--ba-color-surface-canvas, #ffffff);
+  box-shadow: 0 0 0 2px var(--ba-color-surface-canvas, #ffffff), 0 0 0 4px var(--ba-color-action-primary, #133547);
 }
 
 .ba-task-progress__button[data-state='available'] .ba-task-progress__marker {
-  background: var(--ba-color-surface-primary, #ffffff);
+  background: var(--ba-color-surface-canvas, #ffffff);
 }
 
 .ba-task-progress__button[data-state='locked'] .ba-task-progress__marker {
@@ -100,7 +100,7 @@
 .ba-task-progress__button[data-state='skipped'] .ba-task-progress__marker {
   border-style: dashed;
   border-width: 2px;
-  background: var(--ba-color-surface-primary, #ffffff);
+  background: var(--ba-color-surface-canvas, #ffffff);
 }
 
 .ba-task-progress__button[data-hovered='true']:not([data-disabled='true']) .ba-task-progress__marker {
@@ -109,7 +109,7 @@
 }
 
 .ba-task-progress__button[data-focus-visible='true'] {
-  outline: var(--ba-focus-width, 2px) solid var(--ba-color-focus-visible, #133547);
+  outline: var(--ba-focus-width, 2px) solid var(--ba-color-focus, #133547);
   outline-offset: 2px;
 }
 

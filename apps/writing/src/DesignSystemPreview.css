@@ -4,7 +4,7 @@
   min-height: 100dvh;
   padding: clamp(20px, 3.6vw, 56px);
   color: var(--ba-color-content-primary);
-  background: var(--ba-color-surface-shell);
+  background: var(--ba-color-background-secondary);
   font-family: var(--ba-font-body-en);
   line-height: 1.5;
 }
@@ -21,7 +21,7 @@
 .ba-showcase__links a { color: var(--ba-color-action-primary); text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
 .ba-showcase__toolbar { display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; max-width: 1160px; margin: 0 auto 24px; align-items:center; }
 .ba-showcase__switch { display: flex; gap: 8px; }
-.ba-showcase__section { max-width:1160px; margin:0 auto 18px; background:var(--ba-color-surface-primary); border:1px solid color-mix(in srgb, var(--ba-color-content-primary) 12%, white); border-radius:var(--ba-preview-radius); padding:clamp(20px,3vw,32px); }
+.ba-showcase__section { max-width:1160px; margin:0 auto 18px; background:var(--ba-color-surface-canvas); border:1px solid color-mix(in srgb, var(--ba-color-content-primary) 12%, white); border-radius:var(--ba-preview-radius); padding:clamp(20px,3vw,32px); }
 .ba-showcase__section h2 { margin:0 0 6px; font:800 clamp(24px,2.5vw,30px)/1.2 var(--ba-font-heading-en); }
 .ba-showcase[lang='zh-CN'] .ba-showcase__section h2 { font-family:var(--ba-font-heading-zh);font-weight:700; }
 .ba-showcase__section > p { margin:4px 0 18px; }
@@ -43,3 +43,10 @@
  .ba-showcase__section { padding:16px; }
  .ba-showcase__switch { flex-wrap:wrap; }
 }
+
+/* Color v0.2 palette gallery: reads the exact 8x10 approved CSS variables. */
+.ba-showcase__palette-groups { display:grid; gap:18px; margin-top:16px; }
+.ba-showcase__palette h3 { text-transform:capitalize; font-size:15px; margin:0 0 6px; }
+.ba-showcase__palette-steps { display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:6px; }
+.ba-showcase__palette-step { text-align:center; min-width:0; font-size:12px; }
+.ba-showcase__palette-chip { display:block; height:48px; border:1px solid var(--ba-color-border-default); border-radius:6px; margin-bottom:4px; }

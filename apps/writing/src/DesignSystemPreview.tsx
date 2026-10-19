@@ -15,9 +15,9 @@ const tasks: TaskProgressItem[] = [
 const colors = [
   ['Product action', '--ba-color-action-primary'],
   ['Primary text', '--ba-color-content-primary'],
-  ['Content canvas', '--ba-color-surface-primary'],
-  ['Product shell', '--ba-color-surface-shell'],
-  ['Focus ring', '--ba-color-focus-visible'],
+  ['Content canvas', '--ba-color-surface-canvas'],
+  ['Product shell', '--ba-color-background-secondary'],
+  ['Focus ring', '--ba-color-focus'],
   ['Disabled surface', '--ba-color-disabled-surface'],
 ] as const;
 
@@ -66,6 +66,29 @@ export function DesignSystemPreview() {
               <span className="ba-showcase__swatch-color" style={{ background: 'var(' + token + ')' }} />
               <strong>{name}</strong>
               <code>{token}</code>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="ba-showcase__section" aria-labelledby="primitives-title">
+        <h2 id="primitives-title">{zh ? 'Color System v0.2 · 80 个颜色' : 'Color System v0.2 · 80 Primitives'}</h2>
+        <p>{zh ? '8 个色系，每个 10 级；所有色值读取批准的 CSS Tokens。' : 'Eight approved families × ten role levels. Swatches read directly from canonical CSS Tokens.'}</p>
+        <div className="ba-showcase__palette-groups">
+          {(['neutral', 'warm', 'brand', 'writing', 'success', 'danger', 'warning', 'info'] as const).map(family => (
+            <div className="ba-showcase__palette" key={family}>
+              <h3>{family}</h3>
+              <div className="ba-showcase__palette-steps">
+                {Array.from({ length: 10 }, (_, index) => {
+                  const token = `--ba-color-${family}-${index + 1}`;
+                  return (
+                    <div className="ba-showcase__palette-step" key={token}>
+                      <span className="ba-showcase__palette-chip" style={{ background: `var(${token})` }} title={token} />
+                      <span>{index + 1}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </div>

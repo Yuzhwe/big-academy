@@ -61,3 +61,9 @@ On Agent A's isolated branch `feat/agent-a-semantic-tokens-component-preview`:
 - Existing BAButton Storybook gets two-theme side-by-side visual verification. Playwright coverage demonstrates the same React Aria button changes CSS colors with a semantic theme switch.
 - No Reading theme has been invented, and no unapproved visual styles have been presented as final. Iconoir is the approved source; full BAIcon integration, missing reusable components and approved font asset loading remain follow-up work.
 - Validate with `npm run typecheck`, `npm test`, `npm run test:layout`; latest implementation is independent from Grokbot and PR #7.
+
+## Approved Color System v0.2 integrated in Agent A P1-B (2026-10-19)
+
+Design approval source: [PR #10](https://github.com/Yuzhwe/big-academy/pull/10), branch `design/approved-color-scales-v0.2-20261019`. Eight ten-step families (80 CSS primitives) and their semantic roles are now copied unchanged into **the only executable color source**, `packages/design-system/src/tokens.css`. Its detailed specification `docs/design-system/COLOR_SYSTEM_v0.2.md` accompanies the stylesheet; the global `DESIGN.md` Color section was reconciled without discarding E-01 specifications in Writing PRODUCT.md. Existing Writing action and shell mappings use the approved names; BAButton/BATaskProgress consume v0.2 semantic names without importing the Writing primitive. The 80-color grid is browsable in the real `/?system` preview.
+
+**Designer approval is for the color system; component appearance and typography metrics are not yet approved.** PR #10 color-design tests were deliberately waived at the user's request. Subsequent integration checks on PR #9 are engineering smoke checks, not a new design approval round. Reading theme remains TBD.
