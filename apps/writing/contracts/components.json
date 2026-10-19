@@ -1,0 +1,519 @@
+{
+  "registryVersion": "0.1.0",
+  "project": "Big Academy Writing (pilot)",
+  "status": "pilot-in-review",
+  "sourceOfTruth": {
+    "product": "apps/writing/PRODUCT.md (Alex original source and approved UX; detailed E-01 product + page spec)",
+    "design": "/DESIGN.md (global only) + packages/design-system/src/tokens.css + designer visual approval",
+    "components": "this registry maps to code and interactive stories when implemented"
+  },
+  "components": [
+    {
+      "id": "BA-UI-001",
+      "name": "BAButton",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "temporary-foundation-theme",
+      "implementation": "packages/design-system/src/components/ui/BAButton.tsx",
+      "story": "packages/design-system/src/components/ui/BAButton.stories.tsx",
+      "props": {
+        "variant": "primary | secondary | ghost",
+        "disabled": "boolean",
+        "busy": "boolean",
+        "children": "ReactNode",
+        "busyLabel": "string, optional accessible name for the pending indicator",
+        "aria-label": "string, optional accessible name",
+        "locale": "en | zh, optional chrome language for the pending indicator"
+      },
+      "events": {
+        "onPress": "(event) => void"
+      },
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "disabled",
+        "busy"
+      ],
+      "layoutOwner": "The component owns padding/min target size; app owns placement",
+      "requirements": [
+        "Keyboard/space/enter",
+        "Touch >=44px",
+        "No motion when reduced"
+      ],
+      "requiredStories": [
+        "Default",
+        "FocusVisible",
+        "Disabled",
+        "Busy"
+      ],
+      "figma": null,
+      "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
+      "notes": "Temporary foundation theme only. Not validated and not visually approved. busy maps to React Aria isPending plus an inner progressbar. aria-busy is not also set on the button."
+    },
+    {
+      "id": "BA-UI-002",
+      "name": "BATabs",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "planned",
+      "implementation": "packages/design-system/src/components/ui/BATabs.tsx",
+      "story": "packages/design-system/src/components/ui/BATabs.stories.tsx",
+      "props": {
+        "items": "TabDefinition[]",
+        "selectedKey": "string",
+        "disabledKeys": "string[]"
+      },
+      "events": {
+        "onSelectionChange": "(key) => void"
+      },
+      "states": [
+        "idle",
+        "selected",
+        "focus-visible",
+        "disabled"
+      ],
+      "layoutOwner": "Component owns tab strip; consumer owns panel outer bounds",
+      "requirements": [
+        "ARIA tabs",
+        "Arrow-key interaction",
+        "Locale labels"
+      ],
+      "requiredStories": [
+        "ManyGroups",
+        "KeyboardFocus",
+        "LongLabels"
+      ],
+      "figma": null,
+      "runtimeEvidence": null
+    },
+    {
+      "id": "BA-UI-003",
+      "name": "BAChoice",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "planned",
+      "implementation": "packages/design-system/src/components/ui/BAChoice.tsx",
+      "story": "packages/design-system/src/components/ui/BAChoice.stories.tsx",
+      "props": {
+        "choiceMode": "single | multiple",
+        "options": "ChoiceOption[]",
+        "selectedKeys": "string[]",
+        "feedback": "ChoiceFeedback"
+      },
+      "events": {
+        "onChange": "(keys) => void"
+      },
+      "states": [
+        "idle",
+        "selected",
+        "correct",
+        "wrong",
+        "dim",
+        "disabled"
+      ],
+      "layoutOwner": "Choice owns option internals, content area owns column width",
+      "requirements": [
+        "Use React Aria radio/checkbox semantics per task",
+        "No scoring in component"
+      ],
+      "requiredStories": [
+        "Single",
+        "Multiple",
+        "WrongRetry",
+        "CorrectDim"
+      ],
+      "figma": null,
+      "runtimeEvidence": null
+    },
+    {
+      "id": "BA-UI-004",
+      "name": "BAField",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "planned",
+      "implementation": "packages/design-system/src/components/ui/BAField.tsx",
+      "story": "packages/design-system/src/components/ui/BAField.stories.tsx",
+      "props": {
+        "value": "string",
+        "label": "string",
+        "multiline": "boolean",
+        "readOnly": "boolean"
+      },
+      "events": {
+        "onChange": "(value) => void",
+        "onFocus": "() => void"
+      },
+      "states": [
+        "idle",
+        "focused",
+        "populated",
+        "disabled",
+        "error"
+      ],
+      "layoutOwner": "Field owns internal focus treatment, consumer owns surrounding background",
+      "requirements": [
+        "CJK IME composition",
+        "Accessible label and focus",
+        "Preserve caret"
+      ],
+      "requiredStories": [
+        "Multiline",
+        "ChineseInput",
+        "Focus",
+        "ReadOnly"
+      ],
+      "figma": null,
+      "runtimeEvidence": null
+    },
+    {
+      "id": "BA-UI-005",
+      "name": "BAOverlay",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "planned",
+      "implementation": "packages/design-system/src/components/ui/BAOverlay.tsx",
+      "story": "packages/design-system/src/components/ui/BAOverlay.stories.tsx",
+      "props": {
+        "open": "boolean",
+        "title": "string",
+        "presentation": "popover | dialog"
+      },
+      "events": {
+        "onOpenChange": "(open) => void"
+      },
+      "states": [
+        "closed",
+        "open",
+        "focus-within"
+      ],
+      "layoutOwner": "Consumer owns anchor and overlay-safe bounds",
+      "requirements": [
+        "Return focus",
+        "Escape semantics",
+        "Tablet touch and keyboard",
+        "No cover Coach/Footer"
+      ],
+      "requiredStories": [
+        "Closed",
+        "OpenTablet",
+        "FocusRestore"
+      ],
+      "figma": null,
+      "runtimeEvidence": null
+    },
+    {
+      "id": "BA-UI-006",
+      "name": "BATaskProgress",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "temporary-foundation-theme",
+      "implementation": "packages/design-system/src/components/ui/BATaskProgress.tsx",
+      "story": "packages/design-system/src/components/ui/BATaskProgress.stories.tsx",
+      "props": {
+        "tasks": "TaskProgressItem[] — { id, label, status: done|current|available|locked|skipped, number? }. Status is injected.",
+        "activeIndex": "number, lesson-local index",
+        "canOpen": "(index) => boolean, lesson-local gate supplied by the product adapter",
+        "locale": "en | zh, optional status chrome",
+        "label": "string, optional accessible name for the group"
+      },
+      "events": {
+        "onNavigate": "(index) => void"
+      },
+      "states": [
+        "done",
+        "current",
+        "available",
+        "locked",
+        "skipped"
+      ],
+      "layoutOwner": "TopBar owns global centering, progress owns internal overflow",
+      "requirements": [
+        "Never infer domain unlock",
+        "Screen reader current/locked",
+        "Real geometric center"
+      ],
+      "requiredStories": [
+        "MixedStatus",
+        "ManyTasks",
+        "TabletCenter",
+        "Skipped"
+      ],
+      "figma": null,
+      "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
+      "notes": "Temporary foundation theme only. Not validated and not visually approved. Numeric chips confirmed for this round. Visible status caption is skipped only (dashed circle + number + skipped/已跳过). Other states use check, number, lock, or current fill and ring, plus the accessible name. Does not call Pages.canOpen or Skip.skipped. Locked never navigates; every other status navigates only when canOpen(index) is true. Indexes are lesson-local."
+    },
+    {
+      "id": "BA-UI-007",
+      "name": "BAStatus",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "planned",
+      "implementation": "packages/design-system/src/components/ui/BAStatus.tsx",
+      "story": "packages/design-system/src/components/ui/BAStatus.stories.tsx",
+      "props": {
+        "status": "string",
+        "label": "string"
+      },
+      "events": {},
+      "states": [
+        "done",
+        "in-progress",
+        "skipped",
+        "locked",
+        "error"
+      ],
+      "layoutOwner": "Inline/slot components own placement",
+      "requirements": [
+        "Semantic status name",
+        "Status not color alone"
+      ],
+      "requiredStories": [
+        "Done",
+        "Skipped",
+        "Locked"
+      ],
+      "figma": null,
+      "runtimeEvidence": null
+    },
+    {
+      "id": "BA-WR-001",
+      "name": "LessonTopBar",
+      "kind": "composite",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "temporary-foundation-theme",
+      "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
+      "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
+      "props": {
+        "lessonTitle": "string, already localized by the caller",
+        "lessonNumber": "string, already localized by the caller",
+        "tasks": "TaskProgressItem[]",
+        "current": "number, lesson-local active index",
+        "canOpen": "(index) => boolean, required injected gate",
+        "tags": "string[], optional necessary labels",
+        "locale": "en | zh, optional chrome language"
+      },
+      "events": {
+        "onBack": "() => void",
+        "onNavigate": "(index) => void"
+      },
+      "states": [
+        "short-title",
+        "long-title",
+        "tablet",
+        "mixed-progress"
+      ],
+      "layoutOwner": "TopBar owns three-column grid and geometry",
+      "requirements": [
+        "No hamburger menu",
+        "Center progress across whole bar",
+        "Preserve Alex page gate"
+      ],
+      "requiredStories": [
+        "Desktop",
+        "TabletLongTitle",
+        "ManyTasks"
+      ],
+      "figma": null,
+      "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
+      "notes": "Temporary foundation theme only. Not validated and not visually approved. Progress group is absolutely centered on the header. No hamburger and no end-slot control. Mock preview is not Alex course state."
+    },
+    {
+      "id": "BA-WR-002",
+      "name": "LessonWorkspace",
+      "kind": "composite",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "candidate-warm-frame",
+      "implementation": "apps/writing/src/components/writing/LessonWorkspace.tsx",
+      "story": "apps/writing/src/components/writing/LessonWorkspace.stories.tsx",
+      "props": {
+        "activity": "ReactNode",
+        "coach": "ReactNode",
+        "navigation": "ReactNode"
+      },
+      "events": {},
+      "states": [
+        "desktop",
+        "tablet-landscape",
+        "tablet-portrait",
+        "coach-scroll"
+      ],
+      "layoutOwner": "Workspace owns primary columns and independent scroll",
+      "requirements": [
+        "Warm Frame + White Canvas",
+        "Coach independently scrolls",
+        "Footer outside Coach pinned"
+      ],
+      "requiredStories": [
+        "Desktop",
+        "TabletPortrait",
+        "CoachOverflow"
+      ],
+      "figma": null,
+      "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
+      "notes": "Candidate Warm Frame layout for the E-01 lesson slice. Not validated and not visually approved. Footer is outside the scrolling coach."
+    },
+    {
+      "id": "BA-WR-003",
+      "name": "WordGrid",
+      "kind": "composite",
+      "contractVersion": "0.1.0",
+      "status": "planned",
+      "implementation": "apps/writing/src/components/writing/WordGrid.tsx",
+      "story": "apps/writing/src/components/writing/WordGrid.stories.tsx",
+      "props": {
+        "groups": "WordGroup[]",
+        "activeGroup": "string",
+        "presentation": "docked | overlay"
+      },
+      "events": {
+        "onGroupChange": "(key) => void",
+        "onInsert": "(word) => void"
+      },
+      "states": [
+        "hidden",
+        "collapsed",
+        "expanded",
+        "locked",
+        "tab-active"
+      ],
+      "layoutOwner": "Writing area owns insertion target and caret; WordGrid owns chips/panel",
+      "requirements": [
+        "Task-gated visibility",
+        "Tablet on-demand only within writing area",
+        "Preserve caret"
+      ],
+      "requiredStories": [
+        "MultiGroup",
+        "OverlayTablet",
+        "Locked",
+        "Chinese"
+      ],
+      "figma": null,
+      "runtimeEvidence": null
+    },
+    {
+      "id": "BA-WR-004",
+      "name": "HamburgerLayer",
+      "kind": "composite",
+      "contractVersion": "0.1.0",
+      "status": "planned",
+      "implementation": "apps/writing/src/components/writing/HamburgerLayer.tsx",
+      "story": "apps/writing/src/components/writing/HamburgerLayer.stories.tsx",
+      "props": {
+        "layerId": "string",
+        "label": "string",
+        "value": "string",
+        "editable": "boolean"
+      },
+      "events": {
+        "onChange": "(value) => void"
+      },
+      "states": [
+        "idle",
+        "focused",
+        "filled",
+        "read-only",
+        "error"
+      ],
+      "layoutOwner": "Organizer owns layer stack; each layer owns its own label and input",
+      "requirements": [
+        "Label and entry same color surface",
+        "Underline editing focus",
+        "No white nested field"
+      ],
+      "requiredStories": [
+        "Idle",
+        "Focused",
+        "ReadOnly",
+        "LongContent"
+      ],
+      "figma": null,
+      "runtimeEvidence": null
+    },
+    {
+      "id": "BA-WR-005",
+      "name": "StairLessonCard",
+      "kind": "composite",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "candidate-warm-frame",
+      "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
+      "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx",
+      "props": {
+        "lessonId": "string",
+        "number": "number",
+        "title": "string",
+        "state": "start | continue | review | locked | skipped"
+      },
+      "events": {
+        "onEnter": "(lessonId) => void"
+      },
+      "states": [
+        "start",
+        "continue",
+        "review",
+        "locked",
+        "skipped"
+      ],
+      "layoutOwner": "Staircase owns world position/step size; card owns internals",
+      "requirements": [
+        "Number at top left",
+        "No local progress authority",
+        "Preserve skip badge"
+      ],
+      "requiredStories": [
+        "Start",
+        "Continue",
+        "Review",
+        "Locked",
+        "Skipped"
+      ],
+      "figma": null,
+      "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
+      "notes": "Candidate Warm Frame. Not validated and not visually approved. Lesson number stays top left. Action labels are Start / Continue / Review / Locked. Skipped keeps Review plus a mastered label. The card does not grant unlock."
+    },
+    {
+      "id": "BA-WR-006",
+      "name": "UnitMilestone",
+      "kind": "composite",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "candidate-warm-frame",
+      "implementation": "apps/writing/src/components/writing/UnitMilestone.tsx",
+      "story": "apps/writing/src/components/writing/UnitMilestone.stories.tsx",
+      "props": {
+        "unitId": "string",
+        "completed": "boolean",
+        "celebrationEligible": "boolean"
+      },
+      "events": {
+        "onCelebrate": "(unitId) => void"
+      },
+      "states": [
+        "upcoming",
+        "newly-completed",
+        "completed"
+      ],
+      "layoutOwner": "Staircase owns world position; milestone owns visuals and emit; app owns confetti receipt",
+      "requirements": [
+        "At every Unit end",
+        "Auto once on first return after newly completed",
+        "Click completed to replay",
+        "No unlock authority"
+      ],
+      "requiredStories": [
+        "Upcoming",
+        "FirstReturn",
+        "ManualReplay"
+      ],
+      "figma": null,
+      "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
+      "notes": "Candidate Warm Frame. Not validated and not visually approved. Completed state is injected from Alex lesson states. Confetti receipt is UI-only and does not unlock anything. Level Goal formula stays open."
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+name: P1-A integration quality gates
+
+on:
+  push:
+    branches:
+      - integration/p1-a-unified-baseline
+  pull_request:
+    paths:
+      - 'DESIGN.md'
+      - 'AGENTS.md'
+      - 'apps/writing/**'
+      - 'packages/design-system/**'
+      - 'docs/**'
+      - 'scripts/**'
+      - 'package*.json'
+      - '.github/workflows/p1-a.yml'
+
+jobs:
+  project-checks:
+    name: documentation / types / tests / build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check:docs
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  browser-checks:
+    name: desktop / tablet browser interaction
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:layout
+      - name: Attach visual evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-a-playwright-failure
+          path: |
+            apps/writing/test-results/
+            test-results/
+            apps/writing/playwright-report/
+          if-no-files-found: ignore
