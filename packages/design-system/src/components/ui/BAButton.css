@@ -6,10 +6,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--ba-spacing-button-content-gap, 8px);
   min-width: var(--ba-hit-min, 44px);
   min-height: var(--ba-hit-min, 44px);
-  padding: 0 16px;
+  padding: 0 var(--ba-spacing-button-padding-inline, 16px);
   border: 1px solid var(--ba-button-border);
   border-radius: 999px;
   background: var(--ba-button-bg);

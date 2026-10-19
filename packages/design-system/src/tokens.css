@@ -166,6 +166,23 @@
   --ba-font-body-zh: "Noto Sans SC", "PingFang SC", sans-serif;
   --ba-font-digit: "Dosis", "Arial Narrow", sans-serif;
 
+  /* Spatial Grid & Layout System v0.2. Initial numerical scale [E], 4px / 8px rhythm [A]. */
+  --ba-space-0: 0px; /* [E] */
+  --ba-space-1: 4px; /* [E] */
+  --ba-space-2: 8px; /* [E] */
+  --ba-space-3: 12px; /* [E] */
+  --ba-space-4: 16px; /* [E] */
+  --ba-space-6: 24px; /* [E] */
+  --ba-space-8: 32px; /* [E] */
+  --ba-space-12: 48px; /* [E] */
+  --ba-space-16: 64px; /* [E] */
+
+  /* Provisional shared-component semantic spacing mapping [E].
+     Numeric output matches existing BAButton and BATaskProgress geometry. */
+  --ba-spacing-button-content-gap: var(--ba-space-2);
+  --ba-spacing-button-padding-inline: var(--ba-space-4);
+  --ba-spacing-progress-items-gap: var(--ba-space-1);
+
   /* [T] pilot disabled semantics, unchanged values; not part of Color v0.2 approval. */
   --ba-color-disabled-surface: var(--ba-muted-surface);
   --ba-color-disabled-content: var(--ba-muted);

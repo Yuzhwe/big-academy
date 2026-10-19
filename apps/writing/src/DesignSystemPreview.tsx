@@ -94,6 +94,21 @@ export function DesignSystemPreview() {
         </div>
       </section>
 
+      <section className="ba-showcase__section" aria-labelledby="spatial-title">
+        <h2 id="spatial-title">{zh ? 'Spatial v0.2 · 间距尺度' : 'Spatial v0.2 · Spacing Scale'}</h2>
+        <p>{zh ? '4px 基础单位、8px 主要节奏已批准；以下具体数值仍为候选。' : '4px base and 8px primary rhythm approved. Exact scale values remain candidates.'}</p>
+        <div className="ba-showcase__spacing-gallery">
+          {([0, 1, 2, 3, 4, 6, 8, 12, 16] as const).map((step) => (
+            <div className="ba-showcase__spacing-row" key={step}>
+              <code>--ba-space-{step}</code>
+              <span className="ba-showcase__spacing-measure" style={{ width: 'var(--ba-space-' + step + ')' }} />
+              <span className="ba-showcase__spacing-number">{step * 4}px</span>
+            </div>
+          ))}
+        </div>
+        <p className="ba-showcase__small-label">{zh ? '组件已应用：BAButton 内边距 / 内容间距、BATaskProgress 项目间距。现有视觉尺寸不变。' : 'Applied without changing existing sizes: BAButton internal padding/gap and BATaskProgress item gap.'}</p>
+      </section>
+
       <section className="ba-showcase__section" aria-labelledby="typography-title">
         <h2 id="typography-title">{zh ? '文字系统' : 'Typography Roles'}</h2>
         <div className="ba-showcase__type-grid">
