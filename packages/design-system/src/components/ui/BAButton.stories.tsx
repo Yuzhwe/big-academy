@@ -48,3 +48,23 @@ export const Busy: Story = {
     await expect(canvas.getByRole('progressbar', { name: 'Busy' })).toBeInTheDocument();
   },
 };
+
+/** One headless React Aria button, same CSS, two app-level semantic mappings.
+ * Neutral is the system fallback and is NOT a fabricated Reading theme.
+ */
+export const SemanticThemeMapping: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'center' }}>
+      <div data-ba-product="neutral" style={{ padding: 20, background: '#fff', border: '1px solid #ddd' }}>
+        <p>Neutral foundation (no product)</p>
+        <BAButton variant="primary">Primary</BAButton>
+        <BAButton variant="secondary">Secondary</BAButton>
+      </div>
+      <div data-ba-product="writing" style={{ padding: 20, background: 'var(--ba-color-surface-shell)' }}>
+        <p>Writing theme</p>
+        <BAButton variant="primary">Primary</BAButton>
+        <BAButton variant="secondary">Secondary</BAButton>
+      </div>
+    </div>
+  ),
+};

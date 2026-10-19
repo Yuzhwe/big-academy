@@ -1,6 +1,6 @@
 # Big Academy — DESIGN.md
 
-**Version:** v0.3.1 DRAFT · Unified Code-First Design System · 2026-10-19  
+**Version:** v0.4 DRAFT · Color System v0.2 approved · Unified Code-First Design System · 2026-10-19  
 **Owner:** UI/UX Designer (final visual authority)  
 **Scope:** all Big Academy products. **This is the only DESIGN.md in the repository.** Writing feature-specific requirements and page specifications are combined inside `apps/writing/PRODUCT.md`.  
 **Authority:** approved designer decisions override external design prompts; actual checked component code and Storybook demonstrate implementations but never grant design approval. Product-specific business rules belong in each `apps/<product>/PRODUCT.md`.
@@ -26,10 +26,10 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 | `--ba-brand-dark` | `#133547` | [A] | Shared brand ink / key text |
 | `--ba-writing-accent` | `#B25415` | [A] | Writing emphasis/primary action |
 | `--ba-paper` | `#FFFFFF` | [A] | White content / writing canvas |
-| `--ba-surface-warm` | `#FEF9EF` | [E] | Candidate Writing warm frame |
-| `--ba-choice-border` | `#C9B8B2` | [R] | Candidate activity option/Word Grid borders |
-| `--ba-success` | `#14AE5C` | [R] | Candidate correctness feedback; verify contrast |
-| `--ba-error` | `#9B4F36` | [R] | Candidate wrong feedback; not new global brand primary |
+| `--ba-surface-warm` | `#FEF9EF` | [A] | Writing warm frame, warm-1 |
+| `--ba-choice-border` | `#C9B8B2` | [A] | Warm-4 border value; component usage remains contract-specific |
+| `--ba-success` | `#14AE5C` | [A] | Success-6 border-active anchor, NOT white-text strong fill |
+| `--ba-error` | `#9B4F36` | [A] | Danger-7 strong error fill, never global brand primary |
 | Reading primary/accent | TBD | [Q] | **Do not assign a fabricated Reading palette** |
 
 `#B25415` on white has approximately **5.03:1** contrast and is suitable for normal-size AA text. White on `#B25415` also passes AA normal text. On `#133547` (2.56:1) or `#4E3B24` (2.11:1), it does not pass AA for normal text. Recalculate for hover, disabled, focus and actual tinted backgrounds; do not assume one contrast result validates every combination.
@@ -40,7 +40,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 
 - **Product-themed:** primary action backgrounds and on-action foreground pairings, interactive selection, links and relevant emphasis; **allowed** low-intensity surface tints for product atmosphere and shell/background zones.
 - **Shared:** neutral foundations, white functional content canvas where needed, text/readability, component geometry/behavior, spacing, typography principles and functional state meanings (success/error/warning/disabled/focus). Product identity must not silently recolor semantic success/error or reduce contrast.
-- **Boundaries:** Writing remains A · Warm Frame + White Canvas; its background candidate `#FEF9EF` stays [E]. Reading accent and all Reading tint values remain [Q]. The amount/placement of tints and exact colors are chosen by the UI/UX Designer in later visual review.
+- **Boundaries:** Writing remains A · Warm Frame + White Canvas; its warm background `#FEF9EF` is approved [A] at warm-1. Reading accent and all Reading tint values remain [Q]. The amount/placement of additional tints and exact colors are chosen by the UI/UX Designer in later visual review.
 - **Implementation implication:** shared reusable components read semantic aliases such as `--ba-color-action-primary`, not a Writing-specific primitive. App-level product theme resolves those aliases. Exact token spelling/theme selector remains an [E] proposal until Token Architecture approval.
 
 ### 2.3 Token Architecture — approved P0-2 [A, 2026-10-19]
@@ -51,9 +51,20 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 2. **CSS custom properties (CSS Variables) are the current *single executable source of truth*.** Store and maintain token values in the shared design-system source; do **not** hand-maintain a competing JSON/Figma token value set. If cross-platform tooling is needed later, approve a migration and generate derivative outputs automatically.
 3. **Product themes are selected at application/shell level; shared components consume semantic variables.** For example, a Writing app shell resolves a generic `--ba-color-action-primary` to the approved Writing accent. A reusable BAButton never needs `product="writing"` or a direct `--ba-writing-accent` dependency just to get its primary color.
 
-**Scope / approval boundaries:** Theme B (accent + subtle tinted backgrounds) is approved [A]. Exact CSS token names, selector mechanism (e.g. `data-ba-product="writing"`), default theme values, further primitive color scales, specific surface tint values and additional component token values remain *candidates* [E/Q]. Reading accent remains TBD. Shared focus, disabled and feedback semantics cannot silently change meaning when product theme changes. Validate computed foreground/background contrast and keyboard focus in each product theme.
+**Scope / approval boundaries:** Theme B (accent + subtle tinted backgrounds) is approved [A]. The original P0 decision left exact CSS names, selector, color scales and individual tints open. The designer's later Color System v0.2 decision in §2.4 approves the new names, eight color scales, Writing selector and approved warm surface; Reading and new unlisted color values remain [Q]. Reading accent remains TBD. Shared focus, disabled and feedback semantics cannot silently change meaning when product theme changes. Validate computed foreground/background contrast and keyboard focus in each product theme.
 
 **Implementation handoff:** Grokbot pilot CSS on `feat/grokbot-writing-topbar` still directly uses `--ba-writing-accent` in shared BAButton. Migrate it to semantic aliases without intentional visual changes; add verification in stories and browser testing. That implementation branch was not modified by this architecture decision.
+
+### 2.4 Color System v0.2 — designer-approved [A, 2026-10-19]
+
+**Direct approval recorded:** the UI/UX Designer requested that the remaining Big Academy palette be completed using the Geist-inspired ten-step role structure and approved without a separate testing/review round. This approves the **color architecture, eight solid-color scales, anchor values and role maps** described in `docs/design-system/COLOR_SYSTEM_v0.2.md`. It does **not** certify engineering behavior or production accessibility.
+
+- Families: `neutral`, `warm`, `brand`, `writing`, `success`, `danger`, `warning`, `info`.
+- Unified roles: 1–3 component background (default/hover/active); 4–6 border (default/hover/active); 7–8 strong fill (default/hover); 9–10 text/icon (secondary/primary).
+- CSS values live only in `packages/design-system/src/tokens.css`. Semantic tokens drive components. Writing app/shell uses `data-ba-product="writing"` for action-theme alias overrides.
+- Preserved existing anchors: brand `#133547` at level 10; Writing `#B25415` at level 7; white writing canvas `#FFFFFF`. Writing warm frame `#FEF9EF` is now approved at warm level 1. Existing `#C9B8B2` warm border, `#14AE5C` success border-active, and `#9B4F36` error strong fill are incorporated.
+- Reading primary/tint remain undecided; do **not** invent them. Dark mode, alpha scales and component spacing/radius approvals remain separate.
+- No component, browser, Storybook, or accessibility tests were run **as explicitly requested**. Color-system **design approval [A]** must not be confused with engineering `verified` or visual approval of unreviewed rendered components.
 
 ## 3. Typography — Foundation A [A, 2026-10-19]
 
