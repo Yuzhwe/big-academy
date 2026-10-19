@@ -164,3 +164,100 @@
 @media (prefers-reduced-motion: reduce) {
   .staircase-rail, .staircase-viewport * { animation: none !important; transition: none !important; }
 }
+
+
+/* E-01 2026-10-19 designer directive. These overrides supersede old visual A/B.
+   Both are Writing Warm Frame; compare path morphology ONLY, never card-top alignment. */
+.course-path .course-path__header {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) max-content minmax(0,1fr);
+  align-items:center;
+  gap:clamp(8px,1.5vw,20px);
+  margin-inline:clamp(12px,3vw,32px);
+  padding:8px 0 12px;
+  min-width:0;
+}
+.course-path__header-title { min-width:0; overflow:hidden; }
+.course-path__header-title .course-title { margin:0; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
+.course-path__header-locale { min-width:0; display:flex; justify-content:flex-end; }
+.course-path__header-locale .ba-button { flex-shrink:0; }
+.course-level-tabs { display:contents; }
+.course-level-tablist {
+  display:flex; align-items:center; min-width:0; max-width:min(55vw,640px);
+  gap:4px; padding:4px; overflow-x:auto; scrollbar-width:thin;
+  border-radius:12px;
+  background:var(--ba-color-warm-2); border:0.5px solid var(--ba-color-warm-4);
+}
+.course-level-tab {
+  flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+  box-sizing:border-box; min-height:44px; min-width:44px;
+  padding:8px clamp(9px,1.2vw,16px);
+  border-radius:9px; cursor:pointer;
+  font:800 18px/1 var(--ba-font-digit);
+  color:var(--ba-color-content-secondary);
+}
+.course-level-tab[data-selected] { color:var(--ba-color-on-action-primary); background:var(--ba-color-action-primary); }
+.course-level-tab[data-hovered]:not([data-selected]) { background:var(--ba-color-warm-3); }
+.course-level-tab[data-focus-visible] { outline:2px solid var(--ba-color-focus); outline-offset:2px; }
+.course-level-panel { min-width:0; outline:none; }
+.course-level-panel:focus-visible { outline:2px solid var(--ba-color-focus); outline-offset:-2px; }
+
+/* This is the ONLY vertical positioning formula for both variants.
+   top is the pedestal/anchor Y; translateY(-100%) pins card BOTTOM there.
+   Intrinsic card height alters only the TOP, not the anchor Y. */
+.staircase-rail .course-nodes > li {
+  top:calc(var(--anchor-base-y) + (var(--step-count) - 1 - var(--step-index)) * var(--step-rise));
+  transform:translateY(-100%);
+}
+.staircase-viewport[data-variant='A'],
+.staircase-viewport[data-variant='B'] { background:var(--ba-color-background-secondary); }
+.staircase-viewport[data-variant='A'] .stair-lesson-card,
+.staircase-viewport[data-variant='B'] .stair-lesson-card {
+  background:var(--ba-color-surface-canvas); color:var(--ba-color-content-primary);
+  border-color:var(--ba-color-border-default); border-radius:24px;
+  box-shadow:0 6px 20px rgba(19,53,71,.08);
+}
+.staircase-viewport[data-variant='A'] .course-nodes :is(.course-unit,.course-intro,.course-goal,.unit-milestone),
+.staircase-viewport[data-variant='B'] .course-nodes :is(.course-unit,.course-intro,.course-goal,.unit-milestone) {
+  background:var(--ba-color-surface-canvas);
+  color:var(--ba-color-content-primary);
+  border-color:var(--ba-color-border-default);
+}
+/* A: distinct per-node thin platform, platform TOP exactly at card BOTTOM */
+.staircase-viewport[data-variant='A'] .course-nodes > li::after {
+  top:100%; left:-10px; width:280px; height:26px; border-radius:8px;
+  background:linear-gradient(180deg,var(--ba-color-warm-3),var(--ba-color-warm-4));
+  border:0.5px solid var(--ba-color-warm-5);
+  box-shadow:0 5px 0 color-mix(in srgb,var(--ba-color-warm-7) 14%,transparent);
+}
+.staircase-viewport[data-variant='A'] .course-nodes > li::before {
+  top:100%; height:150px; opacity:.32;
+  background:linear-gradient(180deg,var(--ba-color-writing-2),transparent);
+}
+/* B: same anchor coordinates, continuous slope through all individual anchor ticks */
+.staircase-continuous-path { position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; overflow:visible; }
+.staircase-continuous-path path {
+  fill:none; stroke:var(--ba-color-writing-5); stroke-width:6;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+.staircase-viewport[data-variant='B'] .course-nodes > li::after {
+  content:''; position:absolute; pointer-events:none; z-index:-1;
+  left:40px; width:180px; top:100%; height:0;
+  border-top:5px solid var(--ba-color-writing-7); border-radius:5px;
+}
+/* A/B switch uses Writing approved palette, not former dark-dusk theme. */
+.course-ab-button[aria-pressed='true'] { background:var(--ba-color-action-primary); color:var(--ba-color-on-action-primary); border-color:var(--ba-color-action-primary); }
+.course-ab-button:focus-visible,.staircase-viewport:focus-visible { outline-color:var(--ba-color-focus); }
+@media (max-width:900px) {
+  .course-path .course-path__header { gap:8px; }
+  .course-path__header-title .course-title { font-size:clamp(16px,2.6vw,24px); }
+  .course-level-tablist { gap:1px; padding:2px; max-width:54vw; }
+  .course-level-tab { min-width:40px; min-height:44px; padding:6px 9px; font-size:17px; }
+  .course-path__header-locale .ba-button { padding-inline:10px; }
+}
+@media (max-width:500px) {
+  .course-path__header-title .course-kicker { display:none; }
+  .course-level-tablist { max-width:50vw; }
+  .course-level-tab { min-width:38px; }
+  .course-path__header-locale .ba-button { min-width:44px; padding-inline:7px; font-size:12px; }
+}
