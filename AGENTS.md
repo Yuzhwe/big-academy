@@ -8,4 +8,4 @@
 6. `BA-WR-001 LessonTopBar` is the first pilot: back + lesson identification on left, actual task progress centered against **entire viewport/header**, no hamburger menu, no visible right control. Preserve done/current/available/locked/skipped and permission checks.
 7. Only promote components or specifications to `approved` after runtime tests and explicit designer signoff. Never infer visual approval from documentation or static type checks.
 8. Use `feat/writing-lesson-topbar` while building the pilot; open a PR for review. Do not push experimental components directly to `main`.
-9. Source context is incomplete in this repo until `alex-original.html`, actual pilot source, and the canonical Skill v0.2 are imported. Declare gaps rather than inventing source semantics.
+9. `alex-original.html` in `apps/writing/source/` is the product source. The canonical Skill v0.2 is still not imported. Declare that gap rather than inventing a skill run or source semantics.

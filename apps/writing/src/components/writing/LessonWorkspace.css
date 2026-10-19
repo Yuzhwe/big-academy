@@ -1,0 +1,58 @@
+.lesson-workspace {
+  --ba-workspace-rail: minmax(17rem, 28vw);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--ba-workspace-rail);
+  gap: 16px;
+  min-height: 0;
+  height: 100%;
+  padding: 16px;
+  background: var(--ba-surface-warm, #fef9ef); /* [E] candidate */
+  color: var(--ba-brand-dark, #133547);
+}
+
+.lesson-workspace__paper {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: var(--ba-paper, #ffffff);
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
+  border-radius: 16px;
+  padding: 28px 24px 40px;
+}
+
+.lesson-workspace__rail {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--ba-paper, #ffffff);
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
+  border-radius: 16px;
+}
+
+.lesson-workspace__coach {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 20px 16px;
+}
+
+.lesson-workspace__footer {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-top: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
+  background: var(--ba-paper, #ffffff);
+}
+
+@media (max-width: 720px) {
+  .lesson-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(16rem, 1fr) minmax(16rem, 0.8fr);
+    height: auto;
+    min-height: calc(100dvh - 80px);
+  }
+}

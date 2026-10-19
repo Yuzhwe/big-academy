@@ -27,7 +27,7 @@
 | `--ba-success` | `#14AE5C` | `[R-ACTIVITY]` 候选 | Check 正确状态，待对比度校验 |
 | `--ba-error` | `#9B4F36` | `[R-ACTIVITY]` 候选 | 错误/高亮；不把原 Demo 品牌色盖过 Writing accent |
 
-视觉提示词推荐 Dosis/Jost/Douyin Sans/Noto Sans SC，为 `[R]` 字体参考，**尚未锁定文件来源、授权与实际生产 fallback**；不在项目包中分发字体。
+视觉提示词推荐 Dosis/Jost/Douyin Sans/Noto Sans SC。**2026-10-19 设计师确认的优先级高于本段早期候选：**英文标题与所有数字只用 Dosis ExtraBold 800；英文正文 Jost；中文标题抖音美好体；中文正文 Noto Sans SC。仓库不打包未授权字体。Douyin Sans 未随仓库分发，页面使用系统 fallback。Dosis、Jost、Noto Sans SC 通过 Google Fonts 样式表加载，失败时回退到可读系统字体。这仍不是视觉签核。
 
 ## 3. 组件组织
 
