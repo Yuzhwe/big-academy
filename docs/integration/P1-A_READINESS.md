@@ -13,6 +13,7 @@ Give Grokbot and other agents a **single tested GitHub entry point** that contai
 - PR #6 `feat/agent-a-e01-staircase-ab`: A/B diagonal visual prototype. **Both proposals remain unapproved.**
 - PR #2 `docs/unified-design-and-token-audit`: P0 approved decisions, root `DESIGN.md`, gap audit, P1 plan, Iconoir. Keep any later Writing PRODUCT.md work from #6 rather than replacing it with a stale historical draft.
 - PR #5 `feat/delivery-hub`: isolated portal app, built on `main` with pinned early #4 source blobs. **Do not treat as auto-updated when app code changes.** Validate provenance, rebuild and publish separately.
+- PR #7 `cursor/writing-hifi-from-agent-a-e01-8539`: independently authored product follow-up based on PR #6, adding WordGrid/HamburgerLayer and P6 plan-layer functionality; arrived while P1-A was underway. The branch reports successful tests but is **not yet imported** into this integration candidate. Evaluate registry/PRODUCT overlaps and runtime evidence before integration.
 
 ## Merge conflict / source-of-truth resolutions
 
@@ -24,6 +25,7 @@ Give Grokbot and other agents a **single tested GitHub entry point** that contai
 | Historical dusk staircase vs approved Writing A Warm Frame | Dusk variant A is *review-only*; Warm Frame B candidate shares the same diagonal UX. No visual approval implied. | Browser A/B screenshot + designer review |
 | Old PR #2 HANDOFF lacks #4/#6 work | Unify handoff with latest implementation and P0 decisions. | Review PR diff |
 | #5 portal vendor/snapshot source pinned to #4 | Leave portal separate while updating the hub's snapshot importer against reviewed integration source. | Portal check + browser smoke + publish review |
+| Incoming #7 modifies Writing component registry and hi-fi product code | Avoid blind overwrite; review changed contracts and product scope; integrate in a separate, tested commit after P1-A baseline. | PR diff review + re-run QA |
 | Icon library selection made after initial docs | Root `DESIGN.md` and `AGENTS.md` use Iconoir, preserving MIT notice rules; no unauthorized glyph migration. | Source inspection |
 
 ## Estimated effort (not an autonomous background schedule)
