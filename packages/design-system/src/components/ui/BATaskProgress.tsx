@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Button } from 'react-aria-components';
+import { BAIcon } from './BAIcon';
 import type { BALocale, TaskProgressItem } from '../../types/task';
 import { taskChrome, taskMayNavigate } from '../../i18n/chrome';
 import './BATaskProgress.css';
@@ -15,28 +16,8 @@ export interface BATaskProgressProps {
 }
 
 function Marker({ status, number }: { status: TaskProgressItem['status']; number: number }) {
-  if (status === 'done') {
-    return (
-      <svg className="ba-task-progress__icon" viewBox="0 0 16 16" aria-hidden="true">
-        <path
-          d="M3.2 8.4 6.3 11.5 12.8 4.6"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-  if (status === 'locked') {
-    return (
-      <svg className="ba-task-progress__icon" viewBox="0 0 16 16" aria-hidden="true">
-        <rect x="3.5" y="7" width="9" height="6.5" rx="1.2" fill="none" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" fill="none" stroke="currentColor" strokeWidth="1.6" />
-      </svg>
-    );
-  }
+  if (status === 'done') return <BAIcon name="check" size={16} className="ba-task-progress__icon" />;
+  if (status === 'locked') return <BAIcon name="lock" size={16} className="ba-task-progress__icon" />;
   return <span>{number}</span>;
 }
 

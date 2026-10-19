@@ -68,3 +68,12 @@
 .ba-showcase__motion-row { display:grid; grid-template-columns:minmax(100px,150px) minmax(0,1fr) minmax(145px,260px); gap:10px; align-items:center; font-size:13px; border-bottom:1px solid var(--ba-color-border-default); padding:8px 0; }
 .ba-showcase__motion-row code { font-size:11px; overflow-wrap:anywhere; }
 @media(max-width:600px) { .ba-showcase__motion-row { grid-template-columns:1fr; gap:3px; } }
+
+/* Typography/Iconoir visuals (font sizes and icon size remain [T/E]). */
+.ba-showcase__type-specimens { display:grid; grid-template-columns:repeat(auto-fit,minmax(245px,1fr)); gap:18px; margin-block:18px; }
+.ba-showcase__type-specimens > div { min-width:0; padding:12px; border-bottom:1px solid var(--ba-color-border-default); }
+.ba-showcase__type-specimens .ba-text { display:block; margin:10px 0 0; overflow-wrap:anywhere; }
+.ba-showcase__type-specimens code { font-size:12px; color:var(--ba-color-content-muted); }
+.ba-showcase__icon-gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(102px,1fr)); gap:12px; margin-block:20px; }
+.ba-showcase__icon-card { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; min-height:96px; border:1px solid var(--ba-color-border-default); border-radius:var(--ba-radius-control-regular); }
+.ba-showcase__icon-card code { max-width:100%; font-size:11px; overflow-wrap:anywhere; text-align:center; }

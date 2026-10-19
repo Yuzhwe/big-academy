@@ -514,6 +514,111 @@
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
       "notes": "Candidate Warm Frame. Not validated and not visually approved. Completed state is injected from Alex lesson states. Confetti receipt is UI-only and does not unlock anything. Level Goal formula stays open."
+    },
+    {
+      "id": "BA-UI-008",
+      "name": "BAIcon",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "candidate-foundation",
+      "implementation": "packages/design-system/src/components/ui/BAIcon.tsx",
+      "story": "packages/design-system/src/components/ui/BAIcon.stories.tsx",
+      "props": {
+        "name": "8 iconoir names (expand after contract review)",
+        "size": "number px, default 20 [E]",
+        "strokeWidth": "number, default 1.5 [Iconoir]",
+        "decorative": "true by default; aria-hidden",
+        "label": "required when decorative=false",
+        "className": "string"
+      },
+      "events": {},
+      "states": [
+        "decorative",
+        "labelled",
+        "disabled inherited from parent"
+      ],
+      "layoutOwner": "Component owns intrinsic presentation and a11y semantics; product/page owns placement and content hierarchy",
+      "requirements": [
+        "Accessible labels and roles",
+        "Responsive/reduced motion",
+        "Semantic tokens from DESIGN.md; visual review required"
+      ],
+      "requiredStories": [
+        "IconoirGallery",
+        "Decorative",
+        "NamedIcon"
+      ],
+      "figma": null,
+      "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts",
+      "notes": "8 official Iconoir regular SVG paths, upstream MIT notice in design-system package. Full library not imported. Default icon sizing is exploratory."
+    },
+    {
+      "id": "BA-UI-009",
+      "name": "BAText",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "candidate-foundation",
+      "implementation": "packages/design-system/src/components/ui/BATypography.tsx",
+      "story": "packages/design-system/src/components/ui/BATypography.stories.tsx",
+      "props": {
+        "as": "span | p | h1 | h2 | h3 | label",
+        "textRole": "display | heading | body | control | supporting | caption",
+        "children": "ReactNode",
+        "className": "string"
+      },
+      "events": {},
+      "states": [
+        "english",
+        "chinese-fallback",
+        "long-content"
+      ],
+      "layoutOwner": "Component owns intrinsic presentation and a11y semantics; product/page owns placement and content hierarchy",
+      "requirements": [
+        "Accessible labels and roles",
+        "Responsive/reduced motion",
+        "Semantic tokens from DESIGN.md; visual review required"
+      ],
+      "requiredStories": [
+        "RoleGallery",
+        "ChineseFallback"
+      ],
+      "figma": null,
+      "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts",
+      "notes": "Font families approved; sizing, line heights, non-Dosis weights candidate. Douyin distribution unresolved."
+    },
+    {
+      "id": "BA-UI-010",
+      "name": "BANumber",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "candidate-foundation",
+      "implementation": "packages/design-system/src/components/ui/BATypography.tsx",
+      "story": "packages/design-system/src/components/ui/BATypography.stories.tsx",
+      "props": {
+        "children": "string | number",
+        "className": "string"
+      },
+      "events": {},
+      "states": [
+        "english",
+        "chinese"
+      ],
+      "layoutOwner": "Component owns intrinsic presentation and a11y semantics; product/page owns placement and content hierarchy",
+      "requirements": [
+        "Accessible labels and roles",
+        "Responsive/reduced motion",
+        "Semantic tokens from DESIGN.md; visual review required"
+      ],
+      "requiredStories": [
+        "RoleGallery",
+        "ChineseFallback"
+      ],
+      "figma": null,
+      "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts",
+      "notes": "UI numerals use Dosis ExtraBold 800 in both languages; do not rewrite user-authored editable text."
     }
   ]
 }
