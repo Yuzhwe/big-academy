@@ -11,6 +11,10 @@ One `/DESIGN.md` for all Big Academy products; product identity primarily driven
 
 **[A] Chosen:** B · **Accent + subtle tinted surfaces** for product differentiation, while base neutral palette and interaction/accessibility semantics remain common. This resolves the former first open choice about theme scope; tint placement/opacity and each product's exact colors remain open. Details are recorded in the single root `DESIGN.md`.
 
+## Token Architecture approval — P0-2 (2026-10-19)
+
+**[A] Confirmed:** (1) Primitive → Semantic → optional Component Tokens; (2) CSS Variables as the **only current executable value source**; (3) application/shell-owned product theme selection, consumed through semantic role aliases by shared components. This resolves the *architecture*, not exact token naming, CSS theme selector, typography scale, contrast pairs or implementation sign-off. The current Grokbot pilot CSS still contains Writing-specific references in shared BAButton; migrating those is implementation work with testing.
+
 ## 1. External benchmark (what to learn, not what to copy)
 
 | Reference | Verified structure/principle | Big Academy adaptation |
@@ -56,7 +60,7 @@ Component CSS (Grokbot pilot) uses literal dimensions such as `80px`, `76px`, `4
 
 ## 4. First tranche, intentionally small
 
-**First pass:** one DESIGN.md at root; token contract split into primitive → semantic → optional component; semantic mapping for Writing accent as proof; preserve color/value statuses.
+**First pass:** one DESIGN.md at root; **approved** token layers and CSS-only source; **implement** semantic Writing accent mapping in a reviewed engineering PR, preserving status labels and temporary visual treatment.
 
 **Second pass:** migrate BAButton/BATaskProgress to semantic accent without changing appearance; add minimal focus/foreground/bg palette; run existing tests and screenshots on the **engineering branch** with its owner. Keep exact visual styles temporary until designer accepts them.
 
@@ -71,7 +75,7 @@ Component CSS (Grokbot pilot) uses literal dimensions such as `80px`, `76px`, `4
 
 ## 6. Open design choices
 
-- Product theme scope **resolved: B [A]**. Still open: exactly which background zones can be tinted, how strongly, and what semantic aliases to use.
+- Product theme scope **resolved: B [A]**. Token architecture **resolved: Primitive → Semantic → optional Component, CSS Variables source, application-level themes [A]**. Still open: exact background tint zones/intensity, token aliases and selector naming.
 - Which EN/ZH font families can ship legally and reliably?
 - Will other products share a common neutral palette with Writing? Suggested yes; not yet locked.
 - Does a product Theme need light/dark mode from day one? No current authorization, defer.
