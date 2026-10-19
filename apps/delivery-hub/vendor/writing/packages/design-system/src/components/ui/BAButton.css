@@ -1,0 +1,88 @@
+.ba-button {
+  --ba-button-bg: var(--ba-paper, #ffffff);
+  --ba-button-ink: var(--ba-brand-dark, #133547);
+  --ba-button-border: var(--ba-control-border, #133547);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: var(--ba-hit-min, 44px);
+  min-height: var(--ba-hit-min, 44px);
+  padding: 0 16px;
+  border: 1px solid var(--ba-button-border);
+  border-radius: 999px;
+  background: var(--ba-button-bg);
+  color: var(--ba-button-ink);
+  font: 700 16px/1.2 var(--ba-font-sans, sans-serif);
+  letter-spacing: 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.ba-button[data-variant='primary'] {
+  --ba-button-bg: var(--ba-writing-accent, #b25415);
+  --ba-button-ink: var(--ba-paper, #ffffff);
+  --ba-button-border: var(--ba-writing-accent, #b25415);
+}
+
+.ba-button[data-variant='ghost'] {
+  --ba-button-bg: transparent;
+  --ba-button-border: transparent;
+}
+
+.ba-button[data-hovered='true']:not([data-disabled='true']):not([data-pending='true']) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ba-button[data-variant='secondary'][data-hovered='true']:not([data-disabled='true']):not([data-pending='true']),
+.ba-button[data-variant='ghost'][data-hovered='true']:not([data-disabled='true']):not([data-pending='true']) {
+  background: color-mix(in srgb, var(--ba-brand-dark, #133547) 8%, var(--ba-paper, #ffffff));
+}
+
+.ba-button[data-focus-visible='true'] {
+  outline: var(--ba-focus-width, 2px) solid var(--ba-focus-ring, #133547);
+  outline-offset: 2px;
+}
+
+.ba-button[data-disabled='true'],
+.ba-button[data-disabled='true'][data-hovered='true'] {
+  --ba-button-bg: var(--ba-muted-surface, #f4f1ea);
+  --ba-button-ink: var(--ba-muted, #4a5963);
+  --ba-button-border: #c4b8aa;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.ba-button[data-pending='true'] {
+  cursor: progress;
+}
+
+.ba-button__pending {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ba-button-spin 800ms linear infinite;
+}
+
+@keyframes ba-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ba-button,
+  .ba-button__pending {
+    transition: none;
+    animation: none;
+  }
+
+  .ba-button__pending {
+    border-right-color: currentColor;
+  }
+}

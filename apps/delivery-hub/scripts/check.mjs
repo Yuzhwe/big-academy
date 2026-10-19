@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFile(path.join(root,f),'utf8');
@@ -18,5 +19,14 @@ const source=JSON.parse(await read('source-snapshot.json'));
 for(const original of source.documents)assert(d.docs.some(x=>x.path===original.path&&x.ref===original.ref&&x.content===original.content));
 const html=await read('dist/index.html');for(const f of ['style.css','app.js','data.js','assets/writing-path.png','assets/favicon.svg']){assert(html.includes(f)||f.includes('writing-path'));await fs.access(path.join(root,'dist',f));}
 new vm.Script(await read('dist/app.js'));
+new vm.Script(await read('dist/foundations.js'));
 assert((await fs.stat(path.join(root,'dist/assets/writing-path.png'))).size>1000);
-console.log('PASS: source provenance, complete document content, 13 component contracts, safe rendered Markdown, local assets and JavaScript syntax.');
+const manifest=JSON.parse(await read('vendor/writing/manifest.json'));
+for(const f of manifest.files){const data=await fs.readFile(path.join(root,'vendor/writing',f.path));const hash=crypto.createHash('sha1').update('blob '+data.length+'\0').update(data).digest('hex');assert.equal(hash,f.sha,`Modified imported source: ${f.path}`);}
+const catalog=JSON.parse(await read('dist/icon-catalog.json'));assert(catalog.icons.length>1500);assert.equal(new Set(catalog.icons.map(i=>i.name)).size,catalog.icons.length);
+for(const i of catalog.icons)assert(/^<svg/.test(i.svg)&&!/<script|onload=|javascript:/i.test(i.svg));
+for(const f of ['playground/index.html','playground/lab.js','playground/lab.css','prototypes/writing/index.html','prototypes/writing/app.js','prototypes/writing/app.css','prototypes/writing-original/index.html','prototypes/writing-original/source.html','assets/fonts.css','licenses/Iconoir-MIT.txt','licenses/dosis-OFL.txt','licenses/jost-OFL.txt','licenses/noto-sans-sc-OFL.txt'])await fs.access(path.join(root,'dist',f));
+const fonts=await read('dist/assets/fonts.css');for(const m of fonts.matchAll(/url\(\.\/fonts\/([^)]*)\)/g))await fs.access(path.join(root,'dist/assets/fonts',m[1]));
+const original=await fs.readFile(path.join(root,'vendor/writing/apps/writing/source/alex-original.html'));assert.deepEqual(await fs.readFile(path.join(root,'dist/prototypes/writing-original/source.html')),original);
+assert((await read('dist/prototypes/writing/index.html')).includes('reset-prototype'));
+console.log('PASS: source documents, contracts, 27 exact prototype blobs, complete Iconoir catalog, safe Markdown, font/license assets and executable prototype outputs.');

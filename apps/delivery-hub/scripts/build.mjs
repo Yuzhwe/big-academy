@@ -3,6 +3,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createRequire} from 'node:module';
 const {marked}=await import(createRequire(import.meta.url).resolve('marked'));
+import {buildExperiences} from './build-experiences.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const snapshot=JSON.parse(await fs.readFile(path.join(root,'source-snapshot.json'),'utf8'));
 const config=JSON.parse(await fs.readFile(path.join(root,'sources.json'),'utf8'));
@@ -54,9 +55,18 @@ if(!registry)throw new Error('Primary component registry is required');
 const data={repository:snapshot.repository,capturedAt:snapshot.capturedAt,branches:snapshot.branches,docs,components:JSON.parse(registry.content).components,registryRef:registry.ref};
 const dist=path.join(root,'dist');
 await fs.mkdir(path.join(dist,'assets'),{recursive:true});
-for(const f of ['index.html','app.js','style.css'])await fs.copyFile(path.join(root,'src',f),path.join(dist,f));
+for(const f of ['index.html','app.js','style.css','foundations.js','foundations.css'])await fs.copyFile(path.join(root,'src',f),path.join(dist,f));
 await fs.copyFile(path.join(root,'src/favicon.svg'),path.join(dist,'assets/favicon.svg'));
 await fs.copyFile(path.join(root,'writing-path.png'),path.join(dist,'assets/writing-path.png'));
 await fs.writeFile(path.join(dist,'data.js'),'window.HUB_DATA = '+JSON.stringify(data).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')+';\n');
 await fs.writeFile(path.join(dist,'content-index.json'),JSON.stringify({repository:data.repository,capturedAt:data.capturedAt,documents:docs.map(({html,content,...d})=>d),components:data.components},null,2));
-console.log(`Built ${docs.length} source documents, ${data.components.length} component contracts and 7 portal views.`);
+console.log(`Built ${docs.length} source documents, ${data.components.length} component contracts and 11 portal views.`);
+
+const experience=await buildExperiences();
+const tokenSource=docs.find(d=>d.primary&&d.path.endsWith('tokens.css')).content;
+const tokens=[...tokenSource.matchAll(/(--ba-[\w-]+):\s*([^;]+);(?:[^\S\n]*\/\*([^*]*)\*\/)?/g)].map(m=>({name:m[1],value:m[2].trim(),note:(m[3]||'').trim(),status:(m[3]||'').includes('[A]')?'approved':(m[3]||'').includes('[E]')?'candidate':'temporary'}));
+const prototypeManifest=JSON.parse(await fs.readFile(path.join(root,'vendor/writing/manifest.json'),'utf8'));
+const system={...experience,tokens,iconVersion:JSON.parse(await fs.readFile(path.join(root,'node_modules/iconoir-react/package.json'),'utf8')).version,prototypeCommit:prototypeManifest.commit,fontAssets:[]};
+for(const f of ['dosis','jost','noto-sans-sc']){const pkg=JSON.parse(await fs.readFile(path.join(root,'node_modules/@fontsource',f,'package.json'),'utf8'));system.fontAssets.push({family:f,version:pkg.version,license:'OFL-1.1'});}
+await fs.writeFile(path.join(dist,'system.js'),'window.HUB_SYSTEM='+JSON.stringify(system)+';');
+console.log(`Experiences: ${experience.icons} Iconoir icons, 13 interactive components, Writing and original prototype pages.`);

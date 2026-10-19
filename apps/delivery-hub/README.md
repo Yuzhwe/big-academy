@@ -7,7 +7,15 @@ A portable static delivery portal for the private `Yuzhwe/big-academy` repositor
 1. **设计总结经验**: unified DESIGN.md, product specifications, design-system decisions, tokens, 13 component contracts, reference prompts and branch history.
 2. **需求交付**: Writing scope, implementation milestones, exact-commit source links and runtime records. No claim that all 52 screens are complete.
 
-Search, document reading, original downloads, component inspection, category filters, responsive navigation and GitHub edit links work without a backend. No visitor writes are sent to GitHub.
+Search, document reading, downloads, full system catalogs, component interactions, category filters, responsive navigation and GitHub edit links work without a backend. No visitor writes are sent to GitHub.
+
+## Interactive delivery, v0.2
+
+- System overview: all 13 executable CSS tokens, 12 recorded color roles, 1,671 Iconoir icons with search/size/stroke preview, five typography roles, layout, spacing, borders, motion and accessibility. Undefined scales remain explicitly undefined.
+- `/playground/`: all 13 registered components. Six reuse pinned repository code; seven provide React Aria contract demonstrations. These demonstrations do not promote planned registry entries to implemented or approved.
+- `/prototypes/writing/`: actual cursor-branch CourseApp, with isolated local progress and reset confirmation. `/prototypes/writing/?fixture=mixed&locale=zh` opens the Top Bar test harness.
+- `/prototypes/writing-original/`: exact Alex HTML in a separate prototype page. It retains its own original local storage. The imported source is not rewritten.
+- All delivery prototype links open a new tab. The development prototype is partial: E-01 → Lesson 1; P4–P7 have placeholders, and all 52 screens are not complete.
 
 ## Run / build
 
@@ -15,12 +23,13 @@ Requires Node.js 22+.
 
 ```sh
 cd apps/delivery-hub
-npm install
+npm ci
 npm run build
 npm run check
+npm run test:experiences
 ```
 
-Serve `dist/` with a static HTTP server; the app uses hash routes and works under a subdirectory. `src/` is editable UI source; `dist/` is generated output. `marked` is the only build dependency.
+The static host serves `dist/`; portal navigation uses hash routes and prototype directories contain their own index files. `src/` is editable UI source; `dist/` is generated output. Builds use marked, esbuild, React, React Aria, Iconoir and self-hosted Fontsource packages. For Sites, use the managed preview workflow rather than an improvised server.
 
 ## Refresh GitHub content
 
@@ -32,7 +41,7 @@ npm run build
 npm run check
 ```
 
-`sources.json` chooses the primary branch and extra variant paths. The importer reads every Markdown document, token CSS and component registry on the primary branch, excluding this portal to avoid recursive ingestion. Every document carries its branch and exact commit. Review source selection after branch merges; do not silently pick the newest branch as authoritative. The bundled Writing image is actual 1440px branch evidence, tied to the cursor commit in the snapshot.
+`sources.json` chooses the primary branch, extra variant paths and prototype branch. The importer reads every Markdown document, token CSS and component registry on the primary branch, excluding this portal to avoid recursive ingestion. Every document carries its branch and exact commit. Prototype runtime sources are copied unmodified to `vendor/writing/`, whose manifest records exact Git blob hashes. `check` verifies every imported blob. Review source selection after branch merges; do not silently pick the newest branch as authoritative. The bundled Writing image is actual 1440px branch evidence, tied to the cursor commit in the snapshot.
 
 Grokbot or another agent with repository permission can read and change this folder on its own branch. The portal is not an authorization provider; grant the agent's GitHub identity the needed repository permission separately. Do not share personal tokens in chat.
 
@@ -57,4 +66,6 @@ Site URL: https://big-academy-delivery.joe2025shenzhen.chatgpt.site
 
 ## Current visual status
 
-Portal v0.1 is an implemented review candidate using temporary system fonts. The page's swatches and component miniatures are explanatory representations, not proof of approved component rendering. Canonical roles remain Dosis 800 headings/digits, Jost English body, Douyin Chinese headings, Noto Sans SC Chinese body. Font files are not redistributed by this portal.
+Portal v0.2 remains a review candidate. Canonical roles are Dosis 800 headings/digits, Jost English body, Douyin Chinese headings and Noto Sans SC Chinese body. Dosis, Jost and Noto Sans SC are bundled unmodified with OFL notices; Iconoir includes its MIT notice. Douyin has not been provided and the UI clearly labels its fallback. Sample font size, line height and non-Dosis weights remain experiments, not approved scales.
+
+`test:experiences` uses jsdom for interaction and integration checks. It does not verify actual browser rendering, iframe integration, fonts, geometry or mobile layout. The managed browser preview is currently blocked by the host's proc-mount error; see HANDOFF.md.
