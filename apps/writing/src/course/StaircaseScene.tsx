@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type ReactNode, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type KeyboardEvent, type ReactNode, type CSSProperties } from 'react';
 import type { BALocale } from '@big-academy/design-system';
 import './StaircaseScene.css';
 
@@ -123,7 +123,7 @@ export function StaircaseScene({
     snap();
   };
 
-  const keyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
     let target: number | null = null;
     const centered = Math.round((cameraXRef.current + view.width / 2 - CARD_WIDTH / 2) / STEP_GAP);
@@ -148,6 +148,8 @@ export function StaircaseScene({
       ref={viewportRef}
       className="staircase-viewport"
       data-variant={variant}
+      data-camera-x={Math.round(boundedX)}
+      data-rise-px={rise}
       data-dragging={dragging ? 'true' : 'false'}
       role="region"
       tabIndex={0}
