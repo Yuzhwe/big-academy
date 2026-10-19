@@ -1,43 +1,50 @@
-# HANDOFF — GitHub bootstrap (2026-10-19)
+# HANDOFF — Big Academy cross-agent integration
 
-## Confirmed
-- New private repository: `Yuzhwe/big-academy` (renamed from `big-academy-writing`).
-- `main` reserved for approved work; `feat/writing-lesson-topbar` is the active feature branch. Legacy empty `feat/lesson-topbar` remains untouched.
-- Writing scope: E-01 + G2-O nine lessons, 52 activity screens; original Alex logic is product source.
-- Single visual direction: A Warm Frame + White Canvas; dark wood B explicitly rejected.
-- Milestone: one per Unit, same displayed completion rule for all Unit kinds, source-recognized Skill Skip counts; first new-achievement return to staircase auto-celebrates once and user may click to celebrate again.
-- Top Bar: menu removed, back/lesson info left, task and completion state centered geometrically, right slot invisible. Task navigation uses source-provided permissions.
-- React Aria chosen for headless interaction foundation; component tokens, registry, validation, Storybook and UI/UX designer sign-off are required.
+**Date:** 2026-10-19  
+**Status:** **P1-A IN PROGRESS** — integration candidate, **not merged to `main`** and no automatic sign-off.
 
-## Status of this GitHub branch
-`feat/writing-lesson-topbar` holds the Top Bar pilot (`apps/writing/docs/PILOT_RUNTIME.md`). This change adds the E-01 lesson slice (`apps/writing/docs/SLICE_RUNTIME.md`).
+## Canonical roles and sources
+- **Repository:** `Yuzhwe/big-academy` (never `RaoJing414`).
+- **UI/UX Designer:** final visual and major interaction approval.
+- **Alex:** original Writing learning/scoring/skip/progress/eligibility rules.
+- **Agent A:** shared design system, tokens, component conventions, documentation authority, tooling and cross-agent integration.
+- **Grokbot/other product agents:** Writing application on separate branches.
+- **One global `/DESIGN.md`** governs shared design foundations; **`apps/writing/PRODUCT.md` combines Writing shared business rules and feature-specific page requirements/specifications**. There is no `apps/writing/DESIGN.md` and no duplicate standalone E-01 specification.
+- **Other shared engineering artifacts:** executable CSS tokens, React Aria-based BA Components, component registry/contracts, Storybook, browser QA.
 
-`BA-UI-001`, `BA-UI-006`, and `BA-WR-001` stay `implemented` with a temporary foundation theme. They were not rewritten for the slice. They are not `validated`.
+## Approved architecture (P0)
+1. Product accent + subtle tint themes; Writing overarching **A Warm Frame + White Canvas**, page-specific variants require designer review.
+2. Tokens **Primitive → Semantic → optional Component**, CSS Variables current executable source; product app selects semantic theme.
+3. Heading EN **Dosis ExtraBold 800**; EN long text **Jost**; ZH heading **Douyin**; ZH long text **Noto Sans SC**; all UI digits Dosis ExtraBold 800. Sizes/license/assets/fallback verification still pending.
+4. Progressive Big Academy component architecture on React Aria behavior foundation, shared primitives first, product-specific composites locally.
+5. Lightweight governance: distinct engineering verified vs designer visual approved.
+- **Icon standard:** Iconoir (MIT), general-purpose UI icon family; exact BAIcon mappings are P1 follow-up.
 
-`BA-WR-002` LessonWorkspace, `BA-WR-005` StairLessonCard, and `BA-WR-006` UnitMilestone are `implemented` with `visualStatus: candidate-warm-frame`. They are not `validated`. The other registry entries stay `planned`.
+## GitHub source branches and PR ancestry
 
-The slice calls Alex `Pages.canOpen`, `Pages.done`, `Skip`, `Home.lessonStates`, and `Stairs` ordering through `apps/writing/src/product/courseSession.ts`. `?fixture=` remains the fixture-only Top Bar preview. `PRODUCT.md` and `DESIGN.md` are still drafts. The canonical Skill v0.2 is still not imported.
+| PR | Source | Role | Current integration treatment |
+| --- | --- | --- | --- |
+| #1 | `feat/writing-lesson-topbar` base | first Topbar/system pilot | inherited |
+| #2 | `docs/unified-design-and-token-audit` | root DESIGN, P0 and P1 docs | root DESIGN and two audit/planning docs imported/reconciled here |
+| #4 | `cursor/writing-e01-lesson-slice-7d6c` | Alex-backed partial E-01 → Lesson 1 | inherited with product logic unchanged |
+| #6 | `feat/agent-a-e01-staircase-ab` | diagonal interactive E-01 A/B proof | direct parent; exploratory/unverified |
+| #5 | `feat/delivery-hub` | independent delivery portal/site | **not imported into baseline yet**; pinned Writing snapshot is from earlier #4 code |
 
-## Next steps (do in this order)
-1. Designer reviews the path and lesson screenshots in `apps/writing/docs/evidence/slice/` before any visual approval. Candidate values stay candidate.
-2. Import the verified v0.2 prototype-to-hifi Skill. Do not reuse old completed lesson HTML styling.
-3. Port the remaining G2-O templates from real `SCR` rows: P4, P5, P6, P7, then P1. Do not mark a screen done with a placeholder.
-4. Re-home Index / Analytics / Menu behaviors that are no longer on the bar.
-5. Do not merge to `main` until runtime evidence and explicit designer sign-off both exist.
+`integration/p1-a-unified-baseline` was branched from #6. Agent A must not modify the original PR branches or touch `main` without reviewed approval. Delivery Hub may be integrated later as an isolated app once its snapshot importer and browser display are checked; site publication does not automatically follow GitHub merges.
 
-## Known open issues
-Level Goal exact criterion, concurrent new milestones, skip revocation and celebration receipts, removal/re-homing of former menu features, and remaining 52-activity visual QA.
+## Writing pilot — what works and what is still open
+- PR #4 supports a **partial** E-01 → Lesson 1 learn/check → return Continue path, with a real Alex `CourseSession`. Locked lesson access remains guarded, milestone UI receipt separate from progression.
+- PR #6 adds review-only **A dimensional cream/card/platform/weak beam** and **B Warm Frame/white-card** visual switch; both target the **diagonal lower-left → upper-right path** with responsive rise and drag/wheel/keyboard navigation. Neither variant is visually approved.
+- Source count is nine lessons and 52 activity screens; **the 52 screens are not all built or accepted**. P4–P7 currently include unimplemented templates.
+- Alex pending: Level Goal criterion, simultaneous milestones, skip-revocation celebration, P1 Save/Print, Unit clicks, old menu/Index/Analytics location, Task vs Page.
+- Designer pending: both E-01 visual treatments, candidate warm surface `#FEF9EF`, radii, milestone artwork, real Chinese font distribution, Topbar sizing/visual, remainder Word Grid/Hamburger/Coach.
+- Canonical Skill v0.2 is not yet imported.
 
-## E-01 diagonal staircase A/B proof — Agent A (2026-10-19)
+## P1-A work status and gates
+- **Completed:** repository branches/trees audited, integration branch created; root design specification and P0 documentation reconciled with Writing PRODUCT E-01 compact model; old app-level DESIGN removed; source pointers and cross-agent rules refreshed.
+- **Not yet verified:** clean npm install/build, typecheck, Vitest, browser Playwright tests, touch/scroll camera verification, screenshot comparisons and reviewer approval. Do not infer test passage from authored tests.
+- **Next:** verify `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run test:layout`; inspect browser A/B at 1440/1024/834/390 and both locales, fix failures. Then review the resulting integration Draft PR and plan a controlled base merge to main.
+- **P1-B / P1-C:** semantic Token migration/BAIcon/font follow-up; Delivery Hub latest-source compatibility and safe preview update, separate from P1-A product behavior.
+- **Before main:** source-path uniqueness; actual test evidence; no course logic regression; Visual status remains candidate; explicit owner approval for substantive visual/product changes; hub deployment separately verified.
 
-Branch \`feat/agent-a-e01-staircase-ab\` (from \`cursor/writing-e01-lesson-slice-7d6c\`) implements a **draft designer-review-only** A/B variant switch: **A** historical cream card/280px thin platform/under-platform light beam on old dusk backdrop, **B** contemporary Warm Frame white-card treatment; **both** use the same left-bottom → right-top staircase positioning, responsive rise, pointer/wheel/keyboard camera, and Alex course session/state. Neither is visually approved; historic dark palette is not reinstated as the product design standard.
-
-The UI/UX Designer proposed merging requirement and page-level Specification **inside each product's PRODUCT.md** and keeping one shared root DESIGN.md (two documentation sources rather than a third E-01 spec file). E-01 details have been appended to the existing Writing PRODUCT.md for this proof; the more global governance/source-of-truth change remains subject to PR review and reconciliation with the unified DESIGN.md branch. Do not create redundant per-page DESIGN.md files.
-
-The original Cursor Writing PR #4 and Agent A documentation PR #2 are still separate; this branch depends on the Cursor E-01 slice and must be merged in a reviewed order. Do not claim layout tests or screenshots have been performed solely because component/unit-test source was added.
-
-### Agent A A/B review artifact (2026-10-19)
-
-- [Draft PR #6](https://github.com/Yuzhwe/big-academy/pull/6) — implementation preview based on Cursor E-01 Draft PR #4, **not merged**. The interactive A/B switch uses the same diagonal scene geometry and the same `CourseSession` for both visual versions.
-- Proposed browser assertions and matching screenshot capture are now in `apps/writing/e2e/staircase-ab.spec.ts`. **These tests have been authored but not executed in this chat/runtime**; no deployed URL or approved visual evidence yet. Run typecheck, Vitest, Playwright and collect results before treating this as delivered/validated.
-- This branch includes E-01-specific Requirements + Specification in `apps/writing/PRODUCT.md`. Product-level features/shared rules are not duplicated into a separate page spec. The root `/DESIGN.md` on Draft PR #2 still requires a reviewed documentation reconciliation; no false claim of already having two identical finalized docs.
+See [P1-A integration readiness](docs/integration/P1-A_READINESS.md) and [P1 implementation plan](docs/design-system/P1_IMPLEMENTATION_PLAN_v0.1.md).

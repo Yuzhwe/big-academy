@@ -3,8 +3,8 @@
   "project": "Big Academy Writing (pilot)",
   "status": "pilot-in-review",
   "sourceOfTruth": {
-    "product": "Alex original + approved UX; future PRODUCT.md",
-    "design": "DESIGN.md + tokens.css + human visual approval",
+    "product": "apps/writing/PRODUCT.md (Alex original source and approved UX; detailed E-01 product + page spec)",
+    "design": "/DESIGN.md (global only) + packages/design-system/src/tokens.css + designer visual approval",
     "components": "this registry maps to code and interactive stories when implemented"
   },
   "components": [
