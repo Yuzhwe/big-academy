@@ -43,15 +43,17 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 - **Boundaries:** Writing remains A · Warm Frame + White Canvas; its background candidate `#FEF9EF` stays [E]. Reading accent and all Reading tint values remain [Q]. The amount/placement of tints and exact colors are chosen by the UI/UX Designer in later visual review.
 - **Implementation implication:** shared reusable components read semantic aliases such as `--ba-color-action-primary`, not a Writing-specific primitive. App-level product theme resolves those aliases. Exact token spelling/theme selector remains an [E] proposal until Token Architecture approval.
 
-### 2.2 Token model
+### 2.3 Token Architecture — approved P0-2 [A, 2026-10-19]
 
-1. **Primitive** — raw values, e.g. `--ba-color-ink-900`, `--ba-color-writing-600`.
-2. **Semantic** — what values *mean*, e.g. `--ba-color-content-primary`, `--ba-color-action-primary`, `--ba-color-on-action`, `--ba-color-surface-canvas`, `--ba-color-focus`, `--ba-color-feedback-success`.
-3. **Component** — add only when distinct reuse/ownership requires it, e.g. `--ba-topbar-height`, `--ba-progress-gap`.
+**Approved architecture (not approval of every token value or name):**
 
-**Product theme contract:** applications attach a product identity (candidate API: `data-ba-product="writing"`) and resolve semantic accent tokens to product-specific primitive values. Components consume **semantic roles**, not the literal `--ba-writing-accent`. State semantics (success/error/disabled/focus) must remain legible across all product themes and never be signaled through color alone.
+1. **Primitive → Semantic → optional Component.** Primitive tokens store raw values; semantic tokens express usage and product-theme roles; component tokens are introduced only when a component needs a distinct reusable value. Example names: `--ba-color-ink-900` → `--ba-color-content-primary` → optional `--ba-topbar-title-color`.
+2. **CSS custom properties (CSS Variables) are the current *single executable source of truth*.** Store and maintain token values in the shared design-system source; do **not** hand-maintain a competing JSON/Figma token value set. If cross-platform tooling is needed later, approve a migration and generate derivative outputs automatically.
+3. **Product themes are selected at application/shell level; shared components consume semantic variables.** For example, a Writing app shell resolves a generic `--ba-color-action-primary` to the approved Writing accent. A reusable BAButton never needs `product="writing"` or a direct `--ba-writing-accent` dependency just to get its primary color.
 
-Theme **scope B** (accent + subtle tinted surfaces) is [A]. Only Writing's **specific accent value** is approved. Reading / other theme values, exact aliases, surface-tint values and multi-theme runtime implementation remain [E/Q], not production contracts. The current Grokbot pilot uses `--ba-writing-accent` directly; this is a known migration item, not evidence of shared theme support.
+**Scope / approval boundaries:** Theme B (accent + subtle tinted backgrounds) is approved [A]. Exact CSS token names, selector mechanism (e.g. `data-ba-product="writing"`), default theme values, further primitive color scales, specific surface tint values and additional component token values remain *candidates* [E/Q]. Reading accent remains TBD. Shared focus, disabled and feedback semantics cannot silently change meaning when product theme changes. Validate computed foreground/background contrast and keyboard focus in each product theme.
+
+**Implementation handoff:** Grokbot pilot CSS on `feat/grokbot-writing-topbar` still directly uses `--ba-writing-accent` in shared BAButton. Migrate it to semantic aliases without intentional visual changes; add verification in stories and browser testing. That implementation branch was not modified by this architecture decision.
 
 ## 3. Typography
 
@@ -118,5 +120,7 @@ When changing a token, run its affected component stories, accessibility/contras
 
 - **Benchmark:** `docs/design-system/BENCHMARK_AND_TOKEN_GAP_AUDIT_v0.1.md`.
 - **Actual temporary token source:** `packages/design-system/src/tokens.css` on Grokbot's **separate** `feat/grokbot-writing-topbar` branch. This docs branch does **not** yet include that code and must not pretend it does.
-- **Approved theme scope:** B · product accent + light tinted surfaces; token implementation details pending.\n- **Current token gaps:** semantic palette aliases/theme contract, spacing/typography/radii/elevation/motion scale, responsive sizes, accessible feedback color pairs, and status token conventions.
+- **Approved theme scope:** B · product accent + light tinted surfaces; exact tint values pending.
+- **Approved Token Architecture:** Primitive → Semantic → optional Component; shared CSS Variables as the single current executable source; themes set by the app/shell and consumed semantically by shared components.
+- **Current token gaps:** semantic palette aliases/theme contract, spacing/typography/radii/elevation/motion scale, responsive sizes, accessible feedback color pairs, and status token conventions.
 - **Gate:** root DESIGN.md draft requires UI/UX Designer approval; proof requires a running component, Storybook states and browser QA. Component contract and product docs remain authoritative for UI interfaces and learning rules.
