@@ -15,6 +15,10 @@ One `/DESIGN.md` for all Big Academy products; product identity primarily driven
 
 **[A] Confirmed:** (1) Primitive → Semantic → optional Component Tokens; (2) CSS Variables as the **only current executable value source**; (3) application/shell-owned product theme selection, consumed through semantic role aliases by shared components. This resolves the *architecture*, not exact token naming, CSS theme selector, typography scale, contrast pairs or implementation sign-off. The current Grokbot pilot CSS still contains Writing-specific references in shared BAButton; migrating those is implementation work with testing.
 
+## Typography Foundation approval — P0-3 (2026-10-19)
+
+**[A] Confirmed:** one cross-product semantic text-role hierarchy: expressive **Display/Heading** and readability-first **Body/Learning**, with Label/Control and Caption/Supporting roles for interface text. English/Chinese share roles; font families/fallbacks can differ to support CJK. Final fonts, numerical typography tokens, license/bundling choices and visual signoff are [Q]. Existing Dosis/Jost/Douyin Sans/Noto Sans SC are **reference-only**.
+
 ## 1. External benchmark (what to learn, not what to copy)
 
 | Reference | Verified structure/principle | Big Academy adaptation |
@@ -49,7 +53,7 @@ Component CSS (Grokbot pilot) uses literal dimensions such as `80px`, `76px`, `4
 | Product Theme semantics | Shared `BAButton.css` directly calls `--ba-writing-accent` | Shared BA primitive will inherit Writing color when Reading adopts it; needs semantic `--ba-color-action-primary` alias and per-product theme resolver | **P0** |
 | Semantic surface and text | Mainly raw `--ba-paper`, `--ba-brand-dark` | Shared `content-primary`, `surface-canvas`, `on-action`, `focus`, `disabled` roles not codified | **P0** |
 | Token classification/status | CSS comment marks [A]/[E]/temporary | Useful start; statuses must stay visible in audit and designer approval record | P0 |
-| Typography | Single fallback stack, sizes in component CSS | Full EN/ZH text styles, CJK fallbacks, line-height, tokenized role scale and fonts licensing unconfirmed | P1 |
+| Typography | **P0 role architecture approved:** Display/Heading expressive, Body/Learning readable, shared EN/ZH roles; pilot has a single fallback stack and CSS literal sizes | Final families, CJK fonts/licensing, numerical role scales, line-height and responsive behavior remain P1 | P1 |
 | Spacing & sizing | `--ba-hit-min`, most dimensions local | Need minimal spacing/sizing semantic scale and Top Bar component candidates with tested responsive behavior | P1 |
 | Radius & border | `--ba-border-weight`, hard-coded component corners and control strokes | Design-rationale gap: ordinary 0.5px vs input/action/focus strong boundaries; radius types still unspecified | P1 |
 | Feedback colors | Correct / wrong from reference prompt only | Need AA-compatible foreground/background, don't rely on color alone; success green as text is unverified | P1 |
@@ -76,6 +80,6 @@ Component CSS (Grokbot pilot) uses literal dimensions such as `80px`, `76px`, `4
 ## 6. Open design choices
 
 - Product theme scope **resolved: B [A]**. Token architecture **resolved: Primitive → Semantic → optional Component, CSS Variables source, application-level themes [A]**. Still open: exact background tint zones/intensity, token aliases and selector naming.
-- Which EN/ZH font families can ship legally and reliably?
+- Typography role strategy is **resolved: A [A]**; exact EN/ZH font families, scale and legal bundling remain open.
 - Will other products share a common neutral palette with Writing? Suggested yes; not yet locked.
 - Does a product Theme need light/dark mode from day one? No current authorization, defer.
