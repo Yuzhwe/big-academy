@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BAButton, BATaskProgress, type TaskProgressItem } from '@big-academy/design-system';
+import { BAButton, BAIcon, BAText, BANumber, BATaskProgress, type TaskProgressItem, type BAIconName } from '@big-academy/design-system';
 import './DesignSystemPreview.css';
 
 type FoundationTheme = 'neutral' | 'writing';
@@ -143,28 +143,37 @@ export function DesignSystemPreview() {
       </section>
 
       <section className="ba-showcase__section" aria-labelledby="typography-title">
-        <h2 id="typography-title">{zh ? '文字系统' : 'Typography Roles'}</h2>
-        <div className="ba-showcase__type-grid">
-          <div>
-            <span className="ba-showcase__small-label">Heading · Dosis 800 / Douyin</span>
-            <h3 className="ba-showcase__type-heading">{zh ? '探索写作的乐趣' : 'Learn to Write'}</h3>
-          </div>
-          <div>
-            <span className="ba-showcase__small-label">Body · Jost / Noto Sans SC</span>
-            <p>{zh ? '清晰的文字让学习更加轻松。' : 'Clear, readable text makes learning feel effortless.'}</p>
-          </div>
-          <div>
-            <span className="ba-showcase__small-label">UI Digits · Dosis 800</span>
-            <strong className="ba-showcase__digits">0123456789</strong>
-          </div>
+        <h2 id="typography-title">{zh ? 'Typography · 字体语义角色' : 'Typography · Semantic Roles'}</h2>
+        <p>{zh ? '字体家族已确定；字号和行高仍为候选。Douyin 字体资源尚未验证，因此中文标题可能回退。' : 'Typeface assignments are approved; size/line-height are candidates. Douyin font assets are not yet verified, so fallback may appear.'}</p>
+        <div className="ba-showcase__type-specimens">
+          <div><code>display</code><BAText as="h3" textRole="display">{zh ? '想象力从这里开始' : 'Write your next story'}</BAText></div>
+          <div><code>heading</code><BAText as="h3" textRole="heading">{zh ? '学习如何表达观点' : 'Learning to express ideas'}</BAText></div>
+          <div><code>body</code><BAText as="p" textRole="body">{zh ? '阅读提示，然后按步骤写出完整的段落。' : 'Read the instructions and build a paragraph one step at a time.'}</BAText></div>
+          <div><code>control</code><BAText textRole="control">{zh ? '继续学习 · 检查答案' : 'Continue · Check answer'}</BAText></div>
+          <div><code>supporting</code><BAText textRole="supporting">{zh ? '提示和帮助文字' : 'Helpful supporting text'}</BAText></div>
+          <div><code>numeral · Dosis ExtraBold 800</code><BANumber className="ba-showcase__digits">0123456789</BANumber></div>
         </div>
+      </section>
+
+      <section className="ba-showcase__section" aria-labelledby="icons-title">
+        <h2 id="icons-title">{zh ? 'BAIcon · Iconoir 官方图标' : 'BAIcon · Iconoir Foundation'}</h2>
+        <p>{zh ? '第一批 8 个官方 Iconoir regular 图标。装饰图标隐藏于屏幕阅读器，功能图标提供文字标签。' : 'First eight official Iconoir regular glyphs. Decorative icons are hidden from screen readers; meaningful standalone icons provide names.'}</p>
+        <div className="ba-showcase__icon-gallery">
+          {(['check', 'lock', 'arrow-left', 'menu', 'globe', 'book', 'warning-circle', 'info-circle'] as BAIconName[]).map(name => (
+            <div className="ba-showcase__icon-card" key={name}>
+              <BAIcon name={name} size={24} decorative={false} label={name.replaceAll('-', ' ')} />
+              <code>{name}</code>
+            </div>
+          ))}
+        </div>
+        <p className="ba-showcase__small-label">{zh ? '真实应用：LessonTopBar 返回图标、BATaskProgress 完成与锁定图标。' : 'Real usage: LessonTopBar back action and BATaskProgress done/locked markers.'}</p>
       </section>
 
       <section className="ba-showcase__section" aria-labelledby="components-title">
         <h2 id="components-title">{zh ? '交互组件 · React Aria' : 'Interactive Components · React Aria'}</h2>
         <p>BA-UI-001 · BAButton</p>
         <div className="ba-showcase__button-group">
-          <BAButton variant="primary" locale={locale} onPress={() => setPressCount(n => n + 1)}>{zh ? '主要按钮' : 'Test primary'}</BAButton>
+          <BAButton variant="primary" locale={locale} onPress={() => setPressCount(n => n + 1)}><BAIcon name="check" size={18} />{zh ? '主要按钮' : 'Test primary'}</BAButton>
           <BAButton variant="secondary" locale={locale} onPress={() => setPressCount(n => n + 1)}>{zh ? '次级按钮' : 'Secondary'}</BAButton>
           <BAButton variant="ghost" locale={locale} onPress={() => setPressCount(n => n + 1)}>{zh ? '文字按钮' : 'Ghost'}</BAButton>
           <BAButton disabled locale={locale}>{zh ? '禁用' : 'Disabled'}</BAButton>

@@ -65,3 +65,33 @@ test('Radius v0.1 and six interim spring groups use shared CSS tokens only', asy
   expect(data.bubbleMass).toBe('');
   expect(data.modalMass).toBe('');
 });
+
+
+test('Typography roles and Iconoir icons are visible and used in Writing', async ({ page }) => {
+  await page.goto('/?system');
+  await expect(page.getByRole('heading', { name: 'Typography · Semantic Roles' })).toBeVisible();
+  await expect(page.locator('.ba-showcase__type-specimens .ba-text')).toHaveCount(5);
+  await expect(page.locator('.ba-showcase__icon-card')).toHaveCount(8);
+  const heading = await page.locator('.ba-showcase__type-specimens [data-text-role="heading"]').evaluate(el => {
+    const s = getComputedStyle(el);
+    return { weight:s.fontWeight, family:s.fontFamily };
+  });
+  expect(heading.weight).toBe('800');
+  expect(heading.family).toContain('Dosis');
+  const digits = await page.locator('.ba-showcase__digits').first().evaluate(el => {
+    const s = getComputedStyle(el);
+    return { weight:s.fontWeight, family:s.fontFamily };
+  });
+  expect(digits.weight).toBe('800');
+  expect(digits.family).toContain('Dosis');
+  await expect(page.locator('.ba-showcase__icon-card [role="img"]')).toHaveCount(8);
+  await page.getByRole('button', { name: '中文' }).click();
+  await expect(page.locator('.ba-showcase__type-specimens [data-text-role="heading"]')).toHaveCSS('font-weight', '700');
+  const localizedFont = await page.locator('.ba-showcase__type-specimens [data-text-role="heading"]').evaluate(el => getComputedStyle(el).fontFamily);
+  expect(localizedFont).toContain('Douyin Sans');
+
+  await page.goto('/');
+  await page.locator('[data-lesson-focus="G2-O:1"]').click();
+  await expect(page.locator('.lesson-topbar__back-icon[data-icon-name="arrow-left"]')).toBeVisible();
+  expect(await page.locator('.ba-task-progress__icon[data-icon-name="lock"]').count()).toBeGreaterThan(0);
+});
