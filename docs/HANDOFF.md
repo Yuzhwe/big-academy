@@ -74,3 +74,10 @@ Design approval source: [PR #10](https://github.com/Yuzhwe/big-academy/pull/10),
 - Primitive spacing scale **values and semantic aliases remain candidate [E]**, not approved by the 4px/8px principle. Existing BAButton's 8px gap and 16px inline padding, and BATaskProgress's 4px item gap, are refactored to semantic references **without changing computed pixel values**. Other application geometry intentionally untouched.
 - Design System Preview `/?system` now exposes the 9 spacing candidates plus 80 Color System v0.2 primitives, with a browser test for actual semantic role mapping.
 - CI/visual approval/merge status must be checked per PR; never infer final component approval from design principle approval.
+
+
+## Radius & Motion v0.1 system integration
+- Source: Draft PR #14, approved method for role/size/elevation radius, numeric candidates [E], temporary six spring presets [A/T]. Two detailed source specs imported unchanged.
+- Agent A branch `feat/agent-a-radius-motion-v01-preview` imports exact CSS tokens without overwriting Color v0.2, Spatial v0.2, latest Writing PRODUCT or Alex logic. Existing component radii and CSS motion unchanged.
+- Radius candidates are shown at `/?system`; Motion spring groups are listed as tokens only, not as actual animated interactions. Inline masses remain unspecified.
+- Engineering CI and visual signoff remain separate.

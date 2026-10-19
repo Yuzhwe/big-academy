@@ -109,6 +109,39 @@ export function DesignSystemPreview() {
         <p className="ba-showcase__small-label">{zh ? '组件已应用：BAButton 内边距 / 内容间距、BATaskProgress 项目间距。现有视觉尺寸不变。' : 'Applied without changing existing sizes: BAButton internal padding/gap and BATaskProgress item gap.'}</p>
       </section>
 
+      <section className="ba-showcase__section" aria-labelledby="shape-title">
+        <h2 id="shape-title">{zh ? 'Shape & Radius v0.1 · 圆角尺度' : 'Shape & Radius v0.1 · Candidate Scale'}</h2>
+        <p>{zh ? '选择逻辑已批准；具体半径仍为候选，不自动修改现有组件。' : 'Radius selection principles approved; numeric values remain candidates. Existing components are not restyled.'}</p>
+        <div className="ba-showcase__radius-gallery">
+          {(['0','4','6','8','12','16','24','full','circle'] as const).map(size => (
+            <div key={size} className="ba-showcase__radius-item">
+              <span className={'ba-showcase__radius-shape' + (size === 'circle' ? ' ba-showcase__radius-shape--circle' : '')} style={{ borderRadius: 'var(--ba-radius-' + size + ')' }} />
+              <code>--ba-radius-{size}</code>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="ba-showcase__section" aria-labelledby="motion-title">
+        <h2 id="motion-title">{zh ? 'Motion v0.1 · 临时 Spring 参数' : 'Motion v0.1 · Interim Spring Presets'}</h2>
+        <p>{zh ? '六组 Spring 参数已写入 CSS；还未实现动画适配器，具体动效未获视觉批准。' : 'Six spring groups are available as CSS tokens. No runtime adapter or approved choreography yet.'}</p>
+        <div className="ba-showcase__motion-gallery">
+          {([
+            ['bouncy', 'Small control feedback'],
+            ['snappy', 'Panel / popover reveal'],
+            ['gentle', 'Brief achievement'],
+            ['heavy-snap', 'Drag release / snap'],
+            ['bubble-enter', 'Bubble enter; mass unspecified'],
+            ['modal-enter', 'Modal enter; mass unspecified']
+          ] as const).map(([name, purpose]) => (
+            <div key={name} className="ba-showcase__motion-row">
+              <strong>{name}</strong><span>{purpose}</span>
+              <code>--ba-motion-spring-{name}-stiffness</code>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="ba-showcase__section" aria-labelledby="typography-title">
         <h2 id="typography-title">{zh ? '文字系统' : 'Typography Roles'}</h2>
         <div className="ba-showcase__type-grid">

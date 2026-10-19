@@ -139,7 +139,40 @@ Elevation tokens, popover layers, floating Word Grid shadows and Coach treatment
 
 ## 6. Shapes
 
-Define shared radius primitives for button, input, card, chip, overlay and circle, then map components to semantic usage. **No universal numeric radius scale has been approved yet**. Current pilot uses 999px pills and 10px progress targets as [T], not a global standard.
+### BA-DS-RADIUS-001 · Shape & Radius System v0.1 [A principles, E values · 2026-10-19]
+
+**Approved method:** Inspired by [Geist Materials](https://vercel.com/geist/materials), choose radius from **surface type, component size, visual/elevation role, and nested geometry**; never assign random rounded corners. Detailed decision tree and component mapping: `docs/design-system/SHAPE_RADIUS_SYSTEM_v0.1.md`.
+
+1. **First classify the surface:** full-bleed canvas (square edge), on-page base/small/medium/large material, or floating tooltip/menu/modal/fullscreen. The bigger/floating tier *may* use a larger corner, but must not assume every overlay needs a large shadow.
+2. **Then check the component size/variant:** small controls need restrained corners; regular/large controls may widen; explicit pills use a full capsule, circular task markers use a 50% radius on square boxes. Ordinary button and field sizes are not forced to be pills.
+3. **Use shared semantic component/material roles** instead of manually writing `border-radius: 10px` in each new component. Responsive variants must retain intended shape identity; only change radius if the layout/presentation actually changes.
+4. **Concentric/nested corners:** starting rule `outerRadius ≈ innerRadius + visibleInset` when both boundaries are visible. For example, a 12px outer radius plus a 4px inset commonly pairs with an 8px inner radius. Inspect asymmetric insets and clipping; this is a visual heuristic, not a universal equation.
+5. **Focus/overflow/feedback first:** never clip focus outlines, reduce touch targets or hide error/selected states to satisfy a prettier corner. Preserve Writing `0.5px` ordinary borders as a separate concern.
+6. **Material discipline:** choose the least raised surface that establishes hierarchy; avoid stacking two material treatments on the same element; coordinate radius with stroke, fill, shadow and z-index instead of treating radius as isolated decoration.
+7. **Product boundaries:** product-specific geometry (Writing Staircase, Coach, UnitMilestone) remains under Writing layout and component contracts; no global radius migration without designer review.
+
+**Candidate primitive scale [E]:** `0, 4, 6, 8, 12, 16, 24px`, `full=9999px`, `circle=50%` in `packages/design-system/src/tokens.css`. Initial **material candidates [E]**: base/small 6px; medium/large 12px; tooltip 6px; menu/modal 12px; fullscreen 16px. Initial component candidates [E]: regular Button/Field 8px, normal Card 12px, chips pill/full, square marker circle/50%; all detailed in the linked spec. **No final numeric Radius Scale has been approved.** Existing 999px pills and 10px progress corners remain [T] until separately reviewed.
+
+
+## 6.1 Motion & Interaction Physics
+
+### BA-DS-MOTION-001 · Interim Motion System v0.1 [A temporary adoption · 2026-10-19]
+
+The UI/UX Designer explicitly chose to **temporarily reuse all Spring parameter groups in the third-party Open Claude UI `ClaudeMotionPresets.ts`** to save preparation time. Treat this as an interim baseline, **not** a claim that Anthropic formally published or endorsed those parameters. The inspected upstream `AGENTS.md` disagrees with the actual source file; **source-file values take precedence**. Detailed mapping, reduced-motion requirements and provenance: `docs/design-system/MOTION_SYSTEM_v0.1.md`.
+
+| Source Spring group | Stiffness | Damping | Mass | Initial candidate role |
+|---|---:|---:|---:|---|
+| `SPRING_BOUNCY` | 600 | 30 | 1.0 | buttons/small controls |
+| `SPRING_SNAPPY` | 320 | 28 | 1.0 | popover/card reveals |
+| `SPRING_GENTLE` | 380 | 18 | 1.0 | brief celebration micro-feedback |
+| `SPRING_HEAVY_SNAP` | 1200 | 80 | 0.1 | panel/drag snapping |
+| inline bubble-enter spring | 450 | 24 | **unspecified** | message/bubble reveal |
+| inline modal-enter spring | 400 | 32 | **unspecified** | dialog reveal |
+
+**Source rule:** Copy exact numerical values into CSS custom properties once; do not maintain conflicting hardcoded TS numeric tables. Inline masses were omitted upstream and must remain **unspecified**, not invented as explicit 1.0. CSS Tokens remain the current numerical source of truth; future JS animation adapters must resolve CSS values at runtime rather than duplicate constants. CSS values by themselves do not implement animation.
+
+**Motion rules:** use springs only for purposeful state changes; avoid distracting movement during reading/writing/IME composition and do not gate business logic on animation completion. Respect `prefers-reduced-motion: reduce` with an equivalent immediate state change. Preserve accessible focus, dismissal, navigation, scroll and status feedback. Temporary spring adoption does **not** approve any specific rendered animation, component choreography, additional animation dependency or production release.
+
 
 ## 7. Components
 
