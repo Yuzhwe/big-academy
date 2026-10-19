@@ -36,4 +36,4 @@
 - [ ] Mile 完成与 Confetti receipt 分离，刷新不重复自动播；手动重播有效；reduced motion 反馈有效。
 - [ ] 不要求一次性开发整个 Big Academy Design System；不预建 Calendar、Tree、Table 或复杂编辑器，除非实际本次页面需要。
 
-**状态**：本清单为最小开发范围，**实施/运行 QA 尚未开始**。
+**状态**：本清单仍是最小范围。其中 BAButton、BATaskProgress、LessonTopBar 已有临时 foundation 实现与运行记录（见 `docs/PILOT_RUNTIME.md`），其余组件尚未开始。临时实现不是视觉签核。

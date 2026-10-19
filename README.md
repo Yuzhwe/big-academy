@@ -14,8 +14,8 @@ Code-first product workspace owned by **Yuzhwe**. This private repository starts
 
 ## Status
 
-**Foundation documentation staged; React/Storybook pilot code has NOT yet been committed to this repository or runtime-tested.** Do not mistake this documentation commit for a working app. The first planned work is `BA-WR-001 LessonTopBar` using `BA-UI-001 BAButton` and `BA-UI-006 BATaskProgress`.
+`BA-UI-001` BAButton, `BA-UI-006` BATaskProgress, and `BA-WR-001` LessonTopBar now have a runnable pilot on `feat/grokbot-writing-topbar`. The theme is a temporary foundation for review. It is not visually approved. See `apps/writing/docs/PILOT_RUNTIME.md`.
 
-Active development branch: `feat/writing-lesson-topbar`. Work on this branch, verify on browser, and request designer review before merging to `main`.
+Active review target: `feat/writing-lesson-topbar`. Request designer review before merging to `main`.
 
 Private repo: https://github.com/Yuzhwe/big-academy. Do not use RaoJing414 repositories or branches.

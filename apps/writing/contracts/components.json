@@ -1,7 +1,7 @@
 {
   "registryVersion": "0.1.0",
   "project": "Big Academy Writing (pilot)",
-  "status": "planning",
+  "status": "pilot-in-review",
   "sourceOfTruth": {
     "product": "Alex original + approved UX; future PRODUCT.md",
     "design": "DESIGN.md + tokens.css + human visual approval",
@@ -13,14 +13,18 @@
       "name": "BAButton",
       "kind": "primitive",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
+      "visualStatus": "temporary-foundation-theme",
       "implementation": "packages/design-system/src/components/ui/BAButton.tsx",
       "story": "packages/design-system/src/components/ui/BAButton.stories.tsx",
       "props": {
         "variant": "primary | secondary | ghost",
         "disabled": "boolean",
         "busy": "boolean",
-        "children": "ReactNode"
+        "children": "ReactNode",
+        "busyLabel": "string, optional accessible name for the pending indicator",
+        "aria-label": "string, optional accessible name",
+        "locale": "en | zh, optional chrome language for the pending indicator"
       },
       "events": {
         "onPress": "(event) => void"
@@ -45,7 +49,8 @@
         "Busy"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
+      "notes": "Temporary foundation theme only. Not validated and not visually approved. busy maps to React Aria isPending plus an inner progressbar. aria-busy is not also set on the button."
     },
     {
       "id": "BA-UI-002",
@@ -203,13 +208,16 @@
       "name": "BATaskProgress",
       "kind": "primitive",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
+      "visualStatus": "temporary-foundation-theme",
       "implementation": "packages/design-system/src/components/ui/BATaskProgress.tsx",
       "story": "packages/design-system/src/components/ui/BATaskProgress.stories.tsx",
       "props": {
-        "tasks": "TaskProgressItem[]",
-        "activeIndex": "number",
-        "canOpen": "(index) => boolean"
+        "tasks": "TaskProgressItem[] — { id, label, status: done|current|available|locked|skipped, number? }. Status is injected.",
+        "activeIndex": "number, lesson-local index",
+        "canOpen": "(index) => boolean, lesson-local gate supplied by the product adapter",
+        "locale": "en | zh, optional status chrome",
+        "label": "string, optional accessible name for the group"
       },
       "events": {
         "onNavigate": "(index) => void"
@@ -234,7 +242,8 @@
         "Skipped"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
+      "notes": "Temporary foundation theme only. Not validated and not visually approved. Numeric chips confirmed for this round. Visible status caption is skipped only (dashed circle + number + skipped/已跳过). Other states use check, number, lock, or current fill and ring, plus the accessible name. Does not call Pages.canOpen or Skip.skipped. Locked never navigates; every other status navigates only when canOpen(index) is true. Indexes are lesson-local."
     },
     {
       "id": "BA-UI-007",
@@ -274,14 +283,18 @@
       "name": "LessonTopBar",
       "kind": "composite",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
+      "visualStatus": "temporary-foundation-theme",
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
       "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
       "props": {
-        "lessonTitle": "string",
-        "lessonNumber": "string",
+        "lessonTitle": "string, already localized by the caller",
+        "lessonNumber": "string, already localized by the caller",
         "tasks": "TaskProgressItem[]",
-        "current": "number"
+        "current": "number, lesson-local active index",
+        "canOpen": "(index) => boolean, required injected gate",
+        "tags": "string[], optional necessary labels",
+        "locale": "en | zh, optional chrome language"
       },
       "events": {
         "onBack": "() => void",
@@ -305,7 +318,8 @@
         "ManyTasks"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
+      "notes": "Temporary foundation theme only. Not validated and not visually approved. Progress group is absolutely centered on the header. No hamburger and no end-slot control. Mock preview is not Alex course state."
     },
     {
       "id": "BA-WR-002",

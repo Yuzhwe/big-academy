@@ -52,5 +52,5 @@
 
 - 本项目允许 **不依赖 Figma 设计文件即可移交给 Agent**：以本 `DESIGN.md` 传递设计意图，`tokens.css` 提供实际数值，`contracts/components.json` 提供稳定 ID / Props / Events / States，未来的 `*.tsx` 和 `*.stories.tsx` 为实际渲染和交互证据。
 - 组件 ID 约定：`BA-UI-001`～`BA-UI-007` 基础层，`BA-WR-001`～`BA-WR-006` Writing 专属层；正式视觉引用组件 ID，而不是只凭中文名称或页面坐标定位。
-- **现状**：13 项均为 `planned`，尚未存在可运行组件或 Storybook；绝不可把 planned 改写成 validated。详细边界见 `CODE_FIRST_COMPONENT_WORKFLOW_v0.1.md`。
+- **现状**：`BA-UI-001`、`BA-UI-006`、`BA-WR-001` 为 `implemented`，使用临时 foundation theme，不是 `validated`，也未经视觉签核。其余 10 项仍为 `planned`。绝不可把 implemented 改写成 validated。详细边界见 `CODE_FIRST_COMPONENT_WORKFLOW_v0.1.md` 与 `docs/PILOT_RUNTIME.md`。
 - Figma/示意图仍可作为探索和审核证据，但 **不是项目构建运行的必要依赖**；最终审美仍需要设计师对浏览器中的实际组件和页面签核。
