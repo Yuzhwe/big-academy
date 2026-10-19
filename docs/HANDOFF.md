@@ -81,3 +81,11 @@ Design approval source: [PR #10](https://github.com/Yuzhwe/big-academy/pull/10),
 - Agent A branch `feat/agent-a-radius-motion-v01-preview` imports exact CSS tokens without overwriting Color v0.2, Spatial v0.2, latest Writing PRODUCT or Alex logic. Existing component radii and CSS motion unchanged.
 - Radius candidates are shown at `/?system`; Motion spring groups are listed as tokens only, not as actual animated interactions. Inline masses remain unspecified.
 - Engineering CI and visual signoff remain separate.
+
+## Typography + Iconoir live component pilot · 2026-10-20
+
+- `feat/agent-a-typography-baicon` adds semantic type role CSS and reusable `BAText`/`BANumber` (approved fonts, candidate sizes/metrics). Dosis used only ExtraBold 800 for headings and task numerals. The app already requests Dosis, Jost and Noto Sans SC from Google Fonts; exact Douyin file/license is **not verified** and no font file is distributed.
+- `BAIcon` is an accessible eight-glyph **official Iconoir regular SVG** pilot (MIT license notice in package), not a claim that every Iconoir icon is imported or an alternative icon standard. Expand systematically or move to iconoir-react after package dependency/lock verification.
+- The existing Writing `LessonTopBar` Back action and `BATaskProgress` Done/Locked markers consume BAIcon; BAButton typography uses shared role aliases. Underlying React Aria behavior and Alex course permissions unchanged.
+- `/?system` and Storybook expose role/locale specimens and Iconoir gallery with accessible/decorative semantics; component source, icons and numeric geometry remain designer-review candidates.
+- CI unit, TypeScript, build and Playwright results need checking on PR. No browser font-asset certification or final visual approval is claimed.
