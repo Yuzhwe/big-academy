@@ -1,7 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { StaircaseScene, type StaircaseVariant } from './StaircaseScene';
 import { useSyncExternalStore } from 'react';
-import { Checkbox, Radio, RadioGroup } from 'react-aria-components';
+import { Checkbox, Radio, RadioGroup, Tabs, TabList, Tab, TabPanel } from 'react-aria-components';
 import { BAButton, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { LessonWorkspace } from '../components/writing/LessonWorkspace';
@@ -71,30 +71,28 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
 
   return (
     <div className="course-path">
-      <header className="course-path__bar">
-        <div>
-          <p className="course-kicker">{zh ? '写作路径' : 'Writing path'}</p>
-          <h1 className="course-title">
-            {zh ? `第 ${level.id.slice(1)} 级` : `Level ${level.id.slice(1)}`} {session.text(level.name)}
-          </h1>
-        </div>
-        <BAButton variant="secondary" locale={session.locale} onPress={() => session.toggleLocale()}>
-          {zh ? 'English' : '中文'}
-        </BAButton>
-      </header>
-      <nav className="course-levels" aria-label={zh ? '级别' : 'Levels'}>
-        {session.levelPath.levels.map((item) => (
-          <BAButton
-            key={item.id}
-            variant={item.id === session.levelId ? 'primary' : 'secondary'}
-            locale={session.locale}
-            aria-label={session.text(item.name)}
-            onPress={() => session.switchLevel(item.id)}
-          >
-            {item.id}
-          </BAButton>
-        ))}
-      </nav>
+      <Tabs className="course-level-tabs" selectedKey={session.levelId} onSelectionChange={(key) => session.switchLevel(String(key))}>
+        <header className="course-path__bar course-path__header">
+          <div className="course-path__header-title">
+            <p className="course-kicker">{zh ? '写作路径' : 'Writing path'}</p>
+            <h1 className="course-title" title={session.text(level.name)}>
+              {zh ? '第 ' + level.id.slice(1) + ' 级' : 'Level ' + level.id.slice(1)} {session.text(level.name)}
+            </h1>
+          </div>
+          <TabList className="course-level-tablist" aria-label={zh ? '切换级别' : 'Choose level'}>
+            {session.levelPath.levels.map((item) => (
+              <Tab className="course-level-tab" id={item.id} key={item.id} aria-label={session.text(item.name)}>
+                {item.id}
+              </Tab>
+            ))}
+          </TabList>
+          <div className="course-path__header-locale">
+            <BAButton variant="secondary" locale={session.locale} onPress={() => session.toggleLocale()}>
+              {zh ? 'English' : '中文'}
+            </BAButton>
+          </div>
+        </header>
+        <TabPanel id={session.levelId} className="course-level-panel">
       <main id="course-main" className="course-path__main">
         {session.message ? (
           <p className="course-message" role="status" data-testid="locked-note">
@@ -106,12 +104,12 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             {session.openNotice}
           </p>
         ) : null}
-        <div className="course-ab-controls" role="group" aria-label={zh ? '阶梯视觉方案' : 'Staircase visual variants'}>
+        <div className="course-ab-controls" role="group" aria-label={zh ? '路径形态 A/B' : 'Path shape A/B'}>
           <button type="button" className="course-ab-button" aria-pressed={variant === 'A'} onClick={() => onVariantChange('A')}>
-            {zh ? 'A · 立体台面 + 光柱' : 'A · Platform + light beam'}
+            {zh ? 'A · 分立阶梯台面' : 'A · Separate platforms'}
           </button>
           <button type="button" className="course-ab-button" aria-pressed={variant === 'B'} onClick={() => onVariantChange('B')}>
-            {zh ? 'B · 暖色框架 + 白色卡片' : 'B · Warm frame + white cards'}
+            {zh ? 'B · 连续斜坡 + 锚点' : 'B · Continuous slope + anchors'}
           </button>
           <span className="course-ab-hint">{zh ? '探索方案，均未获得视觉批准' : 'Visual exploration only — not approved'}</span>
         </div>
@@ -198,10 +196,12 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
         </StaircaseScene>
         <p className="course-candidate">
           {zh
-            ? 'E-01 A/B 方案对比：两版共享相同的课程数据、斜向浏览和解锁逻辑。A 为历史立体视觉探索；B 为 Warm Frame 候选。均未视觉签核。'
-            : 'E-01 visual A/B test: same Alex course data and diagonal navigation in both. A explores the historical platform/beam treatment; B explores Warm Frame. Neither is visually approved.'}
+            ? 'E-01 A/B 使用相同的卡片底边锚点算法、课程数据和权限；A 为分立台面，B 为连续斜坡与锚点。卡片内容增加时只向上生长。页面视觉仍待设计审核。'
+            : 'E-01 A/B share the exact same bottom-anchor algorithm and Alex permissions. A has separated platforms; B has a continuous slope with local anchors. Card height grows upward, not into the anchor. Visual approval pending.'}
         </p>
       </main>
+        </TabPanel>
+      </Tabs>
     </div>
   );
 }

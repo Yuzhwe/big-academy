@@ -47,6 +47,14 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:layout
+      - name: E-01 A/B visual evidence (1440 / 834 + anchor test)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e01-anchor-tabs-evidence
+          path: |
+            apps/writing/docs/evidence/staircase-ab/
+          if-no-files-found: ignore
       - name: Attach visual evidence on failure
         if: failure()
         uses: actions/upload-artifact@v4
