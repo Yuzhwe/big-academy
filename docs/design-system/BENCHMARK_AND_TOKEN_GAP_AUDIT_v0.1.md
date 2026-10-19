@@ -7,6 +7,10 @@
 
 One `/DESIGN.md` for all Big Academy products; product identity primarily driven by theme colors. Product-specific component/pattern sections belong inside the same document. Business behavior stays in `apps/<product>/PRODUCT.md`; component-specific Props/States/Events stay in registry/contracts. Do **not** create another DESIGN.md inside individual apps.
 
+## Product Theme scope approval (2026-10-19)
+
+**[A] Chosen:** B · **Accent + subtle tinted surfaces** for product differentiation, while base neutral palette and interaction/accessibility semantics remain common. This resolves the former first open choice about theme scope; tint placement/opacity and each product's exact colors remain open. Details are recorded in the single root `DESIGN.md`.
+
 ## 1. External benchmark (what to learn, not what to copy)
 
 | Reference | Verified structure/principle | Big Academy adaptation |
@@ -67,7 +71,7 @@ Component CSS (Grokbot pilot) uses literal dimensions such as `80px`, `76px`, `4
 
 ## 6. Open design choices
 
-- Should product accents change only action/link/highlight, or also shell background tints? **Propose:** accent + allowed subtle surface tints; protect shared semantic status colors.
+- Product theme scope **resolved: B [A]**. Still open: exactly which background zones can be tinted, how strongly, and what semantic aliases to use.
 - Which EN/ZH font families can ship legally and reliably?
 - Will other products share a common neutral palette with Writing? Suggested yes; not yet locked.
 - Does a product Theme need light/dark mode from day one? No current authorization, defer.
