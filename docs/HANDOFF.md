@@ -52,3 +52,9 @@ Designer confirmed **A · lightweight governance**. AI Agents may autonomously i
 ## P0 complete → P1 entry (2026-10-19)
 
 All five P0 architecture choices are accepted and summarized in `docs/design-system/P1_IMPLEMENTATION_PLAN_v0.1.md`. This **does not mean** the unified `DESIGN.md`, color ramp, numerical Typography, existing temporary UI appearance or TopBar integration has received final approval. Active design document branch is `docs/unified-design-and-token-audit`; Grokbot's branch remains `feat/grokbot-writing-topbar`. Proposed P1 first: integrate the single root design spec through reviewed PR ancestry, then semantic tokens on the engineering branch, then implementation/visual status & TopBar Stories QA. No changes were made to Grokbot's branch or `main` by this documentation update.
+
+## P1 tracking links (2026-10-19)
+
+- [Draft PR #2 — unified DESIGN.md, P0 architecture and P1 implementation plan](https://github.com/Yuzhwe/big-academy/pull/2) · head: `docs/unified-design-and-token-audit`; base: `feat/writing-lesson-topbar`; draft **not merged**.
+- [Issue #3 — semantic product-theme token migration](https://github.com/Yuzhwe/big-academy/issues/3) · first P1 engineering work candidate; not automatically assigned or started. Must coordinate with `feat/grokbot-writing-topbar` to preserve current code and QA.
+- `main` remains untouched; merging to it needs separate reviewed integration and all relevant approvals.
