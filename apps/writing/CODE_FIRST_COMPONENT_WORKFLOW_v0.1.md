@@ -4,7 +4,7 @@
 
 ## Decision
 
-Treat **approved component source + design tokens + interactive component stories + browser evidence** as the portable implementation reference for new AI agents. Figma is optional for exploration and review, and any existing Figma screenshots/refs remain historical evidence. **No Agent requires access to Figma to bootstrap the project.** `DESIGN.md` still owns the human-approved visual intent; `PRODUCT.md`/Alex own domain rules.
+Treat **approved component source + design tokens + interactive component stories + browser evidence** as the portable implementation reference for new AI agents. Figma is optional for exploration and review, and any existing Figma screenshots/refs remain historical evidence. **No Agent requires access to Figma to bootstrap the project.** `../../DESIGN.md` still owns the human-approved visual intent; `PRODUCT.md`/Alex own domain rules.
 
 ## Why not code alone?
 
