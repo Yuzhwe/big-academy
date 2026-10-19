@@ -71,18 +71,21 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 
 Both languages share the **same semantic text roles and hierarchy**, but can select different font families or fallbacks for correct CJK coverage, balance and rendering. A localized screen should be monolingual rather than duplicating EN/ZH side-by-side. Verify line breaks, CJK punctuation, long lesson names, zoom/text scaling and mixed-language input.
 
-**Explicitly deferred [Q]:** final font families, exact sizes, weights, line heights, letter spacing, type scale, bundled assets and licensing. The working implementation may continue to use a clearly marked **temporary system-font/fallback stack [T]**; no visual approval is implied.
+### Approved font assignments [A, 2026-10-19]
 
-### Existing typeface inspiration (reference only)
+The UI/UX Designer has explicitly selected the following **font roles**. These are no longer reference-only options.
 
-Reference font direction **[R]** (not installed/approved final distribution):
+| Use | English / Chinese | Typeface | Weight |
+|---|---|---|---|
+| English headings / display | English | **Dosis** | **ExtraBold only (CSS `font-weight: 800`)** |
+| Long-form English body / learning text | English | **Jost** | Not yet fixed |
+| Chinese headings / display | Chinese | **Douyin** (previous reference called `Douyin Sans`; confirm the distributable font's exact family/asset identifier before packaging) | Not yet fixed |
+| Long-form Chinese body / learning text | Chinese | **Noto Sans SC** | Not yet fixed |
+| **All UI numerals (0–9)**, in either language | Global override | **Dosis** | **ExtraBold only (800)** |
 
-| Role | English | Chinese |
-|---|---|---|
-| Display/expressive headings | Dosis ExtraBold | Douyin Sans |
-| Body / extended reading | Jost | Noto Sans SC |
+**Non-negotiable Dosis rule:** **Dosis is used exclusively at ExtraBold weight**; no Dosis Regular/Medium/SemiBold or synthetic intermediate weights should be chosen. This applies to both English headings and every UI numeral. Arabic digits inside otherwise Jost/Noto Sans SC text should use Dosis ExtraBold where technically practical without impairing text editing, accessibility, or text semantics. The exact rendering approach for mixed-script inline numbers, localized number formats and student-authored editable content remains an implementation question to test, **not permission to silently omit the numeric rule**.
 
-These are examples for future font exploration, **not a commitment to Dosis, Jost, Douyin Sans or Noto Sans SC**. Do not ship font binaries without reviewing their license and distribution rights.
+**Explicitly deferred [Q]:** numeric font-size scale, line heights, letter spacing, chosen weights for Jost/Douyin/Noto Sans SC, UI control typography details, font asset source/version, license/distribution verification, performance strategy and fallback behavior. A temporary system-font stack [T] may remain in existing implementation until these font assets have been legally and technically verified; an installed fallback is **not** a change to the approved font choices. Do not bundle any font file before confirming its license. Verify actual font loading and EN/ZH/digit specimens in Storybook before visual sign-off.
 
 ## 4. Layout & Spacing
 
@@ -174,7 +177,7 @@ When changing a token, run its affected component stories, accessibility/contras
 - **Actual temporary token source:** `packages/design-system/src/tokens.css` on Grokbot's **separate** `feat/grokbot-writing-topbar` branch. This docs branch does **not** yet include that code and must not pretend it does.
 - **Approved theme scope:** B · product accent + light tinted surfaces; exact tint values pending.
 - **Approved Token Architecture:** Primitive → Semantic → optional Component; shared CSS Variables as the single current executable source; themes set by the app/shell and consumed semantically by shared components.
-- **Approved Typography Foundation:** A · expressive display/heading + readable body/learning content; shared roles across products, EN/ZH can use appropriate family/fallback; numeric scale and final font selection deferred.
+- **Approved Typography Foundation and font roles:** EN headings Dosis ExtraBold 800; EN long text Jost; ZH headings Douyin (asset/family naming to verify); ZH long text Noto Sans SC; **all UI numerals Dosis ExtraBold 800**. Font size/line-height/other weights, licensing and runtime font loading remain unverified.
 - **Approved Component Architecture:** A · progressively build shared UI primitives and product components; extract Shared Patterns after real cross-product reuse, never by speculative mass abstraction.
 - **Approved Design Governance:** A · lightweight; significant changes reviewed, ordinary agent implementation autonomous; separate engineering and visual acceptance, GitHub PR/HANDOFF records.
 - **Current token gaps:** semantic palette aliases/theme contract, spacing/typography/radii/elevation/motion scale, responsive sizes, accessible feedback color pairs, and status token conventions.

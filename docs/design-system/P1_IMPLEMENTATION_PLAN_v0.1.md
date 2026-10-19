@@ -11,7 +11,7 @@
 |---|---|---|---|
 | P0-1 · Product Color Themes | **B · product accent + subtle light tinted backgrounds.** Shared neutrals, status semantics and accessible contrast remain coherent. Writing accent `#B25415` approved. | Theme scope and existing Writing accent | Reading palette, Writing surface `#FEF9EF` still candidate, tint placement/intensity |
 | P0-2 · Token Architecture | **Primitive → Semantic → optional Component; CSS custom properties are current single executable source; app-level theme selection, shared components consume semantic roles.** | Architecture and ownership | Exact token names, full palette, CSS theme selector, tooling |
-| P0-3 · Typography | **A · expressive display/heading + highly readable body/learning text**, unified cross-product roles, EN/ZH parity with appropriate font fallback differences. | Typographic role strategy | Final fonts, scale, line-height, license/assets |
+| P0-3 · Typography | **A · expressive headings + readable bodies**, shared roles; **EN headings Dosis ExtraBold 800, EN long body Jost, ZH headings Douyin, ZH long body Noto Sans SC; all UI digits Dosis ExtraBold 800, no other Dosis weights.** | Role strategy **and font-family assignments** | Font sizes/line heights, non-Dosis weights, exact Douyin asset identifier, license/assets/loading |
 | P0-4 · Component Architecture | **A · progressive componentization.** Build needed shared primitives, keep product-specific composites within apps, extract Shared Patterns after real reuse. | Reuse/promotion approach | Full future component catalog; `BATaskProgress` multi-product status |
 | P0-5 · Design Governance | **A · lightweight.** Agent autonomy for routine work, review significant changes; GitHub PR and existing specs; separate Engineering and Visual status. | Authority, review gates, dual-state principle | Exact registry schema changes, CI policies, formal approval tooling |
 
@@ -48,13 +48,16 @@
 - Storybook must show representative TopBar states: default, EN/ZH, long title, 18 tasks, done/current/available/locked/skipped, 1440/1024/834 widths; regression test true viewport-relative center and no locked navigation.
 - **Acceptance:** validation script/tests exercise contract fields; screenshots & QA evidence attached; every implemented item accurately reports visual state, known gaps and approvals.
 
-### P1-D · Typography minimal practical foundation (without premature visual freezing)
+### P1-D · Typography implementation and verification (typeface assignments approved, measurements still open)
 
-**Owner:** design/spec agent proposes; Grokbot implements a temporary role mapping only if needed for TopBar; designer reviews before final family/scale lock.
+**Owner:** design/spec agent maintains `/DESIGN.md`; Grokbot implements on its own reviewed branch; UI/UX Designer approves actual renderings.
 
-- Define role names Display, Heading, Body/Learning, Label/Control and Supporting/Caption for cross-product usage.
-- Use existing neutral system-font fallbacks for now, clearly [T]. Apply role concepts to LessonTopBar and Storybook text specimens in EN/ZH.
-- **Acceptance:** long Chinese/English lesson names and CJK wrapping tested; no presumed font licenses or definitive numeric hierarchy until visual approval.
+- Keep shared semantic roles Display, Heading, Body/Learning, Label/Control and Supporting/Caption.
+- **Required family mapping [A]:** EN headings **Dosis ExtraBold 800 only**; EN long body **Jost**; ZH headings **Douyin** (verify precise asset/family name; prior documentation says Douyin Sans); ZH long body **Noto Sans SC**; **all UI digits use Dosis ExtraBold 800**, including digits embedded in Chinese labels/reading copy where practical.
+- **Dosis must never be applied at another weight**. Avoid synthetic font weights; verify actual loaded face in the browser. Other font weights remain for designer review.
+- Until font sources/licenses/assets are verified, keep temporary fallback fonts clearly marked [T]; **do not assert that approved typography is visually rendered** just because a CSS `font-family` is declared.
+- Test in Storybook: EN titles; ZH titles; long EN/ZH reading; UI task numerals, progress counters and numbers embedded in mixed-script labels; verify fallback, wrapping, accessibility/zoom. Do not auto-segment student-authored editable text without UX/product review.
+- **Acceptance:** correct applied family/weight once assets are available, evidenced computed styles/rendered screenshots; documented font license and loading/fallback; no premature size/line-height freeze.
 
 ### P1-E · TopBar product adapter (separate product gate, not a visual task)
 
