@@ -131,11 +131,27 @@ The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, sup
 
 **Other P1–P7 templates:** unique structure/feedback from Alex product source, visually informed by `apps/writing/source/Writing-activity-style-prompt.md`; that reference's simplified P1/P7 and generic completion logic **cannot override Alex**.
 
-## 5. Elevation & Depth
+## 5. Elevation & Depth · Figma Effect Styles v1 [source-derived, visual review pending]
 
-Prefer restrained surfaces and hierarchy in learning views. White Paper should read clearly against the light Warm Frame. Ordinary borders are 0.5 CSS px [A] with tested contrast; do not replace accessibility focus, selected, error or other meaningful boundaries with low-contrast decorative hairlines.
+**Source:** [Big Academy Design System · Figma node 15:5](https://www.figma.com/design/06PPYhEQn3CqVYGlfopJWx/Big-Academy-Design-System?node-id=15-5); `25:2` documentation, `25:8` / `25:11` / `25:14` / `25:17` / `25:20` effects.
 
-Elevation tokens, popover layers, floating Word Grid shadows and Coach treatment remain [Q]; do not clone the dark/wood/strong-glass visual Demo as default.
+Use **depth to communicate hierarchy, not decoration**. Consume the existing Figma Effect Styles through `--ba-elevation-100/200/300/400`; don't paste shadow values into individual component CSS. All colors have RGB `7 46 81`, at opacities 5% / 10% / 15% and spread 0.
+
+| Figma effect | Exact source geometry | Executable CSS token |
+|---|---|---|
+| Elevation/100 | 0 0 2px 5% + 0 2px 4px 10% | `--ba-elevation-100` |
+| Elevation/200 | 0 4px 16px 5% | `--ba-elevation-200` |
+| Elevation/300 | 0 2px 2px 5% + 0 8px 24px 10% | `--ba-elevation-300` |
+| Elevation/400 | 0 0 2px 15% + 0 8px 24px 15% | `--ba-elevation-400` |
+| Blur/Background/20 | Background blur radius 20 in Figma; generated CSS `backdrop-blur(10px)` | `--ba-blur-background-20` |
+
+**Blur ambiguity:** Figma reports an Effect radius of 20; Figma's code export uses CSS `blur(10px)`. We preserve the exported CSS 10px in code, and mark this translation for designer browser comparison rather than silently claiming the value is equivalent in pixels.
+
+**Do not conflate effects:** Button V2's three-pixel lower physical stroke is **not** Elevation/100. Ordinary borders remain 0.5px as otherwise specified. White Paper on Warm Frame stays legible. Do not add elevation to all surfaces by default: select a named effect only when the visual layer calls for one. Tokens are source-derived [F]; product-specific usage mapping and Figma-to-browser signoff still await designer review.
+
+### Tabs vs Segmented · approved styling equivalence [A, 2026-10-20]
+
+`BATabs` / `BATabList` / `BATabPanel` reuse the **same segmented geometry and selected-surface CSS**, not two separately tuned appearances: sizes 36 / 50 / 70 / 90; Strong / Subtle; Full / Standard; Equal / Hug; 200ms selected surface, reduced-motion handling. They have different semantics: `BATabs` uses React Aria Tabs/TabList/Tab/TabPanel (one selected Tab controls the content panel), while `BASegmentedControl` uses React Aria RadioGroup for **local choice without panels**. Do not replace one with the other. Writing's Level Tab remains geometrically centered in the same-row header, and changing it only switches Level/path (never auto-enters Lesson).
 
 ## 6. Shapes
 
