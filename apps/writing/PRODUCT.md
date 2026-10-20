@@ -395,7 +395,7 @@ All points below are implementation requirements, not references to unavailable 
 
 **Staircase:** Remove visible page title “写作路径” and nonessential guidance “一步一步，写出你的想法。拖动或用方向键探索路径”. Preserve semantic page heading and accessible keyboard/drag instructions, Level navigation, Level introduction, Unit information, Lesson cards, Milestone and Goal. Unit goals change from bullet-marked list to plain stacked text (retain authored text). Level introduction and Unit description both use 16px Body text. Every Unit continues to use the rounded folded-paper corner visual.
 
-**Lesson Card:** the number and status combine as one upper-left treatment: blue number with “You're here.” location flag for current; outlined number for other available unstarted; green attached Completed/完成 ✓ capsule for completed; grey attached prerequisite/lock capsule for locked. Preserve actual status and permissions. Use contextual Start, Continue, Review for accessible cards; completed always says Review / 复习; locked button is disabled. CTA uses 70px height. Never change navigation eligibility from visual styling.
+**Lesson Card:** the number and status combine as one upper-left treatment: blue number circle without a visible location phrase for current; outlined number for other available unstarted; green attached Completed/完成 ✓ capsule for completed; grey attached number-and-lock capsule without a visible explanatory phrase for locked. Preserve actual status and permissions. Use contextual Start, Continue, Review for accessible cards; completed always says Review / 复习; locked button is disabled. CTA uses 70px height. Never change navigation eligibility from visual styling.
 
 **Lesson top bar:** Retain Lesson information and full Activity Screen indicator (including adaptive All activity screens Popover). Icon-only top-left Back returns to Staircase; do not show visible “返回路径页” explanatory copy inside or next to it. Footer Previous only goes to previous Activity Screen, and on Screen 1 is disabled. The Footer action pair has 70px controls, 8px gap, width ratio Previous:primary = 1:2, with appropriate narrow-width adaptation. Remove visible “CHECK · 8 OF 8” and similar redundant activity-count badges without removing essential instructions.
 
@@ -408,6 +408,22 @@ All points below are implementation requirements, not references to unavailable 
 **Word Grid:** One authored word group shows pill words without a standalone Tab. Multiple authored groups use sticky-note style tabs connected to the current panel, switching actual word group data. P4 ordered build and frame-fill gates are not altered.
 
 **Hamburger:** all three layers consistently provide the same title and supporting-text typographic roles with the same two-level formatting. Keep the existing source content and educational meaning; do not invent curriculum copy if any layer lacks supporting text. Report the missing copy for review.
+
+## Writing Hi-Fi Review R2 — corrective product decisions (2026-10-20)
+
+**Current and locked Lesson badges:** no visible “You're here”/“你在这里” or “Finish prior unit”/“请完成前置课程” captions. Current uses blue number circle only; locked uses grey number + lock icon only. Preserve accessible current/locked/prerequisite names. Keep state-gated Start/Continue/Review and disabled locked CTA.
+
+**Lesson title and time:** Main Lesson title has exactly two reserved line boxes. One-line titles leave the second line blank; overlong titles truncate at line two with ellipsis, without changing authored data or accessible title. Under the title, show the left-aligned estimated duration as number + localized unit (e.g. 22 mins or 约 22 分钟). CTA is an actual shared BAButton with all existing hover, pressing, focus and reduced-motion behaviors, scoped to height 70px.
+
+**Stage pan bounds:** no Staircase node (including first/last Intro, Level, Unit, Lesson, Milestone and Goal) is clipped at upper-right/lower-left or at terminal pan limits. Compute drag/wheel/keyboard/Home/End clamping from complete node bounding boxes including card height/width, viewport safe padding, sticky overlay and scale. Preserve original platform anchor geometry. Do not hide clipped content or artificially move individual cards.
+
+**Level and Unit card distinction:** informational Level/Intro and Unit cards use subtle decorative stroke/border and light tinted surface, distinct from white actionable Lesson cards. They must not appear as selectable Lessons or inherit their CTA.
+
+**P2 Learn rule pair:** display “Not yet” and “Better” as clearly differentiated example panels; Better is the positive emphasized teaching example, not a graded answer. Preserve original teaching text and no scoring/celebration.
+
+**LessonTopBar content:** left icon-only Back + Lesson title + essential metadata, and screen-number/status strip geometrically centered in the entire bar. Keep one shared ActivityScreenIndicator for top strip and the anchored All activity screens Popover, with done/current/available/locked/skipped/shown mappings, and no connecting line from numeral to small status-circle. Data-driven number of screens, not a fixed eight-screen global limit. Popover numbers and permissions match the strip. Do not remove these indicators or mistake P7 internal Questions for Lesson screens.
+
+**Footer:** independent of Coach scrolling, full-width right-column action group. Previous and contextual primary span the whole available width in 1:2 grid columns with 8px gap and both 70px high. No max-content shrink or right-aligned intrinsic-width pair. Previous on first Activity Screen disabled; top Back exits to Staircase. P7 internal Back/Next question flow remains as authored.
 
 ## 11. Lesson chrome
 
