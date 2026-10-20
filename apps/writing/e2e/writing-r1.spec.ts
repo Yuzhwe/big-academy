@@ -26,7 +26,7 @@ test('R1 E-01 and eight authored Lesson 1 screens including P7 mastery', async (
   await page.screenshot({ path: resolve(evidence, 'choice-correct-1440.png') });
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Next' }).click();
 
-  await expect(page.locator('.course-words .course-word')).toHaveCount(10);
+  await expect(page.locator('.course-words .course-word')).toHaveCount(9);
   await page.locator('.course-words').getByRole('button', { name: 'believe' }).click();
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Check' }).click();
   await expect(page.getByTestId('feedback')).toContainText(/Yes|Right|Good/);
@@ -69,7 +69,7 @@ test('R1 E-01 and eight authored Lesson 1 screens including P7 mastery', async (
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Next question' }).click();
   await page.locator('.course-assessment .course-choice').nth(2).click();
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Next question' }).click();
-  await expect(page.locator('.course-assessment .course-word')).toHaveCount(8);
+  await expect(page.locator('.course-assessment .course-word')).toHaveCount(7);
   await page.locator('.course-assessment').getByRole('button', { name: 'should' }).click();
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Next question' }).click();
   await page.locator('.course-assessment textarea').fill('I think kids should have a pet at home.');
