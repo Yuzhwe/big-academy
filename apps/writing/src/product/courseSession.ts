@@ -155,7 +155,7 @@ export interface ActivityModel {
   feedback: string;
   writing?: { text: string; tokens: string[]; built: string[]; status: TaskProgress['status']; tries: number; type: 'build' | 'write'; frame?: string };
   apply?: { text: string; tries: number; passed: boolean; result: string };
-  assessment?: { attempt: number; index: number; question: AlexTask; answer: number[] | string; results?: boolean[]; passed: boolean; finished: boolean; warning: boolean };
+  assessment?: { attempt: number; index: number; question: AlexTask; answer: number[] | string; answers: Record<string, number[] | string>; results?: boolean[]; passed: boolean; finished: boolean; warning: boolean };
 }
 
 export interface FooterModel {
@@ -1190,7 +1190,10 @@ export class CourseSession {
   private checkApply(pageId:string):void {
     const a=this.state.applies[pageId] ?? {text:'',tries:0,passed:false};
     const value=a.text.trim(),words=value.match(/[a-z']+/gi)??[];
-    if(words.length<3){this.feedback='Write a little first.';this.emit();return;}
+    if(words.length<3 || (value.match(/[\u3400-\u9fff]/g)??[]).length/Math.max(1,value.length)>.3){
+      this.feedback=this.zh?'请先用英语多写一点。':'Write a little more first. Use English sentences.';
+      this.emit();return;
+    }
     let lines=value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
     if(lines.length===1)lines=value.split(/(?<=[.!?])\s+/).filter(Boolean);
     const opinion=/\b(i think|i believe|i feel|i know|in my opinion|should|shouldn't|must|ought to|is better|are better|would be better|the best|is the best|i agree|i disagree|it is important|we need|needs? to)\b/i;
@@ -1215,7 +1218,9 @@ export class CourseSession {
     const screen=this.screens[this.state.screen].screen,c=this.assessmentState(screen.page);
     if(c.results)return;
     const question=this.assessmentQuestions(screen.page,c.attempt)[c.index];
-    c.answers[question.id]=answer;this.save();this.emit();
+    c.answers[question.id]=answer;
+    c.warning=false;
+    this.save();this.emit();
   }
   assessmentQuestion(index:number):void{
     const screen=this.screens[this.state.screen].screen,c=this.assessmentState(screen.page);
@@ -1223,6 +1228,10 @@ export class CourseSession {
   }
   private gradeAssessmentQuestion(q:AlexTask,answer:number[]|string):boolean{
     if(q.type==='pick')return this.engine.choiceGrade(q,Array.isArray(answer)?answer:[]).correct;
+    if(q.type==='tapword') {
+      const selected=Array.isArray(answer)?answer:[];
+      return selected.length===1 && (q.targets??[]).some(target=>this.engine.locate(q.text??'',target)===selected[0]);
+    }
     const t=typeof answer==='string'?answer.trim():'';
     if(t.split(/\s+/).length<5)return false;
     const rules=(q as AlexTask & {rules?:{mustInclude?:{re:string}[];minWords?:number;capital?:boolean;endPunct?:boolean}}).rules;
