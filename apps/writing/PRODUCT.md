@@ -119,7 +119,7 @@ Milestone celebration receipts use a different key, `ba_writing_milestone_receip
 | --- | --- | --- |
 | Edit or select | Answer updates. Status stays `open` if it was open. | The same selection or text. |
 | Check, reveal, or Hand in | Status, tries, feedback inputs, and page-done as the template requires. | Finished items stay finished. Open items keep tries and the last check message. |
-| Footer **Back** inside a lesson | Screen index moves back. Answers are not cleared. | The earlier screen with its saved answer and status. |
+| Footer **Previous** inside a lesson | Screen index moves back. Answers are not cleared. | The earlier screen with its saved answer and status. |
 | P7 **Back** between questions | Question index moves back. Every question’s answer is kept. | The previous question, still answered if it was. |
 | P7 **Back** on question 1 | Leaves the Check for the previous Activity Screen. Check answers stay stored. Coming back resumes the same question index. | The previous Activity Screen. |
 | Top-bar **Back**, or **My path** on the first screen | Flush save. Return to E-01. Screen index stays where the learner was. | **Continue** reopens that screen. |
@@ -167,7 +167,7 @@ In-writing weight is a different scale, threshold 2, and counts only Apply writi
 
 ## 6. Shared layout
 
-Every Activity Screen is one frame: prompt (instruction, read-aloud, Chinese line when 中文 is on), body, and in-page actions. The lesson shell is white task paper on the left and Coach on the right. Coach scrolls on its own. **Back** and the one primary action sit in a footer under the right column, outside the Coach transcript.
+Every Activity Screen is one frame: prompt (instruction, read-aloud, Chinese line when 中文 is on), body, and in-page actions. The lesson shell is white task paper on the left and Coach on the right. Coach scrolls on its own. **Previous** and the one contextual primary action sit in a full-width footer under the right column, outside the Coach transcript.
 
 Choice, word, and sentence options are at least 50 CSS px tall, grow with wrapped text, vertically center a single line, and align wrapped text and the letter or number to the first line. This height rule is only for answer options. It does not resize global buttons.
 
