@@ -18,11 +18,14 @@ describe('component registry', () => {
     }
     expect(byId['BA-UI-001']?.status).not.toBe('approved');
     expect(byId['BA-WR-001']?.status).not.toBe('validated');
-    for (const id of ['BA-WR-002', 'BA-WR-005', 'BA-WR-006']) {
+    for (const id of ['BA-WR-002', 'BA-WR-006']) {
       expect(byId[id]?.status).toBe('implemented');
       expect(byId[id]?.visualStatus).toBe('candidate-warm-frame');
       expect(byId[id]?.status).not.toBe('validated');
     }
+    expect(byId['BA-WR-005']?.status).toBe('implemented');
+    expect(byId['BA-WR-005']?.visualStatus).toBe('in-review-folded-corner');
+    expect(byId['BA-WR-005']?.status).not.toBe('validated');
     const implemented = new Set([
       'BA-UI-001', 'BA-UI-002', 'BA-UI-006', 'BA-UI-008', 'BA-UI-009', 'BA-UI-010', 'BA-UI-011',
       'BA-WR-001', 'BA-WR-002', 'BA-WR-005', 'BA-WR-006',

@@ -109,9 +109,57 @@
   text-underline-offset: 2px;
 }
 
-.ba-task-progress__button[data-focus-visible='true'] {
-  outline: var(--ba-focus-width, 2px) solid var(--ba-color-focus, #133547);
-  outline-offset: 2px;
+.activity-screen-popover {
+  z-index: 20;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: min(70vh, 24rem);
+  overflow: auto;
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-color-border-default);
+  border-radius: var(--ba-activity-indicator-popover-radius);
+  background: var(--ba-color-surface-canvas);
+  box-shadow: var(--ba-elevation-200);
+  padding: var(--ba-activity-indicator-popover-inset);
+}
+
+.activity-screen-popover__dialog {
+  outline: none;
+}
+
+.activity-screen-popover__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ba-space-2);
+  margin-bottom: var(--ba-space-3);
+}
+
+.activity-screen-popover__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.activity-screen-popover__close {
+  min-height: var(--ba-hit-min, 44px);
+  min-width: var(--ba-hit-min, 44px);
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-color-border-default);
+  border-radius: var(--ba-radius-control-compact);
+  background: var(--ba-color-surface-canvas);
+  color: var(--ba-color-content-primary);
+}
+
+.activity-screen-popover__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+  gap: var(--ba-activity-indicator-grid-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  justify-items: center;
+}
+
+.activity-indicator--more {
+  color: var(--ba-color-content-primary);
 }
 
 .ba-task-progress__icon {

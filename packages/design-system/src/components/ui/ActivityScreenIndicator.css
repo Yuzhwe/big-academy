@@ -1,0 +1,133 @@
+/* Activity screen marker. Candidate geometry [E], tokens from tokens.css.
+   Not visually approved. No line joins the number circle to the status circle. */
+
+.activity-indicator {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: var(--ba-hit-min, 44px);
+  min-width: var(--ba-hit-min, 44px);
+  min-height: var(--ba-hit-min, 44px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ba-color-content-primary);
+  cursor: pointer;
+}
+
+.activity-indicator[data-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.activity-indicator__circle {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-activity-indicator-border);
+  border-radius: var(--ba-activity-indicator-radius);
+  background: var(--ba-activity-indicator-incomplete-bg);
+  color: var(--ba-color-content-primary);
+}
+
+.activity-indicator[data-size='regular'] .activity-indicator__circle {
+  width: 44px;
+  height: 44px;
+}
+
+.activity-indicator__number {
+  font-family: var(--ba-activity-indicator-number-font);
+  font-weight: var(--ba-activity-indicator-number-weight);
+  font-size: 16px;
+  line-height: 1;
+  font-variant-numeric: lining-nums;
+}
+
+.activity-indicator[data-selected='true'] .activity-indicator__circle {
+  background: var(--ba-activity-indicator-selected-bg);
+  border-color: var(--ba-activity-indicator-selected-bg);
+  color: var(--ba-activity-indicator-selected-text);
+}
+
+.activity-indicator[data-progress='locked'] .activity-indicator__circle {
+  background: var(--ba-activity-indicator-locked-bg);
+  border-color: var(--ba-activity-indicator-locked-bg);
+  color: var(--ba-activity-indicator-locked-text);
+}
+
+.activity-indicator[data-progress='locked'][data-selected='true'] .activity-indicator__circle {
+  background: var(--ba-activity-indicator-locked-bg);
+  color: var(--ba-activity-indicator-locked-text);
+}
+
+.activity-indicator[data-progress='skipped'] .activity-indicator__circle {
+  border-style: dashed;
+  border-width: 2px;
+  background: var(--ba-activity-indicator-incomplete-bg);
+}
+
+.activity-indicator[data-progress='done'][data-selected='false'] .activity-indicator__circle {
+  background: var(--ba-activity-indicator-incomplete-bg);
+  color: var(--ba-color-content-primary);
+}
+
+.activity-indicator__badge {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border-radius: var(--ba-activity-indicator-badge-radius);
+  color: var(--ba-color-surface-canvas);
+  pointer-events: none;
+}
+
+.activity-indicator__badge--spacer {
+  visibility: hidden;
+}
+
+.activity-indicator__badge--done {
+  background: var(--ba-color-success-fill);
+}
+
+.activity-indicator__badge--shown {
+  background: var(--ba-color-surface-canvas);
+  color: var(--ba-color-content-primary);
+  border: var(--ba-border-weight, 0.5px) dashed var(--ba-color-content-primary);
+}
+
+.activity-indicator__badge--locked {
+  background: var(--ba-color-content-primary);
+}
+
+.activity-indicator__caption {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.activity-indicator[data-hovered='true']:not([data-disabled='true']) .activity-indicator__number {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.activity-indicator[data-focus-visible='true'] {
+  outline: var(--ba-focus-width, 2px) solid var(--ba-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--ba-radius-control-compact);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activity-indicator,
+  .activity-indicator__circle,
+  .activity-indicator__badge {
+    transition: none;
+    animation: none;
+  }
+}

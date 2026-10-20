@@ -28,8 +28,36 @@ export interface AlexTask {
     hints?: Bilingual[];
     options?: Bilingual[];
     words?: Record<string, Bilingual>;
+    diagnose?: string[];
   };
   fields?: string[];
+  cells?: (string | { t?: string })[];
+  target?: string[];
+  answer_text?: string;
+  in_order?: boolean;
+  set?: string;
+  start?: string;
+  given?: string;
+  accept?: string[];
+  frameFill?: {
+    frame: string;
+    blanks: { label: string; min_words: number }[];
+    vagueLast?: boolean;
+  };
+  rules?: {
+    mustInclude?: { re: string; msg?: string; zh?: string }[];
+    mustNotMatch?: { re: string; msg?: string; zh?: string }[];
+    minWords?: number;
+    capital?: boolean;
+    endPunct?: boolean;
+    noRunOn?: boolean;
+    notVague?: boolean;
+  };
+  apply?: boolean;
+  criteria?: string[];
+  tip?: Bilingual | string;
+  continue_after?: number;
+  grid?: { tabs?: string[]; level?: string };
 }
 
 export interface AlexScreen {
@@ -64,6 +92,10 @@ export interface AlexPage {
   teach?: Bilingual | string;
   tasks?: string[];
   task?: string;
+  pool?: string[];
+  auto_per_attempt?: number;
+  writing?: string;
+  grid?: { level?: string; tabs?: string[] };
 }
 
 export interface AlexSkill {
@@ -100,6 +132,16 @@ export interface AlexConfig {
   step_tags?: StepTag[];
   unit_goals?: Bilingual[];
   unit?: { skill_skip?: { merge_below_min?: number } };
+  grids?: {
+    tabs?: Record<string, { label?: string; zh?: string; chunks?: { t: string }[]; words?: { t: string }[]; marks?: { t: string }[] }>;
+  };
+  coach?: {
+    diagnostics?: Record<string, Bilingual>;
+    nudges?: Record<string, Bilingual>;
+    praise?: Record<string, Bilingual>;
+    check_note?: Bilingual;
+    check_after?: Bilingual;
+  };
 }
 
 export interface PathLesson {
@@ -159,12 +201,64 @@ export interface EngineApi {
   tokens: (text: string) => { w: string; start: number; end: number }[];
   skipMode: (status: string, allow: boolean) => 'auto' | 'offer' | 'none';
   stripPictures: (text: string) => string;
+  sameText: (a: string, b: string) => boolean;
+  norm: (value: string) => string;
+  frameFill: (
+    text: string,
+    frame: NonNullable<AlexTask['frameFill']>,
+    ok?: Bilingual,
+  ) => { correct: boolean; explanation: string; zh?: string };
+  masteryItems: (page: AlexPage, attempt: number) => string[];
+  masteryPass: (answers: { correct?: boolean; writing?: boolean }[]) => {
+    auto_correct: number;
+    auto_total: number;
+    writing_correct: boolean;
+    score: number;
+    total: number;
+    passed: boolean;
+  };
+  smartInsert: (
+    value: string,
+    start: number | null,
+    end: number | null,
+    insert: string,
+    kind: string,
+  ) => { value: string; caret: number };
+  practiceHow: (task: AlexTask, status: string, segs?: { t: string; s: string }[]) => string;
+  practiceCredit: (config: AlexConfig, how: string) => number;
+}
+
+export interface ApplyGrade {
+  passed: boolean;
+  checks: { label: string; met: boolean; tip?: string; zh?: string }[];
+  feedback: string;
+  zh?: string;
+  glow?: string;
+  source?: string;
+  safety_flag?: boolean;
+}
+
+export interface AnalyzerApi {
+  checkApply: (skillId: string, text: string) => ApplyGrade;
+  checkProduction: (
+    item: { check?: AlexTask['rules']; success?: string; successZh?: string },
+    answer: string,
+  ) => { correct: boolean; explanation: string; zh?: string };
+  wordCount: (text: string) => number;
+  cjkRatio: (text: string) => number;
+  safetyScreen: (text: string) => boolean;
+  liveNudges: (
+    text: string,
+    opts?: { mode?: string; prompt?: string },
+  ) => { nudge: { id: string; q?: string } | null; praise: { id: string; q?: string } | null };
+  diagnose: (text: string, ids: string[], ctx?: Record<string, unknown>) => string | null;
 }
 
 export interface AlexSource {
   config: AlexConfig;
   levelPath: LevelPath;
   engine: EngineApi;
+  analyzer: AnalyzerApi;
 }
 
 const cache = new Map<string, AlexSource>();
@@ -209,6 +303,16 @@ export function loadEngine(source: string): EngineApi {
   return factory();
 }
 
+export function loadAnalyzer(source: string): AnalyzerApi {
+  const start = source.indexOf('var Analyzer = (function () {');
+  const endMarker = "if (typeof module !== 'undefined' && module.exports) module.exports = Analyzer;";
+  const end = source.indexOf(endMarker);
+  if (start < 0 || end < 0 || end <= start) throw new Error('Alex Analyzer script was not found in the source HTML');
+  const script = source.slice(start, end);
+  const factory = new Function(`${script}\nreturn Analyzer;`) as () => AnalyzerApi;
+  return factory();
+}
+
 export function loadAlexSource(html: string): AlexSource {
   const cached = cache.get(html);
   if (cached) return cached;
@@ -217,7 +321,7 @@ export function loadAlexSource(html: string): AlexSource {
   for (const level of levelPath.levels) {
     for (const unit of level.units) unit.level = level.id;
   }
-  const loaded = { config, levelPath, engine: loadEngine(html) };
+  const loaded = { config, levelPath, engine: loadEngine(html), analyzer: loadAnalyzer(html) };
   cache.set(html, loaded);
   return loaded;
 }
