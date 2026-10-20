@@ -68,3 +68,21 @@ Review at 1440px, 1024px, 834px (plus a narrow viewport): (1) recognizable lower
 **4. One geometric three-zone header.** At desktop and approximately 834 CSS px, keep a SINGLE ROW: left current Level title (truncate inside its area), center the Tablist relative to the ENTIRE header midpoint, right language toggle. Symmetric flexible left/right columns maintain center regardless of unequal side content. No row wrap and no detached language/Level controls. On narrow phones a scrollable internal Tablist is acceptable if all controls remain reachable.
 
 **Acceptance:** interactive A/B with same anchor formula; programmatically change a Lesson card's content height, prove its bottom and anchor Y remain unchanged within 1 CSS px; screenshots at 1440 and 834; test keyboard tabs and exactly one selected item with path-only navigation. Alex course unlocking, skip and scoring remain unchanged. Never label unapproved page visuals Final.
+
+## Celebration effects · isolated review Demo (2026-10-20)
+
+User-authorized scope: migrate the complete Project 2 particle-presets preview to
+`/?demo=celebration-effects` in Writing, with optional `&locale=zh`. All ten effects
+(Ribbons, Confetti, Cannon, Explosions, Falling, Parade, Party, Fire, Firefly and
+Fireworks) are available for explicit manual preview and Stop. Nothing autoplays
+on entry. Previews are decorative, honor reduced motion, stop on Escape/page exit
+or after 15 seconds, and do not block page controls. Cannon retains its drag and
+release gesture; Firefly retains pointer trails. The preview background may be
+switched between paper and night to inspect light particles.
+
+This is a temporary visual candidate awaiting designer acceptance. It is **not
+Milestone integration**: the existing milestone eligibility, first-return auto
+celebration, manual replay receipts, progress, unlocking, skip and scoring rules
+above remain authoritative and unchanged. Source/dependency records and validation
+are in `docs/CELEBRATION_DEMO_MIGRATION.md`; no shared design tokens or component
+contracts are changed.
