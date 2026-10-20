@@ -202,8 +202,8 @@ describe('course slice UI', () => {
     expect(lessonOne).toHaveAttribute('data-state', 'continue');
     expect(lessonOne?.querySelector('[data-testid="lesson-row"]')).toHaveTextContent('Continue');
 
-    await user.click(document.querySelector('[data-lesson-focus="G2-O:2"]') as HTMLElement);
-    expect(screen.getByTestId('locked-note')).toHaveTextContent(/Lesson 1/);
+    const lockedLesson = document.querySelector('[data-lesson-focus="G2-O:2"]') as HTMLElement;
+    expect(lockedLesson).toBeDisabled();
     expect(screen.getByRole('heading', { name: /Level 2/ })).toBeInTheDocument();
     expect(course.inspect().screen).toBe(1);
   });
