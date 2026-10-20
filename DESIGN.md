@@ -510,6 +510,14 @@ The TopBar and the anchored `All activity screens` popover **must reuse one Acti
 
 Popover is an accessible, nonmodal anchored overlay opened by the ellipsis indicator; use the existing floating surface radius category (initial candidate 12px) and semantic inset/group spacing tokens rather than arbitrary values. Show **every** screen number in a responsive grid, restrict height and scroll within the popover if needed, keeping the current screen in view. Display capacity is based on measured width (8/6/4 are review examples, not data limits); status and access permissions remain the responsibility of PRODUCT.md. Focus-visible, Escape dismissal, outside-click dismissal, and focus return are required. Do not use color alone to communicate status, and keep reveal/shown distinct in accessible names. Actual rendered dimensions, icon mapping, badges and shadow are subject to designer screenshot approval.
 
+### E-01 Unit Card — folded paper corner
+
+**Product-specific candidate, not a global Card default.** Preserve Writing A — Warm Frame + White Canvas, existing Unit colors, dimensions, content, rounded perimeter, lower anchor and state-specific appearance.
+
+**Geometry:** a roughly 45° upper-right inward fold, represented by the solid paper body and a separate turned triangular flap, with restrained paper light/dark variation and a small soft local shadow. Do not substitute a simple cut-corner silhouette or dramatic 3D effect. Keep folds consistent across Units with proportional sizing bounded to avoid titles, progress and icons. Prefer CSS pseudo-elements/gradients and existing semantic surface/radius/elevation tokens, with pointer-events disabled on decoration. Do not clip focus rings or obscure text.
+
+**Status and scope:** all Unit instances/states share the same folded anatomy; preserve done/current/locked distinctions. No changes to Lesson, Intro, Milestone, Goal, staircase geometry, behavior or gates. Validate Desktop/Tablet, responsive titles, EN/ZH, state styles, focus/hover/disabled and visual comparison. Designer reviews render before approval. New global Tokens need explicit proposal, not an automatic style migration.
+
 ## 8. Do's and Don'ts
 
 **Do:** reuse semantic Tokens; keep one approved visual language; make product accents thematic; preserve CJK and accessibility; show states using labels/icons/geometry as well as colors; make business logic independent of UI styling; update Contract and Storybook alongside component API changes.
