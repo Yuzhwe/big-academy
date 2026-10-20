@@ -1173,8 +1173,79 @@ export class CourseSession {
     const f=(task as AlexTask & {frameFill?:{frame:string;blanks:{min_words:number}[];vagueLast?:boolean}}).frameFill;
     let pass=false;
     if(f){
-      const sections=f.frame.split('___').map(v=>v.replace(/[.*+?^${}()|[\]\\]/g,'\\  private pickCheck(task: AlexTask, key: string): void {'));
-      const re=new RegExp('^'+sections.join('([\\s\\S]*?)')+'
+      const match = t.match(/^In my opinion, recess should (.+?) because (.+?)\.$/i);
+      pass=!!match && (match[1].match(/[A-Za-z']+/g)?.length??0)>=2 && (match[2].match(/[A-Za-z']+/g)?.length??0)>=3 && !/___/.test(t);
+      if(pass && f.vagueLast)pass=!/^(?:(?:it is|very|really|so)\s+)*(?:good|nice|fun|cool|great|bad)[.!? ]*$/i.test(match![2].trim());
+    }
+    if(!t.trim()){this.feedback='Write your sentence first';this.emit();return;}
+    s.tries++;
+    if(pass || s.tries>=2)this.finish(task,key,pass?'done':'shown');
+    else {this.feedback=this.text(task.why)||'Try again.';this.save();this.emit();}
+  }
+  moveOnApply():void {
+    const screen=this.screens[this.state.screen].screen,a=this.state.applies[screen.page];
+    if(!a||a.tries<2||a.passed)return;
+    this.state.done[screen.page]=true;this.save();this.emit();
+  }
+  private checkApply(pageId:string):void {
+    const a=this.state.applies[pageId] ?? {text:'',tries:0,passed:false};
+    const value=a.text.trim(),words=value.match(/[a-z']+/gi)??[];
+    if(words.length<3){this.feedback='Write a little first.';this.emit();return;}
+    let lines=value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+    if(lines.length===1)lines=value.split(/(?<=[.!?])\s+/).filter(Boolean);
+    const opinion=/\b(i think|i believe|i feel|i know|in my opinion|should|shouldn't|must|ought to|is better|are better|would be better|the best|is the best|i agree|i disagree|it is important|we need|needs? to)\b/i;
+    const good=lines.filter(x=>/garden/i.test(x)&&opinion.test(x));
+    const similarity=(x:string,y:string)=>{const A=new Set(x.toLowerCase().match(/[a-z]+/g)??[]),B=new Set(y.toLowerCase().match(/[a-z]+/g)??[]);return [...A].filter(w=>B.has(w)).length/Math.max(1,new Set([...A,...B]).size);};
+    const passed=lines.length>=3&&good.length>=3&&good.slice(0,3).every((x,i)=>good.slice(i+1,3).every(y=>similarity(x,y)<.8));
+    a.tries++;a.passed=passed;a.result=passed?'All four writing criteria met.':lines.length<3?'Write three topic sentences.':good.length<3?'Each sentence needs a garden opinion.':'Make your sentences more different.';
+    this.state.applies[pageId]=a;this.feedback=a.result;
+    if(passed)this.state.done[pageId]=true;
+    this.save();this.emit();
+  }
+  private assessmentState(pageId:string){
+    this.state.assessment ??={};
+    return this.state.assessment[pageId] ??= {attempt:0,index:0,answers:{},warning:false,passed:false,finished:false};
+  }
+  private assessmentQuestions(pageId:string,attempt:number):AlexTask[]{
+    const page=this.pageOf(pageId) as ReturnType<CourseSession['pageOf']> & {pool?:string[];writing?:string};
+    const pool=page?.pool??['tq1','tq2','tq3','tq4','tq5'];
+    return [0,1,2].map(n=>this.task(pool[(attempt*3+n)%pool.length])).concat(this.task(page?.writing??'L2-04.mw'));
+  }
+  answerAssessment(answer:number[]|string):void{
+    const screen=this.screens[this.state.screen].screen,c=this.assessmentState(screen.page);
+    if(c.results)return;
+    const question=this.assessmentQuestions(screen.page,c.attempt)[c.index];
+    c.answers[question.id]=answer;this.save();this.emit();
+  }
+  assessmentQuestion(index:number):void{
+    const screen=this.screens[this.state.screen].screen,c=this.assessmentState(screen.page);
+    if(index<0||index>3)return;c.index=index;c.warning=false;this.save();this.emit();
+  }
+  private gradeAssessmentQuestion(q:AlexTask,answer:number[]|string):boolean{
+    if(q.type==='pick')return this.engine.choiceGrade(q,Array.isArray(answer)?answer:[]).correct;
+    const t=typeof answer==='string'?answer.trim():'';
+    if(t.split(/\s+/).length<5)return false;
+    const rules=(q as AlexTask & {rules?:{mustInclude?:{re:string}[];minWords?:number;capital?:boolean;endPunct?:boolean}}).rules;
+    return (rules?.mustInclude??[]).every(r=>new RegExp(r.re,'i').test(t))&&(!rules?.minWords||t.split(/\s+/).length>=rules.minWords)&&(!rules?.capital||/^[A-Z]/.test(t))&&(!rules?.endPunct||/[.!?]$/.test(t));
+  }
+  private assessmentNext(pageId:string):void{
+    const c=this.assessmentState(pageId);
+    if(c.results){
+      if(c.passed||c.finished){this.next();return;}
+      c.attempt++;c.index=0;c.warning=false;c.results=undefined;c.answers={};this.feedback='';this.save();this.emit();return;
+    }
+    if(c.index<3){c.index++;this.save();this.emit();return;}
+    const qs=this.assessmentQuestions(pageId,c.attempt);
+    const blanks=qs.map((q,i)=>!c.answers[q.id]||(Array.isArray(c.answers[q.id])&&!c.answers[q.id].length)?i+1:null).filter(Boolean);
+    if(blanks.length&&!c.warning){c.warning=true;this.feedback='Unanswered questions: '+blanks.join(', ')+'. Hand in anyway?';this.save();this.emit();return;}
+    c.results=qs.map(q=>this.gradeAssessmentQuestion(q,c.answers[q.id]??''));
+    c.passed ||= c.results.slice(0,3).filter(Boolean).length>=2 && !!c.results[3];
+    c.finished=c.passed||c.attempt>=1;
+    if(c.finished)this.state.done[pageId]=true;
+    this.feedback=(c.passed?'You passed this check. ':'Not yet. ')+c.results.filter(Boolean).length+' of 4.';
+    this.save();this.emit();
+  }
+  private pickCheck(task: AlexTask, key: string): void {
     const taskState = this.taskState(key);
     const picked = (taskState.picked ?? []).slice();
     if (!picked.length) {
