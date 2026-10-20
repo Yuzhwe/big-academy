@@ -1,8 +1,8 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { StaircaseScene, type StaircaseVariant } from './StaircaseScene';
 import { useSyncExternalStore } from 'react';
-import { Checkbox, Radio, RadioGroup, Tabs, TabList, Tab, TabPanel } from 'react-aria-components';
-import { BAButton, localeTag } from '@big-academy/design-system';
+import { Checkbox, Radio, RadioGroup } from 'react-aria-components';
+import { BAButton, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { LessonWorkspace } from '../components/writing/LessonWorkspace';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
@@ -71,7 +71,7 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
 
   return (
     <div className="course-path">
-      <Tabs className="course-level-tabs" selectedKey={session.levelId} onSelectionChange={(key) => session.switchLevel(String(key))}>
+      <BATabs className="course-level-tabs" selectedKey={session.levelId} onSelectionChange={(key) => session.switchLevel(key)}>
         <header className="course-path__bar course-path__header">
           <div className="course-path__header-title">
             <p className="course-kicker">{zh ? '写作路径' : 'Writing path'}</p>
@@ -79,20 +79,18 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
               {zh ? '第 ' + level.id.slice(1) + ' 级' : 'Level ' + level.id.slice(1)} {session.text(level.name)}
             </h1>
           </div>
-          <TabList className="course-level-tablist" aria-label={zh ? '切换级别' : 'Choose level'}>
-            {session.levelPath.levels.map((item) => (
-              <Tab className="course-level-tab" id={item.id} key={item.id} aria-label={session.text(item.name)}>
-                {item.id}
-              </Tab>
-            ))}
-          </TabList>
+          <BATabList className="course-level-tablist" size={36} radius="full" emphasis="strong" distribution="hug"
+            selectedKey={session.levelId} aria-label={zh ? '切换级别' : 'Choose level'}
+            options={session.levelPath.levels.map(item => ({
+              id: item.id, label: item.id, accessibleLabel: session.text(item.name)
+            }))}/>
           <div className="course-path__header-locale">
             <BAButton variant="secondary" locale={session.locale} onPress={() => session.toggleLocale()}>
               {zh ? 'English' : '中文'}
             </BAButton>
           </div>
         </header>
-        <TabPanel id={session.levelId} className="course-level-panel">
+        <BATabPanel id={session.levelId} className="course-level-panel">
       <main id="course-main" className="course-path__main">
         {session.message ? (
           <p className="course-message" role="status" data-testid="locked-note">
@@ -200,8 +198,8 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             : 'E-01 A/B share the exact same bottom-anchor algorithm and Alex permissions. A has separated platforms; B has a continuous slope with local anchors. Card height grows upward, not into the anchor. Visual approval pending.'}
         </p>
       </main>
-        </TabPanel>
-      </Tabs>
+        </BATabPanel>
+      </BATabs>
     </div>
   );
 }
