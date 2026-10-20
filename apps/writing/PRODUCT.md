@@ -411,6 +411,18 @@ Progress reads the live lesson screen list. Chips distinguish done, current, ava
 
 **Component contract:** separate `screenNumber`, `progressStatus`, `isSelected`, `canOpen`, and `onNavigate`; popover open/close is its container's state. Use the same React Aria focus/keyboard semantics across both locations. Document compact/regular sizes, hover/focus/pressed/disabled and Done+Selected combinations in Storybook; verify 1440/1024/834/390 widths, long headings, and 200% zoom.
 
+## Writing Staircase Unit folded-corner visual requirement
+
+**Status:** design direction approved for prototype; rendered visuals pending designer signoff. **Scope:** every E-01 Unit card (all supported progress states), and no non-Unit nodes.
+
+- Use a **Folded Corner Card** with top-right paper corner folded inward at approximately 45°. Show a visibly separate turned paper layer, delicate tonal gradient and soft local fold shadow; **not** a simple triangular Cut Corner or exaggerated 3D.
+- Retain Unit dimensions, rounded body corners, original color/content/position, bottom-to-platform anchor and responsive staircase geometry. Use a consistent adaptive fold size, without covering title, icon, progress or metadata.
+- Apply one reusable visual implementation to every Unit. Preserve any existing completed, in-progress or locked state visuals. Do not change Lesson, Milestone, Intro, Goal, platforms, navigation, product logic or eligibility.
+- Prefer maintainable CSS-based layered geometry, not static pictures. Reuse approved color, radius and elevation tokens; propose any new global token instead of silently adding/approving it. Decorative layers must not intercept pointer/focus input, disrupt hover/disabled feedback or clip focus.
+- Required developer evidence: interactive Staircase preview, screenshots of **all** Unit cards and status variants, Desktop/Tablet, long EN/ZH labels, before/after layout and list of changed files/tokens. Treat this as **Writing-only visual candidate**; UI/UX Designer has final visual approval.
+
+Detailed visual anatomy lives in root DESIGN.md and component contract BA-WR-005; this PRODUCT.md defines applicability, behavior boundaries and acceptance.
+
 ## 12. E-01 path
 
 E-01 is a diagonal staircase, lower-left to upper-right, not a vertical list. The path form is separate platforms: one thin platform per node. Card bottom sits on the platform top. Card height grows upward and does not move the anchor, the camera, or the slope.
