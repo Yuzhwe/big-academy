@@ -95,3 +95,30 @@ test('Typography roles and Iconoir icons are visible and used in Writing', async
   await expect(page.locator('.lesson-topbar__back-icon[data-icon-name="arrow-left"]')).toBeVisible();
   expect(await page.locator('.ba-task-progress__icon[data-icon-name="lock"]').count()).toBeGreaterThan(0);
 });
+
+
+test('Figma button and segmented gallery preserve visual geometry and local radio semantics', async ({ page }) => {
+  await page.goto('/?system');
+  const panel = page.locator('[aria-labelledby="figma-controls-title"]');
+  await expect(panel).toBeVisible();
+  await expect(panel.locator('.ba-showcase__figma-matrix-row')).toHaveCount(4);
+  const sizes = await panel.locator('.ba-showcase__figma-matrix-row [data-kind="primary"]').evaluateAll(buttons =>
+    buttons.map(button => {
+      const assembly = button.querySelector('.ba-button__assembly');
+      return {size:button.getAttribute('data-size'),height:assembly?.getBoundingClientRect().height};
+    }));
+  expect(sizes).toEqual([36,50,70,90].map(size => ({size:String(size),height:size})));
+  const p = panel.getByRole('radiogroup', { name:'Period' });
+  await expect(p.getByRole('radio')).toHaveCount(4);
+  await expect(p.getByRole('radio', {name:'Week'})).toBeChecked();
+  await p.getByRole('radio',{name:'Week'}).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(p.getByRole('radio',{name:'Month'})).toBeChecked();
+  await expect(page.getByTestId('selected-period')).toHaveText('Selected: month');
+  const iconOnly = panel.getByRole('radiogroup',{name:'Reading control'});
+  await expect(iconOnly.getByRole('radio')).toHaveCount(3);
+  await expect(panel.getByRole('button',{name:'Open menu'})).toBeVisible();
+  await expect(panel.getByRole('button',{name:'Disabled'})).toBeDisabled();
+  await expect(panel.getByRole('button',{name:'Processing'})).toHaveAttribute('data-pending','true');
+  await page.screenshot({path:'apps/writing/docs/evidence/figma-button-segmented-desktop.png',fullPage:false});
+});
