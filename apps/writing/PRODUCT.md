@@ -2,6 +2,10 @@
 
 **Authority:** Alex original HTML (`source/alex-original.html`) and recorded designer approvals in `PHASE1_ALIGNMENT_REPORT_v0.3.md`. This file is a portable working condensation, **not yet Product v1.0**.
 
+## R6 active implementation scope — single L2 Lesson demo
+
+The active Grokbot delivery is **L2/G2-O Lesson 1, Topic sentences, eight exact original Activity Screens**, defined in `docs/L2_LESSON1_DEMO_CONTRACT_R6.md`. The extracted 52-Screen matrix is **source reference only**, not a requirement to implement every Screen. Preserve Lesson 1 exact task data and Alex's full end-to-end progression, assessment, grading, retry/shown and persistence; other Lessons are out of implementation scope. This scope clarification supersedes any broader R6 development interpretations; it does not erase original catalog data.
+
 ## R6 approved decision overlay — 2026-10-20
 
 **Precedence:** This dated designer/product-owner decision overlay supersedes contrary historical exploration or open-question entries. Alex's original `source/alex-original.html` remains the authority for all unmodified assessment, scoring, skip, grading and page-gating behavior. This is an explicit change log, not authorization to rewrite that engine.
