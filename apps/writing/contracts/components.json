@@ -67,20 +67,27 @@
       "name": "BATabs",
       "kind": "primitive",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BATabs.tsx",
       "story": "packages/design-system/src/components/ui/BATabs.stories.tsx",
       "props": {
-        "items": "TabDefinition[]",
         "selectedKey": "string",
-        "disabledKeys": "string[]"
+        "defaultSelectedKey": "string",
+        "options": "BATabOption[] on BATabList",
+        "size": "36|50|70|90",
+        "emphasis": "strong|subtle",
+        "radius": "full|standard",
+        "distribution": "equal|hug",
+        "aria-label": "BATabList required",
+        "id": "BATabPanel id matches tab id"
       },
       "events": {
-        "onSelectionChange": "(key) => void"
+        "onSelectionChange": "(key: string) => void"
       },
       "states": [
         "idle",
         "selected",
+        "hover",
         "focus-visible",
         "disabled"
       ],
@@ -91,12 +98,14 @@
         "Locale labels"
       ],
       "requiredStories": [
-        "ManyGroups",
-        "KeyboardFocus",
-        "LongLabels"
+        "LevelTabs",
+        "StrongSubtle",
+        "KeyboardFocus"
       ],
-      "figma": null,
-      "runtimeEvidence": null
+      "figma": "Design decision 2026-10-20: visual style same as Figma Segmented Control 806:3",
+      "runtimeEvidence": "apps/writing/e2e/staircase-ab.spec.ts",
+      "visualStatus": "figma-segmented-parity-candidate",
+      "notes": "React Aria Tabs/TabList/Tab/TabPanel semantics; same selection geometry and CSS as segmented, no RadioGroup. Styling parity is user-approved direction; exact browser visual review pending."
     },
     {
       "id": "BA-UI-003",

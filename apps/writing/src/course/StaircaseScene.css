@@ -122,23 +122,11 @@
 .course-path__header-locale { min-width:0; display:flex; justify-content:flex-end; }
 .course-path__header-locale .ba-button { flex-shrink:0; }
 .course-level-tabs { display:contents; }
-.course-level-tablist {
-  display:flex; align-items:center; min-width:0; max-width:min(55vw,640px);
-  gap:4px; padding:4px; overflow-x:auto; scrollbar-width:thin;
-  border-radius:12px;
-  background:var(--ba-color-warm-2); border:0.5px solid var(--ba-color-warm-4);
-}
-.course-level-tab {
-  flex:0 0 auto; display:flex; align-items:center; justify-content:center;
-  box-sizing:border-box; min-height:44px; min-width:44px;
-  padding:8px clamp(9px,1.2vw,16px);
-  border-radius:9px; cursor:pointer;
-  font:800 18px/1 var(--ba-font-digit);
-  color:var(--ba-color-content-secondary);
-}
-.course-level-tab[data-selected] { color:var(--ba-color-on-action-primary); background:var(--ba-color-action-primary); }
-.course-level-tab[data-hovered]:not([data-selected]) { background:var(--ba-color-warm-3); }
-.course-level-tab[data-focus-visible] { outline:2px solid var(--ba-color-focus); outline-offset:2px; }
+/* Figma parity: BATabList and BASegmentedControl own all track/selection visuals.
+ * Keep level strip centered by the header's 1fr max-content 1fr geometry. */
+.course-level-tablist { max-width:min(55vw,640px); min-width:0; }
+.course-level-tablist .ba-tabs__tablist { overflow:hidden; }
+.course-level-tablist .ba-tabs__option { font:800 16px/1 var(--ba-font-digit); }
 .course-level-panel { min-width:0; outline:none; }
 .course-level-panel:focus-visible { outline:2px solid var(--ba-color-focus); outline-offset:-2px; }
 
@@ -194,13 +182,13 @@
 @media (max-width:900px) {
   .course-path .course-path__header { gap:8px; }
   .course-path__header-title .course-title { font-size:clamp(16px,2.6vw,24px); }
-  .course-level-tablist { gap:1px; padding:2px; max-width:54vw; }
-  .course-level-tab { min-width:40px; min-height:44px; padding:6px 9px; font-size:17px; }
+  .course-level-tablist { max-width:54vw; }
+  .course-level-tablist .ba-tabs__option { min-width:40px; }
   .course-path__header-locale .ba-button { padding-inline:10px; }
 }
 @media (max-width:500px) {
   .course-path__header-title .course-kicker { display:none; }
   .course-level-tablist { max-width:50vw; }
-  .course-level-tab { min-width:38px; }
+  .course-level-tablist .ba-tabs__option { min-width:38px; }
   .course-path__header-locale .ba-button { min-width:44px; padding-inline:7px; font-size:12px; }
 }

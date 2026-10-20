@@ -97,3 +97,10 @@ Design approval source: [PR #10](https://github.com/Yuzhwe/big-academy/pull/10),
 - Segmented: one local selection 2-4 choices, Strong/Subtle, Full/Standard, Equal/Hug, icon+label/icon only, product-mapped Strong fill, 200ms moving selected surface, reduced-motion guard. Outer / selected heights differ by 4px.
 - Interactive `/?system` Figma matrix + Storybook and Playwright checks. Figma pixel-level visual approval and separate Tabs/Shadow design nodes **remain pending** (no invented Final values).
 - Work isolated in `feat/agent-a-figma-button-segmented-v1`; original PR #16 and `main` unchanged.
+
+
+## Figma Elevation and BATabs (2026-10-20)
+- Figma source node `15:5` / docs `25:2`: Elevation/100/200/300/400 exact shadows (RGB 7,46,81 at 5/10/15%); backdrop blur Figma radius 20 maps to exported CSS blur(10px). Effect tokens are in `packages/design-system/src/tokens.css`; see root `DESIGN.md` for full source references. The button 3px lower stroke is separate.
+- Designer instructs: **BATabs visual style exactly matches BASegmentedControl**. BATabs uses React Aria Tabs/TabList/Tab/TabPanel, and shared CSS `ba-segmented__*` shapes/states with a CSS ::before selected surface. Product selection stays under Alex business logic; Level Tab never opens Lesson.
+- Actual Writing Level header now uses BATabs and retains the existing 1fr/max-content/1fr geometry and 834px constraint. Storybook, browser and designer screenshot signoff pending.
+- Branch `feat/agent-a-elevation-batabs-figma` based on PR #17 head. No main merge or final visual approval.

@@ -13,3 +13,6 @@ export type { BATextProps, BATextRole } from './components/ui/BATypography';
 
 export { BASegmentedControl } from './components/ui/BASegmentedControl';
 export type { BASegmentedControlProps, BASegmentOption, BASegmentSize } from './components/ui/BASegmentedControl';
+
+export { BATabs, BATabList, BATabPanel } from './components/ui/BATabs';
+export type { BATabOption, BATabsProps, BATabListProps } from './components/ui/BATabs';

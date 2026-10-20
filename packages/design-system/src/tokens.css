@@ -261,6 +261,20 @@
   --ba-control-focus:#2364db; /* Figma focus stroke */
   --ba-button-content-gap:6px;
   --ba-segmented-strong-selected:var(--ba-color-brand-10);
+  /* Elevation/Effect Styles v1 — from Figma 15:5 / 25:2, NOT button depth.
+   * Color effects based on rgba(7,46,81), no spread. Consume these semantic
+   * effects directly; do not duplicate box-shadow geometry in components. */
+  --ba-effect-shadow-subtle: rgba(7,46,81,0.05);
+  --ba-effect-shadow-default: rgba(7,46,81,0.10);
+  --ba-effect-shadow-strong: rgba(7,46,81,0.15);
+  --ba-elevation-100: 0 0 2px 0 var(--ba-effect-shadow-subtle), 0 2px 4px 0 var(--ba-effect-shadow-default);
+  --ba-elevation-200: 0 4px 16px 0 var(--ba-effect-shadow-subtle);
+  --ba-elevation-300: 0 2px 2px 0 var(--ba-effect-shadow-subtle), 0 8px 24px 0 var(--ba-effect-shadow-default);
+  --ba-elevation-400: 0 0 2px 0 var(--ba-effect-shadow-strong), 0 8px 24px 0 var(--ba-effect-shadow-strong);
+  /* Figma Background Blur radius 20 maps to CSS backdrop-filter blur(10px)
+   * in Figma-generated code — these are two distinct unit conventions. */
+  --ba-blur-background-20: blur(10px);
+
   /* [T] pilot disabled semantics, unchanged values; not part of Color v0.2 approval. */
   --ba-color-disabled-surface: var(--ba-muted-surface);
   --ba-color-disabled-content: var(--ba-muted);

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BAButton, BAIcon, BAText, BANumber, BATaskProgress, BASegmentedControl, type TaskProgressItem, type BAIconName } from '@big-academy/design-system';
+import { BAButton, BAIcon, BAText, BANumber, BATaskProgress, BASegmentedControl, BATabs, BATabList, BATabPanel, type TaskProgressItem, type BAIconName } from '@big-academy/design-system';
 import './DesignSystemPreview.css';
 
 type FoundationTheme = 'neutral' | 'writing';
@@ -32,6 +32,8 @@ export function DesignSystemPreview() {
   const [selectedTask, setSelectedTask] = useState(1);
   const [period, setPeriod] = useState('week');
   const [alignment, setAlignment] = useState('left');
+  const [demoTab, setDemoTab] = useState('lesson');
+  const [subtleTab, setSubtleTab] = useState('one');
   const zh = locale === 'zh';
 
   return (
@@ -231,6 +233,52 @@ export function DesignSystemPreview() {
           </div>
         </div>
         <p className="ba-showcase__small-label">{zh ? 'Button 点击量：' : 'Button presses: '}<strong data-testid="figma-press-count">{pressCount}</strong></p>
+      </section>
+
+      <section className="ba-showcase__section" aria-labelledby="elevation-title">
+        <h2 id="elevation-title">Elevation · Figma Effect Styles</h2>
+        <p>{zh ? 'Figma 15:5 的原始四级阴影，使用全局 Effect Tokens；背景模糊与阴影分别处理。' : 'The original four effect styles from Figma 15:5 — consumed through shared tokens, not hardcoded component shadows.'}</p>
+        <div className="ba-showcase__elevation-gallery">
+          {(['100','200','300','400'] as const).map(level=>
+            <div key={level} className="ba-showcase__elevation-card"
+              data-elevation={level} style={{boxShadow:'var(--ba-elevation-'+level+')'}}>
+              <strong>{level}</strong><code>Elevation/{level}</code>
+            </div>)}
+          <div className="ba-showcase__blur-scene" data-testid="backdrop-blur-scene">
+            <div className="ba-showcase__blur-card">
+              <strong>20</strong><code>Blur/Background/20</code>
+            </div>
+          </div>
+        </div>
+        <p className="ba-showcase__small-label">{zh ? '注意：Button 底部的 3px 描边不属于 Elevation 阴影。' : 'Button 3px lower stroke remains distinct from generic Elevation tokens.'}</p>
+      </section>
+
+      <section className="ba-showcase__section" aria-labelledby="tabs-figma-title">
+        <h2 id="tabs-figma-title">BATabs · Segmented visual parity</h2>
+        <p>{zh ? '与 Segmented 使用相同的容器、圆角、字号与选中背景，但 Tabs 负责切换面板。' : 'Exactly the same segmented visual geometry, but true tabs switch a labelled panel rather than local radio selection.'}</p>
+        <BATabs selectedKey={demoTab} onSelectionChange={setDemoTab} className="ba-showcase__demo-tabs">
+          <BATabList selectedKey={demoTab} size={50} emphasis="strong" radius="full"
+            aria-label="Writing demo tabs" options={[
+              {id:'lesson',label:zh?'课程':'Lesson'},
+              {id:'notes',label:zh?'笔记':'Notes'},
+              {id:'review',label:zh?'回顾':'Review'}
+            ]}/>
+          <BATabPanel id={demoTab} className="ba-showcase__demo-tabpanel">
+            <strong data-testid="demo-tab-value">{demoTab}</strong>
+            <p>{demoTab==='lesson'?(zh?'这里是课程内容。':'Lesson content panel.')
+              :demoTab==='notes'?(zh?'这里是笔记内容。':'Notes content panel.')
+              :(zh?'这里是回顾内容。':'Review content panel.')}</p>
+          </BATabPanel>
+        </BATabs>
+        <div className="ba-showcase__tab-variants">
+          <div><strong>Subtle · Standard · 36</strong>
+            <BATabs selectedKey={subtleTab} onSelectionChange={setSubtleTab}>
+              <BATabList selectedKey={subtleTab} size={36} emphasis="subtle" radius="standard"
+                aria-label="Subtle tab styling" options={[{id:'one',label:'One'},{id:'two',label:'Two'}]}/>
+              <BATabPanel id={subtleTab}><span>Tab visual example: {subtleTab}</span></BATabPanel>
+            </BATabs>
+          </div>
+        </div>
       </section>
 
       <section className="ba-showcase__section" aria-labelledby="components-title">

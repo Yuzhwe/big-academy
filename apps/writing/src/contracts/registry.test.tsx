@@ -24,7 +24,7 @@ describe('component registry', () => {
       expect(byId[id]?.status).not.toBe('validated');
     }
     const implemented = new Set([
-      'BA-UI-001', 'BA-UI-006', 'BA-UI-008', 'BA-UI-009', 'BA-UI-010', 'BA-UI-011',
+      'BA-UI-001', 'BA-UI-002', 'BA-UI-006', 'BA-UI-008', 'BA-UI-009', 'BA-UI-010', 'BA-UI-011',
       'BA-WR-001', 'BA-WR-002', 'BA-WR-005', 'BA-WR-006',
     ]);
     for (const component of registry.components) {
