@@ -89,3 +89,11 @@ Design approval source: [PR #10](https://github.com/Yuzhwe/big-academy/pull/10),
 - The existing Writing `LessonTopBar` Back action and `BATaskProgress` Done/Locked markers consume BAIcon; BAButton typography uses shared role aliases. Underlying React Aria behavior and Alex course permissions unchanged.
 - `/?system` and Storybook expose role/locale specimens and Iconoir gallery with accessible/decorative semantics; component source, icons and numeric geometry remain designer-review candidates.
 - CI unit, TypeScript, build and Playwright results need checking on PR. No browser font-asset certification or final visual approval is claimed.
+
+
+## Figma Button V2 + Segmented Control V1 component implementation (2026-10-20)
+- Direct Figma design references: `30:2` (Button) and `806:3` (Segmented Control). Existing `BAButton` upgraded, not duplicated; new `BASegmentedControl` built on React Aria RadioGroup/Radio, **not** Tabs.
+- Button: size 36/50/70/90, Primary/Secondary/Tertiary, Full/Standard, state, destructive intent, icon content, busy, fixed outer hit with scaled visible assembly, 3px Figma lower stroke; no claim this is a universal drop-shadow system.
+- Segmented: one local selection 2-4 choices, Strong/Subtle, Full/Standard, Equal/Hug, icon+label/icon only, product-mapped Strong fill, 200ms moving selected surface, reduced-motion guard. Outer / selected heights differ by 4px.
+- Interactive `/?system` Figma matrix + Storybook and Playwright checks. Figma pixel-level visual approval and separate Tabs/Shadow design nodes **remain pending** (no invented Final values).
+- Work isolated in `feat/agent-a-figma-button-segmented-v1`; original PR #16 and `main` unchanged.

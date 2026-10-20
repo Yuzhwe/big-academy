@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from 'storybook/test';
 import { BAButton } from './BAButton';
+import { BAIcon } from './BAIcon';
+
 
 const meta = {
   title: 'UI/BAButton',
@@ -67,4 +69,34 @@ export const SemanticThemeMapping: Story = {
       </div>
     </div>
   ),
+};
+
+
+/** Figma 30:2 production variant matrix; all sizes use identical React Aria press behavior. */
+export const FigmaV2ButtonMatrix: Story = {
+  render: () => (
+    <div style={{ display:'grid', gap:20 }}>
+      {([36,50,70,90] as const).map(size =>
+        <div key={size} style={{ display:'flex',flexWrap:'wrap',alignItems:'center',gap:16 }}>
+          <strong>{size}px</strong>
+          <BAButton variant="primary" size={size}>Primary</BAButton>
+          <BAButton variant="secondary" size={size}>Secondary</BAButton>
+          <BAButton variant="tertiary" size={size}>Tertiary</BAButton>
+          <BAButton variant="primary" radius="standard" size={size}>Standard</BAButton>
+        </div>
+      )}
+    </div>
+  )
+};
+export const FigmaV2IconAndStates: Story = {
+  render: () => (
+    <div style={{ display:'flex', flexWrap:'wrap',gap:16,alignItems:'center' }}>
+      <BAButton variant="primary" leadingIcon={<BAIcon name="arrow-left"/>}>Back</BAButton>
+      <BAButton variant="secondary" trailingIcon={<BAIcon name="check"/>}>Continue</BAButton>
+      <BAButton variant="primary" iconOnly aria-label="Menu"><BAIcon name="menu"/></BAButton>
+      <BAButton variant="primary" intent="destructive">Delete</BAButton>
+      <BAButton variant="primary" disabled>Disabled</BAButton>
+      <BAButton variant="primary" busy>Processing</BAButton>
+    </div>
+  )
 };

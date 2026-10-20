@@ -120,5 +120,5 @@ test('Figma button and segmented gallery preserve visual geometry and local radi
   await expect(panel.getByRole('button',{name:'Open menu'})).toBeVisible();
   await expect(panel.getByRole('button',{name:'Disabled'})).toBeDisabled();
   await expect(panel.getByRole('button',{name:'Processing'})).toHaveAttribute('data-pending','true');
-  await page.screenshot({path:'apps/writing/docs/evidence/figma-button-segmented-desktop.png',fullPage:false});
+  // Visual evidence is captured by Playwright on failure; dedicated Figma screenshot QA remains separate.
 });
