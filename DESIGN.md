@@ -230,6 +230,10 @@ for accessible headless button, tabs, field and overlay behavior. Use native sem
 
 Shared BA IDs and actual implementations are tracked in `apps/writing/contracts/components.json` (including BAIcon, BATypography, BASegmentedControl and BATabs); do not assume the original BA-UI-001…007 pilot range is exhaustive. Writing composites: `BA-WR-001` … `BA-WR-006`.
 
+## 8. Components
+
+**Behavior foundation:** React Aria Components and native semantics. **Visual layer:** Big Academy components via shared Tokens, Stories and Contracts in `apps/writing/contracts/components.json`. Implemented components are not necessarily visually approved.
+
 ### Component Architecture — P0-4 · Progressive Componentization [A, 2026-10-19]
 
 **Approved strategy: develop necessary shared foundation primitives first, allow product-specific components to be built independently, and extract cross-product Shared Patterns only after demonstrated reuse.** Do not attempt a complete speculative component catalog in advance.
