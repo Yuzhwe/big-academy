@@ -5,7 +5,8 @@ import { expect, test } from '@playwright/test';
 const evidence = resolve(import.meta.dirname, '../docs/evidence/r1');
 
 test('R1 E-01 and eight authored Lesson 1 screens including P7 mastery', async ({ page }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(90_000);
+  page.setDefaultTimeout(10_000);
   mkdirSync(evidence, { recursive: true });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
@@ -33,7 +34,7 @@ test('R1 E-01 and eight authored Lesson 1 screens including P7 mastery', async (
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Next' }).click();
 
   for (const part of [/Dogs are the best pets/i, /In my opinion, every kid/i, /School lunch should/i]) {
-    await page.getByRole('checkbox', { name: part }).click();
+    await page.locator('.course-choices .course-choice', { hasText: part }).click();
   }
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Check' }).click();
   await expect(page.getByTestId('feedback')).toBeVisible();
