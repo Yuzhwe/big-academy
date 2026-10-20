@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { BAIcon } from './BAIcon';
 import { BATabs, BATabList, BATabPanel } from './BATabs';
 
 const options=[{id:'level-1',label:'L1',accessibleLabel:'Level 1'},
