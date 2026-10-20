@@ -289,14 +289,14 @@ Opinion pattern: I think / I believe / I feel / I know / in my opinion / should 
 
 ### P7 Check — answer all questions, then Hand in
 
-One Check screen is four questions: three drawn from the page pool, then the page’s writing item. The grid is off. The bar says “No grid and no help this time.” Hints and reveal are absent. Lesson progress does not move when the question index moves.
+One Check screen is four questions: three drawn from the page pool, then the page’s writing item. Display the current Question as one prominent numeral at upper-left rather than a visible count phrase. The grid is off. An accessible assessment announcement may communicate “No grid and no help this time” where useful, without introducing an extra visible count bar. Hints and reveal are absent. Lesson progress does not move when the question index moves.
 
 **Which three.** For attempt `a` (starting at 0) and pool length `P`, auto items are pool slots `(a×3 + 0) % P`, `(a×3 + 1) % P`, `(a×3 + 2) % P`, then the writing item. Lesson 1 pool order is `tq1`, `tq2`, `tq3`, `tq4`, `tq5`, writing `L2-04.mw`.
 
 - Attempt 0: tq1, tq2, tq3, writing.
 - Attempt 1: tq4, tq5, tq1, writing.
 
-**While answering.** The learner can open any question from the dots. A dot shows that the question has an answer. Select and edit behave as on P3/P4 except:
+**While answering.** The learner can open any question from the dots (their function is retained without adding a second verbose “Question n of 4” label). A dot shows that the question has an answer. Select and edit behave as on P3/P4 except:
 
 - No per-question Check button, no cloze auto-grade, no build grid, no tries, no reveal.
 - A pick is answered when at least one option is selected. A tap-word is answered when a word is selected. A label is answered when every line has a category. A write or edit is answered when the text is non-empty and different from the printed start or given sentence.
