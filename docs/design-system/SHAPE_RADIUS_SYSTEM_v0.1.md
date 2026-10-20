@@ -3,7 +3,7 @@
 **Decision date:** 2026-10-19
 **Design approval [A]:** Adopt a Vercel Geist Materials-inspired principle: corner radius depends on **component type, component size, surface/elevation role, and parent-child geometry**.
 **Candidate [E]:** All initial numeric radius values, aliases and mappings below. No global numeric Radius Scale has yet received final designer approval.
-**Implementation:** Candidate CSS variables added to `packages/design-system/src/tokens.css`, not yet applied to rendered components.
+**Implementation:** Candidate CSS variables are available; BAButton V2 already supports full/pill default and named standard. New interactive numeric mappings require rendered review.
 **Benchmark:** [Vercel Geist Materials](https://vercel.com/geist/materials), used for its **surface role and radius association**, not as a copy of its full material/stroke/shadow definitions.
 
 ## 1. Shape design principles [A]
@@ -52,12 +52,12 @@
 
 | Component | Default candidate | Alternatives / caveats |
 |---|---|---|
-| BAButton | regular control 8px | compact 6px, large 12px; **pill variant** uses full radius |
-| BAField / Textarea | 8px | large/multiline wrapper 12px; preserve text area and caret |
+| BAButton | **full/pill default [A]** | Square icon-only = circle [A]. Figma `standard` remains available; its 8/12/16/24px sized radii are [F/E] |
+| BAField / Textarea | **large radius preference [A]** | Single-line pill is [E] candidate; multiline retains readable area and caret, not a forced capsule |
 | BATabs / Segmented Control | track 12px or full depending approved layout | active indicator radius must match track/inset; do not randomly mix |
 | BAChoice / options | 8px | group container 12px, inner option 8px when inset allows |
 | BAStatus / chip | full for pill label | radius 6px for a squarish status tile when context calls for it |
-| LessonCard / learning card | 12px | compact 6px, larger featured 16px [E]; product artwork may use a distinct approved shape |
+| LessonCard / learning card | **large radius when interactive [A]** | 16px default candidate [E], featured 24px candidate [E]; passive surfaces choose by material hierarchy |
 | Coach panel | 12px | right-side full-height workspace can have 0px at full-bleed edge |
 | Tooltip / small helper | 6px | beware narrow viewport + arrow clipping |
 | Popover/Menu | 12px | keep floating surface separate from underlying card |
@@ -66,7 +66,7 @@
 | Circular task marker / Avatar | 50% | square width/height required for true circle |
 | Long capsule button / progress rail | full | use only if intended pill geometry |
 
-**Important:** these candidate values do not change existing BAButton pill `999px`, BATaskProgress 10px target, or TopBar geometry. Apply changes through the component's own reviewed styling/contracts in later implementation.
+**Important:** the Figma BAButton already defaults Full/Pill, with Standard as a named option. Numeric aliases for interactive cards are candidates only; don't bulk-restyle BATaskProgress or Writing.
 
 ## 5. Concentric corners (nested radius) rule [A method]
 
@@ -122,3 +122,16 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 - Changes to major UI geometry, public Props, product logic, semantic roles or approved Writing interactions still require appropriate designer/Alex review.
 
 **Design reference:** Vercel Geist Materials, https://vercel.com/geist/materials
+
+
+## 10. DESIGN.md v0.5 addendum: interactive shapes [A defaults, E numeric; 2026-10-20]
+
+The UI/UX Designer approved a **stronger interactive shape preference** without discarding role, size, elevation or nested geometry selection. This overrides older suggestions to make the regular BAButton square-ish: **ordinary action buttons default Full/Pill; square icon-only buttons render Circle.** Figma `radius="standard"` is still an explicit alternative, not removed.
+
+Other independently clickable surfaces (learning cards, navigation items/tiles, choice cells) favor **Large Radius**, not universal 9999px. The initial alias `--ba-radius-interactive-large` = `--ba-radius-16` is a candidate [E], as is a possible 24px featured tier. Single-line text field as a pill remains a candidate; textarea, edge-to-edge canvas, table cells and inline links use contextual shapes. Existing Writing geometry and focus outlines are preserved.
+
+**Hierarchy nuance:** more curvature may increase softness or recognition, but does not itself guarantee attention. Contrasting product actions, size, placement, content and whitespace establish hierarchy. If every shape is equally round, shape no longer distinguishes actions. Preserve the visible-inset concentric rule and meaningful focus/disabled/error states.
+
+Approved default intents [A]: `--ba-radius-action-button` (Full), `--ba-radius-icon-button` (Circle on square bounds). Numeric interactive large mapping [E] is explicitly not a full visual signoff.
+
+**Nested interactions:** a child button inside a clickable card must own its action and feedback; the parent should not press/scale simultaneously. Prefer independent semantic activation regions rather than invalid nested buttons/links. See `docs/design-system/INTERACTION_FEEDBACK_SYSTEM_v0.1.md`.
