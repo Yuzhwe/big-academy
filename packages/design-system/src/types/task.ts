@@ -15,8 +15,13 @@ export interface TaskProgressItem {
   /** Activity title. The caller passes the already chosen locale. */
   label: string;
   status: TaskProgressStatus;
-  /** 1-based number drawn in the chip. Defaults to index + 1. */
+  /** 1-based number drawn in the circle. Defaults to index + 1. */
   number?: number;
+  /**
+   * The answer was revealed after the last try. Accessible name uses
+   * “answer shown”, which stays distinct from done.
+   */
+  revealed?: boolean;
 }
 
 export type BALocale = 'en' | 'zh';

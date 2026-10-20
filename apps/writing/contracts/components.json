@@ -285,7 +285,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "New interaction/visual contract in review; current implementation may still use legacy chips/scroll rail. BA-UI-006 owns shared marker rendering and overflow presentation, but not product gate or completion decisions. Do not label code visually approved."
+      "notes": "ActivityScreenIndicator is shared by the top bar and the nonmodal All activity screens popover. Numerals stay visible; done and locked add a lower badge with no connector. Visual status stays in-review. BA-UI-006 does not decide gates or completion."
     },
     {
       "id": "BA-UI-007",

@@ -28,8 +28,41 @@ export interface AlexTask {
     hints?: Bilingual[];
     options?: Bilingual[];
     words?: Record<string, Bilingual>;
+    diagnose?: string[];
   };
   fields?: string[];
+  cells?: string[];
+  distractors?: string[];
+  target?: string[];
+  answer_text?: string;
+  in_order?: boolean;
+  frameFill?: {
+    frame: string;
+    blanks: { label: string; min_words: number }[];
+    vagueLast?: boolean;
+  };
+  start?: string;
+  accept?: string[];
+  rules?: {
+    mustInclude?: { re: string; msg: string; zh?: string }[];
+    mustNotMatch?: { re: string; msg: string; zh?: string }[];
+    noRunOn?: boolean;
+    minWords?: number;
+    minWordsMsg?: string;
+    minWordsZh?: string;
+    notVague?: boolean;
+    capital?: boolean;
+    endPunct?: boolean;
+    stripRe?: string;
+    vagueMsg?: string;
+    vagueZh?: string;
+  };
+  apply?: boolean;
+  criteria?: string[];
+  tip?: Bilingual | string;
+  continue_after?: number;
+  cloze?: boolean;
+  given?: string;
 }
 
 export interface AlexScreen {
@@ -64,6 +97,9 @@ export interface AlexPage {
   teach?: Bilingual | string;
   tasks?: string[];
   task?: string;
+  pool?: string[];
+  writing?: string;
+  auto_per_attempt?: number;
 }
 
 export interface AlexSkill {
@@ -159,12 +195,46 @@ export interface EngineApi {
   tokens: (text: string) => { w: string; start: number; end: number }[];
   skipMode: (status: string, allow: boolean) => 'auto' | 'offer' | 'none';
   stripPictures: (text: string) => string;
+  sameText: (a: string, b: string) => boolean;
+  frameFill: (
+    text: string,
+    frame: NonNullable<AlexTask['frameFill']>,
+    ok?: Bilingual,
+  ) => { correct: boolean; explanation?: string; zh?: string };
+  masteryItems: (page: AlexPage, attempt: number) => string[];
+  masteryPass: (answers: { correct?: boolean; writing?: boolean }[]) => {
+    auto_correct: number;
+    auto_total: number;
+    writing_correct: boolean;
+    score: number;
+    total: number;
+    passed: boolean;
+  };
+}
+
+export interface ApplyCheckResult {
+  passed: boolean;
+  checks: { label: string; met: boolean; tip?: string; zh?: string }[];
+  feedback: string;
+  zh?: string;
+  glow?: string;
+  safety_flag?: boolean;
+  source?: string;
+}
+
+export interface AnalyzerApi {
+  checkApply: (skillId: string, text: string) => ApplyCheckResult;
+  checkProduction: (
+    item: { check?: AlexTask['rules']; success?: string; successZh?: string },
+    answer: string,
+  ) => { correct: boolean; explanation?: string; zh?: string };
 }
 
 export interface AlexSource {
   config: AlexConfig;
   levelPath: LevelPath;
   engine: EngineApi;
+  analyzer: AnalyzerApi;
 }
 
 const cache = new Map<string, AlexSource>();
@@ -209,6 +279,14 @@ export function loadEngine(source: string): EngineApi {
   return factory();
 }
 
+export function loadAnalyzer(source: string): AnalyzerApi {
+  const start = source.indexOf('var Analyzer = (function () {');
+  const end = source.indexOf('</script>', start);
+  if (start < 0 || end < 0 || end <= start) throw new Error('Alex Analyzer script was not found in the source HTML');
+  const factory = new Function(`${source.slice(start, end)}\nreturn Analyzer;`) as () => AnalyzerApi;
+  return factory();
+}
+
 export function loadAlexSource(html: string): AlexSource {
   const cached = cache.get(html);
   if (cached) return cached;
@@ -217,7 +295,7 @@ export function loadAlexSource(html: string): AlexSource {
   for (const level of levelPath.levels) {
     for (const unit of level.units) unit.level = level.id;
   }
-  const loaded = { config, levelPath, engine: loadEngine(html) };
+  const loaded = { config, levelPath, engine: loadEngine(html), analyzer: loadAnalyzer(html) };
   cache.set(html, loaded);
   return loaded;
 }

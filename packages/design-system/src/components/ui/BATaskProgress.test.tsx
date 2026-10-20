@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { TaskProgressItem } from '../../types/task';
@@ -91,8 +91,33 @@ describe('BATaskProgress', () => {
     render(
       <BATaskProgress tasks={rows} activeIndex={4} canOpen={(index) => index < 9} />,
     );
-    expect(screen.getAllByRole('button')).toHaveLength(18);
+    expect(screen.getAllByRole('button', { name: /^Task / })).toHaveLength(18);
+    expect(screen.getByRole('button', { name: 'All activity screens' })).toBeEnabled();
     expect(screen.getByRole('button', { name: `Task 9: ${long}, available` })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Task 18: Activity 18, locked' })).toBeDisabled();
+  });
+
+  it('keeps the numeral and puts the lock under it', () => {
+    render(<BATaskProgress tasks={tasks} activeIndex={2} canOpen={() => true} />);
+    expect(screen.getByRole('button', { name: /Task 1: Learn, done/ }).querySelector('.ba-task-progress__numeral')).toHaveTextContent('1');
+    expect(screen.getByRole('button', { name: /Task 5: Check, locked/ }).querySelector('[data-icon-name="lock"]')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Task 1: Learn, done/ }).querySelector('[data-icon-name="check"]')).toBeInTheDocument();
+  });
+
+  it('names a revealed answer separately from done', () => {
+    const shown: TaskProgressItem[] = [{ id: 'shown', label: 'Build', status: 'done', revealed: true }];
+    render(<BATaskProgress tasks={shown} activeIndex={0} canOpen={() => true} />);
+    expect(screen.getByRole('button', { name: 'Task 1: Build, answer shown' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /answer shown/ }).querySelector('[data-icon-name="check"]')).not.toBeInTheDocument();
+  });
+
+  it('opens every screen in the popover and restores focus on Escape', async () => {
+    const user = userEvent.setup();
+    render(<BATaskProgress tasks={tasks} activeIndex={2} canOpen={(index) => index !== 4} />);
+    const opener = screen.getByRole('button', { name: 'All activity screens' });
+    await user.click(opener);
+    expect(screen.getAllByRole('button', { name: /^Task / }).length).toBeGreaterThanOrEqual(5);
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(opener).toHaveFocus());
   });
 });
