@@ -102,7 +102,7 @@ test('Figma button and segmented gallery preserve visual geometry and local radi
   const panel = page.locator('[aria-labelledby="figma-controls-title"]');
   await expect(panel).toBeVisible();
   await expect(panel.locator('.ba-showcase__figma-matrix-row')).toHaveCount(4);
-  const sizes = await panel.locator('.ba-showcase__figma-matrix-row [data-kind="primary"]').evaluateAll(buttons =>
+  const sizes = await panel.locator('.ba-showcase__figma-matrix-row [data-kind="primary"][data-radius="full"]').evaluateAll(buttons =>
     buttons.map(button => {
       const assembly = button.querySelector('.ba-button__assembly');
       return {size:button.getAttribute('data-size'),height:assembly?.getBoundingClientRect().height};
