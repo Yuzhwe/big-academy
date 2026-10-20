@@ -208,3 +208,78 @@ describe('course slice UI', () => {
     expect(course.inspect().screen).toBe(1);
   });
 });
+
+
+describe('R1 Lesson 1 authored Apply and P7 gates', () => {
+  const atLessonCheck = (course: Session) => {
+    satisfyAll(course, 0);
+    delete course.inspect().done['L2-04.check'];
+    expect(course.openLesson('G2-O', 1)).toBe(true);
+    course.navigateLocal(7);
+    expect(course.screens[course.inspect().screen].screen.id).toBe('L2-04.check');
+  };
+
+  it('presents the authored third assessment question as tapword, without grading before Hand in', () => {
+    const course = session();
+    atLessonCheck(course);
+    course.assessmentQuestion(2);
+    expect(course.activity()?.assessment?.question.id).toBe('tq3');
+    expect(course.activity()?.assessment?.question.type).toBe('tapword');
+    course.answerAssessment([2]); // Our / town / should / ...
+    expect(course.activity()?.assessment?.results).toBeUndefined();
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    course.assessmentQuestion(0);
+    course.answerAssessment([1]);
+    course.assessmentQuestion(1);
+    course.answerAssessment([2]);
+    course.assessmentQuestion(3);
+    course.answerAssessment('I think kids should have a pet at home.');
+    course.pressPrimary();
+    expect(course.activity()?.assessment?.results).toEqual([true, true, true, true]);
+    expect(course.activity()?.assessment?.passed).toBe(true);
+    expect(course.screenDone(course.inspect().screen)).toBe(true);
+  });
+
+  it('keeps failed first hand-in locked, warns once on blanks, and never calls second failure mastery', () => {
+    const course = session();
+    atLessonCheck(course);
+    course.assessmentQuestion(3);
+    course.pressPrimary(); // One unanswered warning, no grade
+    expect(course.activity()?.assessment?.warning).toBe(true);
+    expect(course.activity()?.assessment?.results).toBeUndefined();
+    course.pressPrimary(); // Hand in anyway
+    expect(course.activity()?.assessment?.passed).toBe(false);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    course.pressPrimary(); // Try a new set
+    expect(course.activity()?.assessment?.attempt).toBe(1);
+    expect(course.activity()?.assessment?.question.id).toBe('tq4');
+    course.assessmentQuestion(3);
+    course.pressPrimary();
+    course.pressPrimary();
+    expect(course.activity()?.assessment?.passed).toBe(false);
+    expect(course.activity()?.assessment?.finished).toBe(true);
+    expect(course.screenDone(course.inspect().screen)).toBe(true);
+  });
+
+  it('restores typed Apply text and does not convert Move on into a passed writing check', () => {
+    const storage = createMemoryStorage();
+    const course = session('', storage);
+    satisfyAll(course, 0);
+    delete course.inspect().done['L2-04.apply'];
+    delete course.inspect().done['L2-04.check'];
+    expect(course.openLesson('G2-O', 1)).toBe(true);
+    course.navigateLocal(6);
+    course.setWriting('A garden is good for everyone.');
+    course.pressPrimary();
+    course.pressPrimary();
+    expect(course.activity()?.apply?.tries).toBe(2);
+    expect(course.activity()?.apply?.passed).toBe(false);
+    const resumed = session('', storage);
+    expect(resumed.inspect().screen).toBe(course.inspect().screen);
+    expect(resumed.openLesson('G2-O', 1)).toBe(true);
+    expect(resumed.activity()?.apply?.text).toBe('A garden is good for everyone.');
+    resumed.moveOnApply();
+    expect(resumed.screenDone(resumed.inspect().screen)).toBe(true);
+    expect(resumed.activity()?.apply?.passed).toBe(false);
+  });
+});
