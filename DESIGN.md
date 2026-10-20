@@ -1,25 +1,37 @@
 # Big Academy — DESIGN.md
 
-**Version:** v0.4 DRAFT · Color System v0.2 approved · Unified Code-First Design System · 2026-10-19  
-**Owner:** UI/UX Designer (final visual authority)  
-**Scope:** all Big Academy products. **This is the only DESIGN.md in the repository.** Writing feature-specific requirements and page specifications are combined inside `apps/writing/PRODUCT.md`.  
-**Authority:** approved designer decisions override external design prompts; actual checked component code and Storybook demonstrate implementations but never grant design approval. Product-specific business rules belong in each `apps/<product>/PRODUCT.md`.
+**Version:** v0.5 DRAFT · Visual Language & Interaction Refinement · 2026-10-20
+**Owner:** UI/UX Designer (final visual and UX authority)
+**Scope:** cross-product Big Academy design system. This is the **only root DESIGN.md**; page and learning rules remain in `apps/<product>/PRODUCT.md`.
+**Normative priority:** explicit designer-approved decisions and source-backed component contracts override exploratory prompts; Alex retains Writing business-logic authority. Latest Writing E-01 specification is `apps/writing/PRODUCT.md`, not archived visual demos.
 
-## 1. Overview — one design language, multiple product themes
+**Status legend:** **[A]** designer-approved rule/principle; **[F]** from Figma source, awaiting rendered design acceptance; **[E]** candidate geometry or unapproved numeric mapping; **[T]** working implementation; **[Q]** requires decision. Approval of a rule never implies approval of every rendered component or production readiness.
 
-Big Academy is a K–12 learning ecosystem. Maintain coherent typography, spacing, form controls, navigation, accessible state affordances, layouts and component quality across Writing, Reading and future experiences. Differentiate product identity **primarily through theme color**, without forcing different learning experiences into identical screen structures.
+## 1. Design Principles & Visual Language
 
-- **Global:** Design Tokens; semantic color roles; typography rhythm; spacing, shape, borders, focus, responsiveness, motion, components.
-- **Theme:** product-owned accent/background mappings (e.g. Writing) and permitted decorative accents.
-- **Product-specific composition:** Writing's staircase, Coach, paper workspace, Word Grid and Hamburger are distinct components/patterns. Their **page-specific requirements and UX specifications live together in `apps/writing/PRODUCT.md`**, their Props/Events/States live in the Component Registry, and their shared design foundations live **here**. Do not duplicate detailed page requirements or learning/scoring rules inside this global document.
-- **Figma:** optional exploration, never a mandatory build input.
-- **Implementation status:** the shared library and Storybook pilot are on `feat/grokbot-writing-topbar`. The theme there is explicitly *temporary* and **not visually approved**.
+### 1.1 Light, calm, intentionally expressive [A, 2026-10-20]
 
-Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candidate; **[R]** reference-only; **[T]** working temporary implementation; **[Q]** open decision.
+Big Academy uses **light minimalist composition with low visual noise**: white and restrained near-white surfaces, soft neutral boundaries, deliberate whitespace, legible typographic hierarchy, and selectively applied subtle elevation. Interaction should feel approachable and friendly for K–12 without flattening the learning hierarchy.
 
-## 2. Colors & Product Themes
+1. **Low visual noise is not low text contrast.** Backgrounds, decorations and dividers can be subtle; reading text, icons conveying actions, focus rings, validation, selected and disabled meanings must remain independently perceivable and accessibility-tested. Do not set all text to pale gray.
+2. **Theme personality is retained.** White `#FFFFFF` task canvas and approved warm `#FEF9EF` Writing frame coexist with Big Academy brand ink `#133547` and Writing action accent `#B25415`. Neutral surfaces are the foundation, **not** a ban on approved semantic product colors. Never invent Reading's theme.
+3. **Use roundness to express affordance, then hierarchy.** Greater curvature often feels softer and can distinguish a control's silhouette, but it **does not inherently guarantee more attention**. Size, contrast, placement, content and space establish actual priority. Pill-shaped primary and secondary buttons differentiate action role with color and content—not an arms race in curvature.
+4. **Depth is earned, not universal.** Use a named Figma Elevation style only where the layering needs it. A shadow is not required merely because a surface is clickable.
+5. **Spatial and type discipline.** 4px base / 8px main rhythm, Element First controls and Content First learning layouts, locally consistent icon/text optical alignment and approved sans-serif families.
+6. **Accessibility outweighs stylistic softness.** Maintain discernible boundaries, keyboard focus, disabled and error states, stable touch targets, EN/ZH legibility and OS reduced-motion preferences.
 
-### 2.1 Known colors (do not invent other product themes)
+### 1.2 Scope of these rules
+
+- **Design principle:** defaults govern new BA Components and new feature instances; do not secretly migrate signed-off product geometry or change product state.
+- **Executable values:** `packages/design-system/src/tokens.css` owns primitive → semantic → optional component aliases; CSS is the single numerical source of truth.
+- **Authority:** Figma-backed component variants may deliberately differ from a foundation default; the exception must remain named (e.g. Button `radius="standard"`) and auditable in its Contract.
+- **Composition:** passive content canvas may be square, low-radius or edge-to-edge. Product-specific arrangement belongs in PRODUCT.md.
+
+## 2. Visual Foundations
+
+#### 2.1.1 Color & Product Themes
+
+#### 2.1.1 Known colors (do not invent other product themes)
 
 | Role / candidate token | Value | Status | Use / caveat |
 |---|---|---|---|
@@ -34,7 +46,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 
 `#B25415` on white has approximately **5.03:1** contrast and is suitable for normal-size AA text. White on `#B25415` also passes AA normal text. On `#133547` (2.56:1) or `#4E3B24` (2.11:1), it does not pass AA for normal text. Recalculate for hover, disabled, focus and actual tinted backgrounds; do not assume one contrast result validates every combination.
 
-### 2.2 Approved theme scope — Decision B [A, 2026-10-19]
+#### 2.1.2 Approved theme scope — Decision B [A, 2026-10-19]
 
 **Product Color Themes use accent colors plus subtle tinted backgrounds.** This is the approved architectural direction, not approval of any new individual hex values, color ramps or CSS selector API.
 
@@ -43,7 +55,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 - **Boundaries:** Writing remains A · Warm Frame + White Canvas; its warm background `#FEF9EF` is approved [A] at warm-1. Reading accent and all Reading tint values remain [Q]. The amount/placement of additional tints and exact colors are chosen by the UI/UX Designer in later visual review.
 - **Implementation implication:** shared reusable components read semantic aliases such as `--ba-color-action-primary`, not a Writing-specific primitive. App-level product theme resolves those aliases. Exact token spelling/theme selector remains an [E] proposal until Token Architecture approval.
 
-### 2.3 Token Architecture — approved P0-2 [A, 2026-10-19]
+#### 2.1.3 Token Architecture — approved P0-2 [A, 2026-10-19]
 
 **Approved architecture (not approval of every token value or name):**
 
@@ -51,11 +63,10 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 2. **CSS custom properties (CSS Variables) are the current *single executable source of truth*.** Store and maintain token values in the shared design-system source; do **not** hand-maintain a competing JSON/Figma token value set. If cross-platform tooling is needed later, approve a migration and generate derivative outputs automatically.
 3. **Product themes are selected at application/shell level; shared components consume semantic variables.** For example, a Writing app shell resolves a generic `--ba-color-action-primary` to the approved Writing accent. A reusable BAButton never needs `product="writing"` or a direct `--ba-writing-accent` dependency just to get its primary color.
 
-**Scope / approval boundaries:** Theme B (accent + subtle tinted backgrounds) is approved [A]. The original P0 decision left exact CSS names, selector, color scales and individual tints open. The designer's later Color System v0.2 decision in §2.4 approves the new names, eight color scales, Writing selector and approved warm surface; Reading and new unlisted color values remain [Q]. Reading accent remains TBD. Shared focus, disabled and feedback semantics cannot silently change meaning when product theme changes. Validate computed foreground/background contrast and keyboard focus in each product theme.
+**Scope / approval boundaries:** Theme B (accent + subtle tinted backgrounds) is approved [A]. The designer's Color System v0.2 decision in §2.1.4 approves the new names, eight color scales, Writing selector and approved warm surface; Reading and new unlisted color values remain [Q]. Reading accent remains TBD. Shared focus, disabled and feedback semantics cannot silently change meaning when product theme changes. Validate computed foreground/background contrast and keyboard focus in each product theme.
 
-**Implementation handoff:** Grokbot pilot CSS on `feat/grokbot-writing-topbar` still directly uses `--ba-writing-accent` in shared BAButton. Migrate it to semantic aliases without intentional visual changes; add verification in stories and browser testing. That implementation branch was not modified by this architecture decision.
 
-### 2.4 Color System v0.2 — designer-approved [A, 2026-10-19]
+#### 2.1.4 Color System v0.2 — designer-approved [A, 2026-10-19]
 
 **Direct approval recorded:** the UI/UX Designer requested that the remaining Big Academy palette be completed using the Geist-inspired ten-step role structure and approved without a separate testing/review round. This approves the **color architecture, eight solid-color scales, anchor values and role maps** described in `docs/design-system/COLOR_SYSTEM_v0.2.md`. It does **not** certify engineering behavior or production accessibility.
 
@@ -66,11 +77,11 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 - Reading primary/tint remain undecided; do **not** invent them. Dark mode, alpha scales and component spacing/radius approvals remain separate.
 - No component, browser, Storybook, or accessibility tests were run **as explicitly requested**. Color-system **design approval [A]** must not be confused with engineering `verified` or visual approval of unreviewed rendered components.
 
-## 3. Typography — Foundation A [A, 2026-10-19]
+#### 2.2 Typography — Foundation [A]
 
 **Approved direction:** One coherent typography system across **all** Big Academy products, with **expressive display/heading typography plus highly readable body/learning text**. UI labels use the shared text-role system rather than a separate product-specific font identity. The display and body roles **may** use different typefaces; two separate families are not mandatory.
 
-### Shared text roles (architecture approved; exact style values pending)
+#### Shared text roles (architecture approved; exact style values pending)
 
 - **Display:** expressive brand/learning headlines, used selectively; preserve legibility for younger learners.
 - **Heading:** lesson, page and sectional hierarchy, consistent with display intent without excessive decoration.
@@ -78,11 +89,11 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 - **Label / Control:** buttons, tabs, task status, short interface labels; remain legible at practical sizes.
 - **Supporting / Caption:** metadata and secondary copy that must remain accessible; not automatically "tiny."
 
-### English and Chinese
+#### English and Chinese
 
 Both languages share the **same semantic text roles and hierarchy**, but can select different font families or fallbacks for correct CJK coverage, balance and rendering. A localized screen should be monolingual rather than duplicating EN/ZH side-by-side. Verify line breaks, CJK punctuation, long lesson names, zoom/text scaling and mixed-language input.
 
-### Approved font assignments [A, 2026-10-19]
+#### Approved font assignments [A, 2026-10-19]
 
 The UI/UX Designer has explicitly selected the following **font roles**. These are no longer reference-only options.
 
@@ -98,9 +109,9 @@ The UI/UX Designer has explicitly selected the following **font roles**. These a
 
 **Explicitly deferred [Q]:** numeric font-size scale, line heights, letter spacing, chosen weights for Jost/Douyin/Noto Sans SC, UI control typography details, font asset source/version, license/distribution verification, performance strategy and fallback behavior. A temporary system-font stack [T] may remain in existing implementation until these font assets have been legally and technically verified; an installed fallback is **not** a change to the approved font choices. Do not bundle any font file before confirming its license. Verify actual font loading and EN/ZH/digit specimens in Storybook before visual sign-off.
 
-## 4. Layout & Spacing
+#### 2.3 Spatial, Grid & Layout
 
-### Spatial, Grid & Layout System v0.2 [A principles, E values · 2026-10-19]
+#### Spatial, Grid & Layout System v0.2 [A principles, E values · 2026-10-19]
 
 The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, supported by **Element First / Content First** sizing, context-sensitive **Column / Modular / Baseline Grid**, and **Responsive / Adaptive / Strict** layout strategies. Full rules and statuses: `docs/design-system/SPATIAL_GRID_LAYOUT_SYSTEM_v0.2.md`.
 
@@ -117,85 +128,93 @@ The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, sup
 - Responsive behavior is defined by available layout space and verified in browser; test desktop 1440×900 and tablet 1024×768, 834×1112. A 390px mobile smoke test is useful; mobile remains secondary for current Writing pilot.
 - Shared layouts should be implemented as primitives/slots where reusable, not mandated as one rigid template.
 
-### Writing page patterns [A unless noted]
+### 2.4 Shape & Radius — role-first selection [A method + new defaults, E numbers]
 
-**E-01 Staircase:** the **diagonal lower-left → upper-right learning-path interaction is the agreed target**; its complete page-specific requirements and A/B verification protocol are in `apps/writing/PRODUCT.md` (one combined PRODUCT + page specification). Lesson number top-left on every card. Start / Continue / Review / Locked actions; preserve distinct skipped indicator. Insert one Unit Milestone after each Unit and Level Goal after final Unit. Their progress and confetti eligibility are product logic, not CSS. **A/B visual review only [E]:** Variant A explores the *historical* cream cards + thin platform + subordinate light beam + dusk gradient; Variant B explores Warm Frame + White Canvas without platform/beam. The historical dark treatment is **not** a reversal of the approved overall Writing visual direction. Both remain visually unapproved; geometry parameters/surfaces require browser evidence and designer decision.
+**Canonical detail:** `docs/design-system/SHAPE_RADIUS_SYSTEM_v0.1.md`. The Geist-inspired principle remains: first classify **purpose, size, layer/elevation and nested visible insets**. This v0.5 decision adds stronger interactive defaults.
 
-**Lesson Shell:** A · **Warm Frame + White Canvas**. White task/paper on left, Coach on right. Coach content scrolls independently; Back plus one contextual Check / Next / Hand in control live in a bottom footer **outside Coach**, pinned to the right column bottom. Ordinary visual borders/dividers default **0.5 CSS px [A]**; thicker functional focus rings remain [T/Q] and must visibly distinguish focus.
+| Role | New default [A] | Numerical review boundary |
+|---|---|---|
+| **All ordinary BA action buttons** (Primary/Secondary/Tertiary) | **Full/Pill**, regardless of color or size | `--ba-radius-action-button: var(--ba-radius-full)`; Figma `standard` remains an explicit supported shape variant |
+| **Icon-only action buttons** | **Circle**, visually square width and height | `--ba-radius-icon-button: var(--ba-radius-circle)`; maintain ≥44px usable hit area or documented exception |
+| **Tabs & segmented selection** | Large/Full rounded group plus congruent selected surface | Both share Figma Segmented appearance and React Aria semantics appropriate to each |
+| **Other clickable components** (cards, tiles, option surfaces, menu/nav items) | **Large Radius by default**, as a class of surface rather than automatic `9999px` | Candidate shared alias `--ba-radius-interactive-large: var(--ba-radius-16)`; bigger surfaced items may opt into 24px after component review |
+| **Single-line text fields** | Soft, strongly rounded; **pill as a candidate**, not approved for every form factor | Text/caret, prefix/suffix, validation and long EN/ZH content decide actual geometry |
+| **Textarea / long content, whole-page canvas, edge-to-edge regions, inline links, table cells** | Use context geometry; no enforced pill | A multi-line textarea need not be a capsule; inline text links have no standalone rounded rectangle |
+| **Passive surfaces** | Size/material-dependent radius, not determined by whether the surface can be clicked incidentally | Existing 0/4/6/8/12/16/24px primitive numeric scale remains [E] |
 
-**BA-WR-001 LessonTopBar [A structure, E dimensions]:** remove collapsible menu. Left: Back + current Lesson name + only necessary tags; centered: real current-Lesson task numbers and completion statuses; right: no visible action. Task group must be geometrically centered in the **whole bar**, regardless of left-side title length. Do not hard-code task count. Keep skipped distinguishable, and never determine access by visuals. Long titles must not push progress or cause hidden task navigation. 80px desktop / 76px tablet, warm `#FEF9EF`, task marker 36px and scroll rail are **pilot candidates [T]**, not approved measurements. Removed menu capabilities remain a product-placement question.
+**Principle clarification:** curvature strengthens a friendly affordance and differentiates controls from content, but actual visual attention depends on relative contrast, prominence, color, spacing and area. If everything is pill/large, radius ceases to distinguish hierarchy. Do **not** promote every passive card to clickable merely to get bigger corners.
 
-**Word Grid:** task-gated inside left writing area. Multiple groups switch real vocabulary using tabs; active tab is visually connected to its panel. Tablet uses **on-demand overlay** in left area, preserving active caret and final writing line, and must not cover Coach/Footer.
+**Concentric geometry:** when parent and child shapes have visible rounded outlines, use `outerRadius ≈ innerRadius + actualInset` as a starting heuristic; clip neither focus nor selected state. Within the same component family, preserve its shape across hover, pressed, focus, disabled unless an explicit shape variant is chosen. Never round a Writing staircase anchor or 0.5px ordinary border to the spacing grid.
 
-**P6 Hamburger:** each row is **one shared visual layer**, label and editable content on same background. Focus changes whole-layer treatment and gives editable line a clear underline, no nested white input card. Distinguish P5 paragraph scaffold colors from P6 plan-layer palette; do not mix them.
+**Approval boundary:** defaults above [A]; exact 16/24px mapping [E]. Do not silently rewrite existing `BAButton standard` instances, current input fields or Writing scene geometry. Newly authored button instances default Full, with a documented opt-in Standard.
 
-**Other P1–P7 templates:** unique structure/feedback from Alex product source, visually informed by `apps/writing/source/Writing-activity-style-prompt.md`; that reference's simplified P1/P7 and generic completion logic **cannot override Alex**.
+### 2.5 Elevation & Effects — Figma source [F] / usage [E]
 
-## 5. Elevation & Depth
+Canonical source: [Big Academy Figma Effect Styles, node 15:5](https://www.figma.com/design/06PPYhEQn3CqVYGlfopJWx/Big-Academy-Design-System?node-id=15-5). **Elevation communicates stacking and separation, not decoration.** All effect colors use base `rgb(7,46,81)`, spread `0`.
 
-Prefer restrained surfaces and hierarchy in learning views. White Paper should read clearly against the light Warm Frame. Ordinary borders are 0.5 CSS px [A] with tested contrast; do not replace accessibility focus, selected, error or other meaningful boundaries with low-contrast decorative hairlines.
+| Effect | Exact Figma-derived source geometry | Semantic implementation |
+|---|---|---|
+| Elevation/100 | 0 0 2px @5% + 0 2px 4px @10% | `--ba-effect-elevation-100` |
+| Elevation/200 | 0 4px 16px @5% | `--ba-effect-elevation-200` |
+| Elevation/300 | 0 2px 2px @5% + 0 8px 24px @10% | `--ba-effect-elevation-300` |
+| Elevation/400 | 0 0 2px @15% + 0 8px 24px @15% | `--ba-effect-elevation-400` |
+| Blur/Background/20 | Figma radius 20; exported CSS `blur(10px)` | `--ba-effect-blur-background-20` |
 
-Elevation tokens, popover layers, floating Word Grid shadows and Coach treatment remain [Q]; do not clone the dark/wood/strong-glass visual Demo as default.
+Figma blur radius and exported CSS pixels are **not presumed equivalent**; visually verify before approving. Button V2's **3px lower physical border** is not a generic shadow. Ordinary Writing boundaries remain **0.5 CSS px** except visible functional focus/validation outlines. Existing Figma effect values are source-backed; overlay/card-to-elevation mappings still need component review. No default blanket shadow.
 
-## 6. Shapes
+### 2.6 Iconography — Iconoir [A]
 
-### BA-DS-RADIUS-001 · Shape & Radius System v0.1 [A principles, E values · 2026-10-19]
+**Approved source:** [Iconoir](https://iconoir.com/#icons) is the Big Academy system's standard icon library. React apps should use the maintained `iconoir-react` package through a Big Academy-facing `BAIcon` interface where practical, instead of independently introducing other general-purpose icon sets. Iconoir is distributed under the MIT license: preserve required copyright/license notices in redistributed copies.
 
-**Approved method:** Inspired by [Geist Materials](https://vercel.com/geist/materials), choose radius from **surface type, component size, visual/elevation role, and nested geometry**; never assign random rounded corners. Detailed decision tree and component mapping: `docs/design-system/SHAPE_RADIUS_SYSTEM_v0.1.md`.
+**Boundaries:** This decision selects the icon family, **not** every icon glyph, icon-to-action mapping, line thickness, size, optical alignment or approved full icon component API. Establish a small accessible icon mapping in the component registry/Storybook during P1; meaningful icon-only controls require names and visible keyboard focus. Decorative assets (e.g. staircase platform illustrations or milestone artwork) are **not interchangeable with UI icons** and must be separately reviewed. Any exceptions or custom artwork should be tracked explicitly rather than silently mixing libraries.
 
-1. **First classify the surface:** full-bleed canvas (square edge), on-page base/small/medium/large material, or floating tooltip/menu/modal/fullscreen. The bigger/floating tier *may* use a larger corner, but must not assume every overlay needs a large shadow.
-2. **Then check the component size/variant:** small controls need restrained corners; regular/large controls may widen; explicit pills use a full capsule, circular task markers use a 50% radius on square boxes. Ordinary button and field sizes are not forced to be pills.
-3. **Use shared semantic component/material roles** instead of manually writing `border-radius: 10px` in each new component. Responsive variants must retain intended shape identity; only change radius if the layout/presentation actually changes.
-4. **Concentric/nested corners:** starting rule `outerRadius ≈ innerRadius + visibleInset` when both boundaries are visible. For example, a 12px outer radius plus a 4px inset commonly pairs with an 8px inner radius. Inspect asymmetric insets and clipping; this is a visual heuristic, not a universal equation.
-5. **Focus/overflow/feedback first:** never clip focus outlines, reduce touch targets or hide error/selected states to satisfy a prettier corner. Preserve Writing `0.5px` ordinary borders as a separate concern.
-6. **Material discipline:** choose the least raised surface that establishes hierarchy; avoid stacking two material treatments on the same element; coordinate radius with stroke, fill, shadow and z-index instead of treating radius as isolated decoration.
-7. **Product boundaries:** product-specific geometry (Writing Staircase, Coach, UnitMilestone) remains under Writing layout and component contracts; no global radius migration without designer review.
+## 3. Interaction Feedback & Motion
 
-**Candidate primitive scale [E]:** `0, 4, 6, 8, 12, 16, 24px`, `full=9999px`, `circle=50%` in `packages/design-system/src/tokens.css`. Initial **material candidates [E]**: base/small 6px; medium/large 12px; tooltip 6px; menu/modal 12px; fullscreen 16px. Initial component candidates [E]: regular Button/Field 8px, normal Card 12px, chips pill/full, square marker circle/50%; all detailed in the linked spec. **No final numeric Radius Scale has been approved.** Existing 999px pills and 10px progress corners remain [T] until separately reviewed.
+### 3.1 Separate **Target** from **Transition** [A, 2026-10-20]
 
+**Interaction Target** = what a state looks like: target `scale`, `opacity`, `background`, `border`, and indicator position. **Motion Transition** = how the target is reached: Spring (`stiffness/damping/mass`) or CSS `duration/easing`. Do not mix target values into Spring definitions or pretend CSS Spring tokens already animate anything.
 
-## 6.1 Motion & Interaction Physics
+**State priority:** disabled/pending suppress hover/press → pressing overrides hover → hover overrides default. Keyboard `focus-visible` is orthogonal and may coexist without becoming pressing. Selection and validation are persistent semantic states independent of transient feedback.
 
-### BA-DS-MOTION-001 · Interim Motion System v0.1 [A temporary adoption · 2026-10-19]
+| BAButton state | Scale target [A] | Opacity target [A] | Notes |
+|---|---:|---:|---|
+| Default | 1.00 | 1.00 | Natural assembly size |
+| Hover | **1.02** | 1.00 | Does not shift layout or target |
+| Pressing (pointer/key activation) | **0.95** | **1.00** | Preserve Figma Button V2; pressed wins over hover |
+| Disabled / Pending | 1.00 | component-defined | No transient hover/press; visible accessible disabled/busy state |
+| Focus-visible | no additional scale by default | no forced fade | Clear focus outline; not a held pressing state |
 
-The UI/UX Designer explicitly chose to **temporarily reuse all Spring parameter groups in the third-party Open Claude UI `ClaudeMotionPresets.ts`** to save preparation time. Treat this as an interim baseline, **not** a claim that Anthropic formally published or endorsed those parameters. The inspected upstream `AGENTS.md` disagrees with the actual source file; **source-file values take precedence**. Detailed mapping, reduced-motion requirements and provenance: `docs/design-system/MOTION_SYSTEM_v0.1.md`.
+The rejected proposal `pressing = 1.03 + opacity 0.50` is **not** a Big Academy default. Do not use `opacity:0.5` across control text/icons/focus as the global pressed state; it may make learning controls illegible. For controls other than BAButton, scale/opacity targets are *component-specific candidates*, not automatically inherited from Button. In particular, **text fields do not keep scaling while focused**, Tabs/Segmented must preserve selected state, and drag surfaces need stable geometry.
 
-| Source Spring group | Stiffness | Damping | Mass | Initial candidate role |
-|---|---:|---:|---:|---|
-| `SPRING_BOUNCY` | 600 | 30 | 1.0 | buttons/small controls |
-| `SPRING_SNAPPY` | 320 | 28 | 1.0 | popover/card reveals |
-| `SPRING_GENTLE` | 380 | 18 | 1.0 | brief celebration micro-feedback |
-| `SPRING_HEAVY_SNAP` | 1200 | 80 | 0.1 | panel/drag snapping |
-| inline bubble-enter spring | 450 | 24 | **unspecified** | message/bubble reveal |
-| inline modal-enter spring | 400 | 32 | **unspecified** | dialog reveal |
+Scale the **visual assembly about its center**, not the interactive hit region or layout box. A hit region keeps its geometry for pointer/touch/keyboard consistency; siblings must not reflow. Pressing ends correctly on release, cancel, pointer departure or disabled transition. Keep action semantics independent of animation completion.
 
-**Source rule:** Copy exact numerical values into CSS custom properties once; do not maintain conflicting hardcoded TS numeric tables. Inline masses were omitted upstream and must remain **unspecified**, not invented as explicit 1.0. CSS Tokens remain the current numerical source of truth; future JS animation adapters must resolve CSS values at runtime rather than duplicate constants. CSS values by themselves do not implement animation.
+**Executable target aliases:** `--ba-feedback-button-default-scale`, `--ba-feedback-button-hover-scale`, `--ba-feedback-button-press-scale`, `--ba-feedback-button-press-opacity` in shared `tokens.css`. These are BAButton targets, **not** universal CSS wildcard selectors.
 
-**Motion rules:** use springs only for purposeful state changes; avoid distracting movement during reading/writing/IME composition and do not gate business logic on animation completion. Respect `prefers-reduced-motion: reduce` with an equivalent immediate state change. Preserve accessible focus, dismissal, navigation, scroll and status feedback. Temporary spring adoption does **not** approve any specific rendered animation, component choreography, additional animation dependency or production release.
+### 3.2 Motion Transition — Interim Springs [A/T]
 
+Existing temporary Open Claude UI Spring groups remain unchanged: `BOUNCY 600/30/1`, `SNAPPY 320/28/1`, `GENTLE 380/18/1`, `HEAVY_SNAP 1200/80/0.1`, bubble-enter `450/24/(mass unspecified)`, modal-enter `400/32/(mass unspecified)`. Exact source/purpose/limitations in `docs/design-system/MOTION_SYSTEM_v0.1.md`.
 
-### BA-DS-ELEVATION-001 · Figma Elevation / Shadow [source-backed; visual-review]
+- **Spring** controls the way the target changes, not the target scale itself; runtime adapter is not yet shipped. Until then, existing CSS `200ms cubic-bezier(.2,0,0,1)` BAButton transitions remain temporary [T], not falsely described as Springs.
+- Use one purposeful transition per relevant state change. Do not gate lesson completion or navigation permissions on animation.
+- Respect `prefers-reduced-motion: reduce`: suppress nonessential scaling/travel/bounce while preserving visible immediate selection, focus and status. Preserve scroll, IME composition, keyboard, touch and pointer cancellation.
+- Figma may specify distinct interactions (e.g. a moving segmented selected surface); preserve explicit component source behavior until designer approval of any change.
 
-Figma [Elevation 15:5](https://www.figma.com/design/06PPYhEQn3CqVYGlfopJWx/Big-Academy-Design-System?node-id=15-5) frame `25:2`: 用层级而不是装饰表达浮层关系；组件引用 Effect Style，不复制阴影。
+### 3.3 Nested interaction feedback ownership [A, 2026-10-20]
 
-- Elevation/100: `0 0 2 0 subtle + 0 2 4 0 default`.
-- Elevation/200: `0 4 16 0 subtle`.
-- Elevation/300: `0 2 2 0 subtle + 0 8 24 0 default`.
-- Elevation/400: `0 0 2 0 strong + 0 8 24 0 strong`.
-- Effect colors: subtle/default/strong = rgba(7,46,81, .05/.10/.15).
-- Blur/Background/20: Figma effect radius 20, exported CSS backdrop-filter blur(10px).
+**One interaction has one primary action owner and one transient feedback owner.** A card containing a Start control is NOT an invitation to fire and animate both ancestors and descendants.
 
-Exact executable tokens: `--ba-effect-shadow-*`, `--ba-effect-elevation-*` and `--ba-effect-blur-background-20` in shared tokens.css. Component elevation assignments still require context-specific design review. Button V2's 3px physical lower border is not a generic shadow.
+1. **Prefer semantic siblings, not interactive descendants:** avoid HTML `<button>` containing another `<button>`, or links wrapping nested interactive controls. A card action may use a stretched-link / separated button layout with nonoverlapping activation regions, respecting focus order.
+2. **Owner resolution:** pointer / touch / keyboard activation on a nested child assigns press feedback and action to the **child**; ancestors must suppress their own press/hover visual feedback when the pointer is over that interactive descendant. Activating the parent's own empty area belongs to the parent.
+3. **Event and visual separation:** `stopPropagation()` alone does **not** prevent ancestor CSS `:hover`, capture handlers or all keyboard handling. Choose a deliberate mechanism (separate DOM activation regions; scoped state/event ownership; appropriate `:has()` suppression when validated). Do not install universal event interception that blocks child behavior.
+4. **Termination and precedence:** pointerup/pointercancel, movement outside ownership region, lost pointer capture, blur/cancel, disabled/unmount/scroll interruptions must release pressing state. A focused field remains focused without retaining press. Hover resumes if genuinely hovered; don't stack parent+child scale/opacity.
+5. **Accessible equivalence:** each action has a distinguishable accessible name, focus order and keyboard behavior. Parent selection and child action semantics remain independent. Tests cover mouse, touch, pointer cancel, keyboard, reduced motion and nested disabled cases.
+6. **No product side effects:** nested visual feedback may never decide Writing unlock, scoring, skip or navigation permissions. Product actions use the canonical PRODUCT/Component Contract handler.
 
-**Tabs appearance decision:** Tabs share Segmented Control visual anatomy/size/radius/selected surface while preserving React Aria Tabs/TabList/TabPanel behavior. Segmented uses RadioGroup and has no panel. Writing E-01 geometric header alignment and level navigation rules remain authoritative. Final rendered approval remains separate.
+Canonical implementation checklist: `docs/design-system/INTERACTION_FEEDBACK_SYSTEM_v0.1.md`. Component Contracts own documented exceptions. **This approval is a behavioral design contract, not a claim all existing nested cards have been audited or fixed.**
 
-## 7. Components
+## 4. Component System & Implementation Boundaries
 
-Foundation: **React Aria Components** for accessible headless button, tabs, field and overlay behavior. Use native semantics where React Aria does not supply an exact business-level component.
-
-Shared BA IDs from `apps/writing/contracts/components.json`: `BA-UI-001` … `BA-UI-007`. Writing composites: `BA-WR-001` … `BA-WR-006`.
-
-### Component Architecture — P0-4 · Progressive Componentization [A, 2026-10-19]
+### 4.1 Code-first component boundaries [A]
 
 **Approved strategy: develop necessary shared foundation primitives first, allow product-specific components to be built independently, and extract cross-product Shared Patterns only after demonstrated reuse.** Do not attempt a complete speculative component catalog in advance.
 
@@ -212,7 +231,27 @@ Every reusable component needs stable ID, Props, Events, States, Slots (when app
 
 When changing a token, run its affected component stories, accessibility/contrast checks, and impacted product layouts. Do not assert that a JSX file alone is a design reference unless it is reproducible and reviewed.
 
-### Design Governance — P0-5 · Lightweight Governance [A, 2026-10-19]
+### 4.2 Reusable feedback and component ownership
+
+React Aria provides headless keyboard/pointer/a11y state; BA Components map semantic Tokens and state to presentation. Do **not** apply one global `:hover {transform:...}` selector to every clickable element. Use component-specific target profiles and a shared implementation pattern, with one visual owner per interaction.
+
+- **BAButton** defaults `radius="full"`; Figma `radius="standard"` remains explicit. It uses its own visible assembly so hit testing does not reflow. An icon-only button must remain circular if its visual bounds are square.
+- **BASegmentedControl** owns local radio choice; **BATabs** owns TabPanels and navigation. Their shapes and indicator visuals match per the designer decision, but their behavior and ARIA contracts are distinct.
+- **Cards/tiles/choices** should be large-radius when clickable; do not set card-level scales in a way that magnifies an active nested button. Large-radius aliases are [E] for numeric values until stories/screenshots are signed off.
+- **BAField/Textarea** needs stable typing geometry, caret and error/focus outline; inputs are not BAButton.
+- Contract/Storybook must record states, hit vs visual layer, shape exceptions, nested ownership, touch/keyboard, and reduced motion. No component is visually approved solely by compilation.
+
+## 5. Product Themes & Page Composition
+
+Different products share foundations; product themes may provide allowed subtle accents and surfaces without changing the meanings of focus/success/error/disabled. Writing is **A — Warm Frame + White Canvas** [A]; Reading theme remains [Q].
+
+**Do not duplicate page specs in this file:** full Writing UX/behavior rules belong in `apps/writing/PRODUCT.md`. E-01 is a **lower-left to upper-right** navigable diagonal staircase. Its current A/B exploration is **A separate stepped platforms vs B continuous slope with per-step anchor ticks**, with **card.bottom = pedestal/anchor Y**, independent of content height. The current header is **left Level title | geometrically centered React Aria Level Tabs | right language**. Both A and B share the same Writing palette and Alex state; neither is final visually. Do **not** revive archived dark/dusk A/B palettes, old platform/beam-as-color comparisons, fake unlock logic or card-top alignment.
+
+Other Writing patterns: White task/paper on left, independently scrolling Coach at right, contextual bottom navigation outside Coach; Word Grid content switching inside writing space; P6 Hamburger row uses one shared visual layer for label and editable line. **The precise layout, task prompts and P1–P7 behavior must be read from Product and component contracts**, not recreated from this cross-product summary.
+
+## 6. Governance, Sources & Review
+
+### 6.1 Review authority and independent approval [A]
 
 **Approved:** AI Agents may autonomously perform routine implementation that follows existing contracts and design rules. **Significant changes require review**, but routine fixes must not be blocked by unnecessary approval ceremonies. GitHub feature branches, Pull Requests, the Component Registry, `/DESIGN.md`, product `PRODUCT.md` and `docs/HANDOFF.md` are the project record. Do not rely on chats as the only source of authority.
 
@@ -235,26 +274,12 @@ When changing a token, run its affected component stories, accessibility/contras
 
 **Stage:** governance policy is approved [A]; the full dual-status schema, CI checks, branch protections and PR templates are **not yet implemented**. Keep initial workflow lightweight, audit in P1 as useful rather than constructing a large approval platform.
 
-### Shared Icon Library — Iconoir [A, 2026-10-19]
+### 6.2 Change discipline and linked source documents
 
-**Approved source:** [Iconoir](https://iconoir.com/#icons) is the Big Academy system's standard icon library. React apps should use the maintained `iconoir-react` package through a Big Academy-facing `BAIcon` interface where practical, instead of independently introducing other general-purpose icon sets. Iconoir is distributed under the MIT license: preserve required copyright/license notices in redistributed copies.
+- **Source priority:** product/business decisions → product `PRODUCT.md`; shared design decisions → root `DESIGN.md` and linked foundation specs; actual component Props/Events/States → component Contract; live numerical values → shared CSS Tokens; implementation evidence/state → `docs/HANDOFF.md` and PRs. A Figma file supplies component visual evidence, but design acceptance still requires the UI/UX Designer.
+- Detailed specs: `docs/design-system/COLOR_SYSTEM_v0.2.md`; `SPATIAL_GRID_LAYOUT_SYSTEM_v0.2.md`; `SHAPE_RADIUS_SYSTEM_v0.1.md`; `MOTION_SYSTEM_v0.1.md`; `INTERACTION_FEEDBACK_SYSTEM_v0.1.md`.
+- Visual references: Figma Button node `30:2`; Segmented `806:3`; Elevation `15:5`. Tabs intentionally share Segmented appearance. Existing numeric styles remain source-derived or candidate until actual render sign-off.
+- **Do:** reuse shared semantic Tokens, differentiate visual target and motion process, preserve accessible focus/contrast/EN-ZH, avoid nested double actions, document exception/approval in contracts.
+- **Do not:** create a second Writing DESIGN.md, invent Reading colors, treat historical demos as live authority, convert opacity reduction into universal pressing, confuse button bottom depth with Elevation, duplicate product rules, or mark unreviewed visuals Final.
+- **Evidence and status:** current engineering branches and test results are tracked in `docs/HANDOFF.md` / associated PRs instead of dated claims in the evergreen DESIGN.md. Visual acceptance and engineering verification remain independent.
 
-**Boundaries:** This decision selects the icon family, **not** every icon glyph, icon-to-action mapping, line thickness, size, optical alignment or approved full icon component API. Establish a small accessible icon mapping in the component registry/Storybook during P1; meaningful icon-only controls require names and visible keyboard focus. Decorative assets (e.g. staircase platform illustrations or milestone artwork) are **not interchangeable with UI icons** and must be separately reviewed. Any exceptions or custom artwork should be tracked explicitly rather than silently mixing libraries.
-
-## 8. Do's and Don'ts
-
-**Do:** reuse semantic Tokens; keep one approved visual language; make product accents thematic; preserve CJK and accessibility; show states using labels/icons/geometry as well as colors; make business logic independent of UI styling; update Contract and Storybook alongside component API changes.
-
-**Don't:** create a separate `apps/writing/DESIGN.md` or duplicate the E-01 page specification outside `apps/writing/PRODUCT.md`; hard-code Writing accent in shared BAButton; invent Reading colors; treat source visual Demo measurements as approved; visually merge skipped with done; add menu or duplicate title; use confetti to mutate progression; freeze v1.0 without designer screenshot/interaction review.
-
-## 9. Evidence & Open Work
-
-- **Benchmark:** `docs/design-system/BENCHMARK_AND_TOKEN_GAP_AUDIT_v0.1.md`.
-- **Actual temporary token source:** `packages/design-system/src/tokens.css` on Grokbot's **separate** `feat/grokbot-writing-topbar` branch. This docs branch does **not** yet include that code and must not pretend it does.
-- **Approved theme scope:** B · product accent + light tinted surfaces; exact tint values pending.
-- **Approved Token Architecture:** Primitive → Semantic → optional Component; shared CSS Variables as the single current executable source; themes set by the app/shell and consumed semantically by shared components.
-- **Approved Typography Foundation and font roles:** EN headings Dosis ExtraBold 800; EN long text Jost; ZH headings Douyin (asset/family naming to verify); ZH long text Noto Sans SC; **all UI numerals Dosis ExtraBold 800**. Font size/line-height/other weights, licensing and runtime font loading remain unverified.
-- **Approved Component Architecture:** A · progressively build shared UI primitives and product components; extract Shared Patterns after real cross-product reuse, never by speculative mass abstraction.
-- **Approved Design Governance:** A · lightweight; significant changes reviewed, ordinary agent implementation autonomous; separate engineering and visual acceptance, GitHub PR/HANDOFF records.
-- **Current token gaps:** semantic palette aliases/theme contract, spacing/typography/radii/elevation/motion scale, responsive sizes, accessible feedback color pairs, and status token conventions.
-- **Gate:** root DESIGN.md draft requires UI/UX Designer approval; proof requires a running component, Storybook states and browser QA. Component contract and product docs remain authoritative for UI interfaces and learning rules.
