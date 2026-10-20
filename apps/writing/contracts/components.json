@@ -26,10 +26,10 @@
         "aria-label": "string, optional accessible name",
         "locale": "en | zh, optional chrome language for the pending indicator",
         "size": "36 | 50 | 70 | 90 (Figma)",
-        "radius": "full | standard (Figma)",
+        "radius": "full [approved default] | standard [explicit Figma shape variant]",
         "intent": "default | destructive",
         "tone": "default | accent (tertiary/default only)",
-        "iconOnly": "boolean; requires aria-label for icon-only",
+        "iconOnly": "boolean; square visible assembly uses Circle; meaningful aria-label required",
         "leadingIcon": "ReactNode optional",
         "trailingIcon": "ReactNode optional"
       },
@@ -48,7 +48,11 @@
       "requirements": [
         "Keyboard/space/enter",
         "Touch >=44px",
-        "No motion when reduced"
+        "No motion when reduced",
+        "Outer hit region stays fixed; scale only visual assembly about center",
+        "Default scale 1; hover 1.02; press 0.95; pressing opacity 1; pressed beats hovered",
+        "Disabled/pending suppress transient scale; focus visible and reduced-motion equivalent",
+        "Embedded child action owns its feedback; clickable ancestor must not press or fire"
       ],
       "requiredStories": [
         "Default",
@@ -60,7 +64,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Figma node 30:2 Button V2. Visible assembly scales (hover 1.02, pressed 0.95, 200ms cubic-bezier(.2,0,0,1)); outer hit fixed. Bottom 3px border is a geometric stroke, not a generic elevation token. Provisional visuals awaiting designer browser comparison."
+      "notes": "Figma Button V2 30:2. Designer confirms Full/Pill default and Circle icon-only square; Standard shape remains a documented exception. Button target states: default 1, hover 1.02, press 0.95, opacity 1 (not universal 1.03/.5). 200ms CSS is still a temporary transition, not runtime Spring. 3px depth stroke is not Elevation. Nested cards must isolate child action/feedback; a full card migration is pending designer review."
     },
     {
       "id": "BA-UI-002",
@@ -96,7 +100,9 @@
         "React Aria Tabs/TabList/TabPanel ARIA semantics and arrow navigation",
         "Same track, radius, selected surface + motion as Segmented",
         "No local radio semantics; real content panel",
-        "Writing 1440/834 centered Level header preserved"
+        "Writing 1440/834 centered Level header preserved",
+        "Selection/focus status is separate from transient press target; no global 50% opacity",
+        "Inside clickable parent cards, child control activation must not also animate/fire ancestor"
       ],
       "requiredStories": [
         "ManyGroups",
@@ -677,7 +683,9 @@
         "React Aria RadioGroup with arrow key selection",
         "Icon only must provide accessibleLabel",
         "One selected option; 2–4 items",
-        "200ms selected surface with reduced-motion fallback"
+        "200ms selected surface with reduced-motion fallback",
+        "Selection/focus status is separate from transient press target; no global 50% opacity",
+        "Inside clickable parent cards, child control activation must not also animate/fire ancestor"
       ],
       "requiredStories": [
         "Default",

@@ -72,3 +72,14 @@ User asked to copy the source springs for speed. The parameter adoption does **n
 ## 7. Reference/license
 
 Only numerical configuration data and brief semantics have been transcribed, **not the original TypeScript module or proprietary application binaries**. The Open Claude UI repository is separately MIT licensed; preserve its author attribution if actual upstream source code is imported later. Do not describe it as an Anthropic-approved motion system.
+
+
+## 8. DESIGN.md v0.5 addendum: targets distinct from transitions [A, 2026-10-20]
+
+**Interaction Target** names the desired scale/opacity/color/indicator placement; **Motion Transition** describes how to move to it with Spring or CSS timing. The Spring table above remains numerically unchanged and is **not** a runtime adapter.
+
+**BAButton Figma V2 targets [A]:** default scale 1 / opacity 1; hover scale **1.02** / opacity 1; pressing scale **0.95** / opacity **1**. Pressing wins over hover; disabled/pending suppress both. The rejected global pressing proposal **1.03 and 50% opacity** is NOT adopted. Visual assembly scales around its center; the hit target and layout occupancy stay stable. Focus is not pressing.
+
+Other component targets require their own profile: Tabs/Segmented maintain selected indicator, fields protect caret/focus and card press effects cannot double-trigger nested buttons. On release/cancel/move-out, transient state terminates. Reduced motion removes unnecessary transforms while preserving visible immediate states. BAButton still uses a temporary CSS 200ms cubic-bezier transition until a separately reviewed Spring adapter exists.
+
+See `docs/design-system/INTERACTION_FEEDBACK_SYSTEM_v0.1.md` for nested event/visual ownership, cancellation and accessibility criteria. `stopPropagation()` alone does not cancel CSS ancestor hover.

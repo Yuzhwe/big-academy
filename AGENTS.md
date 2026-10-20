@@ -31,3 +31,11 @@
 ## Radius and Motion from PR #14
 14. **Radius v0.1 [A method / E numbers]:** read `docs/design-system/SHAPE_RADIUS_SYSTEM_v0.1.md`. Choose by surface (base/raised/floating), control size, nested geometry, focus/overflow and Writing-specific composition. The candidate 0/4/6/8/12/16/24/full/circle scale and semantic aliases are in `tokens.css` but do not silently restyle existing components or override 0.5px borders.
 15. **Motion v0.1 [A/T interim spring adoption]:** read `docs/design-system/MOTION_SYSTEM_v0.1.md`. Use exact spring parameter groups from upstream `Caho1/open-claude-ui/code-examples/ClaudeMotionPresets.ts`, not its conflicting AGENTS.md; all six groups (4 named, 2 inline) are in `tokens.css`. Inline masses are unspecified upstream. Do not hardcode copied TS numeric tables, invent a Motion dependency, or claim runtime animation/testing from CSS values alone. Honor reduced motion, protect typing/reading, and keep designer/engineering signoff separate.
+
+
+## DESIGN.md v0.5 · Interaction ownership and visual defaults (approved 2026-10-20)
+
+- Root `DESIGN.md` §1–6 governs visual language: Light, minimal, **low noise not low text contrast**, white+warm Writing canvas, theme accents intact. Buttons default Full/Pill, square icon-only Circle; other clickable surfaces favor Large Radius, numeric candidate 16px. Figma Button `standard` still supported. Do not force existing content or page geometry to inherit unapproved radii.
+- Separate **Interaction Target** from **Motion Transition**. Button targets are default 1/1, hover 1.02/1, pressing 0.95/1; previous global 1.03/.5 is rejected. Temporary Spring preset values remain unchanged and have no runtime adapter. Don't apply a blanket hover scale to all clickable elements.
+- **Nested owner**: action and visual feedback belong to one independently activated element. Child Start button must not also invoke/scale card. Avoid nested HTML interactive elements; stopPropagation alone cannot suppress CSS parent hover. Detailed QA: `docs/design-system/INTERACTION_FEEDBACK_SYSTEM_v0.1.md`.
+- Numeric aliases are CSS Tokens; component exceptions and states belong in Contracts; runtime branch/test records belong in `docs/HANDOFF.md`; visual approval remains UI/UX Designer-owned.
