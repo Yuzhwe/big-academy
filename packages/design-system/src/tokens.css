@@ -183,6 +183,11 @@
   --ba-spacing-button-padding-inline: var(--ba-space-4);
   --ba-spacing-progress-items-gap: var(--ba-space-1);
 
+  /* Interactive shape defaults: intent [A], concrete 16px on card [E]. */
+  --ba-radius-action-button: var(--ba-radius-full);
+  --ba-radius-icon-button: var(--ba-radius-circle);
+  --ba-radius-interactive-large: var(--ba-radius-16); /* candidate */
+
   /* Radius System v0.1 [E]: proposed values, unused by components. */
   --ba-radius-0: 0px; /* [E] */
   --ba-radius-4: 4px; /* [E] */
@@ -208,6 +213,12 @@
   --ba-radius-control-large: var(--ba-radius-12); /* [E] */
   --ba-radius-card-regular: var(--ba-radius-12); /* [E] */
   --ba-radius-badge-pill: var(--ba-radius-full); /* [E] */
+
+  /* Button interaction TARGETS [A], distinct from temporary motion transitions. */
+  --ba-feedback-button-default-scale: 1;
+  --ba-feedback-button-hover-scale: 1.02;
+  --ba-feedback-button-press-scale: 0.95;
+  --ba-feedback-button-press-opacity: 1;
 
   /* Motion System v0.1 [A/T]: exact upstream spring numeric parameters.
    * Source: Caho1/open-claude-ui code-examples/ClaudeMotionPresets.ts (MIT).

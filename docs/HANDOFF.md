@@ -103,3 +103,13 @@ Design approval source: [PR #10](https://github.com/Yuzhwe/big-academy/pull/10),
 - Figma 15:5 / 25:2 exact Elevation 100/200/300/400 and Background Blur 20 now mapped into `--ba-effect-*` tokens; component roles not auto-assigned.
 - Tabs share Segmented Control visuals; React Aria Tab navigation keeps panels separate from local RadioGroup segmentation.
 - Feature branch feat/agent-a-elevation-shared-tabs-v1; designer visual signoff pending; main unchanged.
+
+
+## DESIGN.md v0.5 · Visual Language & Interaction Refinement (2026-10-20)
+
+- **Branch:** `design/visual-interaction-refinement-v0.5` from PR #19 head `feat/agent-a-elevation-shared-tabs-v1`. Independent Draft PR will be used; this work does not merge PR #18 or main.
+- **Approved new defaults:** light, neutral, minimal, low visual noise while preserving text contrast and Writing color identity. BAButton Full/Pill, icon-only Circle if square; other clickable controls/cards Large Radius preference. Numerical 16/24px for cards remain candidates; Figma Standard variant stays usable.
+- **Motion policy:** targets (scale/opacity) separate from Spring/duration/easing transitions. BAButton remains hover 1.02 / pressing 0.95 / pressing opacity 1. Unapproved global 1.03/.5 omitted. CSS variables introduced and consumed by BAButton with no intended pixel/motion change.
+- **Nested feedback:** one action/feedback owner; valid sibling DOM interaction regions; ancestor :hover must not double-scale child; stopPropagation by itself is insufficient. New source checklist in `docs/design-system/INTERACTION_FEEDBACK_SYSTEM_v0.1.md`. Existing cards require follow-up audit; not claimed complete.
+- **Documentation cleanup:** root DESIGN has 6 top-level sections, single Elevation chapter, separate Motion chapter, E-01 text reconciled to current Writing PRODUCT, old branch/test status moved out of evergreen DESIGN. Radius/Motion docs updated additively; original Spring numbers unchanged.
+- **Engineering status:** tokens and BAButton aliases updated, no sweeping component visual redesign, product logic unchanged. Run repository checks and review snapshots before claiming implemented/verified. Visual review remains distinct.
