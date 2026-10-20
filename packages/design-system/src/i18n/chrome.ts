@@ -6,7 +6,7 @@ export interface TaskChrome {
   back: string;
   backShort: string;
   status: Record<TaskProgressStatus, string>;
-  task: (number: number, label: string, status: string) => string;
+  task: (number: number, label: string, status: string, revealed?: boolean) => string;
 }
 
 const chrome: Record<BALocale, TaskChrome> = {
@@ -22,7 +22,8 @@ const chrome: Record<BALocale, TaskChrome> = {
       locked: 'locked',
       skipped: 'skipped',
     },
-    task: (number, label, status) => `Task ${number}: ${label}, ${status}`,
+    task: (number, label, status, revealed) =>
+      `Task ${number}: ${label}, ${status}${revealed ? ', answer revealed' : ''}`,
   },
   zh: {
     nav: '本课任务',
@@ -36,7 +37,8 @@ const chrome: Record<BALocale, TaskChrome> = {
       locked: '未解锁',
       skipped: '已跳过',
     },
-    task: (number, label, status) => `任务 ${number}：${label}，${status}`,
+    task: (number, label, status, revealed) =>
+      `任务 ${number}：${label}，${status}${revealed ? '，答案已显示' : ''}`,
   },
 };
 

@@ -1,5 +1,5 @@
 {
-  "registryVersion": "0.2.0",
+  "registryVersion": "0.3.0",
   "project": "Big Academy Writing (pilot)",
   "status": "pilot-in-review",
   "sourceOfTruth": {
@@ -12,9 +12,9 @@
       "id": "BA-UI-001",
       "name": "BAButton",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.3.0",
       "status": "implemented",
-      "visualStatus": "figma-v2-candidate-implementation",
+      "visualStatus": "R1-candidate-pending-designer-review",
       "implementation": "packages/design-system/src/components/ui/BAButton.tsx",
       "story": "packages/design-system/src/components/ui/BAButton.stories.tsx",
       "props": {
@@ -48,7 +48,9 @@
       "requirements": [
         "Keyboard/space/enter",
         "Touch >=44px",
-        "No motion when reduced"
+        "No motion when reduced",
+        "70px height for Writing Lesson Card CTA and Lesson Footer action pair, scoped variants; don't migrate all shared buttons",
+        "Secondary tone required for Coach Hint and Show me another"
       ],
       "requiredStories": [
         "Default",
@@ -56,7 +58,10 @@
         "Disabled",
         "Busy",
         "FigmaV2ButtonMatrix",
-        "FigmaV2IconAndStates"
+        "FigmaV2IconAndStates",
+        "WritingLessonCTA70",
+        "WritingFooterAction70",
+        "CoachSecondary"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
@@ -111,7 +116,7 @@
       "id": "BA-UI-003",
       "name": "BAChoice",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.3.0",
       "status": "planned",
       "implementation": "packages/design-system/src/components/ui/BAChoice.tsx",
       "story": "packages/design-system/src/components/ui/BAChoice.stories.tsx",
@@ -135,16 +140,27 @@
       "layoutOwner": "Choice owns option internals, content area owns column width",
       "requirements": [
         "Use React Aria radio/checkbox semantics per task",
-        "No scoring in component"
+        "No scoring in component",
+        "Choice option min-height 50px with wrapped text, icon aligned first text line",
+        "Select state distinct from checked correct/wrong; graded filled and outlined success, filled error, accessible dimmed/disabled",
+        "Tapword items reuse Choice-equivalent token state visuals with authored single-select/check gate"
       ],
       "requiredStories": [
         "Single",
         "Multiple",
         "WrongRetry",
-        "CorrectDim"
+        "CorrectDim",
+        "ChoiceLongWrapped",
+        "ChoiceSelectedBeforeCheck",
+        "ChoiceCorrectFilled",
+        "ChoiceCorrectOutlined",
+        "ChoiceWrongFilled",
+        "ChoiceDimmed",
+        "TapwordTokens"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": null,
+      "visualStatus": "R1-candidate-pending-designer-review"
     },
     {
       "id": "BA-UI-004",
@@ -324,9 +340,9 @@
       "id": "BA-WR-001",
       "name": "LessonTopBar",
       "kind": "composite",
-      "contractVersion": "0.2.0",
+      "contractVersion": "0.3.0",
       "status": "implemented",
-      "visualStatus": "in-review",
+      "visualStatus": "R1-candidate-pending-designer-review",
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
       "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
       "props": {
@@ -354,7 +370,10 @@
         "Center progress across whole bar",
         "Initial Lesson entry selects first Screen and all successors are locked until earned",
         "Use BA-UI-006 shared ActivityScreenIndicator + anchored All activity screens popover, not an alternative marker design",
-        "Full-bar geometric centering, no hamburger, no extra right-side action"
+        "Full-bar geometric centering, no hamburger, no extra right-side action",
+        "Retain Lesson metadata plus eight Activity Screen indicators and overflow",
+        "Standalone visible icon-only top Back returns to Staircase; no visible helper words",
+        "Footer Previous is distinct, previous Activity Screen only, disabled on first screen"
       ],
       "requiredStories": [
         "Desktop",
@@ -362,7 +381,9 @@
         "ManyTasks",
         "FirstScreenOnlyUnlocked",
         "OverflowPopoverSharedIndicator",
-        "BackAndResume"
+        "BackAndResume",
+        "IconOnlyBack",
+        "R1HeaderLessonInfoProgress"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
@@ -372,9 +393,9 @@
       "id": "BA-WR-002",
       "name": "LessonWorkspace",
       "kind": "composite",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.3.0",
       "status": "implemented",
-      "visualStatus": "candidate-warm-frame",
+      "visualStatus": "R1-candidate-pending-designer-review",
       "implementation": "apps/writing/src/components/writing/LessonWorkspace.tsx",
       "story": "apps/writing/src/components/writing/LessonWorkspace.stories.tsx",
       "props": {
@@ -393,12 +414,19 @@
       "requirements": [
         "Warm Frame + White Canvas",
         "Coach independently scrolls",
-        "Footer outside Coach pinned"
+        "Footer outside Coach pinned",
+        "Footer Previous and primary actions use height 70px, gap 8px, flex proportions 1:2",
+        "Coach independently scrolls, semantic message containers, footer outside Coach",
+        "Listen icon-only floats in instruction container top-right with fixed safe inset"
       ],
       "requiredStories": [
         "Desktop",
         "TabletPortrait",
-        "CoachOverflow"
+        "CoachOverflow",
+        "FooterFirstScreenDisabled",
+        "FooterTwoThirdsPrimary",
+        "CoachSemanticMessages",
+        "FloatingListen"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
@@ -408,7 +436,7 @@
       "id": "BA-WR-003",
       "name": "WordGrid",
       "kind": "composite",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.3.0",
       "status": "planned",
       "implementation": "apps/writing/src/components/writing/WordGrid.tsx",
       "story": "apps/writing/src/components/writing/WordGrid.stories.tsx",
@@ -432,22 +460,29 @@
       "requirements": [
         "Task-gated visibility",
         "Tablet on-demand only within writing area",
-        "Preserve caret"
+        "Preserve caret",
+        "Pill word options min 50px high and wrap in rows",
+        "Single group has no tab, multiple groups use sticky-note tabs with panel-connected active appearance",
+        "Tabs switch authored vocabulary data only, no grader mutation"
       ],
       "requiredStories": [
         "MultiGroup",
         "OverlayTablet",
         "Locked",
-        "Chinese"
+        "Chinese",
+        "OneGroupNoTab",
+        "MultipleStickyTabs",
+        "WordWrapTablet"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": null,
+      "visualStatus": "R1-candidate-pending-designer-review"
     },
     {
       "id": "BA-WR-004",
       "name": "HamburgerLayer",
       "kind": "composite",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.3.0",
       "status": "planned",
       "implementation": "apps/writing/src/components/writing/HamburgerLayer.tsx",
       "story": "apps/writing/src/components/writing/HamburgerLayer.stories.tsx",
@@ -471,31 +506,36 @@
       "requirements": [
         "Label and entry same color surface",
         "Underline editing focus",
-        "No white nested field"
+        "No white nested field",
+        "Three Hamburger layers share two typographic roles (title and supporting text), consistent values per layer",
+        "Do not invent missing educational copy to populate support tier"
       ],
       "requiredStories": [
         "Idle",
         "Focused",
         "ReadOnly",
-        "LongContent"
+        "LongContent",
+        "AllThreeLayersTwoTextLevels"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": null,
+      "visualStatus": "R1-candidate-pending-designer-review"
     },
     {
       "id": "BA-WR-005",
       "name": "StairLessonCard",
       "kind": "composite",
-      "contractVersion": "0.2.0",
+      "contractVersion": "0.3.0",
       "status": "implemented",
-      "visualStatus": "in-review-folded-corner",
+      "visualStatus": "R1-candidate-pending-designer-review",
       "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx",
       "props": {
         "lessonId": "string",
         "number": "number",
         "title": "string",
-        "state": "start | continue | review | locked | skipped"
+        "state": "start | continue | review | locked | skipped",
+        "location": "current | available | completed | locked | skipped"
       },
       "events": {
         "onEnter": "(lessonId) => void"
@@ -516,7 +556,10 @@
         "45-degree inward fold with separate paper layer and subtle shadow",
         "Preserve Unit bounding box, anchor, existing text, color, state and interaction",
         "No pointer interception, focus clipping or overlap with title/progress",
-        "Desktop and Tablet visual evidence, EN/ZH long-title checks; designer signoff required"
+        "Desktop and Tablet visual evidence, EN/ZH long-title checks; designer signoff required",
+        "Top-left number and status visually integrated: blue current bubble, warm-outline available, green completed capsule, gray locked capsule",
+        "CTA height 70px, Start/Continue/Review according to real status; completed always Review",
+        "Paper surface white with rounded corners, warm base shadow and readable long content"
       ],
       "requiredStories": [
         "Start",
@@ -526,7 +569,12 @@
         "Skipped",
         "FoldedUnitAllStates",
         "FoldedUnitDesktopTablet",
-        "FoldedUnitLongContent"
+        "FoldedUnitLongContent",
+        "LessonCurrentHere",
+        "LessonAvailableOutlined",
+        "LessonCompletedReview",
+        "LessonLockedPrerequisite",
+        "LessonLongTitle70CTA"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
@@ -801,5 +849,19 @@
         ]
       }
     ]
+  },
+  "reviewR1": {
+    "version": "2026-10-20",
+    "designAuthority": "/DESIGN.md Writing Hi-Fi Review R1",
+    "productAuthority": "apps/writing/PRODUCT.md Writing Hi-Fi Review R1",
+    "acceptance": [
+      "Staircase gradient vertical #3B2424 to #E8946C",
+      "No redundant visible path/instruction/step-count prose",
+      "P7 numeral only in visible top-left; accessible full count",
+      "Practice once-only micro ribbon/explosion; mastery Lesson full 30 ribbon + 3 explosion",
+      "Coach semantic message surfaces and secondary actions",
+      "All major reference visuals expressed numerically/textually; not image dependent"
+    ],
+    "status": "spec-only; implementation and visual QA pending"
   }
 }

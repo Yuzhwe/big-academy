@@ -90,11 +90,22 @@
   height: 44px;
 }
 
+.lesson-topbar__back {
+  width: var(--ba-writing-back-size, 72px);
+  height: var(--ba-writing-back-size, 72px);
+  min-width: var(--ba-writing-back-size, 72px);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--ba-writing-back-shadow, 0 10px 20px rgba(19, 53, 71, 0.23));
+  color: var(--ba-writing-back-icon-color, #405d6d);
+}
+
 .lesson-topbar__back-icon {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   display: block;
   flex: none;
+  stroke-width: var(--ba-writing-back-icon-stroke, 2.5px);
 }
 
 @container (max-width: 1279px) {
@@ -102,16 +113,10 @@
     min-height: 76px;
   }
 
-  .lesson-topbar__back-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
+  .lesson-topbar__back {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
   }
 }
 

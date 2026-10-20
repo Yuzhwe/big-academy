@@ -1,14 +1,15 @@
 import { useEffect, useState, type CSSProperties } from 'react';
-import { StaircaseScene, type StaircaseVariant } from './StaircaseScene';
+import { StaircaseScene } from './StaircaseScene';
 import { useSyncExternalStore } from 'react';
-import { Checkbox, Radio, RadioGroup } from 'react-aria-components';
 import { BAButton, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { LessonWorkspace } from '../components/writing/LessonWorkspace';
-import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
+import { StairLessonCard, type StairLessonLocation, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
 import alexHtml from '../../source/alex-original.html?raw';
 import { CourseSession } from '../product/courseSession';
+import { CoachColumn, LessonStage } from './LessonStage';
+import { LessonParticles } from './LessonParticles';
 import './course.css';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
@@ -19,11 +20,17 @@ function cardState(courseState: string, action: string): StairLessonState {
   return 'locked';
 }
 
+function cardLocation(courseState: string): StairLessonLocation {
+  if (courseState === 'current') return 'current';
+  if (courseState === 'done') return 'completed';
+  if (courseState === 'locked' || courseState === 'view') return 'locked';
+  if (courseState === 'skipped') return 'skipped';
+  return 'available';
+}
+
 export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const [session] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
-  // Visual A/B state is a review-only control, not saved to Alex's learning state.
-  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('B');
   const locale = session.locale;
   const zh = locale === 'zh';
 
@@ -50,19 +57,20 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   }, [session, revision]);
 
   return (
-    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ab-variant={staircaseVariant} data-ba-product="writing">
+    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ab-variant="A" data-ba-product="writing">
       <a className="course-skip" href="#course-main">
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
-      {session.view === 'path' ? <PathView session={session} variant={staircaseVariant} onVariantChange={setStaircaseVariant} /> : null}
+      {session.view === 'path' ? <PathView session={session} /> : null}
       {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
       {session.view === 'preview' ? <PreviewView session={session} /> : null}
       {session.celebration ? <Celebration session={session} /> : null}
+      <LessonParticles session={session} />
     </div>
   );
 }
 
-function PathView({ session, variant, onVariantChange }: { session: CourseSession; variant: StaircaseVariant; onVariantChange: (next: StaircaseVariant) => void }) {
+function PathView({ session }: { session: CourseSession }) {
   const zh = session.zh;
   const level = session.level();
   const nodes = session.pathNodes();
@@ -74,7 +82,6 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
       <BATabs className="course-level-tabs" selectedKey={session.levelId} onSelectionChange={(key) => session.switchLevel(key)}>
         <header className="course-path__bar course-path__header">
           <div className="course-path__header-title">
-            <p className="course-kicker">{zh ? '写作路径' : 'Writing path'}</p>
             <h1 className="course-title" title={session.text(level.name)}>
               {zh ? '第 ' + level.id.slice(1) + ' 级' : 'Level ' + level.id.slice(1)} {session.text(level.name)}
             </h1>
@@ -102,16 +109,7 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             {session.openNotice}
           </p>
         ) : null}
-        <div className="course-ab-controls" role="group" aria-label={zh ? '路径形态 A/B' : 'Path shape A/B'}>
-          <button type="button" className="course-ab-button" aria-pressed={variant === 'A'} onClick={() => onVariantChange('A')}>
-            {zh ? 'A · 分立阶梯台面' : 'A · Separate platforms'}
-          </button>
-          <button type="button" className="course-ab-button" aria-pressed={variant === 'B'} onClick={() => onVariantChange('B')}>
-            {zh ? 'B · 连续斜坡 + 锚点' : 'B · Continuous slope + anchors'}
-          </button>
-          <span className="course-ab-hint">{zh ? '探索方案，均未获得视觉批准' : 'Visual exploration only — not approved'}</span>
-        </div>
-        <StaircaseScene key={level.id} variant={variant} locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
+        <StaircaseScene key={level.id} variant="A" locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
         <ol className="course-nodes">
           {nodes.map((node, index) => {
             if (node.kind === 'intro') {
@@ -133,11 +131,11 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
                     <h2>{node.unit.title}</h2>
                     <p>{node.unit.meta}</p>
                     {node.unit.goals.length ? (
-                      <ul>
+                      <div className="course-goals">
                         {node.unit.goals.map((goal) => (
-                          <li key={goal}>{goal}</li>
+                          <p key={goal}>{goal}</p>
                         ))}
-                      </ul>
+                      </div>
                     ) : null}
                   </section>
                 </li>
@@ -152,6 +150,7 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
                     number={lesson.number}
                     title={lesson.title}
                     state={cardState(lesson.courseState, lesson.action)}
+                    location={cardLocation(lesson.courseState)}
                     detail={lesson.detail}
                     locale={session.locale}
                     onEnter={() => session.openLesson(lesson.unitId, lesson.number)}
@@ -192,11 +191,6 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
           })}
         </ol>
         </StaircaseScene>
-        <p className="course-candidate">
-          {zh
-            ? 'E-01 A/B 使用相同的卡片底边锚点算法、课程数据和权限；A 为分立台面，B 为连续斜坡与锚点。卡片内容增加时只向上生长。页面视觉仍待设计审核。'
-            : 'E-01 A/B share the exact same bottom-anchor algorithm and Alex permissions. A has separated platforms; B has a continuous slope with local anchors. Card height grows upward, not into the anchor. Visual approval pending.'}
-        </p>
       </main>
         </BATabPanel>
       </BATabs>
@@ -209,20 +203,6 @@ function LessonView({ session }: { session: CourseSession }) {
   const activity = session.activity();
   const footer = session.footer();
   if (!bar || !activity) return null;
-  const hintLabel =
-    activity.hintAction === 'hint'
-      ? session.zh
-        ? '需要提示？'
-        : 'Need a hint?'
-      : activity.hintAction === 'another'
-        ? session.zh
-          ? '再来一个提示'
-          : 'Another hint'
-        : activity.hintAction === 'reveal'
-          ? session.zh
-            ? '看答案'
-            : 'Show me the answer'
-          : null;
 
   return (
     <div className="course-lesson">
@@ -238,144 +218,14 @@ function LessonView({ session }: { session: CourseSession }) {
         onNavigate={(index) => session.navigateLocal(index)}
       />
       <LessonWorkspace
-        activity={
-          <article className="course-activity" data-template={activity.template} data-kind={activity.kind}>
-            {activity.learn ? (
-              <>
-                <h1 className="course-title">{activity.learn.heading || activity.title}</h1>
-                {activity.learn.teach ? <p className="course-teach">{activity.learn.teach}</p> : null}
-                {activity.learn.weak || activity.learn.strong ? (
-                  <div className="course-examples">
-                    {activity.learn.weak ? (
-                      <p>
-                        <span>{activity.learn.weakLabel}</span> {activity.learn.weak}
-                      </p>
-                    ) : null}
-                    {activity.learn.strong ? (
-                      <p>
-                        <span>{activity.learn.strongLabel}</span> {activity.learn.strong}
-                      </p>
-                    ) : null}
-                  </div>
-                ) : null}
-                {activity.learn.nextUp ? <p>{activity.learn.nextUp}</p> : null}
-              </>
-            ) : null}
-            {activity.pick ? (
-              <>
-                <h1 className="course-title">{activity.ask}</h1>
-                {activity.pick.hint ? <p>{activity.pick.hint}</p> : null}
-                {activity.pick.multi ? (
-                  <div className="course-choices" role="group" aria-label={activity.ask}>
-                    {activity.pick.options.map((option) => (
-                      <Checkbox
-                        key={option.index}
-                        className="course-choice"
-                        data-wrong={option.wrong ? 'true' : undefined}
-                        isSelected={option.selected}
-                        onChange={() => session.pick(option.index)}
-                      >
-                        <span className="course-choice__letter">{option.letter}</span>
-                        <span>{option.text}</span>
-                      </Checkbox>
-                    ))}
-                  </div>
-                ) : (
-                  <RadioGroup
-                    className="course-choices"
-                    aria-label={activity.ask}
-                    value={activity.pick.options.find((option) => option.selected)?.index.toString() ?? ''}
-                    onChange={(value) => session.pick(Number(value))}
-                  >
-                    {activity.pick.options.map((option) => (
-                      <Radio
-                        key={option.index}
-                        className="course-choice"
-                        data-wrong={option.wrong ? 'true' : undefined}
-                        value={String(option.index)}
-                      >
-                        <span className="course-choice__letter">{option.letter}</span>
-                        <span>{option.text}</span>
-                      </Radio>
-                    ))}
-                  </RadioGroup>
-                )}
-              </>
-            ) : null}
-            {activity.tapword ? (
-              <>
-                <h1 className="course-title">{activity.ask}</h1>
-                <p className="course-words">
-                  {activity.tapword.words.map((word) => (
-                    <button
-                      key={word.index}
-                      type="button"
-                      className="course-word"
-                      data-selected={word.selected ? 'true' : undefined}
-                      data-wrong={word.wrong ? 'true' : undefined}
-                      onClick={() => session.tapWord(word.index)}
-                    >
-                      {word.text}
-                    </button>
-                  ))}
-                </p>
-              </>
-            ) : null}
-            {!activity.supported && !activity.learn ? (
-              <>
-                <h1 className="course-title">{activity.ask || activity.title}</h1>
-                <p className="course-message" data-testid="unsupported-template">
-                  {activity.unsupportedReason}
-                </p>
-              </>
-            ) : null}
-            {activity.skip?.mode === 'note' ? <p data-testid="skip-note">{activity.skip.text}</p> : null}
-            {activity.skip?.mode === 'offer' ? (
-              <div className="course-skip-offer" data-testid="skip-offer">
-                <p>{activity.skip.text}</p>
-                <BAButton variant="secondary" locale={session.locale} onPress={() => session.chooseSkip('skip')}>
-                  {session.zh ? '跳过这个技能' : 'Skip this skill'}
-                </BAButton>
-                <BAButton variant="ghost" locale={session.locale} onPress={() => session.chooseSkip('review')}>
-                  {session.zh ? '先复习' : 'Review it'}
-                </BAButton>
-              </div>
-            ) : null}
-          </article>
-        }
-        coach={
-          <div>
-            {activity.coach.map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-            {activity.hints.map((hint) => (
-              <p key={hint} data-testid="hint">
-                {hint}
-              </p>
-            ))}
-            {activity.coachMore ? (
-              <BAButton variant="ghost" locale={session.locale} onPress={() => session.showAnother()}>
-                {session.zh ? '再看一个' : 'Show me another'}
-              </BAButton>
-            ) : null}
-            {hintLabel ? (
-              <BAButton variant="ghost" locale={session.locale} onPress={() => session.openHint()}>
-                {hintLabel}
-              </BAButton>
-            ) : null}
-            {activity.feedback ? (
-              <p className="course-feedback" role="status" data-testid="feedback">
-                {activity.feedback}
-              </p>
-            ) : null}
-          </div>
-        }
+        activity={<LessonStage session={session} activity={activity} />}
+        coach={<CoachColumn session={session} activity={activity} />}
         navigation={
           <>
-            <BAButton variant="secondary" locale={session.locale} onPress={() => session.pressBack()}>
+            <BAButton variant="secondary" size={70} locale={session.locale} disabled={footer.previousDisabled} onPress={() => session.pressBack()}>
               {footer.backLabel}
             </BAButton>
-            <BAButton variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+            <BAButton variant="primary" size={70} locale={session.locale} disabled={footer.primaryDisabled} onPress={() => session.pressPrimary()}>
               <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
             </BAButton>
           </>

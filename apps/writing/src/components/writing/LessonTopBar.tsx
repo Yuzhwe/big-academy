@@ -52,14 +52,15 @@ export function LessonTopBar({
       >
         <div className="lesson-topbar__start">
           <BAButton
-            variant="ghost"
+            variant="secondary"
+            iconOnly
+            size={70}
             className="lesson-topbar__back"
             locale={locale}
             aria-label={copy.back}
             onPress={() => onBack?.()}
           >
-            <BAIcon name="arrow-left" size={20} className="lesson-topbar__back-icon" />
-            <span className="lesson-topbar__back-label">{copy.backShort}</span>
+            <BAIcon name="arrow-left" size={28} className="lesson-topbar__back-icon" />
           </BAButton>
           <div className="lesson-topbar__identity">
             <p className="lesson-topbar__title" title={fullTitle}>

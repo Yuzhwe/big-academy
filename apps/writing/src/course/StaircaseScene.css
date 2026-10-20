@@ -138,7 +138,8 @@
   transform:translateY(-100%);
 }
 .staircase-viewport[data-variant='A'],
-.staircase-viewport[data-variant='B'] { background:var(--ba-color-background-secondary); }
+.staircase-viewport[data-variant='B'] { background: transparent; }
+.course-path { background: var(--ba-writing-staircase-stage-background); min-height: 100dvh; }
 .staircase-viewport[data-variant='A'] .stair-lesson-card,
 .staircase-viewport[data-variant='B'] .stair-lesson-card {
   background:var(--ba-color-surface-canvas); color:var(--ba-color-content-primary);

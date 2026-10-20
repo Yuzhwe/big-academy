@@ -34,11 +34,11 @@ function prepareEngine() {
   return enginePromise;
 }
 
-export async function startEffect(preset: PresetId, id: string): Promise<Container> {
+export async function startEffect(preset: PresetId, id: string, options?: { count?: number }): Promise<Container> {
   await prepareEngine();
   let container: Container | undefined;
   if (preset === 'ribbons') {
-    container = await ribbons(id, { count: 30, colors: RIBBON_COLORS, disableForReducedMotion: true, zIndex: 10 });
+    container = await ribbons(id, { count: options?.count ?? 30, colors: RIBBON_COLORS, disableForReducedMotion: true, zIndex: 10 });
   } else {
     const options: ISourceOptions = {
       preset: runtimePresets[preset], fullScreen: { enable: true, zIndex: 10 },

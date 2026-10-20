@@ -93,7 +93,7 @@ test('Typography roles and Iconoir icons are visible and used in Writing', async
   await page.goto('/');
   await page.locator('[data-lesson-focus="G2-O:1"]').click();
   await expect(page.locator('.lesson-topbar__back-icon[data-icon-name="arrow-left"]')).toBeVisible();
-  expect(await page.locator('.ba-task-progress__icon[data-icon-name="lock"]').count()).toBeGreaterThan(0);
+  expect(await page.locator('.ba-task-progress [data-icon-name="lock"]').count()).toBeGreaterThan(0);
 });
 
 
