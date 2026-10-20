@@ -139,6 +139,7 @@ function PathView({ session, variant }: { session: CourseSession; variant: Stair
               return (
                 <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
                   <StairLessonCard
+                    isCurrent={lesson.courseState === 'current'}
                     lessonId={lesson.lessonId}
                     number={lesson.number}
                     title={lesson.title}
