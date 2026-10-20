@@ -170,11 +170,7 @@ function PathView({ session, variant }: { session: CourseSession; variant: Stair
                   <section className="course-goal" data-testid="level-goal" data-formula="open">
                     <p className="course-kicker">{node.goal.title}</p>
                     <h2>{node.goal.detail}</h2>
-                    <p>
-                      {zh
-                        ? '完成公式仍未决定（Q-M06）。这里只保留位置，不记完成。'
-                        : 'The completion formula is still open (Q-M06). This marker is not scored.'}
-                    </p>
+
                   </section>
                 </li>
               );

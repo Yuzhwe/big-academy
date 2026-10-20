@@ -85,3 +85,8 @@
 .stair-lesson-card[data-state='review'] .stair-lesson-card__number{background:var(--ba-color-success-7);color:#fff}
 .stair-lesson-card[data-state='locked'] .stair-lesson-card__number{background:var(--ba-color-neutral-4);color:var(--ba-color-neutral-9)}
 .stair-lesson-card__badge{font-size:12px;font-weight:700;align-self:flex-start;margin:2px 0 0;color:var(--ba-color-brand-10)}
+
+/* Current location is independent of Start/Continue, per R1 state anatomy. */
+.stair-lesson-card[data-current='true'] .stair-lesson-card__number{background:var(--ba-writing-lesson-current-fill,#2f67c8);color:#fff;border-color:transparent}
+.stair-lesson-card[data-current='true'] .stair-lesson-card__badge{background:var(--ba-writing-lesson-current-fill,#2f67c8);color:#fff;border-radius:999px;padding:5px 12px;margin-top:-8px;position:relative;white-space:nowrap}
+.stair-lesson-card[data-current='true'] .stair-lesson-card__badge::after{content:'';position:absolute;left:20px;bottom:-5px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--ba-writing-lesson-current-fill,#2f67c8)}
