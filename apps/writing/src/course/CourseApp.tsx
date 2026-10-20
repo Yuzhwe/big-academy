@@ -280,6 +280,9 @@ function LessonView({ session }: { session: CourseSession }) {
                         key={option.index}
                         className="course-choice"
                         data-wrong={option.wrong ? 'true' : undefined}
+                        data-correct={option.correct ? 'true' : undefined}
+                        data-revealed={option.revealed ? 'true' : undefined}
+                        isDisabled={option.correct || option.revealed}
                         value={String(option.index)}
                       >
                         <span className="course-choice__letter">{option.letter}</span>
@@ -345,10 +348,69 @@ function LessonView({ session }: { session: CourseSession }) {
                 <span className="course-question-number" aria-label={`Question ${activity.assessment.index+1} of 4`}>{activity.assessment.index+1}</span>
                 <h1 className="course-title">{activity.ask}</h1>
                 <nav className="course-question-dots" aria-label="Assessment questions">{[0,1,2,3].map(n=><button aria-label={`Question ${n+1} of 4`} aria-current={n===activity.assessment?.index?'step':undefined} key={n} onClick={()=>session.assessmentQuestion(n)}>{n+1}</button>)}</nav>
-                {activity.assessment.question.type === 'pick' ? <div className="course-choices">{(activity.assessment.question.lines??[]).map((option,index)=>{
-                  const answer=Array.isArray(activity.assessment?.answer)?activity.assessment.answer:[];
-                  return <button key={index} className="course-choice" data-selected={answer.includes(index)?'true':undefined} data-correct={activity.assessment?.results?.[activity.assessment.index] && (activity.assessment.question.answers??[]).includes(index)?'true':undefined} onClick={()=>session.answerAssessment(activity.assessment?.question.multi ? (answer.includes(index)?answer.filter(i=>i!==index):[...answer,index]):[index])}>{String.fromCharCode(65+index)} · {option}</button>;
-                })}</div> : <textarea rows={6} aria-label="Writing answer" value={typeof activity.assessment.answer==='string'?activity.assessment.answer:''} onChange={e=>session.answerAssessment(e.target.value)} />}
+                {activity.assessment.question.type === 'tapword' ? (
+                  <div className="course-words" role="group" aria-label={activity.ask}>
+                    {session.engine.tokens(activity.assessment.question.text ?? '').map((word, index) => {
+                      const response = Array.isArray(activity.assessment?.answer) ? activity.assessment.answer : [];
+                      const isTarget = (activity.assessment?.question.targets ?? []).some(target =>
+                        session.engine.locate(activity.assessment?.question.text ?? '', target) === index
+                      );
+                      const graded = !!activity.assessment?.results;
+                      return (
+                        <button
+                          type="button"
+                          key={index}
+                          className="course-word"
+                          aria-pressed={response.includes(index)}
+                          data-selected={response.includes(index) ? 'true' : undefined}
+                          data-correct={graded && isTarget ? 'true' : undefined}
+                          data-wrong={graded && response.includes(index) && !isTarget ? 'true' : undefined}
+                          disabled={graded}
+                          onClick={() => session.answerAssessment([index])}
+                        >
+                          {word.w}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : activity.assessment.question.type === 'pick' ? (
+                  <div className="course-choices" role="group" aria-label={activity.ask}>
+                    {(activity.assessment.question.lines ?? []).map((option, index) => {
+                      const response = Array.isArray(activity.assessment?.answer) ? activity.assessment.answer : [];
+                      const graded = !!activity.assessment?.results;
+                      const correct = (activity.assessment?.question.answers ?? []).includes(index);
+                      return (
+                        <button
+                          type="button"
+                          key={index}
+                          className="course-choice"
+                          aria-pressed={response.includes(index)}
+                          data-selected={response.includes(index) ? 'true' : undefined}
+                          data-correct={graded && correct ? 'true' : undefined}
+                          data-revealed={graded && correct && !response.includes(index) ? 'true' : undefined}
+                          data-wrong={graded && response.includes(index) && !correct ? 'true' : undefined}
+                          disabled={graded}
+                          onClick={() => session.answerAssessment(
+                            activity.assessment?.question.multi
+                              ? response.includes(index) ? response.filter(i => i !== index) : [...response, index]
+                              : [index]
+                          )}
+                        >
+                          <span className="course-choice__letter">{String.fromCharCode(65 + index)}</span>
+                          <span>{option}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <textarea
+                    rows={6}
+                    aria-label={session.zh ? '书写答案' : 'Writing answer'}
+                    value={typeof activity.assessment.answer === 'string' ? activity.assessment.answer : ''}
+                    disabled={!!activity.assessment.results}
+                    onChange={e => session.answerAssessment(e.target.value)}
+                  />
+                )}
                 {activity.assessment.results ? <p role="status">{activity.assessment.passed?'You passed this check.':'Not yet.'} {activity.assessment.results.filter(Boolean).length} / 4</p>:null}
               </section>
             ):null}
