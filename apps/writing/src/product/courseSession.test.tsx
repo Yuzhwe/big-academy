@@ -219,6 +219,18 @@ describe('R1 Lesson 1 authored Apply and P7 gates', () => {
     expect(course.screens[course.inspect().screen].screen.id).toBe('L2-04.check');
   };
 
+  it('opens a completed lesson in Review at the first screen, retaining the assessed result', () => {
+    const course = session();
+    satisfyAll(course, 0);
+    expect(course.openLesson('G2-O', 1)).toBe(true);
+    course.navigateLocal(7);
+    expect(course.inspect().screen).toBe(7);
+    course.backToPath();
+    expect(course.openLesson('G2-O', 1)).toBe(true);
+    expect(course.inspect().screen).toBe(0);
+    expect(course.canOpenLocal(7)).toBe(true);
+  });
+
   it('presents the authored third assessment question as tapword, without grading before Hand in', () => {
     const course = session();
     atLessonCheck(course);
