@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
+import { useBASelectionSurface } from './useBASelectionSurface';
 import { Radio, RadioGroup } from 'react-aria-components';
 import './BASegmentedControl.css';
 
@@ -51,25 +52,7 @@ export function BASegmentedControl({
   const [internal, setInternal] = useState(defaultSelectedKey ?? options[0]?.id ?? '');
   const active = isControlled ? selectedKey : internal;
   const root = useRef<HTMLDivElement>(null);
-  const [selectionRect, setSelectionRect] = useState<{x:number; width:number}|null>(null);
-
-  useLayoutEffect(() => {
-    const element = root.current;
-    if (!element) return;
-    const update = () => {
-      const activeNode = Array.from(element.querySelectorAll<HTMLElement>('.ba-segmented__option'))
-        .find(el => el.dataset.key === active);
-      const rail = element.querySelector<HTMLElement>('.ba-segmented__track');
-      if (!activeNode || !rail) { setSelectionRect(null); return; }
-      const a = activeNode.getBoundingClientRect(), b = rail.getBoundingClientRect();
-      setSelectionRect({ x: a.left - b.left + 2, width: Math.max(0, a.width - 4) });
-    };
-    update();
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update);
-    observer?.observe(element);
-    for (const child of element.querySelectorAll<HTMLElement>('.ba-segmented__option')) observer?.observe(child);
-    return () => observer?.disconnect();
-  }, [active, size, distribution, options]);
+  const selectionRect = useBASelectionSurface(root, active, size, distribution, options.map(o => o.id).join('|'));
 
   const onChange = (next:string) => {
     if (!isControlled) setInternal(next);
