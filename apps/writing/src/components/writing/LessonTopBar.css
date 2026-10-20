@@ -136,3 +136,9 @@
     animation: none;
   }
 }
+
+/* R1 icon-only Back, independent of footer Previous. */
+.lesson-topbar__back.ba-button{width:72px;height:72px;min-width:72px;padding:0;border-radius:50%;background:#fff;box-shadow:0 10px 20px rgba(19,53,71,.23);color:#405d6d}
+.lesson-topbar__back-icon{height:30px;width:30px}
+.lesson-topbar__back-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:834px){.lesson-topbar__back.ba-button{width:54px;height:54px;min-width:54px}}

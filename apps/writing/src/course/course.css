@@ -313,3 +313,48 @@
   font-family: var(--ba-font-zh-title);
   font-weight: 700;
 }
+
+/* Writing Hi-Fi R1 local surface candidates — review required. */
+.course-visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.course-path{max-width:none;margin:0;padding:0}
+.course-path__header{position:relative;z-index:2;max-width:none;margin:0;padding:16px 24px;background:#3b2424;color:#fff}
+.course-path__main{background:linear-gradient(180deg,#3b2424 0%,#e8946c 100%);min-height:calc(100dvh - 92px)}
+.course-path__main .staircase-viewport{background:transparent}
+.course-unit{position:relative;isolation:isolate;border-radius:24px;padding:22px;overflow:visible}
+.course-unit::before{content:"";position:absolute;top:-1px;right:-1px;width:32px;height:32px;background:linear-gradient(135deg,#f3e8d9 0%,#fff9f2 54%,#b49c95 100%);clip-path:polygon(0 0,100% 100%,0 100%);border-radius:0 4px 4px 4px;filter:drop-shadow(-2px 2px 2px #71584844);pointer-events:none}
+.course-unit::after{content:"";position:absolute;top:-1px;right:-1px;width:32px;height:32px;background:#e8946c;clip-path:polygon(0 0,100% 0,100% 100%);border-radius:0 24px 0 0;pointer-events:none}
+.course-intro,.course-unit>p:not(.course-kicker){font-size:16px;line-height:24px}
+.course-unit-goals{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:6px}
+.course-unit-goals li{list-style:none}
+.staircase-viewport[data-variant='A'] .course-nodes>li::before{background:transparent}
+.staircase-viewport[data-variant='A'] .course-nodes>li::after{background:linear-gradient(180deg,#fde2c2,#c9b8b2)}
+.course-instruction{position:relative;padding:20px 60px 20px 20px;background:var(--ba-color-warm-1);border:1px solid var(--ba-color-warm-3);border-radius:20px;margin-bottom:22px}
+.course-instruction .course-title{margin:0}
+.course-listen{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:1px solid var(--ba-color-warm-4);background:#fff;cursor:pointer}
+.course-choices{gap:12px}
+.course-choice,.course-word{min-height:50px;border-radius:14px;border:1px solid var(--ba-color-warm-4);background:#fff;align-items:flex-start;line-height:1.45}
+.course-choice__letter{flex:0 0 34px;min-width:34px;text-align:center}
+.course-choice[data-correct='true']:not([data-revealed='true']){background:var(--ba-color-success-7);color:#fff;border-color:var(--ba-color-success-7)}
+.course-choice[data-revealed='true'][data-correct='true'],.course-word[data-revealed='true'][data-correct='true']{border:2px solid var(--ba-color-success-7);background:#fff;color:var(--ba-color-success-7)}
+.course-choice[data-wrong='true'],.course-word[data-wrong='true']{background:var(--ba-color-danger-7,#963c4b);color:#fff}
+.course-word[data-correct='true']:not([data-revealed='true']){background:var(--ba-color-success-7);color:#fff}
+.course-word{border-radius:999px;padding:12px 18px}
+.course-words{gap:10px}
+.course-coach-message{display:block;padding:12px;border-radius:12px;border-left:4px solid var(--ba-color-warm-6);background:var(--ba-color-warm-2);margin:0 0 12px}
+.course-coach-message[data-tone='hint']{background:var(--ba-color-warning-1);border-color:var(--ba-color-warning-7)}
+.course-coach-message[data-tone='success']{background:var(--ba-color-success-1);border-color:var(--ba-color-success-7)}
+.course-coach-message[data-tone='error']{background:var(--ba-color-danger-1);border-color:var(--ba-color-danger-7)}
+.course-writing{display:grid;gap:16px}
+.course-writing textarea,.course-assessment textarea{min-height:150px;width:100%;box-sizing:border-box;font:inherit;border:1px solid var(--ba-color-warm-5);border-radius:18px;padding:18px;resize:vertical;color:var(--ba-color-brand-10)}
+.course-writing textarea:focus-visible,.course-assessment textarea:focus-visible{outline:3px solid var(--ba-color-focus);outline-offset:3px}
+.course-build-line{padding:26px;border:2px dashed var(--ba-color-warm-5);border-radius:18px;min-height:72px}
+.course-word-grid{display:flex;flex-wrap:wrap;gap:12px;padding:20px;background:#d0f7fc;border:1px solid #a9dde4;border-radius:28px}
+.course-word-grid button{background:white;border:1px solid var(--ba-color-warm-4);border-radius:999px;min-height:50px;padding:12px 20px;color:var(--ba-color-brand-10);font:inherit;cursor:pointer}
+.course-word-grid button:disabled{opacity:.4;cursor:not-allowed}
+.course-question-number{font:800 36px/1 'Dosis',sans-serif;display:block;margin:0 0 14px}
+.course-question-dots{display:flex;gap:8px;margin-bottom:22px}
+.course-question-dots button{height:44px;width:44px;border-radius:50%;border:1px solid var(--ba-color-warm-5);background:#fff;cursor:pointer}
+.course-question-dots button[aria-current]{background:var(--ba-color-brand-10);color:#fff}
+.course-app :is(button,textarea,[role=radio],[role=checkbox]):focus-visible{outline:3px solid var(--ba-color-focus,#2f67c8);outline-offset:3px}
+@media(max-width:720px){.course-path__header{padding:10px}.course-instruction{padding:16px 60px 16px 12px}}
+@media(prefers-reduced-motion:reduce){.course-app *{scroll-behavior:auto!important;animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
