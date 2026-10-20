@@ -11,9 +11,28 @@ export interface Bilingual {
   zh?: string;
 }
 
+export interface FrameFill {
+  frame: string;
+  blanks: { label: string; min_words: number }[];
+  vagueLast?: boolean;
+}
+
+export interface ProductionRules {
+  mustInclude?: { re: string; msg: string; zh?: string }[];
+  mustNotMatch?: { re: string; msg: string; zh?: string }[];
+  minWords?: number;
+  minWordsMsg?: string;
+  minWordsZh?: string;
+  capital?: boolean;
+  endPunct?: boolean;
+  noRunOn?: boolean;
+  notVague?: boolean;
+}
+
 export interface AlexTask {
   id: string;
   type: string;
+  skill?: string;
   ask?: Bilingual | string;
   lines?: string[];
   answers?: number[];
@@ -28,8 +47,24 @@ export interface AlexTask {
     hints?: Bilingual[];
     options?: Bilingual[];
     words?: Record<string, Bilingual>;
+    diagnose?: string[];
   };
   fields?: string[];
+  in_order?: boolean;
+  cells?: (string | { t: string })[];
+  target?: string[];
+  answer_text?: string;
+  set?: string;
+  start?: string;
+  given?: string;
+  frameFill?: FrameFill;
+  rules?: ProductionRules;
+  accept?: string[];
+  cloze?: boolean;
+  tip?: Bilingual | string;
+  criteria?: string[];
+  continue_after?: number;
+  apply?: boolean;
 }
 
 export interface AlexScreen {
@@ -64,6 +99,9 @@ export interface AlexPage {
   teach?: Bilingual | string;
   tasks?: string[];
   task?: string;
+  pool?: string[];
+  writing?: string;
+  auto_per_attempt?: number;
 }
 
 export interface AlexSkill {
@@ -99,7 +137,11 @@ export interface AlexConfig {
   skills: AlexSkill[];
   step_tags?: StepTag[];
   unit_goals?: Bilingual[];
-  unit?: { skill_skip?: { merge_below_min?: number } };
+  unit?: {
+    skill_skip?: { merge_below_min?: number };
+    practice_credit?: { weights?: Record<string, number> };
+  };
+  coach?: { diagnostics?: Record<string, Bilingual> };
 }
 
 export interface PathLesson {
@@ -155,16 +197,62 @@ export interface EngineApi {
     picked: number[],
   ) => { correct: boolean; right: number; wrong: number; need: number };
   choiceLetter: (index: number) => string;
+  choiceKey: (key: string, count: number) => number;
   locate: (text: string, target: { at: string; occurrence?: number }) => number;
   tokens: (text: string) => { w: string; start: number; end: number }[];
   skipMode: (status: string, allow: boolean) => 'auto' | 'offer' | 'none';
   stripPictures: (text: string) => string;
+  sameText: (a: string, b: string) => boolean;
+  smartInsert: (
+    value: string,
+    start: number,
+    end: number,
+    insert: string,
+    kind: string,
+  ) => { value: string; start: number; inserted: string; caret: number };
+  frameFill: (
+    text: string,
+    frame: FrameFill,
+    ok?: Bilingual,
+  ) => { correct: boolean; explanation: string; zh?: string };
+  masteryItems: (page: AlexPage, attempt: number) => string[];
+  masteryPass: (answers: { correct?: boolean; writing?: boolean }[]) => {
+    auto_correct: number;
+    auto_total: number;
+    writing_correct: boolean;
+    score: number;
+    total: number;
+    passed: boolean;
+  };
+  practiceHow: (task: AlexTask, status: string, segments?: { t: string; s: string }[]) => string;
+  practiceCredit: (config: AlexConfig, how: string) => number;
+}
+
+export interface ApplyCheck {
+  passed: boolean;
+  checks: { label: string; met: boolean; tip?: string; zh?: string }[];
+  feedback: string;
+  zh?: string;
+  glow?: string;
+  source?: string;
+  safety_flag?: boolean;
+}
+
+export interface AnalyzerApi {
+  checkApply: (skillId: string, text: string) => ApplyCheck;
+  checkProduction: (
+    item: { check?: ProductionRules; success?: string; successZh?: string },
+    answer: string,
+  ) => { correct: boolean; explanation?: string; zh?: string };
+  wordCount: (text: string) => number;
+  diagnose: (text: string, ids: string[], context?: Record<string, unknown>) => string | null;
 }
 
 export interface AlexSource {
   config: AlexConfig;
   levelPath: LevelPath;
   engine: EngineApi;
+  analyzer: AnalyzerApi;
 }
 
 const cache = new Map<string, AlexSource>();
@@ -209,6 +297,18 @@ export function loadEngine(source: string): EngineApi {
   return factory();
 }
 
+export function loadAnalyzer(source: string): AnalyzerApi {
+  const start = source.indexOf('var Analyzer = (function () {');
+  const endMarker = "if (typeof module !== 'undefined' && module.exports) module.exports = Analyzer;";
+  const end = source.indexOf(endMarker);
+  if (start < 0 || end < 0 || end <= start) {
+    throw new Error('Alex Analyzer script was not found in the source HTML');
+  }
+  const script = source.slice(start, end);
+  const factory = new Function(`${script}\nreturn Analyzer;`) as () => AnalyzerApi;
+  return factory();
+}
+
 export function loadAlexSource(html: string): AlexSource {
   const cached = cache.get(html);
   if (cached) return cached;
@@ -217,7 +317,7 @@ export function loadAlexSource(html: string): AlexSource {
   for (const level of levelPath.levels) {
     for (const unit of level.units) unit.level = level.id;
   }
-  const loaded = { config, levelPath, engine: loadEngine(html) };
+  const loaded = { config, levelPath, engine: loadEngine(html), analyzer: loadAnalyzer(html) };
   cache.set(html, loaded);
   return loaded;
 }

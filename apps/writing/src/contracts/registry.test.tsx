@@ -24,9 +24,11 @@ describe('component registry', () => {
       expect(byId[id]?.status).not.toBe('validated');
     }
     const implemented = new Set([
-      'BA-UI-001', 'BA-UI-002', 'BA-UI-006', 'BA-UI-008', 'BA-UI-009', 'BA-UI-010', 'BA-UI-011',
+      'BA-UI-001', 'BA-UI-002', 'BA-UI-003', 'BA-UI-004', 'BA-UI-006', 'BA-UI-008', 'BA-UI-009', 'BA-UI-010', 'BA-UI-011',
       'BA-WR-001', 'BA-WR-002', 'BA-WR-005', 'BA-WR-006',
     ]);
+    expect(byId['BA-UI-003']?.visualStatus).toBe('engineering-verified-not-designer-approved');
+    expect(byId['BA-UI-004']?.visualStatus).toBe('engineering-verified-not-designer-approved');
     for (const component of registry.components) {
       expect(component.status).toBe(implemented.has(component.id) ? 'implemented' : 'planned');
       // Engineering implementation is not final designer visual acceptance.

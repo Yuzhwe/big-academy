@@ -208,3 +208,199 @@ describe('course slice UI', () => {
     expect(course.inspect().screen).toBe(1);
   });
 });
+
+const BUILD_ORDER = ['our', 'school', 'should', 'have', 'a', 'garden', 'for', 'two', 'big', 'reasons', '.'];
+const APPLY_PASS = [
+  'I think our school should have a garden.',
+  'I believe a school garden should help us learn.',
+  'Our school should have a garden because it gives us real work.',
+].join('\n');
+
+function openLessonOne(course: Session) {
+  expect(course.openLesson('G2-O', 1)).toBe(true);
+}
+
+describe('L2 lesson 1 original eight screens', () => {
+  it('keeps the source screen order and does not celebrate a selection', () => {
+    const course = session();
+    openLessonOne(course);
+    const ids = course.liveIdx(0).map((index) => course.screens[index].screen.id);
+    expect(ids).toEqual([
+      'L2-04.learn',
+      'L2-04.t.ts1',
+      'L2-04.t.ts4',
+      'L2-04.t.ts3',
+      'L2-04.t.ss.L2-04',
+      'L2-04.t.ts8',
+      'L2-04.apply',
+      'L2-04.check',
+    ]);
+    course.pressPrimary();
+    course.pick(1);
+    expect(course.lessonBurst).toBe(false);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    expect(course.topBar()?.tasks).toHaveLength(8);
+  });
+
+  it('shows an answer only after the second wrong try, and keeps it when navigating back', () => {
+    const course = session();
+    openLessonOne(course);
+    course.pressPrimary();
+    course.pick(0);
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/You chose A/);
+    expect(course.screenDone(1)).toBe(false);
+    course.pick(0);
+    course.pressPrimary();
+    expect(course.inspect().tasks['L2-04.skill:ts1'].status).toBe('shown');
+    expect(course.inspect().tasks['L2-04.skill:ts1'].credit).toBe(0);
+    expect(course.feedback).toMatch(/right answer is B/i);
+    course.pressPrimary();
+    expect(course.screens[course.inspect().screen].screen.id).toBe('L2-04.t.ts4');
+    course.pressBack();
+    expect(course.screens[course.inspect().screen].screen.id).toBe('L2-04.t.ts1');
+    expect(course.inspect().tasks['L2-04.skill:ts1'].status).toBe('shown');
+    expect(course.activity()?.pick?.options.find((option) => option.index === 1)?.visual).toBe('shown');
+  });
+
+  it('completes build, fill, apply, and the check without unlocking the next lesson early', () => {
+    const storage = createMemoryStorage();
+    const course = session('', storage);
+    openLessonOne(course);
+    course.pressPrimary();
+    course.pick(1);
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/Right\. You chose B/);
+    course.pressPrimary();
+
+    course.tapWord(0);
+    course.pressPrimary();
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    course.tapWord(1);
+    course.pressPrimary();
+    expect(course.screenDone(course.inspect().screen)).toBe(true);
+    course.pressPrimary();
+
+    course.pick(0);
+    course.pressPrimary();
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    course.pick(2);
+    course.pick(4);
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/Right/);
+    course.pressPrimary();
+
+    expect(course.activity()?.screenId).toBe('L2-04.t.ss.L2-04');
+    course.buildCell('school');
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    for (const word of BUILD_ORDER) course.buildCell(word);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']).toMatchObject({ status: 'done', how: 'set', credit: 0.5 });
+    course.pressPrimary();
+
+    course.setWriting('In my opinion, recess should be good because it is nice.');
+    course.pressPrimary();
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    course.setWriting('In my opinion, recess should be longer because kids need time to run.');
+    course.pressPrimary();
+    expect(course.inspect().tasks['L2-04.skill:ts8'].status).toBe('done');
+    course.pressPrimary();
+
+    course.setWriting('Hello there friend');
+    course.pressPrimary();
+    expect(course.activity()?.apply?.passed).toBe(false);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    course.setWriting(APPLY_PASS);
+    course.pressPrimary();
+    expect(course.activity()?.apply?.passed).toBe(true);
+    expect(course.feedback).toMatch(/own writing/);
+    course.pressPrimary();
+
+    expect(course.activity()?.screenId).toBe('L2-04.check');
+    expect(course.topBar()?.current).toBe(7);
+    expect(course.lessonBurst).toBe(false);
+    expect(course.liveState(1)).toBe('locked');
+    course.pick(1);
+    course.pressPrimary();
+    expect(course.topBar()?.current).toBe(7);
+    expect(course.activity()?.assessment?.index).toBe(1);
+    course.pick(2);
+    course.pressPrimary();
+    course.tapWord(2);
+    course.pressPrimary();
+    course.setWriting('I think kids should have a pet at home.');
+    course.pressPrimary();
+    expect(course.activity()?.assessment?.passed).toBe(true);
+    expect(course.activity()?.assessment?.stage).toBe('results');
+    expect(course.inspect().done['L2-04.check']).toBe(true);
+    // Original Pages.canOpen: the next lesson opens when this lesson's screens are done.
+    expect(course.liveState(1)).toBe('available');
+    course.pressPrimary();
+    expect(course.view).toBe('lessonEnd');
+    expect(course.lessonBurst).toBe(true);
+    expect(storage.getItem(ALEX_STATE_KEY)).not.toContain('lessonBurst');
+    expect(storage.getItem(CELEBRATION_KEY)).toContain('G2-O:1');
+    course.backToPath();
+    expect(course.cardAction(course.playUnit(), 0, course.liveState(0))).toBe('review');
+    expect(course.liveState(1)).toBe('available');
+  });
+
+  it('warns about blank check answers, then fails and offers a new set', () => {
+    const course = session();
+    openLessonOne(course);
+    for (let step = 0; step < 20 && course.screens[course.inspect().screen].screen.id !== 'L2-04.check'; step += 1) {
+      const id = course.screens[course.inspect().screen].screen.id;
+      if (id === 'L2-04.t.ts1') course.pick(1);
+      if (id === 'L2-04.t.ts4') course.tapWord(1);
+      if (id === 'L2-04.t.ts3') {
+        course.pick(0);
+        course.pick(2);
+        course.pick(4);
+      }
+      if (id === 'L2-04.t.ss.L2-04') for (const word of BUILD_ORDER) course.buildCell(word);
+      if (id === 'L2-04.t.ts8') course.setWriting('In my opinion, recess should be longer because kids need time to run.');
+      if (id === 'L2-04.apply') course.setWriting(APPLY_PASS);
+      course.pressPrimary();
+    }
+    expect(course.activity()?.screenId).toBe('L2-04.check');
+    course.pressPrimary();
+    course.pressPrimary();
+    course.pressPrimary();
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/still blank/);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    course.pressPrimary();
+    expect(course.activity()?.assessment?.passed).toBe(false);
+    expect(course.footer().primaryTestId).toBe('retry-check-foot');
+    const first = course.engine.masteryItems(course.pageOf('L2-04.check')!, 0);
+    course.retryAssessment();
+    const second = course.engine.masteryItems(course.pageOf('L2-04.check')!, 1);
+    expect(second.slice(0, 3)).not.toEqual(first.slice(0, 3));
+    expect(course.activity()?.assessment?.stage).toBe('answering');
+  });
+
+  it('lets apply writing move on without marking it a correct answer', () => {
+    const course = session();
+    openLessonOne(course);
+    while (course.screens[course.inspect().screen].screen.id !== 'L2-04.apply') {
+      const id = course.screens[course.inspect().screen].screen.id;
+      if (id === 'L2-04.t.ts1') course.pick(1);
+      if (id === 'L2-04.t.ts4') course.tapWord(4);
+      if (id === 'L2-04.t.ts3') {
+        course.pick(0);
+        course.pick(2);
+        course.pick(4);
+      }
+      if (id === 'L2-04.t.ss.L2-04') for (const word of BUILD_ORDER) course.buildCell(word);
+      if (id === 'L2-04.t.ts8') course.setWriting('In my opinion, recess should be longer because kids need time to run.');
+      course.pressPrimary();
+    }
+    course.setWriting('Hello there friend');
+    course.pressPrimary();
+    course.pressPrimary();
+    expect(course.activity()?.apply?.canMoveOn).toBe(true);
+    expect(course.activity()?.apply?.passed).toBe(false);
+    course.moveOnApply();
+    expect(course.screenDone(course.inspect().screen)).toBe(true);
+    expect(course.activity()?.apply?.passed).toBe(false);
+  });
+});

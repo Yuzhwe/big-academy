@@ -1,5 +1,9 @@
 export { BAButton } from './components/ui/BAButton';
 export type { BAButtonProps } from './components/ui/BAButton';
+export { BAChoice } from './components/ui/BAChoice';
+export type { BAChoiceOption, BAChoiceProps, BAChoiceVisual } from './components/ui/BAChoice';
+export { BAField } from './components/ui/BAField';
+export type { BAFieldProps } from './components/ui/BAField';
 export { BATaskProgress, taskMayNavigate } from './components/ui/BATaskProgress';
 export type { BATaskProgressProps } from './components/ui/BATaskProgress';
 export { localeTag, taskChrome } from './i18n/chrome';
