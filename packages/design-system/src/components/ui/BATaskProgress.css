@@ -2,7 +2,7 @@
   box-sizing: border-box;
   display: flex;
   justify-content: center;
-  width: max-content;
+  width: 100%;
   max-width: 100%;
   min-width: 0;
   color: var(--ba-color-content-primary, #133547);
@@ -10,36 +10,45 @@
 }
 
 .ba-task-progress__rail {
+  display: flex;
+  align-items: center;
+  gap: var(--ba-spacing-progress-items-gap, 4px);
+  width: 100%;
   max-width: 100%;
   min-width: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
 }
 
-.ba-task-progress__list {
+.ba-task-progress__list,
+.ba-task-progress__grid {
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   gap: var(--ba-spacing-progress-items-gap, 4px);
   margin: 0;
   padding: 2px;
   list-style: none;
 }
 
+.ba-task-progress__list {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: center;
+}
+
 .ba-task-progress__item {
   flex: 0 0 auto;
 }
 
-.ba-task-progress__button {
+.ba-task-progress__button,
+.ba-task-progress__more {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 2px;
   min-width: var(--ba-hit-min, 44px);
   min-height: var(--ba-hit-min, 44px);
-  padding: 2px 4px;
+  padding: 2px 4px 8px;
   border: 0;
   border-radius: 10px;
   background: transparent;
@@ -48,25 +57,51 @@
   cursor: pointer;
 }
 
-.ba-task-progress__button[data-disabled='true'] {
+.ba-task-progress__button[data-disabled='true'],
+.ba-task-progress__more[data-disabled='true'] {
   cursor: not-allowed;
 }
 
 .ba-task-progress__marker {
+  position: relative;
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
-  border: 1px solid var(--ba-control-border, #133547);
-  border-radius: 50%;
+  border: 1px solid var(--ba-activity-indicator-border, var(--ba-color-content-primary, #133547));
+  border-radius: var(--ba-activity-indicator-radius, 999px);
+  background: var(--ba-activity-indicator-incomplete-bg, var(--ba-color-surface-canvas, #ffffff));
+  color: var(--ba-color-content-primary, #133547);
+}
+
+.ba-task-progress__button[data-size='regular'] .ba-task-progress__marker {
+  width: 44px;
+  height: 44px;
+}
+
+.ba-task-progress__numeral {
+  font-family: var(--ba-activity-indicator-number-font, var(--ba-type-numeric-family));
+  font-size: 16px;
+  font-weight: var(--ba-activity-indicator-number-weight, 800);
+  line-height: 1;
+}
+
+.ba-task-progress__badge {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--ba-activity-indicator-border, var(--ba-color-content-primary, #133547));
+  border-radius: var(--ba-activity-indicator-badge-radius, 999px);
   background: var(--ba-color-surface-canvas, #ffffff);
   color: var(--ba-color-content-primary, #133547);
-  font-family: var(--ba-type-numeric-family);
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 1;
+  transform: translateX(-50%);
 }
 
 .ba-task-progress__caption {
@@ -77,52 +112,68 @@
   white-space: nowrap;
 }
 
-.ba-task-progress__button[data-state='done'] .ba-task-progress__marker {
-  background: var(--ba-color-surface-canvas, #ffffff);
-}
-
-.ba-task-progress__button[data-state='current'] .ba-task-progress__marker {
-  background: var(--ba-color-action-primary, #133547);
-  border-color: var(--ba-color-action-primary, #133547);
-  color: var(--ba-color-surface-canvas, #ffffff);
-  box-shadow: 0 0 0 2px var(--ba-color-surface-canvas, #ffffff), 0 0 0 4px var(--ba-color-action-primary, #133547);
-}
-
-.ba-task-progress__button[data-state='available'] .ba-task-progress__marker {
-  background: var(--ba-color-surface-canvas, #ffffff);
-}
-
 .ba-task-progress__button[data-state='locked'] .ba-task-progress__marker {
-  background: var(--ba-color-disabled-surface, #f4f1ea);
-  border-style: solid;
-  color: var(--ba-color-disabled-content, #4a5963);
+  background: var(--ba-activity-indicator-locked-bg, var(--ba-color-neutral-6, #8aa0ad));
+  border-color: var(--ba-activity-indicator-locked-bg, var(--ba-color-neutral-6, #8aa0ad));
+  color: var(--ba-activity-indicator-locked-text, #ffffff);
 }
 
 .ba-task-progress__button[data-state='skipped'] .ba-task-progress__marker {
   border-style: dashed;
   border-width: 2px;
-  background: var(--ba-color-surface-canvas, #ffffff);
 }
 
-.ba-task-progress__button[data-hovered='true']:not([data-disabled='true']) .ba-task-progress__marker {
+.ba-task-progress__button[data-selected='true'] .ba-task-progress__marker {
+  background: var(--ba-activity-indicator-selected-bg, var(--ba-color-content-primary, #133547));
+  border-color: var(--ba-activity-indicator-selected-bg, var(--ba-color-content-primary, #133547));
+  color: var(--ba-activity-indicator-selected-text, #ffffff);
+}
+
+.ba-task-progress__button[data-hovered='true']:not([data-disabled='true']) .ba-task-progress__numeral {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-.ba-task-progress__button[data-focus-visible='true'] {
+.ba-task-progress__button[data-focus-visible='true'],
+.ba-task-progress__more[data-focus-visible='true'] {
   outline: var(--ba-focus-width, 2px) solid var(--ba-color-focus, #133547);
   outline-offset: 2px;
 }
 
 .ba-task-progress__icon {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   display: block;
+}
+
+.ba-task-progress__popover {
+  box-sizing: border-box;
+  max-width: min(24rem, calc(100vw - 24px));
+  max-height: min(70vh, 28rem);
+  overflow: auto;
+  padding: var(--ba-activity-indicator-popover-inset, 16px);
+  border: 1px solid var(--ba-color-content-primary, #133547);
+  border-radius: var(--ba-activity-indicator-popover-radius, 12px);
+  background: var(--ba-color-surface-canvas, #ffffff);
+  color: var(--ba-color-content-primary, #133547);
+  box-shadow: 0 8px 24px rgba(19, 53, 71, 0.12);
+}
+
+.ba-task-progress__dialog {
+  outline: none;
+}
+
+.ba-task-progress__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: var(--ba-activity-indicator-grid-gap, 12px);
+  justify-items: center;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ba-task-progress__button,
-  .ba-task-progress__marker {
+  .ba-task-progress__marker,
+  .ba-task-progress__badge {
     transition: none;
     animation: none;
   }

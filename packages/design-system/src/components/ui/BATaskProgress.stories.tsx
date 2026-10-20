@@ -84,3 +84,53 @@ export const Skipped: Story = {
     await expect(canvas.getByRole('button', { name: /已完成/ })).toBeInTheDocument();
   },
 };
+
+const five: TaskProgressItem[] = [
+  { id: '1', label: 'Learn', status: 'available' },
+  { id: '2', label: 'Pick', status: 'done' },
+  { id: '3', label: 'Build', status: 'current' },
+  { id: '4', label: 'Apply', status: 'skipped' },
+  { id: '5', label: 'Check', status: 'locked' },
+];
+
+export const IndicatorFiveStates: Story = {
+  args: { tasks: five, activeIndex: 2, canOpen: (index) => index !== 4 },
+};
+
+export const DoneSelected: Story = {
+  args: {
+    activeIndex: 0,
+    tasks: [{ id: 'done', label: 'Learn', status: 'done' }],
+    canOpen: () => true,
+  },
+};
+
+export const Locked: Story = {
+  args: {
+    activeIndex: 0,
+    tasks: [{ id: 'lock', label: 'Check', status: 'locked' }],
+    canOpen: () => false,
+  },
+};
+
+export const ShownAccessible: Story = {
+  args: {
+    activeIndex: 0,
+    tasks: [{ id: 'shown', label: 'Build a topic sentence', status: 'done', revealed: true }],
+    canOpen: () => true,
+  },
+};
+
+export const AllScreensPopover: Story = {
+  args: { tasks: many, activeIndex: 4, canOpen: allow(many) },
+};
+
+export const PopoverKeyboardFocus: Story = AllScreensPopover;
+
+export const Overflow16Screens: Story = {
+  args: {
+    tasks: many.slice(0, 16),
+    activeIndex: 8,
+    canOpen: (index) => index < 10,
+  },
+};

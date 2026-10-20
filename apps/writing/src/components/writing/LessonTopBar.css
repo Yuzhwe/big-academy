@@ -78,7 +78,7 @@
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
-  width: max-content;
+  width: var(--ba-topbar-progress-max);
   max-width: var(--ba-topbar-progress-max);
   z-index: 2;
 }
