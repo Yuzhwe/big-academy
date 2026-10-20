@@ -2,6 +2,42 @@
 
 **Authority:** Alex original HTML (`source/alex-original.html`) and recorded designer approvals in `PHASE1_ALIGNMENT_REPORT_v0.3.md`. This file is a portable working condensation, **not yet Product v1.0**.
 
+## R6 active implementation scope — single L2 Lesson demo
+
+The active Grokbot delivery is **L2/G2-O Lesson 1, Topic sentences, eight exact original Activity Screens**, defined in `docs/L2_LESSON1_DEMO_CONTRACT_R6.md`. The extracted 52-Screen matrix is **source reference only**, not a requirement to implement every Screen. Preserve Lesson 1 exact task data and Alex's full end-to-end progression, assessment, grading, retry/shown and persistence; other Lessons are out of implementation scope. This scope clarification supersedes any broader R6 development interpretations; it does not erase original catalog data.
+
+## R6 approved decision overlay — 2026-10-20
+
+**Precedence:** This dated designer/product-owner decision overlay supersedes contrary historical exploration or open-question entries. Alex's original `source/alex-original.html` remains the authority for all unmodified assessment, scoring, skip, grading and page-gating behavior. This is an explicit change log, not authorization to rewrite that engine.
+
+- **Activity inventory:** `docs/ACTIVITY_MATRIX_G2O_v0.1.json` records **52 original screens across 9 lessons** with stable screen IDs, template/variant, page/task references and source minutes; mapping P1=2, P2=5, P3=15, P4=12, P5=8, P6=6, P7=4. The inventory does *not* claim all runtime actions have been independently verified.
+- **P1 Book:** remove the user-facing **Save my paragraph** and **Print** controls. Do not remove automatic saving, authored content, version history or browser functionality required elsewhere.
+- **Historical Index / Analytics menu:** do not restore the old menu or user-facing Index / Analytics features elsewhere in the new lesson chrome. Preserve shared session/progress data and APIs needed for other features.
+- **Practice grading:** keep Alex's original retries and `shown` transitions, including per-task exceptions; **no unlimited retry override**.
+- **Template actions:** preserve heterogeneous P1–P7 flows. P1 read-only final/growth (no export/print); P2 learning/model/skip offer; P3 pick/tapword/label with check/auto special cases; P4 sentence edit/write/build with cloze auto checks where originally present; P5 Apply Check → Draft Hand in → Revision/Hand in again → Final; P6 Plan Check/Recap → Start writing; P7 paginated assessment with Hand in my check, blank confirmation and Try a new set. Never homogenize all into Correct → Next.
+- **Terminology:** top bar progresses through actual lesson-local **Activity Screens**, not P7's internal questions or individual task records. Preserve `Pages.canOpen` and `Pages.canNext`; do not rename or rewrite source data types solely for UI terminology.
+- **Writing answer UI:** choice/word/sentence option controls use 50 CSS px minimum height, grow with wrapped content, vertically center single-line text, align multiline text and numbering to the first line. This does **not** change global BAButton sizes. Input, Coach hint/instruction, grading feedback and progression remain distinct events.
+- **Celebration:** use the existing PR #22 ten-effect tsParticles implementation as source. **Lesson Ribbons count 30**, paired with three Explosions where the original lesson celebration composition is approved; milestone uses a separate `confetti` request with `startCount:50`, `rate.quantity:0`, `life.count:1`. Celebration is presentation-only, never grading.
+- **Milestone on E-01:** only completed Mile flags are replayable. On the first eligible return to E-01, auto-locate the completed flag if offscreen and auto-play once; if several become newly eligible together, **auto-display only the highest-progress eligible Milestone and mark the other eligible milestones' auto-celebration opportunities as handled**. This is *receipt handling only*, not learning completion. Subsequent returns do not auto-replay; manually clicking any completed flag can replay. Maintain existing progress/skip qualification; do not invent new re-qualification after skip revocation. In reduced motion show a static success state without particles. Do not force cross-Level navigation in this G2-O pilot.
+- **Level Goal:** use the existing implementation as-is; no new formula or eligibility logic is authorized.
+- **E-01 Staircase:** **A / independent platforms only** for forward implementation, ascending lower-left to upper-right. Horizontal anchor separation 290 CSS px remains a reference; derive vertical rise from actual available viewport height (initial exploration clamp ~48–120px), use the same geometry for camera, drag, wheel, keyboard and snap; never hard-code 15°. Card bottoms anchor at platform tops regardless of card height. The historical continuous-slope B is superseded, not an active A/B requirement. SC-Unit remains an informational non-clickable Stub. SC-Intro is informational, SC-Lesson is the prominent action, Mile and Goal remain distinct. Dusk gradient `#411C0A → #B39C6B`, beams and card detailing remain **visual candidates** pending designer approval; they do not supersede Warm Frame + White Canvas.
+- **Approvals:** design direction and temporary typography ramp are accepted; precise appearance, effects in live screens, responsive behavior and accessibility require review evidence. Product edge cases not decided here retain Alex's behavior.
+
+### Template contract overview (runtime remains authoritative)
+
+| Template | Original purpose | Action / gate family |
+| --- | --- | --- |
+| P1 Book | Finished paragraph + growth comparison | Read and navigate; no Save/Print UI |
+| P2 Teach | Rules and annotated text | Next and source Skill Skip where qualified |
+| P3 Select | Pick, tapword, label; topic selection when configured | Check/auto according to task; preserve `shown`/remediation |
+| P4 Sentence | Fill, fix, combine, expand, rewrite, write, build, reflection | Task-specific check, auto-cloze and build progression |
+| P5 Write | Apply, draft, revise, final | Check writing, Hand in, Hand in again, finish |
+| P6 Plan | Layer, whole, recap | Content completeness, Check my plan, Start writing |
+| P7 Check | Paged assessment and results | Next question, Hand in (including blank warning), Try a new set |
+
+Every implementation PR must link exact Screen IDs in the extracted matrix, list the actual activity action and entry/exit gate, and provide at least one matching browser test. The JSON's generic `primaryActionPolicy` is deliberately not proof of a fully audited action implementation.
+
+
 ## Scope
 - One E-01 staircase, 9 Lessons / 52 Activity Screens across seven P1–P7 templates for G2-O; source controls all product semantics, state gating and scoring.
 - On E-01, Lesson cards show stable lesson number in upper left plus Start / Continue / Review / Locked. Legitimate Skill Skip follows original Pages/Home/Skip semantics. No demo unlock.

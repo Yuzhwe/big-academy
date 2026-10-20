@@ -3,6 +3,22 @@
 **Date:** 2026-10-19  
 **Status:** **P1-A IN PROGRESS** — integration candidate, **not merged to `main`** and no automatic sign-off.
 
+## R6 scope correction — single Lesson demo
+
+Current Grokbot implementation target is **only original L2/G2-O Lesson 1 (Topic sentences), 8 ordered Activity Screens**. Refer to `apps/writing/docs/L2_LESSON1_DEMO_CONTRACT_R6.md`; retain 52-Screen inventory as reference, **not** an implementation checklist. Acceptance requires first-screen-to-last-screen navigation, original choices, right/wrong/retry/shown and P7 assessment flow, real progress/return, responsive accessible hi-fi with designer review. Do not assign remaining 44 Screens or Lessons 2–9 to Grokbot in this round.
+
+## R6 approved decisions and handoff overlay — 2026-10-20
+
+**Documentation branch:** `docs/writing-r6-spec-sync-20261020`, based on unmerged Celebration Effects PR #22 branch, **not main**. Older sections below describe their original checkpoint and may be stale; this overlay is the current R6 decision register.
+
+- Source-extracted 52 G2-O Activity Screens (nine lessons; P1=2/P2=5/P3=15/P4=12/P5=8/P6=6/P7=4): `apps/writing/docs/ACTIVITY_MATRIX_G2O_v0.1.json`. Identifiers and templates extracted; per-screen runtime action gate QA still pending.
+- Designer/product decisions: keep Alex `shown`/two-try-and-exceptions; remove P1 Save/Print UI; do not revive old Index/Analytics menu features; preserve underlying data; Unit remains a Stub; E-01 A independent platforms only, viewport adaptive diagonal navigation; use temporary accepted Typography v0.1 from root DESIGN; Writing options minimum 50px.
+- Celebration: source is Draft PR #22, ten effects implemented as review Demo, not merged to main or wired into milestones; use Ribbons **30**, lesson Explosions ×3 where approved, separate Milestone Confetti. First eligible E-01 return may auto-locate/celebrate highest-progress newly eligible Mile, and **other newly eligible Mile auto-celebration receipts are handled** (not course completion). Completed flags can always manually replay. Level Goal retains existing logic; skip revocation is out of scope.
+- Existing docs' older cross-Level, A/B path, Save/Print, Unit-click and two-retry/open-question treatments must be interpreted using the R6 overlays in PRODUCT and DESIGN. Do not silently modify Alex's original grading, skip or CourseSession logic.
+- **Still open for engineering verification:** per-Screen action matrix QA against original runtime, any complete page integration, shared celebration extraction/integration, component stories and browser evidence, responsive screen height geometry, Safari/touch behavior, fonts/licensing and designer visual acceptance.
+- **Workflow:** Grokbot uses an independent feature branch from an explicitly agreed integrated baseline; submit PR and tests, do not merge automatically. Alex still owns any true change to original scoring and unlocking, UI/UX designer owns visual signoff.
+
+
 ## Canonical roles and sources
 - **Repository:** `Yuzhwe/big-academy` (never `RaoJing414`).
 - **UI/UX Designer:** final visual and major interaction approval.

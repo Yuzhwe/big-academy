@@ -1,0 +1,1997 @@
+{
+  "version": "0.1.0",
+  "status": "source-extracted-needs-behavior-QA",
+  "source": "apps/writing/source/alex-original.html UNIT_CONFIG (schema writing-unit-config/7.0)",
+  "scope": "G2-O",
+  "count": 52,
+  "templateCounts": {
+    "P2": 5,
+    "P3": 15,
+    "P4": 12,
+    "P5": 8,
+    "P7": 4,
+    "P6": 6,
+    "P1": 2
+  },
+  "important": "Identifiers, variants and task references are source-extracted; do not infer per-screen Check/Next/Hand in from this data alone. Follow Alex runtime and Template Contracts.",
+  "rows": [
+    {
+      "order": 1,
+      "lessonId": "lesson1",
+      "lessonNumber": 1,
+      "lessonTitle": {
+        "en": "Topic sentences",
+        "zh": "主题句"
+      },
+      "screenIndex": 1,
+      "screenId": "L2-04.learn",
+      "stepTag": "L2-04",
+      "template": "P2",
+      "kind": "learn",
+      "variant": {
+        "body": "rule_pair",
+        "diagram": "hamburger",
+        "skip_offer": true
+      },
+      "pageId": "L2-04.skill",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ts1",
+        "ts4",
+        "ts3",
+        "ss.L2-04",
+        "ts8"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Learn",
+        "zh": "学一学"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 2,
+      "lessonId": "lesson1",
+      "lessonNumber": 1,
+      "lessonTitle": {
+        "en": "Topic sentences",
+        "zh": "主题句"
+      },
+      "screenIndex": 2,
+      "screenId": "L2-04.t.ts1",
+      "stepTag": "L2-04",
+      "template": "P3",
+      "kind": "task",
+      "variant": {
+        "layout": "list",
+        "unit": "option",
+        "pick": "single",
+        "scored": "auto"
+      },
+      "pageId": "L2-04.skill",
+      "taskId": "ts1",
+      "taskType": "pick",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ts1",
+        "ts4",
+        "ts3",
+        "ss.L2-04",
+        "ts8"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Pick the topic sentence",
+        "zh": "选出主题句"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 3,
+      "lessonId": "lesson1",
+      "lessonNumber": 1,
+      "lessonTitle": {
+        "en": "Topic sentences",
+        "zh": "主题句"
+      },
+      "screenIndex": 3,
+      "screenId": "L2-04.t.ts4",
+      "stepTag": "L2-04",
+      "template": "P3",
+      "kind": "task",
+      "variant": {
+        "layout": "passage",
+        "unit": "word",
+        "pick": "single",
+        "scored": "auto"
+      },
+      "pageId": "L2-04.skill",
+      "taskId": "ts4",
+      "taskType": "tapword",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ts1",
+        "ts4",
+        "ts3",
+        "ss.L2-04",
+        "ts8"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Find the opinion word",
+        "zh": "找出观点词"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 4,
+      "lessonId": "lesson1",
+      "lessonNumber": 1,
+      "lessonTitle": {
+        "en": "Topic sentences",
+        "zh": "主题句"
+      },
+      "screenIndex": 4,
+      "screenId": "L2-04.t.ts3",
+      "stepTag": "L2-04",
+      "template": "P3",
+      "kind": "task",
+      "variant": {
+        "layout": "list",
+        "unit": "option",
+        "pick": "multi",
+        "scored": "auto"
+      },
+      "pageId": "L2-04.skill",
+      "taskId": "ts3",
+      "taskType": "pick",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ts1",
+        "ts4",
+        "ts3",
+        "ss.L2-04",
+        "ts8"
+      ],
+      "taskMulti": true,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Opinion or fact?",
+        "zh": "观点还是事实？"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 5,
+      "lessonId": "lesson1",
+      "lessonNumber": 1,
+      "lessonTitle": {
+        "en": "Topic sentences",
+        "zh": "主题句"
+      },
+      "screenIndex": 5,
+      "screenId": "L2-04.t.ss.L2-04",
+      "stepTag": "L2-04",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "action": "build",
+        "input": "set",
+        "build_unit": "word",
+        "order": "guided",
+        "distractors": 0,
+        "scoring": "auto",
+        "evidence": "practice"
+      },
+      "pageId": "L2-04.skill",
+      "taskId": "ss.L2-04",
+      "taskType": "build",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ts1",
+        "ts4",
+        "ts3",
+        "ss.L2-04",
+        "ts8"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Build a topic sentence",
+        "zh": "拼一个主题句"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 6,
+      "lessonId": "lesson1",
+      "lessonNumber": 1,
+      "lessonTitle": {
+        "en": "Topic sentences",
+        "zh": "主题句"
+      },
+      "screenIndex": 6,
+      "screenId": "L2-04.t.ts8",
+      "stepTag": "L2-04",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "input": "chunks",
+        "source": "frame",
+        "action": "fill",
+        "scoring": "rule+ai",
+        "evidence": "practice"
+      },
+      "pageId": "L2-04.skill",
+      "taskId": "ts8",
+      "taskType": "write",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ts1",
+        "ts4",
+        "ts3",
+        "ss.L2-04",
+        "ts8"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 1,
+      "title": {
+        "en": "Finish the sentence",
+        "zh": "把句子写完整"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 7,
+      "lessonId": "lesson1",
+      "lessonNumber": 1,
+      "lessonTitle": {
+        "en": "Topic sentences",
+        "zh": "主题句"
+      },
+      "screenIndex": 7,
+      "screenId": "L2-04.apply",
+      "stepTag": "L2-04",
+      "template": "P5",
+      "kind": "apply",
+      "variant": {
+        "purpose": "apply",
+        "phase": "draft",
+        "input": "words",
+        "feedback": "constraint",
+        "evidence": "apply"
+      },
+      "pageId": "L2-04.apply",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "apply",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 5,
+      "title": {
+        "en": "Try it in your own writing",
+        "zh": "在自己的写作里试一试"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 8,
+      "lessonId": "lesson1",
+      "lessonNumber": 1,
+      "lessonTitle": {
+        "en": "Topic sentences",
+        "zh": "主题句"
+      },
+      "screenIndex": 8,
+      "screenId": "L2-04.check",
+      "stepTag": "L2-04",
+      "template": "P7",
+      "kind": "check",
+      "variant": {
+        "purpose": "mastery",
+        "preset": "assessment",
+        "items": "3 auto + 1 writing",
+        "pass_rule": ">=2/3 auto AND writing correct",
+        "second_set": true,
+        "input": "keyboard"
+      },
+      "pageId": "L2-04.check",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "check",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Check",
+        "zh": "小测"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 9,
+      "lessonId": "lesson2",
+      "lessonNumber": 2,
+      "lessonTitle": {
+        "en": "Reasons & closing",
+        "zh": "理由和结尾"
+      },
+      "screenIndex": 1,
+      "screenId": "L2-05.learn",
+      "stepTag": "L2-05",
+      "template": "P2",
+      "kind": "learn",
+      "variant": {
+        "body": "rule_pair",
+        "diagram": "hamburger",
+        "skip_offer": true
+      },
+      "pageId": "L2-05.skill",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "sc1",
+        "sc7",
+        "sc3",
+        "sc4",
+        "sc5"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Learn",
+        "zh": "学一学"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 10,
+      "lessonId": "lesson2",
+      "lessonNumber": 2,
+      "lessonTitle": {
+        "en": "Reasons & closing",
+        "zh": "理由和结尾"
+      },
+      "screenIndex": 2,
+      "screenId": "L2-05.t.sc1",
+      "stepTag": "L2-05",
+      "template": "P3",
+      "kind": "task",
+      "variant": {
+        "layout": "list",
+        "unit": "option",
+        "pick": "single",
+        "scored": "auto"
+      },
+      "pageId": "L2-05.skill",
+      "taskId": "sc1",
+      "taskType": "pick",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "sc1",
+        "sc7",
+        "sc3",
+        "sc4",
+        "sc5"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Which detail fits?",
+        "zh": "哪个细节合适？"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 11,
+      "lessonId": "lesson2",
+      "lessonNumber": 2,
+      "lessonTitle": {
+        "en": "Reasons & closing",
+        "zh": "理由和结尾"
+      },
+      "screenIndex": 3,
+      "screenId": "L2-05.t.sc7",
+      "stepTag": "L2-05",
+      "template": "P3",
+      "kind": "task",
+      "variant": {
+        "layout": "passage",
+        "unit": "sentence",
+        "pick": "single",
+        "scored": "auto"
+      },
+      "pageId": "L2-05.skill",
+      "taskId": "sc7",
+      "taskType": "pick",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "sc1",
+        "sc7",
+        "sc3",
+        "sc4",
+        "sc5"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Find the off-topic sentence",
+        "zh": "找出跑题的句子"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 12,
+      "lessonId": "lesson2",
+      "lessonNumber": 2,
+      "lessonTitle": {
+        "en": "Reasons & closing",
+        "zh": "理由和结尾"
+      },
+      "screenIndex": 4,
+      "screenId": "L2-05.t.sc3",
+      "stepTag": "L2-05",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "action": "build",
+        "input": "set",
+        "build_unit": "sentence",
+        "order": "free",
+        "distractors": 0,
+        "scoring": "auto",
+        "evidence": "practice"
+      },
+      "pageId": "L2-05.skill",
+      "taskId": "sc3",
+      "taskType": "build",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "sc1",
+        "sc7",
+        "sc3",
+        "sc4",
+        "sc5"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Build the paragraph",
+        "zh": "拼出整段"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 13,
+      "lessonId": "lesson2",
+      "lessonNumber": 2,
+      "lessonTitle": {
+        "en": "Reasons & closing",
+        "zh": "理由和结尾"
+      },
+      "screenIndex": 5,
+      "screenId": "L2-05.t.sc4",
+      "stepTag": "L2-05",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "input": "chunks",
+        "source": "given",
+        "action": "expand",
+        "scoring": "rule+ai",
+        "evidence": "practice"
+      },
+      "pageId": "L2-05.skill",
+      "taskId": "sc4",
+      "taskType": "write",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "sc1",
+        "sc7",
+        "sc3",
+        "sc4",
+        "sc5"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Show me an example",
+        "zh": "举个例子"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 14,
+      "lessonId": "lesson2",
+      "lessonNumber": 2,
+      "lessonTitle": {
+        "en": "Reasons & closing",
+        "zh": "理由和结尾"
+      },
+      "screenIndex": 6,
+      "screenId": "L2-05.t.sc5",
+      "stepTag": "L2-05",
+      "template": "P3",
+      "kind": "task",
+      "variant": {
+        "layout": "list",
+        "unit": "option",
+        "pick": "single",
+        "scored": "auto"
+      },
+      "pageId": "L2-05.skill",
+      "taskId": "sc5",
+      "taskType": "pick",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "sc1",
+        "sc7",
+        "sc3",
+        "sc4",
+        "sc5"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 1,
+      "title": {
+        "en": "Choose a closing",
+        "zh": "选一个结尾句"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 15,
+      "lessonId": "lesson2",
+      "lessonNumber": 2,
+      "lessonTitle": {
+        "en": "Reasons & closing",
+        "zh": "理由和结尾"
+      },
+      "screenIndex": 7,
+      "screenId": "L2-05.apply",
+      "stepTag": "L2-05",
+      "template": "P5",
+      "kind": "apply",
+      "variant": {
+        "purpose": "apply",
+        "phase": "draft",
+        "input": "words",
+        "feedback": "constraint",
+        "evidence": "apply"
+      },
+      "pageId": "L2-05.apply",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "apply",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 5,
+      "title": {
+        "en": "Try it in your own writing",
+        "zh": "在自己的写作里试一试"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 16,
+      "lessonId": "lesson2",
+      "lessonNumber": 2,
+      "lessonTitle": {
+        "en": "Reasons & closing",
+        "zh": "理由和结尾"
+      },
+      "screenIndex": 8,
+      "screenId": "L2-05.check",
+      "stepTag": "L2-05",
+      "template": "P7",
+      "kind": "check",
+      "variant": {
+        "purpose": "mastery",
+        "preset": "assessment",
+        "items": "3 auto + 1 writing",
+        "pass_rule": ">=2/3 auto AND writing correct",
+        "second_set": true,
+        "input": "keyboard"
+      },
+      "pageId": "L2-05.check",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "check",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Check",
+        "zh": "小测"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 17,
+      "lessonId": "lesson3",
+      "lessonNumber": 3,
+      "lessonTitle": {
+        "en": "Linking words",
+        "zh": "连接词"
+      },
+      "screenIndex": 1,
+      "screenId": "L2-06.learn",
+      "stepTag": "L2-06",
+      "template": "P2",
+      "kind": "learn",
+      "variant": {
+        "body": "rule_pair",
+        "diagram": "hamburger",
+        "skip_offer": true
+      },
+      "pageId": "L2-06.skill",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "lw1",
+        "lw6",
+        "lw3",
+        "lw5",
+        "lw4"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Learn",
+        "zh": "学一学"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 18,
+      "lessonId": "lesson3",
+      "lessonNumber": 3,
+      "lessonTitle": {
+        "en": "Linking words",
+        "zh": "连接词"
+      },
+      "screenIndex": 2,
+      "screenId": "L2-06.t.lw1",
+      "stepTag": "L2-06",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "input": "chunks",
+        "source": "given",
+        "action": "fill",
+        "scoring": "rule",
+        "evidence": "practice"
+      },
+      "pageId": "L2-06.skill",
+      "taskId": "lw1",
+      "taskType": "edit",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "lw1",
+        "lw6",
+        "lw3",
+        "lw5",
+        "lw4"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Fill the gap",
+        "zh": "填空"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 19,
+      "lessonId": "lesson3",
+      "lessonNumber": 3,
+      "lessonTitle": {
+        "en": "Linking words",
+        "zh": "连接词"
+      },
+      "screenIndex": 3,
+      "screenId": "L2-06.t.lw6",
+      "stepTag": "L2-06",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "input": "chunks",
+        "source": "given",
+        "action": "fix",
+        "scoring": "rule",
+        "evidence": "practice"
+      },
+      "pageId": "L2-06.skill",
+      "taskId": "lw6",
+      "taskType": "edit",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "lw1",
+        "lw6",
+        "lw3",
+        "lw5",
+        "lw4"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Fix the missing mark",
+        "zh": "补上标点"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 20,
+      "lessonId": "lesson3",
+      "lessonNumber": 3,
+      "lessonTitle": {
+        "en": "Linking words",
+        "zh": "连接词"
+      },
+      "screenIndex": 4,
+      "screenId": "L2-06.t.lw3",
+      "stepTag": "L2-06",
+      "template": "P3",
+      "kind": "task",
+      "variant": {
+        "layout": "list",
+        "unit": "option",
+        "pick": "multi",
+        "scored": "auto"
+      },
+      "pageId": "L2-06.skill",
+      "taskId": "lw3",
+      "taskType": "pick",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "lw1",
+        "lw6",
+        "lw3",
+        "lw5",
+        "lw4"
+      ],
+      "taskMulti": true,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Words that bring an example",
+        "zh": "引出例子的词"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 21,
+      "lessonId": "lesson3",
+      "lessonNumber": 3,
+      "lessonTitle": {
+        "en": "Linking words",
+        "zh": "连接词"
+      },
+      "screenIndex": 5,
+      "screenId": "L2-06.t.lw5",
+      "stepTag": "L2-06",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "input": "chunks",
+        "source": "given",
+        "action": "combine",
+        "scoring": "rule",
+        "evidence": "practice"
+      },
+      "pageId": "L2-06.skill",
+      "taskId": "lw5",
+      "taskType": "edit",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "lw1",
+        "lw6",
+        "lw3",
+        "lw5",
+        "lw4"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Join with “In addition,”",
+        "zh": "用 In addition 连接"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 22,
+      "lessonId": "lesson3",
+      "lessonNumber": 3,
+      "lessonTitle": {
+        "en": "Linking words",
+        "zh": "连接词"
+      },
+      "screenIndex": 6,
+      "screenId": "L2-06.t.lw4",
+      "stepTag": "L2-06",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "action": "build",
+        "input": "set",
+        "build_unit": "phrase",
+        "order": "free",
+        "distractors": 2,
+        "scoring": "auto",
+        "evidence": "practice"
+      },
+      "pageId": "L2-06.skill",
+      "taskId": "lw4",
+      "taskType": "build",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "lw1",
+        "lw6",
+        "lw3",
+        "lw5",
+        "lw4"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 1,
+      "title": {
+        "en": "Build: “in order to”",
+        "zh": "拼句：in order to"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 23,
+      "lessonId": "lesson3",
+      "lessonNumber": 3,
+      "lessonTitle": {
+        "en": "Linking words",
+        "zh": "连接词"
+      },
+      "screenIndex": 7,
+      "screenId": "L2-06.apply",
+      "stepTag": "L2-06",
+      "template": "P5",
+      "kind": "apply",
+      "variant": {
+        "purpose": "apply",
+        "phase": "draft",
+        "input": "words",
+        "feedback": "constraint",
+        "evidence": "apply"
+      },
+      "pageId": "L2-06.apply",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "apply",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 5,
+      "title": {
+        "en": "Try it in your own writing",
+        "zh": "在自己的写作里试一试"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 24,
+      "lessonId": "lesson3",
+      "lessonNumber": 3,
+      "lessonTitle": {
+        "en": "Linking words",
+        "zh": "连接词"
+      },
+      "screenIndex": 8,
+      "screenId": "L2-06.check",
+      "stepTag": "L2-06",
+      "template": "P7",
+      "kind": "check",
+      "variant": {
+        "purpose": "mastery",
+        "preset": "assessment",
+        "items": "3 auto + 1 writing",
+        "pass_rule": ">=2/3 auto AND writing correct",
+        "second_set": true,
+        "input": "keyboard"
+      },
+      "pageId": "L2-06.check",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "check",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Check",
+        "zh": "小测"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 25,
+      "lessonId": "lesson4",
+      "lessonNumber": 4,
+      "lessonTitle": {
+        "en": "Run-on sentences",
+        "zh": "连写句"
+      },
+      "screenIndex": 1,
+      "screenId": "L2-01.learn",
+      "stepTag": "L2-01",
+      "template": "P2",
+      "kind": "learn",
+      "variant": {
+        "body": "rule_pair",
+        "diagram": "hamburger",
+        "skip_offer": true
+      },
+      "pageId": "L2-01.skill",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ro1",
+        "ro5",
+        "ro3",
+        "ro6",
+        "ro7"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Learn",
+        "zh": "学一学"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 26,
+      "lessonId": "lesson4",
+      "lessonNumber": 4,
+      "lessonTitle": {
+        "en": "Run-on sentences",
+        "zh": "连写句"
+      },
+      "screenIndex": 2,
+      "screenId": "L2-01.t.ro1",
+      "stepTag": "L2-01",
+      "template": "P3",
+      "kind": "task",
+      "variant": {
+        "layout": "list",
+        "unit": "option",
+        "pick": "single",
+        "scored": "auto"
+      },
+      "pageId": "L2-01.skill",
+      "taskId": "ro1",
+      "taskType": "pick",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ro1",
+        "ro5",
+        "ro3",
+        "ro6",
+        "ro7"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Spot the run-on",
+        "zh": "找出连写句"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 27,
+      "lessonId": "lesson4",
+      "lessonNumber": 4,
+      "lessonTitle": {
+        "en": "Run-on sentences",
+        "zh": "连写句"
+      },
+      "screenIndex": 3,
+      "screenId": "L2-01.t.ro5",
+      "stepTag": "L2-01",
+      "template": "P3",
+      "kind": "task",
+      "variant": {
+        "layout": "passage",
+        "unit": "boundary",
+        "pick": "multi",
+        "scored": "auto",
+        "targets": 4,
+        "remediation": "ro5r"
+      },
+      "pageId": "L2-01.skill",
+      "taskId": "ro5",
+      "taskType": "tapword",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ro1",
+        "ro5",
+        "ro3",
+        "ro6",
+        "ro7"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Find 4 run-ons",
+        "zh": "找出 4 处连写"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 28,
+      "lessonId": "lesson4",
+      "lessonNumber": 4,
+      "lessonTitle": {
+        "en": "Run-on sentences",
+        "zh": "连写句"
+      },
+      "screenIndex": 4,
+      "screenId": "L2-01.t.ro3",
+      "stepTag": "L2-01",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "input": "words",
+        "source": "given",
+        "action": "fix",
+        "scoring": "rule",
+        "evidence": "practice"
+      },
+      "pageId": "L2-01.skill",
+      "taskId": "ro3",
+      "taskType": "edit",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ro1",
+        "ro5",
+        "ro3",
+        "ro6",
+        "ro7"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Fix a run-on",
+        "zh": "改正连写句"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 29,
+      "lessonId": "lesson4",
+      "lessonNumber": 4,
+      "lessonTitle": {
+        "en": "Run-on sentences",
+        "zh": "连写句"
+      },
+      "screenIndex": 5,
+      "screenId": "L2-01.t.ro6",
+      "stepTag": "L2-01",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "action": "build",
+        "input": "set",
+        "build_unit": "phrase",
+        "order": "free",
+        "distractors": 3,
+        "scoring": "auto",
+        "evidence": "practice"
+      },
+      "pageId": "L2-01.skill",
+      "taskId": "ro6",
+      "taskType": "build",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ro1",
+        "ro5",
+        "ro3",
+        "ro6",
+        "ro7"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Join with “, so”",
+        "zh": "用 , so 连接"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 30,
+      "lessonId": "lesson4",
+      "lessonNumber": 4,
+      "lessonTitle": {
+        "en": "Run-on sentences",
+        "zh": "连写句"
+      },
+      "screenIndex": 6,
+      "screenId": "L2-01.t.ro7",
+      "stepTag": "L2-01",
+      "template": "P4",
+      "kind": "task",
+      "variant": {
+        "input": "words",
+        "source": "given",
+        "action": "rewrite",
+        "scoring": "rule",
+        "evidence": "practice"
+      },
+      "pageId": "L2-01.skill",
+      "taskId": "ro7",
+      "taskType": "edit",
+      "pageKind": "skill",
+      "pageTaskIds": [
+        "ro1",
+        "ro5",
+        "ro3",
+        "ro6",
+        "ro7"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 1,
+      "title": {
+        "en": "Fix it your way",
+        "zh": "用你的办法改"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 31,
+      "lessonId": "lesson4",
+      "lessonNumber": 4,
+      "lessonTitle": {
+        "en": "Run-on sentences",
+        "zh": "连写句"
+      },
+      "screenIndex": 7,
+      "screenId": "L2-01.apply",
+      "stepTag": "L2-01",
+      "template": "P5",
+      "kind": "apply",
+      "variant": {
+        "purpose": "apply",
+        "phase": "draft",
+        "input": "folded",
+        "feedback": "constraint",
+        "evidence": "apply"
+      },
+      "pageId": "L2-01.apply",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "apply",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 5,
+      "title": {
+        "en": "Try it in your own writing",
+        "zh": "在自己的写作里试一试"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 32,
+      "lessonId": "lesson4",
+      "lessonNumber": 4,
+      "lessonTitle": {
+        "en": "Run-on sentences",
+        "zh": "连写句"
+      },
+      "screenIndex": 8,
+      "screenId": "L2-01.check",
+      "stepTag": "L2-01",
+      "template": "P7",
+      "kind": "check",
+      "variant": {
+        "purpose": "mastery",
+        "preset": "assessment",
+        "items": "3 auto + 1 writing",
+        "pass_rule": ">=2/3 auto AND writing correct",
+        "second_set": true,
+        "input": "keyboard"
+      },
+      "pageId": "L2-01.check",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "check",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Check",
+        "zh": "小测"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 33,
+      "lessonId": "lesson5",
+      "lessonNumber": 5,
+      "lessonTitle": {
+        "en": "A strong paragraph",
+        "zh": "读一篇好段落"
+      },
+      "screenIndex": 1,
+      "screenId": "model.read",
+      "stepTag": "model",
+      "template": "P2",
+      "kind": "model_read",
+      "variant": {
+        "body": "annotated_text"
+      },
+      "pageId": "model",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "model",
+      "pageTaskIds": [
+        "mt.top",
+        "mt.detail",
+        "mt.bottom",
+        "m1",
+        "m2"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 6,
+      "title": {
+        "en": "Read the model",
+        "zh": "读范文"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 34,
+      "lessonId": "lesson5",
+      "lessonNumber": 5,
+      "lessonTitle": {
+        "en": "A strong paragraph",
+        "zh": "读一篇好段落"
+      },
+      "screenIndex": 2,
+      "screenId": "model.t.mt.top",
+      "stepTag": "model",
+      "template": "P3",
+      "kind": "model_task",
+      "variant": {
+        "layout": "passage",
+        "source": "model",
+        "unit": "sentence",
+        "pick": "single",
+        "scored": "auto"
+      },
+      "pageId": "model",
+      "taskId": "mt.top",
+      "taskType": "pick",
+      "pageKind": "model",
+      "pageTaskIds": [
+        "mt.top",
+        "mt.detail",
+        "mt.bottom",
+        "m1",
+        "m2"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Find the top bun",
+        "zh": "找出上层面包"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 35,
+      "lessonId": "lesson5",
+      "lessonNumber": 5,
+      "lessonTitle": {
+        "en": "A strong paragraph",
+        "zh": "读一篇好段落"
+      },
+      "screenIndex": 3,
+      "screenId": "model.t.mt.detail",
+      "stepTag": "model",
+      "template": "P3",
+      "kind": "model_task",
+      "variant": {
+        "layout": "passage",
+        "source": "model",
+        "unit": "sentence",
+        "pick": "single",
+        "scored": "auto"
+      },
+      "pageId": "model",
+      "taskId": "mt.detail",
+      "taskType": "pick",
+      "pageKind": "model",
+      "pageTaskIds": [
+        "mt.top",
+        "mt.detail",
+        "mt.bottom",
+        "m1",
+        "m2"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Find an example",
+        "zh": "找出一个例子"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 36,
+      "lessonId": "lesson5",
+      "lessonNumber": 5,
+      "lessonTitle": {
+        "en": "A strong paragraph",
+        "zh": "读一篇好段落"
+      },
+      "screenIndex": 4,
+      "screenId": "model.t.mt.bottom",
+      "stepTag": "model",
+      "template": "P3",
+      "kind": "model_task",
+      "variant": {
+        "layout": "passage",
+        "source": "model",
+        "unit": "sentence",
+        "pick": "single",
+        "scored": "auto"
+      },
+      "pageId": "model",
+      "taskId": "mt.bottom",
+      "taskType": "pick",
+      "pageKind": "model",
+      "pageTaskIds": [
+        "mt.top",
+        "mt.detail",
+        "mt.bottom",
+        "m1",
+        "m2"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 2,
+      "title": {
+        "en": "Find the bottom bun",
+        "zh": "找出下层面包"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 37,
+      "lessonId": "lesson5",
+      "lessonNumber": 5,
+      "lessonTitle": {
+        "en": "A strong paragraph",
+        "zh": "读一篇好段落"
+      },
+      "screenIndex": 5,
+      "screenId": "model.t.m1",
+      "stepTag": "model",
+      "template": "P3",
+      "kind": "model_task",
+      "variant": {
+        "layout": "two_up",
+        "pick": "single",
+        "scored": "auto"
+      },
+      "pageId": "model",
+      "taskId": "m1",
+      "taskType": "pick",
+      "pageKind": "model",
+      "pageTaskIds": [
+        "mt.top",
+        "mt.detail",
+        "mt.bottom",
+        "m1",
+        "m2"
+      ],
+      "taskMulti": false,
+      "estimatedMinutes": 4,
+      "title": {
+        "en": "A or B?",
+        "zh": "A 还是 B？"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 38,
+      "lessonId": "lesson5",
+      "lessonNumber": 5,
+      "lessonTitle": {
+        "en": "A strong paragraph",
+        "zh": "读一篇好段落"
+      },
+      "screenIndex": 6,
+      "screenId": "model.t.m2",
+      "stepTag": "model",
+      "template": "P3",
+      "kind": "model_task",
+      "variant": {
+        "layout": "list",
+        "pick": "multi",
+        "scored": "auto"
+      },
+      "pageId": "model",
+      "taskId": "m2",
+      "taskType": "pick",
+      "pageKind": "model",
+      "pageTaskIds": [
+        "mt.top",
+        "mt.detail",
+        "mt.bottom",
+        "m1",
+        "m2"
+      ],
+      "taskMulti": true,
+      "estimatedMinutes": 4,
+      "title": {
+        "en": "Why is it stronger?",
+        "zh": "为什么更好？"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 39,
+      "lessonId": "lesson6",
+      "lessonNumber": 6,
+      "lessonTitle": {
+        "en": "Plan your paragraph",
+        "zh": "计划你的段落"
+      },
+      "screenIndex": 1,
+      "screenId": "plan.topic",
+      "stepTag": "plan",
+      "template": "P3",
+      "kind": "plan_topic",
+      "variant": {
+        "layout": "cards",
+        "pick": "single",
+        "scored": "none"
+      },
+      "pageId": "plan",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "plan",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Choose a question",
+        "zh": "选一个问题"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 40,
+      "lessonId": "lesson6",
+      "lessonNumber": 6,
+      "lessonTitle": {
+        "en": "Plan your paragraph",
+        "zh": "计划你的段落"
+      },
+      "screenIndex": 2,
+      "screenId": "plan.top",
+      "stepTag": "plan",
+      "template": "P6",
+      "kind": "plan_layer",
+      "variant": {
+        "organizer": "hamburger",
+        "view": "layer",
+        "fields": [
+          "opinion"
+        ],
+        "coach": "ask"
+      },
+      "pageId": "plan",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "plan",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Top bun: my opinion",
+        "zh": "上层面包：我的观点"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 41,
+      "lessonId": "lesson6",
+      "lessonNumber": 6,
+      "lessonTitle": {
+        "en": "Plan your paragraph",
+        "zh": "计划你的段落"
+      },
+      "screenIndex": 3,
+      "screenId": "plan.r1",
+      "stepTag": "plan",
+      "template": "P6",
+      "kind": "plan_layer",
+      "variant": {
+        "organizer": "hamburger",
+        "view": "layer",
+        "fields": [
+          "reason1",
+          "detail1"
+        ],
+        "coach": "ask"
+      },
+      "pageId": "plan",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "plan",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 4,
+      "title": {
+        "en": "Reason 1 and an example",
+        "zh": "理由 1 和例子"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 42,
+      "lessonId": "lesson6",
+      "lessonNumber": 6,
+      "lessonTitle": {
+        "en": "Plan your paragraph",
+        "zh": "计划你的段落"
+      },
+      "screenIndex": 4,
+      "screenId": "plan.r2",
+      "stepTag": "plan",
+      "template": "P6",
+      "kind": "plan_layer",
+      "variant": {
+        "organizer": "hamburger",
+        "view": "layer",
+        "fields": [
+          "reason2",
+          "detail2"
+        ],
+        "coach": "ask"
+      },
+      "pageId": "plan",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "plan",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 4,
+      "title": {
+        "en": "Reason 2 and an example",
+        "zh": "理由 2 和例子"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 43,
+      "lessonId": "lesson6",
+      "lessonNumber": 6,
+      "lessonTitle": {
+        "en": "Plan your paragraph",
+        "zh": "计划你的段落"
+      },
+      "screenIndex": 5,
+      "screenId": "plan.bottom",
+      "stepTag": "plan",
+      "template": "P6",
+      "kind": "plan_layer",
+      "variant": {
+        "organizer": "hamburger",
+        "view": "layer",
+        "fields": [
+          "closing"
+        ],
+        "coach": "ask"
+      },
+      "pageId": "plan",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "plan",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Bottom bun: closing idea",
+        "zh": "下层面包：结尾"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 44,
+      "lessonId": "lesson6",
+      "lessonNumber": 6,
+      "lessonTitle": {
+        "en": "Plan your paragraph",
+        "zh": "计划你的段落"
+      },
+      "screenIndex": 6,
+      "screenId": "plan.check",
+      "stepTag": "plan",
+      "template": "P6",
+      "kind": "plan_check",
+      "variant": {
+        "organizer": "hamburger",
+        "view": "whole",
+        "coach": "ask",
+        "send_to_canvas": true
+      },
+      "pageId": "plan",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "plan",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "Check my plan",
+        "zh": "检查我的计划"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 45,
+      "lessonId": "lesson7",
+      "lessonNumber": 7,
+      "lessonTitle": {
+        "en": "Write your paragraph",
+        "zh": "写你的段落"
+      },
+      "screenIndex": 1,
+      "screenId": "draft.ready",
+      "stepTag": "draft",
+      "template": "P6",
+      "kind": "draft_ready",
+      "variant": {
+        "organizer": "hamburger",
+        "view": "recap"
+      },
+      "pageId": "draft",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "draft",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 4,
+      "title": {
+        "en": "Get ready",
+        "zh": "准备"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 46,
+      "lessonId": "lesson7",
+      "lessonNumber": 7,
+      "lessonTitle": {
+        "en": "Write your paragraph",
+        "zh": "写你的段落"
+      },
+      "screenIndex": 2,
+      "screenId": "draft.write",
+      "stepTag": "draft",
+      "template": "P5",
+      "kind": "draft_write",
+      "variant": {
+        "purpose": "draft",
+        "phase": "draft",
+        "zones_from": "plan",
+        "input": "words",
+        "feedback": "rubric",
+        "evidence": "genre"
+      },
+      "pageId": "draft",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "draft",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 16,
+      "title": {
+        "en": "Write",
+        "zh": "写"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 47,
+      "lessonId": "lesson8",
+      "lessonNumber": 8,
+      "lessonTitle": {
+        "en": "Read my comments and revise",
+        "zh": "读批注，改一改"
+      },
+      "screenIndex": 1,
+      "screenId": "revise.comments",
+      "stepTag": "revise",
+      "template": "P5",
+      "kind": "rev_comments",
+      "variant": {
+        "purpose": "draft",
+        "phase": "revise",
+        "input": "folded",
+        "feedback": "rubric"
+      },
+      "pageId": "feedback",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "feedback",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 8,
+      "title": {
+        "en": "Read my comments",
+        "zh": "读批注"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 48,
+      "lessonId": "lesson8",
+      "lessonNumber": 8,
+      "lessonTitle": {
+        "en": "Read my comments and revise",
+        "zh": "读批注，改一改"
+      },
+      "screenIndex": 2,
+      "screenId": "revise.cups",
+      "stepTag": "revise",
+      "template": "P5",
+      "kind": "rev_cups",
+      "variant": {
+        "purpose": "draft",
+        "phase": "revise",
+        "check": "CUPS",
+        "input": "folded",
+        "feedback": "rubric"
+      },
+      "pageId": "feedback",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "feedback",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 7,
+      "title": {
+        "en": "Check and hand in again",
+        "zh": "检查后再交"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 49,
+      "lessonId": "lesson8",
+      "lessonNumber": 8,
+      "lessonTitle": {
+        "en": "Read my comments and revise",
+        "zh": "读批注，改一改"
+      },
+      "screenIndex": 3,
+      "screenId": "revise.final",
+      "stepTag": "revise",
+      "template": "P5",
+      "kind": "rev_final",
+      "variant": {
+        "purpose": "draft",
+        "phase": "review",
+        "input": "none"
+      },
+      "pageId": "feedback",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "feedback",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 5,
+      "title": {
+        "en": "Second look",
+        "zh": "再看一遍"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 50,
+      "lessonId": "lesson9",
+      "lessonNumber": 9,
+      "lessonTitle": {
+        "en": "My finished paragraph",
+        "zh": "我完成的段落"
+      },
+      "screenIndex": 1,
+      "screenId": "report.paragraph",
+      "stepTag": "report",
+      "template": "P1",
+      "kind": "rep_paragraph",
+      "variant": {
+        "variant": "final"
+      },
+      "pageId": "report",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "report",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "My paragraph",
+        "zh": "我的段落"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 51,
+      "lessonId": "lesson9",
+      "lessonNumber": 9,
+      "lessonTitle": {
+        "en": "My finished paragraph",
+        "zh": "我完成的段落"
+      },
+      "screenIndex": 2,
+      "screenId": "report.grew",
+      "stepTag": "report",
+      "template": "P1",
+      "kind": "rep_grew",
+      "variant": {
+        "variant": "growth"
+      },
+      "pageId": "report",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "report",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 3,
+      "title": {
+        "en": "How it grew",
+        "zh": "我的进步"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    },
+    {
+      "order": 52,
+      "lessonId": "lesson9",
+      "lessonNumber": 9,
+      "lessonTitle": {
+        "en": "My finished paragraph",
+        "zh": "我完成的段落"
+      },
+      "screenIndex": 3,
+      "screenId": "report.reflect",
+      "stepTag": "report",
+      "template": "P4",
+      "kind": "rep_reflect",
+      "variant": {
+        "source": "frame",
+        "action": "write",
+        "input": "keyboard",
+        "scoring": "none"
+      },
+      "pageId": "report",
+      "taskId": null,
+      "taskType": null,
+      "pageKind": "report",
+      "pageTaskIds": null,
+      "taskMulti": false,
+      "estimatedMinutes": 4,
+      "title": {
+        "en": "One last thing",
+        "zh": "最后一件事"
+      },
+      "primaryActionPolicy": "inherited-from-original-renderer",
+      "completionAuthority": "Alex CourseSession/Pages",
+      "designerStatus": "requires-visual-review"
+    }
+  ]
+}
