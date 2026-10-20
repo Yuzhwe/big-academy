@@ -1,11 +1,22 @@
 # Big Academy — DESIGN.md
 
-**Version:** v0.4 DRAFT · Color System v0.2 approved · Unified Code-First Design System · 2026-10-19  
+**Version:** v0.5 DRAFT · Color System v0.2 approved · Unified Code-First Design System · 2026-10-19  
 **Owner:** UI/UX Designer (final visual authority)  
 **Scope:** all Big Academy products. **This is the only DESIGN.md in the repository.** Writing feature-specific requirements and page specifications are combined inside `apps/writing/PRODUCT.md`.  
 **Authority:** approved designer decisions override external design prompts; actual checked component code and Storybook demonstrate implementations but never grant design approval. Product-specific business rules belong in each `apps/<product>/PRODUCT.md`.
 
 ## 1. Overview — one design language, multiple product themes
+
+### Global visual language · designer decision [A, 2026-10-20]
+
+**Soft, clear, purposeful:** light minimalist compositions, low visual noise, restrained neutral surfaces, spacious readable content, and rounded interactive silhouettes. Prefer white/light-neutral functional canvases and quiet borders, with approved product-themed surfaces and primary actions (Writing: Warm Frame + White Canvas, accent #B25415). **Low visual noise is NOT low text or control contrast.** Functional text, icons, error/success/selected states and visible focus must maintain adequate contrast and redundant cues. Do not lighten disabled items until their labels become indistinguishable; native disabled semantics and a still-recognizable boundary matter.
+
+**Shape directs attention, but does not determine hierarchy by itself.** Large roundness can make an element appear softer, more self-contained, and inviting, especially when paired with prominent color, size, placement and whitespace; it does not guarantee higher attention in every context. Primary actions remain more salient by their semantic color, wording and position. The global shape preference is: **ordinary action buttons default to a full capsule; icon-only action buttons default to a circle with square visual bounds; other click targets favor generously rounded corners chosen by component role and content.** Avoid forcing multi-line learning cards, text editing regions or layout shells into pills. Keep user-defined shape variants where the Figma component specification explicitly offers them.
+
+**Quiet elevation:** use light 0.5px ordinary strokes where context calls for them and the existing Elevation tokens when actual layering needs emphasis. Do not give every interactive thing a shadow. Align content and icons optically; prefer the 4px/8px spacing rhythm without compressing text or violating touch/keyboard targets.
+
+**UI resources:** Iconoir line icons and approved sans-serif typography roles from §3. This paragraph describes the *design language*, not new numeric color, shadow or font authorizations.
+
 
 Big Academy is a K–12 learning ecosystem. Maintain coherent typography, spacing, form controls, navigation, accessible state affordances, layouts and component quality across Writing, Reading and future experiences. Differentiate product identity **primarily through theme color**, without forcing different learning experiences into identical screen structures.
 
@@ -119,7 +130,7 @@ The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, sup
 
 ### Writing page patterns [A unless noted]
 
-**E-01 Staircase:** the **diagonal lower-left → upper-right learning-path interaction is the agreed target**; its complete page-specific requirements and A/B verification protocol are in `apps/writing/PRODUCT.md` (one combined PRODUCT + page specification). Lesson number top-left on every card. Start / Continue / Review / Locked actions; preserve distinct skipped indicator. Insert one Unit Milestone after each Unit and Level Goal after final Unit. Their progress and confetti eligibility are product logic, not CSS. **A/B visual review only [E]:** Variant A explores the *historical* cream cards + thin platform + subordinate light beam + dusk gradient; Variant B explores Warm Frame + White Canvas without platform/beam. The historical dark treatment is **not** a reversal of the approved overall Writing visual direction. Both remain visually unapproved; geometry parameters/surfaces require browser evidence and designer decision.
+**E-01 Staircase:** the **diagonal lower-left → upper-right learning-path interaction is the agreed target**; its complete page-specific requirements and A/B verification protocol are in `apps/writing/PRODUCT.md` (one combined PRODUCT + page specification). Lesson number top-left on every card. Start / Continue / Review / Locked actions; preserve distinct skipped indicator. Insert one Unit Milestone after each Unit and Level Goal after final Unit. Their progress and confetti eligibility are product logic, not CSS. **A/B path morphology review [E]:** Variant A uses separate stepped platforms and Variant B a continuous slope with per-level anchors, sharing the same Writing palette and exact bottom-anchored geometry. The card bottom must equal the platform/anchor Y regardless of content height. See the latest combined Writing PRODUCT.md; neither variant is visually final.
 
 **Lesson Shell:** A · **Warm Frame + White Canvas**. White task/paper on left, Coach on right. Coach content scrolls independently; Back plus one contextual Check / Next / Hand in control live in a bottom footer **outside Coach**, pinned to the right column bottom. Ordinary visual borders/dividers default **0.5 CSS px [A]**; thicker functional focus rings remain [T/Q] and must visibly distinguish focus.
 
@@ -133,13 +144,29 @@ The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, sup
 
 ## 5. Elevation & Depth
 
-Prefer restrained surfaces and hierarchy in learning views. White Paper should read clearly against the light Warm Frame. Ordinary borders are 0.5 CSS px [A] with tested contrast; do not replace accessibility focus, selected, error or other meaningful boundaries with low-contrast decorative hairlines.
+Prefer restrained surfaces and ## 5. Elevation & Depth · Figma Effect Styles [A source specification, visual application reviewed separately]
 
-Elevation tokens, popover layers, floating Word Grid shadows and Coach treatment remain [Q]; do not clone the dark/wood/strong-glass visual Demo as default.
+**Authoritative Figma reference:** [Elevation node 15:5](https://www.figma.com/design/06PPYhEQn3CqVYGlfopJWx/Big-Academy-Design-System?node-id=15-5), frame 25:2. Express meaningful layer depth, not decoration. The shared executable `tokens.css` defines a single set of source-derived effect primitives and composites; components consume those aliases.
 
-## 6. Shapes
+| Style | Source-derived effect | Role |
+|---|---|---|
+| Elevation/100 | 0 0 2px rgba(7,46,81,.05) + 0 2px 4px rgba(7,46,81,.10) | very subtle raised boundary |
+| Elevation/200 | 0 4px 16px rgba(7,46,81,.05) | lightly lifted surface |
+| Elevation/300 | 0 2px 2px rgba(7,46,81,.05) + 0 8px 24px rgba(7,46,81,.10) | stronger separation |
+| Elevation/400 | 0 0 2px rgba(7,46,81,.15) + 0 8px 24px rgba(7,46,81,.15) | prominent floating surface |
+| Blur/Background/20 | Figma blur radius 20; exported CSS blur(10px) | backdrop material candidate; equivalence needs browser check |
+
+Shadow layers above have zero spread. The effect *numbers* are source-backed; the decision of **which component uses which elevation** remains contextual/subject to designer review. **Button V2's 3px lower physical stroke is not an Elevation shadow.** Never let a soft shadow replace the visible selected, error or focus boundary. On a white canvas, if a component is adequately separated through layout or light border, no shadow is required.
+
+## 6. Shapes & Radius · soft but purposeful geometry
 
 ### BA-DS-RADIUS-001 · Shape & Radius System v0.1 [A principles, E values · 2026-10-19]
+
+**New approved shape hierarchy [A, 2026-10-20]:** interactive geometry should appear warm and inviting, but hierarchy remains the result of role + color + scale + spacing + context. 
+- **Action buttons (including primary/secondary/tertiary):** full pill/capsule by default. Icon-only action buttons: true circle with square visual bounds. **Figma Button V2 retains its explicit Full / Standard shape variant**, with Full as the system default. Do not globally remove Standard.
+- **Other clickable components:** favor a large rounded silhouette **relative to their actual component size**, then inspect content, target shape, and hierarchy. Tabs/Segmented tracks use the already reviewed Full / Standard variants with matched inner indicator curvature; interactive lesson cards, selectable tiles, menus, input containers and overlays are not all forced to the same radius. For dense content, multiple lines, insets or editor caret regions, use controlled radii rather than a pill.
+- **Attention principle:** increasing radius may emphasize the boundaries/softness of an isolated control, but does not reliably increase salience monotonically. Color contrast, visual mass, whitespace, placement and readable copy remain stronger levers for importance. A disabled button cannot regain priority just by being more rounded.
+- **Nested corners:** keep the existing concentric-corner method; preserve visible insets and avoid double rounding/clipped focus rings. The global rule picks a *shape family*; Figma component sizes and role-specific radius tokens provide numerical mapping. Candidate primitive numeric scale remains [E], not newly auto-approved.
 
 **Approved method:** Inspired by [Geist Materials](https://vercel.com/geist/materials), choose radius from **surface type, component size, visual/elevation role, and nested geometry**; never assign random rounded corners. Detailed decision tree and component mapping: `docs/design-system/SHAPE_RADIUS_SYSTEM_v0.1.md`.
 
@@ -154,7 +181,32 @@ Elevation tokens, popover layers, floating Word Grid shadows and Coach treatment
 **Candidate primitive scale [E]:** `0, 4, 6, 8, 12, 16, 24px`, `full=9999px`, `circle=50%` in `packages/design-system/src/tokens.css`. Initial **material candidates [E]**: base/small 6px; medium/large 12px; tooltip 6px; menu/modal 12px; fullscreen 16px. Initial component candidates [E]: regular Button/Field 8px, normal Card 12px, chips pill/full, square marker circle/50%; all detailed in the linked spec. **No final numeric Radius Scale has been approved.** Existing 999px pills and 10px progress corners remain [T] until separately reviewed.
 
 
-## 6.1 Motion & Interaction Physics
+## 7. Motion & Interaction Feedback
+
+### Motion targets vs transitions [A design architecture, 2026-10-20]
+
+Separate **target state** from **how the state animates**:
+
+- **Target values:** per-component `scale`, `opacity`, color/surface and visible focus state. These are state results, not Spring parameters. Start with component-specific roles instead of an indiscriminate global scale/opacity on all interactives.
+- **Transition physics:** temporary Spring presets in `MOTION_SYSTEM_v0.1.md` govern how a meaningful target is reached when a spring runtime exists. Current CSS Bézier transitions may remain until a shared adapter is validated. Do **not** claim existing CSS transitions consume the Spring presets.
+- **Priority:** disabled/pending do not respond; pressing overrides hover while active; release/cancel/pointer-out ends pressing; hovering on release returns to hover, otherwise default. Focus is independent of pressing; a focused field is not permanently pressed. Transform visual surfaces from their own center, without moving document-flow layout bounds or shrinking touch/keyboard hit regions.
+- **Figma Button V2 exception (retained by explicit designer approval):** default scale `1.00`, hover `1.02`, pressing `0.95`; its visible assembly scales, not the outer hit target. Pressing **does not apply 50% opacity**. Follow the exact Figma button states, including disabled and focus. A proposal to use global pressing `1.03` and whole-component opacity `0.5` is **not approved**; retain it as a research candidate only, not a universal Token or CSS default.
+- **Other controls:** tabs/segmented express lasting selection on the indicator and must not blur that selection with global opacity; field editing/caret/IME should remain stable; interactive cards require a reviewed profile. Avoid animations that convey product progress, score or permission.
+- **Reduced motion:** honor `prefers-reduced-motion: reduce`; show state immediately, without nonessential scaling, bounce and travel. Keyboard/touch interactions must be meaningful even without a hover device.
+
+### Nested interactive ownership and event isolation [A, 2026-10-20]
+
+**Rule: one user action has one interactive owner.** For a clickable card containing a separate button/link/control, the inner control owns its action and visual response when operated. The card owns feedback only when its own distinct interactive surface is operated. Parent and child must not both scale, fade or invoke actions from a single operation.
+
+1. **Prefer sibling interactive regions, not interactive DOM nested inside interactive DOM.** Do not render a `button` inside another `button`, or a link/button inside a parent button. Use semantic independent focusable targets, with a noninteractive layout wrapper or carefully partitioned click areas.
+2. **Gate ancestor press styling by the actual owner.** Shared press/hover visuals must not activate on the ancestor just because an inner control receives pointer, keyboard or touch activation. Where CSS `:active` / `:has()` inheritance is unsuitable, use owner-aware React Aria hooks/handlers. Avoid relying on CSS-only parent `:active` when nested actions exist.
+3. **Handle behavior as well as presentation.** Avoid double navigation, double score changes, double analytics and accidental card opening. Use deliberate event propagation management where necessary, but `stopPropagation` alone does not make invalid nested semantics valid and should not be the default architecture. Pointer cancel, drag, scroll, touch move, blur/unmount and Escape where applicable must clear press feedback.
+4. **Focus and accessibility are separate from hover.** Every independent interactive target must have its own logical keyboard focus and accessible name; parent focus outlines must not misrepresent child focus as a parent activation.
+5. **Contracts & QA:** document `interactionOwner`, parent/child boundaries, press-state cleanup, event propagation exception and keyboard/touch behaviors in each applicable component Contract. Test pointer-down/up, cancel/drag-out, child vs parent action, keyboard Space/Enter, disabled/pending and reduced motion before visual approval.
+
+**Example (normative):** A StairLessonCard wrapper presents lesson content; its Start control is a real BAButton. Activating Start causes only BAButton press feedback/action; the card's own distinct selectable area can have separate feedback and action if the product contract allows. Neither feedback changes Alex permission/score logic.
+
+
 
 ### BA-DS-MOTION-001 · Interim Motion System v0.1 [A temporary adoption · 2026-10-19]
 
@@ -174,26 +226,9 @@ The UI/UX Designer explicitly chose to **temporarily reuse all Spring parameter 
 **Motion rules:** use springs only for purposeful state changes; avoid distracting movement during reading/writing/IME composition and do not gate business logic on animation completion. Respect `prefers-reduced-motion: reduce` with an equivalent immediate state change. Preserve accessible focus, dismissal, navigation, scroll and status feedback. Temporary spring adoption does **not** approve any specific rendered animation, component choreography, additional animation dependency or production release.
 
 
-### BA-DS-ELEVATION-001 · Figma Elevation / Shadow [source-backed; visual-review]
+for accessible headless button, tabs, field and overlay behavior. Use native semantics where React Aria does not supply an exact business-level component.
 
-Figma [Elevation 15:5](https://www.figma.com/design/06PPYhEQn3CqVYGlfopJWx/Big-Academy-Design-System?node-id=15-5) frame `25:2`: 用层级而不是装饰表达浮层关系；组件引用 Effect Style，不复制阴影。
-
-- Elevation/100: `0 0 2 0 subtle + 0 2 4 0 default`.
-- Elevation/200: `0 4 16 0 subtle`.
-- Elevation/300: `0 2 2 0 subtle + 0 8 24 0 default`.
-- Elevation/400: `0 0 2 0 strong + 0 8 24 0 strong`.
-- Effect colors: subtle/default/strong = rgba(7,46,81, .05/.10/.15).
-- Blur/Background/20: Figma effect radius 20, exported CSS backdrop-filter blur(10px).
-
-Exact executable tokens: `--ba-effect-shadow-*`, `--ba-effect-elevation-*` and `--ba-effect-blur-background-20` in shared tokens.css. Component elevation assignments still require context-specific design review. Button V2's 3px physical lower border is not a generic shadow.
-
-**Tabs appearance decision:** Tabs share Segmented Control visual anatomy/size/radius/selected surface while preserving React Aria Tabs/TabList/TabPanel behavior. Segmented uses RadioGroup and has no panel. Writing E-01 geometric header alignment and level navigation rules remain authoritative. Final rendered approval remains separate.
-
-## 7. Components
-
-Foundation: **React Aria Components** for accessible headless button, tabs, field and overlay behavior. Use native semantics where React Aria does not supply an exact business-level component.
-
-Shared BA IDs from `apps/writing/contracts/components.json`: `BA-UI-001` … `BA-UI-007`. Writing composites: `BA-WR-001` … `BA-WR-006`.
+Shared BA IDs and actual implementations are tracked in `apps/writing/contracts/components.json` (including BAIcon, BATypography, BASegmentedControl and BATabs); do not assume the original BA-UI-001…007 pilot range is exhaustive. Writing composites: `BA-WR-001` … `BA-WR-006`.
 
 ### Component Architecture — P0-4 · Progressive Componentization [A, 2026-10-19]
 
@@ -241,20 +276,20 @@ When changing a token, run its affected component stories, accessibility/contras
 
 **Boundaries:** This decision selects the icon family, **not** every icon glyph, icon-to-action mapping, line thickness, size, optical alignment or approved full icon component API. Establish a small accessible icon mapping in the component registry/Storybook during P1; meaningful icon-only controls require names and visible keyboard focus. Decorative assets (e.g. staircase platform illustrations or milestone artwork) are **not interchangeable with UI icons** and must be separately reviewed. Any exceptions or custom artwork should be tracked explicitly rather than silently mixing libraries.
 
-## 8. Do's and Don'ts
+## 9. Do's and Don'ts
 
 **Do:** reuse semantic Tokens; keep one approved visual language; make product accents thematic; preserve CJK and accessibility; show states using labels/icons/geometry as well as colors; make business logic independent of UI styling; update Contract and Storybook alongside component API changes.
 
 **Don't:** create a separate `apps/writing/DESIGN.md` or duplicate the E-01 page specification outside `apps/writing/PRODUCT.md`; hard-code Writing accent in shared BAButton; invent Reading colors; treat source visual Demo measurements as approved; visually merge skipped with done; add menu or duplicate title; use confetti to mutate progression; freeze v1.0 without designer screenshot/interaction review.
 
-## 9. Evidence & Open Work
+## 10. Evidence & Open Work
 
 - **Benchmark:** `docs/design-system/BENCHMARK_AND_TOKEN_GAP_AUDIT_v0.1.md`.
-- **Actual temporary token source:** `packages/design-system/src/tokens.css` on Grokbot's **separate** `feat/grokbot-writing-topbar` branch. This docs branch does **not** yet include that code and must not pretend it does.
+- **Executable token source:** `packages/design-system/src/tokens.css` in the reviewed feature lineage. PR #19 includes Elevation and BATabs implementation candidates; `main` remains separate. Verify the target branch on every read.
 - **Approved theme scope:** B · product accent + light tinted surfaces; exact tint values pending.
 - **Approved Token Architecture:** Primitive → Semantic → optional Component; shared CSS Variables as the single current executable source; themes set by the app/shell and consumed semantically by shared components.
 - **Approved Typography Foundation and font roles:** EN headings Dosis ExtraBold 800; EN long text Jost; ZH headings Douyin (asset/family naming to verify); ZH long text Noto Sans SC; **all UI numerals Dosis ExtraBold 800**. Font size/line-height/other weights, licensing and runtime font loading remain unverified.
 - **Approved Component Architecture:** A · progressively build shared UI primitives and product components; extract Shared Patterns after real cross-product reuse, never by speculative mass abstraction.
 - **Approved Design Governance:** A · lightweight; significant changes reviewed, ordinary agent implementation autonomous; separate engineering and visual acceptance, GitHub PR/HANDOFF records.
-- **Current token gaps:** semantic palette aliases/theme contract, spacing/typography/radii/elevation/motion scale, responsive sizes, accessible feedback color pairs, and status token conventions.
+- **Current outstanding work:** review numerical Typography/Radius values, document per-component Elevation usage and motion target profiles, verify contrast/focus and keyboard/touch states, validate cross-product reuse, and inspect actual rendered visual evidence. Color v0.2, Spatial v0.2, Figma Elevation primitives and interim Motion Spring parameters already exist.
 - **Gate:** root DESIGN.md draft requires UI/UX Designer approval; proof requires a running component, Storybook states and browser QA. Component contract and product docs remain authoritative for UI interfaces and learning rules.
