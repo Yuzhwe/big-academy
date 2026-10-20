@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BAButton, BAIcon, BAText, BANumber, BATaskProgress, BASegmentedControl, type TaskProgressItem, type BAIconName } from '@big-academy/design-system';
+import { BAButton, BAIcon, BAText, BANumber, BATaskProgress, BASegmentedControl, BATabs, BATabList, BATabPanel, type TaskProgressItem, type BAIconName } from '@big-academy/design-system';
 import './DesignSystemPreview.css';
 
 type FoundationTheme = 'neutral' | 'writing';
@@ -32,6 +32,7 @@ export function DesignSystemPreview() {
   const [selectedTask, setSelectedTask] = useState(1);
   const [period, setPeriod] = useState('week');
   const [alignment, setAlignment] = useState('left');
+  const [demoTab, setDemoTab] = useState('overview');
   const zh = locale === 'zh';
 
   return (
@@ -169,6 +170,50 @@ export function DesignSystemPreview() {
           ))}
         </div>
         <p className="ba-showcase__small-label">{zh ? '真实应用：LessonTopBar 返回图标、BATaskProgress 完成与锁定图标。' : 'Real usage: LessonTopBar back action and BATaskProgress done/locked markers.'}</p>
+      </section>
+
+      <section className="ba-showcase__section" aria-labelledby="elevation-title">
+        <h2 id="elevation-title">{zh ? 'Figma Elevation · 阴影与背景模糊' : 'Figma Elevation · Shadow & Blur'}</h2>
+        <p>{zh ? '直接读取 Figma 15:5 的四级阴影和背景模糊 Tokens。点击不是修改层级；组件需要由设计师指定使用场景。' : 'Directly mapped to the five Figma 15:5 effect tokens. Elevation is chosen by surface hierarchy, not decoration.'}</p>
+        <div className="ba-showcase__elevation-gallery">
+          {([100, 200, 300, 400] as const).map(level => (
+            <div key={level} className="ba-showcase__elevation-card" data-elevation={level}
+              style={{boxShadow:'var(--ba-effect-elevation-'+level+')'}}>
+              <strong>{level}</strong><code>Elevation/{level}</code>
+            </div>
+          ))}
+          <div className="ba-showcase__blur-backdrop">
+            <div className="ba-showcase__blur-demo" data-effect="background-20" style={{backdropFilter:'var(--ba-effect-blur-background-20)'}}>
+              <strong>20</strong><code>Blur/Background/20</code>
+            </div>
+          </div>
+        </div>
+        <p className="ba-showcase__small-label">{zh ? '注意：Button 的 3px 底部立体描边不是 Elevation 阴影。' : 'Note: Button 3px bottom physical stroke is separate from Elevation.'}</p>
+      </section>
+
+      <section className="ba-showcase__section" aria-labelledby="shared-tabs-title">
+        <h2 id="shared-tabs-title">{zh ? 'BATabs · 与 Segmented 相同的外观' : 'BATabs · Same Visuals as Segmented'}</h2>
+        <p>{zh ? '切换 Tab 会改变下方内容面板；分段选择只改变局部单选值。两者共用轨道和选中块视觉规则。' : 'Tabs change the associated panel. Segmented handles a local radio choice. They share track geometry, fills, radius and motion.'}</p>
+        <div className="ba-showcase__tabs-comparison">
+          <div>
+            <strong>Tabs · Strong / Full / 50</strong>
+            <BATabs selectedKey={demoTab} onSelectionChange={setDemoTab}>
+              <BATabList aria-label="Content sections" selectedKey={demoTab}
+                emphasis="strong" radius="full" size={50}
+                items={[{id:'overview',label:'Overview'},{id:'examples',label:'Examples'},{id:'notes',label:'Notes'}]}/>
+              <BATabPanel id="overview"><p data-testid="tabs-panel-content">Overview panel · Writing progress</p></BATabPanel>
+              <BATabPanel id="examples"><p data-testid="tabs-panel-content">Examples panel · Practice tasks</p></BATabPanel>
+              <BATabPanel id="notes"><p data-testid="tabs-panel-content">Notes panel · Help</p></BATabPanel>
+            </BATabs>
+          </div>
+          <div>
+            <strong>Segmented · Strong / Full / 50</strong>
+            <BASegmentedControl aria-label="Local choice comparison" size={50}
+              emphasis="strong" radius="full"
+              options={[{id:'day',label:'Day'},{id:'week',label:'Week'},{id:'month',label:'Month'}]}/>
+            <p>{zh ? '局部单选，没有关联 TabPanel。' : 'Local single selection; no associated TabPanel.'}</p>
+          </div>
+        </div>
       </section>
 
       <section className="ba-showcase__section" aria-labelledby="figma-controls-title">

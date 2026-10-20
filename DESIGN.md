@@ -174,6 +174,21 @@ The UI/UX Designer explicitly chose to **temporarily reuse all Spring parameter 
 **Motion rules:** use springs only for purposeful state changes; avoid distracting movement during reading/writing/IME composition and do not gate business logic on animation completion. Respect `prefers-reduced-motion: reduce` with an equivalent immediate state change. Preserve accessible focus, dismissal, navigation, scroll and status feedback. Temporary spring adoption does **not** approve any specific rendered animation, component choreography, additional animation dependency or production release.
 
 
+### BA-DS-ELEVATION-001 · Figma Elevation / Shadow [source-backed; visual-review]
+
+Figma [Elevation 15:5](https://www.figma.com/design/06PPYhEQn3CqVYGlfopJWx/Big-Academy-Design-System?node-id=15-5) frame `25:2`: 用层级而不是装饰表达浮层关系；组件引用 Effect Style，不复制阴影。
+
+- Elevation/100: `0 0 2 0 subtle + 0 2 4 0 default`.
+- Elevation/200: `0 4 16 0 subtle`.
+- Elevation/300: `0 2 2 0 subtle + 0 8 24 0 default`.
+- Elevation/400: `0 0 2 0 strong + 0 8 24 0 strong`.
+- Effect colors: subtle/default/strong = rgba(7,46,81, .05/.10/.15).
+- Blur/Background/20: Figma effect radius 20, exported CSS backdrop-filter blur(10px).
+
+Exact executable tokens: `--ba-effect-shadow-*`, `--ba-effect-elevation-*` and `--ba-effect-blur-background-20` in shared tokens.css. Component elevation assignments still require context-specific design review. Button V2's 3px physical lower border is not a generic shadow.
+
+**Tabs appearance decision:** Tabs share Segmented Control visual anatomy/size/radius/selected surface while preserving React Aria Tabs/TabList/TabPanel behavior. Segmented uses RadioGroup and has no panel. Writing E-01 geometric header alignment and level navigation rules remain authoritative. Final rendered approval remains separate.
+
 ## 7. Components
 
 Foundation: **React Aria Components** for accessible headless button, tabs, field and overlay behavior. Use native semantics where React Aria does not supply an exact business-level component.

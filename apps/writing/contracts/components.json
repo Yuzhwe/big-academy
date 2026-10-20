@@ -67,36 +67,47 @@
       "name": "BATabs",
       "kind": "primitive",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BATabs.tsx",
       "story": "packages/design-system/src/components/ui/BATabs.stories.tsx",
       "props": {
-        "items": "TabDefinition[]",
+        "items": "readonly BASegmentOption[]",
         "selectedKey": "string",
-        "disabledKeys": "string[]"
+        "defaultSelectedKey": "string optional",
+        "size": "36 | 50 | 70 | 90",
+        "emphasis": "strong | subtle",
+        "radius": "full | standard",
+        "distribution": "equal | hug",
+        "className": "string; page layout owns placement",
+        "width": "number | string optional"
       },
       "events": {
-        "onSelectionChange": "(key) => void"
+        "onSelectionChange": "(selectedKey:string)=>void"
       },
       "states": [
-        "idle",
+        "default",
         "selected",
+        "hover",
         "focus-visible",
         "disabled"
       ],
-      "layoutOwner": "Component owns tab strip; consumer owns panel outer bounds",
+      "layoutOwner": "BA Tabs component owns visual selection; app owns title/header layout and TabPanel content. Figma styles shared with BASegmentedControl.",
       "requirements": [
-        "ARIA tabs",
-        "Arrow-key interaction",
-        "Locale labels"
+        "React Aria Tabs/TabList/TabPanel ARIA semantics and arrow navigation",
+        "Same track, radius, selected surface + motion as Segmented",
+        "No local radio semantics; real content panel",
+        "Writing 1440/834 centered Level header preserved"
       ],
       "requiredStories": [
         "ManyGroups",
         "KeyboardFocus",
-        "LongLabels"
+        "LongLabels",
+        "SharedVisualComparison"
       ],
-      "figma": null,
-      "runtimeEvidence": null
+      "figma": "User directive 2026-10-20: Tabs visual equals Figma Segmented Control node 806:3",
+      "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts, apps/writing/e2e/staircase-ab.spec.ts",
+      "visualStatus": "figma-segmented-shared-candidate",
+      "notes": "Appearance equality shares BASegmentedControl.css and useBASelectionSurface hook; code implemented but not final designer visual approval."
     },
     {
       "id": "BA-UI-003",

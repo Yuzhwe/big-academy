@@ -122,3 +122,42 @@ test('Figma button and segmented gallery preserve visual geometry and local radi
   await expect(panel.getByRole('button',{name:'Processing'})).toHaveAttribute('data-pending','true');
   // Visual evidence is captured by Playwright on failure; dedicated Figma screenshot QA remains separate.
 });
+
+
+test('Figma Elevation styles reproduce exactly the shared CSS effects', async ({page}) => {
+  await page.goto('/?system');
+  const d = await page.locator('[data-elevation="100"]').evaluate(el => {
+    const parent = getComputedStyle(el);
+    const root = getComputedStyle(document.documentElement);
+    return {
+      shadow: parent.boxShadow,
+      light: root.getPropertyValue('--ba-effect-shadow-subtle').trim(),
+      normal: root.getPropertyValue('--ba-effect-shadow-default').trim(),
+    };
+  });
+  expect(d.light).toBe('rgba(7,46,81,0.05)');
+  expect(d.normal).toBe('rgba(7,46,81,0.10)');
+  expect(d.shadow).toContain('rgba(7, 46, 81, 0.05)');
+  expect(d.shadow).toContain('rgba(7, 46, 81, 0.1)');
+  await expect(page.locator('[data-effect="background-20"]')).toHaveCSS('backdrop-filter','blur(10px)');
+  const effects = await page.locator('.ba-showcase__elevation-card').count();
+  expect(effects).toBe(4);
+});
+
+test('BATabs share selected surface appearance but own tabpanel navigation', async ({page}) => {
+  await page.goto('/?system');
+  const tabs = page.getByRole('tablist',{name:'Content sections'});
+  await expect(tabs.getByRole('tab')).toHaveCount(3);
+  await expect(page.getByTestId('tabs-panel-content')).toHaveText('Overview panel · Writing progress');
+  const selected = tabs.getByRole('tab',{name:'Overview'});
+  await selected.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(tabs.getByRole('tab',{name:'Examples'})).toHaveAttribute('aria-selected','true');
+  await expect(page.getByTestId('tabs-panel-content')).toHaveText('Examples panel · Practice tasks');
+  const fills=await page.locator('.ba-showcase__tabs-comparison').evaluate(container=>{
+    const track=container.querySelector('.ba-tabs__track') as HTMLElement;
+    const segmented=container.querySelector('.ba-segmented__surface') as HTMLElement;
+    return {tab:getComputedStyle(track,'::before').backgroundColor,segment:getComputedStyle(segmented).backgroundColor};
+  });
+  expect(fills.tab).toBe(fills.segment);
+});

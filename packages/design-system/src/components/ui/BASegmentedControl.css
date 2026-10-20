@@ -33,7 +33,8 @@
   border-radius:var(--ba-seg-outer);
   padding:0 2px;
 }
-.ba-segmented__surface {
+.ba-segmented__surface,
+.ba-tabs__track::before {
   box-sizing:border-box; position:absolute; left:2px; top:2px;
   height:calc(var(--ba-seg-height) - 4px);
   border-radius:var(--ba-seg-inner);
@@ -83,3 +84,14 @@
 @media (prefers-reduced-motion:reduce) {
   .ba-segmented__surface { transition:none; }
 }
+
+/* Shared Figma selected surface applies identically to Tabs pseudo layer. */
+.ba-tabs__track::before {
+  content:'';
+  left:var(--ba-tabs-selected-x,2px);
+  width:var(--ba-tabs-selected-width,0px);
+  opacity:var(--ba-tabs-selected-opacity,0);
+  z-index:0;
+}
+.ba-tabs__track > .ba-segmented__option { z-index:1; }
+@media(prefers-reduced-motion:reduce) { .ba-tabs__track::before { transition:none; } }
