@@ -9,4 +9,4 @@
 
 Launch Writing: `npm run dev` from repository root. Run `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run test:layout`, and relevant Storybook/browser checks for review.
 
-E-01 A/B diagonal **A dimensional vs B Warm Frame** both remain exploratory. Neither design is approved; the implementation branch is not necessarily merged to `main`.
+E-01 uses the selected A independent-platform diagonal geometry. High-fidelity browser visual sign-off remains pending.
