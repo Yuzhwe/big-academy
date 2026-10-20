@@ -253,6 +253,13 @@
   --ba-type-supporting-leading: 1.4; /* [E] */
   --ba-type-control-weight: 700; /* [T] Jost / Noto Sans, not Dosis */
 
+  /* Figma Button V2 foundation: node 30:2, Figma dark primary #133547.
+     Writing product maps primary to its approved #B25415. */
+  --ba-button-primary-bg:var(--ba-color-brand-10);
+  --ba-button-secondary-bg:rgba(7,46,81,.05);
+  --ba-button-destructive-bg:#ae2314; /* Figma control-specific value */
+  --ba-control-focus:#2364db; /* Figma focus stroke */
+  --ba-button-content-gap:6px;
   /* [T] pilot disabled semantics, unchanged values; not part of Color v0.2 approval. */
   --ba-color-disabled-surface: var(--ba-muted-surface);
   --ba-color-disabled-content: var(--ba-muted);
@@ -265,6 +272,7 @@
  * The existing BAButton/BATaskProgress do not yet consume these action aliases.
  */
 [data-ba-product="writing"] {
+  --ba-button-primary-bg:var(--ba-color-writing-7);
   --ba-color-action-primary: var(--ba-color-writing-7);
   --ba-color-action-primary-hover: var(--ba-color-writing-8);
   --ba-color-action-primary-active: var(--ba-color-writing-8);
