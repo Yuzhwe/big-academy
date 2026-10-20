@@ -122,3 +122,33 @@ test('Figma button and segmented gallery preserve visual geometry and local radi
   await expect(panel.getByRole('button',{name:'Processing'})).toHaveAttribute('data-pending','true');
   // Visual evidence is captured by Playwright on failure; dedicated Figma screenshot QA remains separate.
 });
+
+
+test('Figma Elevation computed tokens and React Aria BATabs share segmented selection geometry', async ({page}) => {
+  await page.goto('/?system');
+  const cards=page.locator('.ba-showcase__elevation-card');
+  await expect(cards).toHaveCount(4);
+  const shadows=await cards.evaluateAll(nodes=>nodes.map(n=>getComputedStyle(n).boxShadow));
+  expect(shadows[0]).toContain('0px 2px 4px');
+  expect(shadows[1]).toContain('0px 4px 16px');
+  expect(shadows[2]).toContain('0px 8px 24px');
+  expect(shadows[3]).toContain('0px 8px 24px');
+  const blur=await page.locator('.ba-showcase__blur-card').evaluate(n=>getComputedStyle(n).backdropFilter);
+  expect(blur).toBe('blur(10px)');
+  const list=page.getByRole('tablist',{name:'Writing demo tabs'});
+  await expect(list).toBeVisible();
+  await expect(list.getByRole('tab',{name:'Lesson'})).toHaveAttribute('aria-selected','true');
+  const segment=page.locator('.ba-segmented__track').first();
+  const tabTrack=list;
+  const [segHeight,tabHeight]=await Promise.all([
+    segment.evaluate(n=>getComputedStyle(n).height),
+    tabTrack.evaluate(n=>getComputedStyle(n).height)
+  ]);
+  expect(tabHeight).toBe(segHeight);
+  await list.getByRole('tab',{name:'Lesson'}).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(list.getByRole('tab',{name:'Notes'})).toHaveAttribute('aria-selected','true');
+  await expect(page.getByRole('tabpanel')).toContainText('Notes content panel.');
+  await expect(page.getByTestId('demo-tab-value')).toHaveText('notes');
+  await expect(list.locator('.ba-tabs__tablist')).toHaveCount(0);
+});

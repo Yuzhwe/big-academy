@@ -88,3 +88,15 @@
 .ba-showcase__segmented-examples small { color:var(--ba-color-content-muted); }
 .ba-showcase__segmented-examples .ba-segmented { max-width:100%; }
 .ba-showcase__section h3 { margin:22px 0 12px; font-size:17px; }
+
+/* Figma Elevation v1 and shared Tab visual review. */
+.ba-showcase__elevation-gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:24px; padding:20px; margin:20px 0; background:var(--ba-color-background-secondary); border-radius:var(--ba-radius-card-regular); }
+.ba-showcase__elevation-card, .ba-showcase__blur-card { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-width:0; height:160px; background:var(--ba-color-surface-canvas); border-radius:var(--ba-radius-12); }
+.ba-showcase__elevation-card strong, .ba-showcase__blur-card strong { font:800 32px/1 var(--ba-font-digit); }
+.ba-showcase__elevation-card code, .ba-showcase__blur-card code { font-size:11px; }
+.ba-showcase__blur-scene { padding:0; border-radius:var(--ba-radius-12); background:repeating-linear-gradient(125deg,var(--ba-color-writing-3) 0 16px,var(--ba-color-brand-2) 16px 32px); }
+.ba-showcase__blur-card { background:rgba(255,255,255,.72); backdrop-filter:var(--ba-blur-background-20); -webkit-backdrop-filter:var(--ba-blur-background-20); }
+.ba-showcase__demo-tabs { display:grid; gap:16px; margin-top:20px; }
+.ba-showcase__demo-tabpanel { min-height:110px; border:1px solid var(--ba-color-border-default); border-radius:var(--ba-radius-12); padding:16px; }
+.ba-showcase__tab-variants { margin-top:20px; }
+.ba-showcase__tab-variants > div { display:grid; gap:10px; }
