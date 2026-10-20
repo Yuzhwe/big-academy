@@ -192,3 +192,57 @@
   .course-level-tablist .ba-tabs__option { min-width:38px; }
   .course-path__header-locale .ba-button { min-width:44px; padding-inline:7px; font-size:12px; }
 }
+
+/* Writing E-01 · Unit only · folded-paper corner (visual candidate).
+ * Shared for every .course-unit regardless of unit availability/status.
+ * Decorative only: does not affect node geometry, platform anchors, or pointer input.
+ * The two triangular layers create a 45deg fold, not a cut-corner silhouette.
+ * Local --unit-fold-size is deliberately a component geometry value, not a new
+ * global design token; designer must approve the rendered dimension first.
+ */
+.staircase-viewport .course-nodes .course-unit {
+  --unit-fold-size: clamp(26px, 13.8%, 38px);
+  position: relative;
+  isolation: isolate;
+  /* Existing dimensions, background, border, radius and content stay intact. */
+}
+.staircase-viewport .course-nodes .course-unit > * {
+  position: relative;
+  z-index: 1;
+}
+/* Reserve only the top row's top-right decorative corner, avoiding label overlap. */
+.staircase-viewport .course-nodes .course-unit > :first-child {
+  padding-inline-end: var(--unit-fold-size);
+}
+/* The revealed background behind the turned-up sheet, along a 45deg diagonal. */
+.staircase-viewport .course-nodes .course-unit::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: -1px;
+  right: -1px;
+  width: var(--unit-fold-size);
+  height: var(--unit-fold-size);
+  background: var(--ba-color-background-secondary, #fef9ef);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  pointer-events: none;
+}
+/* The turned paper triangle. A quiet gradient and fine edge suggest thickness. */
+.staircase-viewport .course-nodes .course-unit::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  top: -1px;
+  right: -1px;
+  width: var(--unit-fold-size);
+  height: var(--unit-fold-size);
+  background: linear-gradient(
+    135deg,
+    var(--ba-color-warm-1, #fef9ef) 3%,
+    var(--ba-color-warm-3, #f3e8d9) 62%,
+    var(--ba-color-warm-4, #c9b8b2) 100%
+  );
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+  filter: drop-shadow(-1px 2px 2px rgba(19, 53, 71, 0.10));
+  pointer-events: none;
+}
