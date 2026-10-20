@@ -1,33 +1,31 @@
-# Big Academy — Agent Operating Rules
+# Big Academy — Agent Instructions (Baseline v0.1)
 
-## Authority and repository
-- Canonical repository: `Yuzhwe/big-academy`. Never modify or use `RaoJing414` repositories, branches or forks.
-- **UI/UX Designer:** owns final visual/major UX decisions. **Alex:** owns Writing learning rules, progression, scoring and business behavior. AI engineering agents implement, test, document and submit PRs, but do not approve their own visual candidates.
-- **Agent A — System Builder:** owns global `/DESIGN.md`, shared design tokens, Big Academy Components, registry/contract validation, Storybook/test foundations and system integration. **Grokbot and other product coding agents:** implement Writing/product features on independent branches, consume approved contracts, and propose changes through PRs.
-- No tool or agent is authorized to silently merge unapproved visual/product changes to `main`. Work on your own feature branch; prefer a PR.
+## Mandatory source order
+1. `apps/writing/PRODUCT.md` — Writing product goals, exact lesson data, scoring, gating, recovery and acceptance.
+2. Root `DESIGN.md` — sole authoritative visual/design guide, including detailed Spacing, Gap, Radius, Typography, Motion and Unit folded-corner direction.
+3. `packages/design-system/src/tokens.css` — executable design values and semantic aliases. Candidate values are not automatically visually approved.
+4. `apps/writing/contracts/components.json` — stable IDs, props, events, states, slots and ownership.
+5. `docs/HANDOFF.md` — current delivery and verification gaps.
 
-## Two-document authoring model
-- Exactly **one global repository-root `/DESIGN.md`** for design system foundations, typography, colors, Iconoir, shared components, accessibility and reusable patterns. **Do not create `apps/<product>/DESIGN.md`.**
-- Each product has **one `apps/<product>/PRODUCT.md`** containing shared business rules **and** feature/page-specific interaction/layout/visual Specifications when needed (e.g. `apps/writing/PRODUCT.md#e-01--staircase`). No redundant `E-01.staircase.md` is required.
-- Component Props/Events/States/Slots are owned by the registry/contracts and executable component code; CSS variables are current single executable Token source. Do not copy the same detailed rules across documents.
-- Source hierarchy: approved Designer/Alex decisions > respective canonical PRODUCT/DESIGN specs > reviewed component contracts > historical prompts/demo. If two sources conflict, raise the conflict; **do not silently discard an approved requirement**.
+Do not use old branches, historical prompts, demos, abandoned PRs or duplicate design files as product/design authority. One root DESIGN.md, one PRODUCT.md per product. There is no `apps/writing/DESIGN.md`.
 
-## P0 approved architectural rules
-1. Product-themed **accents and subtle tinted backgrounds**, with shared neutrals and functional statuses. Writing A · Warm Frame + White Canvas is the approved overarching direction; exact page styling remains subject to designer review. The A separate-platform Staircase direction is current; earlier A/B exploration is not a competing requirement.
-2. **Primitive → Semantic → optional Component Tokens**, CSS custom properties as executable source, themes mapped by app shell. Shared BAButton should consume semantic aliases, not a Writing-only primitive (P1-B).
-3. **English headings Dosis ExtraBold 800 only**, long English text Jost, Chinese headings Douyin (asset/license to verify), long Chinese text Noto Sans SC, all UI digits Dosis ExtraBold 800. Font loading, sizing and CJK fallback remain to verify.
-4. Progressive componentization: React Aria as accessible behavior foundation; shared Big Academy Components are the product-facing API. Product composites stay in their apps until repeated cross-product patterns justify promotion.
-5. Lightweight review: engineering `planned/implemented/verified` is separate from visual `temporary/in-review/approved`; Storybook, browser/a11y/responsive evidence and human visual approval are necessary before visual completion claims.
+## Scope
+Writing v1 target: **L2/G2-O Lesson 1, eight Activity Screens**, E-01 Staircase entry/return and Lesson End. No obligation to build all 52 screens. Existing source code is a reusable pilot, not proven parity with the current contracts.
 
-## Current feature and component boundaries
-- **E-01 is a diagonal lower-left → upper-right staircase**, not a vertical list. Only the current A separate-platform geometry is the design direction; live visual QA remains pending. Consult the combined E-01 section in `apps/writing/PRODUCT.md`.
-- **LessonTopBar (BA-WR-001):** Back/title/tags left, actual task progress geometrically centered against the entire bar, no hamburger or visible right action; no permission bypass and skipped is distinct.
-- **Iconoir** is the standard general-purpose icon library. Prefer a shared BAIcon mapping, respect the Iconoir MIT license; decorative artwork is a separate category.
-- `apps/writing/source/alex-original.html` is the original Alex reference. Do not invent P4–P7 completion, pretend all 52 screens are built, or claim Skill v0.2 is imported if it is not.
-- **Current spec consolidation:** PR #26 (`spec/writing-product-consolidation-20261020`), based on `docs/writing-r6-spec-sync-20261020`; `main` is not yet updated.
-- Before review: `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run test:layout`, relevant Storybook/browser screenshot/interaction checks, and an explicit record of remaining uncertainties in `docs/HANDOFF.md`.
+## Roles and boundaries
+- UI/UX Designer: final visual and major UX approval.
+- Product Owner: Writing curriculum, grading, completion and learning rules.
+- AI Agents: implement, test, provide reproducible review evidence and open PRs.
+- Never use or modify RaoJing414 repositories.
+- Preserve approved **A — Warm Frame + White Canvas** and A independent-platform diagonal Staircase.
+- React Aria Components provide accessible interaction foundation; shared Big Academy components own reusable visual language.
+- Numeric and semantic values belong in shared CSS Tokens, with approved Primitive → Semantic → optional Component hierarchy.
+- English heading/numeral: Dosis ExtraBold 800; English body Jost; Chinese heading Douyin; Chinese body Noto Sans SC; Iconoir is standard UI icon library.
 
+## Workflow
+Start each feature from the latest `main`. Use an isolated branch. Read canonical specs, inspect existing component code, implement and update contracts and Tokens where required, run checks, deliver an interactive preview and screenshots, then request designer review. Do not merge unreviewed significant product or visual changes.
 
-## Radius and Motion from PR #14
-14. **Radius v0.1 [A method / E numbers]:** read `root DESIGN.md §6 (complete Shape/Radius guide)`. Choose by surface (base/raised/floating), control size, nested geometry, focus/overflow and Writing-specific composition. The candidate 0/4/6/8/12/16/24/full/circle scale and semantic aliases are in `tokens.css` but do not silently restyle existing components or override 0.5px borders.
-15. **Motion v0.1 [A/T interim spring adoption]:** read `docs/design-system/MOTION_SYSTEM_v0.1.md`. Use exact spring parameter groups from upstream `Caho1/open-claude-ui/code-examples/ClaudeMotionPresets.ts`, not its conflicting AGENTS.md; all six groups (4 named, 2 inline) are in `tokens.css`. Inline masses are unspecified upstream. Do not hardcode copied TS numeric tables, invent a Motion dependency, or claim runtime animation/testing from CSS values alone. Honor reduced motion, protect typing/reading, and keep designer/engineering signoff separate.
+Checks: `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, applicable Playwright/Storybook and browser accessibility/responsive evidence. Record not-run or failing checks instead of claiming success. Update `docs/HANDOFF.md` when changing integration state.
+
+## Visual state
+A component may be `implemented` yet `temporary` or `in-review` visually. The new ActivityScreenIndicator and Unit folded-corner treatment require rendered comparison and designer approval. Never treat successful compilation as approval.
