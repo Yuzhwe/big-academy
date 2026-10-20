@@ -10,3 +10,6 @@ export { BAIcon, baIconPaths } from './components/ui/BAIcon';
 export type { BAIconName, BAIconProps } from './components/ui/BAIcon';
 export { BAText, BANumber } from './components/ui/BATypography';
 export type { BATextProps, BATextRole } from './components/ui/BATypography';
+
+export { BASegmentedControl } from './components/ui/BASegmentedControl';
+export type { BASegmentedControlProps, BASegmentOption, BASegmentSize } from './components/ui/BASegmentedControl';

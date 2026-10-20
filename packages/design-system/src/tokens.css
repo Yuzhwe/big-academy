@@ -260,6 +260,7 @@
   --ba-button-destructive-bg:#ae2314; /* Figma control-specific value */
   --ba-control-focus:#2364db; /* Figma focus stroke */
   --ba-button-content-gap:6px;
+  --ba-segmented-strong-selected:var(--ba-color-brand-10);
   /* [T] pilot disabled semantics, unchanged values; not part of Color v0.2 approval. */
   --ba-color-disabled-surface: var(--ba-muted-surface);
   --ba-color-disabled-content: var(--ba-muted);
@@ -273,6 +274,7 @@
  */
 [data-ba-product="writing"] {
   --ba-button-primary-bg:var(--ba-color-writing-7);
+  --ba-segmented-strong-selected:var(--ba-color-writing-7);
   --ba-color-action-primary: var(--ba-color-writing-7);
   --ba-color-action-primary-hover: var(--ba-color-writing-8);
   --ba-color-action-primary-active: var(--ba-color-writing-8);
