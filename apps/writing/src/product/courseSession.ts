@@ -153,6 +153,7 @@ export interface ActivityModel {
   coach: string[];
   coachMore: boolean;
   feedback: string;
+  feedbackTone?: 'success' | 'error' | 'revealed';
   writing?: { text: string; tokens: string[]; built: string[]; status: TaskProgress['status']; tries: number; type: 'build' | 'write'; frame?: string };
   apply?: { text: string; tries: number; passed: boolean; result: string };
   assessment?: { attempt: number; index: number; question: AlexTask; answer: number[] | string; answers: Record<string, number[] | string>; results?: boolean[]; passed: boolean; finished: boolean; warning: boolean };
@@ -776,6 +777,17 @@ export class CourseSession {
       coach,
       coachMore: this.coachHasMore(screen),
       feedback: this.feedback,
+      feedbackTone: (
+        screen.task && this.state.tasks[`${screen.page}:${screen.task}`]?.status === 'done'
+          ? 'success'
+          : screen.task && this.state.tasks[`${screen.page}:${screen.task}`]?.status === 'shown'
+            ? 'revealed'
+            : screen.kind === 'apply' && this.state.applies[screen.page]?.passed
+              ? 'success'
+              : screen.kind === 'check' && this.state.assessment?.[screen.page]?.passed
+                ? 'success'
+                : 'error'
+      ) as ActivityModel['feedbackTone'],
     };
 
     if (screen.kind === 'learn' && screen.template === 'P2') {

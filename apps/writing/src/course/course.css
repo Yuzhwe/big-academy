@@ -377,3 +377,6 @@
  .course-path__header-locale .ba-button__assembly{padding-inline:6px;min-width:44px;width:44px;height:44px;font-size:13px}
  .course-lesson .lesson-workspace{height:calc(100dvh - 136px);min-height:0}
 }
+
+/* Shown/revealed is not a success state; feedback tint follows course state, not wording. */
+.course-coach-message[data-tone='revealed']{background:var(--ba-writing-coach-surface-revealed,var(--ba-color-neutral-1));border-color:var(--ba-color-brand-5)}

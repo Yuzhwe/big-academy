@@ -454,7 +454,7 @@ function LessonView({ session }: { session: CourseSession }) {
               </BAButton>
             ) : null}
             {activity.feedback ? (
-              <p className="course-feedback course-coach-message" data-tone={activity.feedback.match(/Right|Yes|passed|met|对|正确/i) ? "success" : "error"} role="status" data-testid="feedback">
+              <p className="course-feedback course-coach-message" data-tone={activity.feedbackTone ?? 'error'} role="status" data-testid="feedback">
                 {activity.feedback}
               </p>
             ) : null}
