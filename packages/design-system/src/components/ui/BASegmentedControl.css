@@ -1,0 +1,85 @@
+/* Figma Segmented Control v1 · 806:3, production spec under 815:19318.
+   2-4 local Radio choices, no tabpanel. 36/50/70/90 align to Button heights. */
+.ba-segmented {
+  --ba-seg-height:50px;
+  --ba-seg-font-size:14px;
+  --ba-seg-content-gap:8px;
+  --ba-seg-inline:16px;
+  --ba-seg-outer:25px;
+  --ba-seg-inner:23px;
+  display:inline-flex;
+  position:relative;
+  max-width:100%;
+  min-width:0;
+  font:700 var(--ba-seg-font-size)/20px var(--ba-type-control-family,sans-serif);
+  vertical-align:middle;
+  color:var(--ba-color-content-primary);
+}
+.ba-segmented[data-size='36'] { --ba-seg-height:36px; --ba-seg-inline:12px; --ba-seg-outer:18px; --ba-seg-inner:16px; }
+.ba-segmented[data-size='50'] { --ba-seg-height:50px; --ba-seg-inline:16px; --ba-seg-outer:25px; --ba-seg-inner:23px; }
+.ba-segmented[data-size='70'] { --ba-seg-height:70px; --ba-seg-inline:20px; --ba-seg-outer:35px; --ba-seg-inner:33px; --ba-seg-font-size:18px; }
+.ba-segmented[data-size='90'] { --ba-seg-height:90px; --ba-seg-inline:24px; --ba-seg-outer:45px; --ba-seg-inner:43px; --ba-seg-font-size:22px; }
+.ba-segmented[data-radius='standard'][data-size='36'] { --ba-seg-outer:8px; --ba-seg-inner:6px; }
+.ba-segmented[data-radius='standard'][data-size='50'] { --ba-seg-outer:12px; --ba-seg-inner:10px; }
+.ba-segmented[data-radius='standard'][data-size='70'] { --ba-seg-outer:16px; --ba-seg-inner:14px; }
+.ba-segmented[data-radius='standard'][data-size='90'] { --ba-seg-outer:24px; --ba-seg-inner:22px; }
+.ba-segmented[data-distribution='equal'] { width:min(100%,480px); }
+.ba-segmented__track {
+  box-sizing:border-box; position:relative; display:flex; gap:0;
+  align-items:center; justify-content:center;
+  min-width:0; max-width:100%; width:100%; height:var(--ba-seg-height);
+  border:1px solid rgba(7,46,81,.1);
+  background:var(--ba-color-surface-canvas,#fff);
+  border-radius:var(--ba-seg-outer);
+  padding:0 2px;
+}
+.ba-segmented__surface {
+  box-sizing:border-box; position:absolute; left:2px; top:2px;
+  height:calc(var(--ba-seg-height) - 4px);
+  border-radius:var(--ba-seg-inner);
+  background:var(--ba-seg-selected-bg);
+  border:1px solid rgba(7,46,81,.2);
+  pointer-events:none;
+  transition:left 200ms cubic-bezier(.2,0,0,1),
+    width 200ms cubic-bezier(.2,0,0,1), background-color 200ms ease;
+}
+.ba-segmented[data-emphasis='strong'] { --ba-seg-selected-bg:var(--ba-segmented-strong-selected,var(--ba-color-brand-10)); }
+.ba-segmented[data-emphasis='subtle'] { --ba-seg-selected-bg:rgba(7,46,81,.05); }
+.ba-segmented__option {
+  box-sizing:border-box; position:relative; z-index:1;
+  flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+  min-width:0; height:var(--ba-seg-height);
+  padding:0 2px;
+  border-radius:var(--ba-seg-inner);
+  color:var(--ba-color-content-primary);
+  cursor:pointer;
+  user-select:none;
+  outline:none;
+}
+.ba-segmented[data-distribution='equal'] .ba-segmented__option { flex:1 1 0; }
+.ba-segmented__content {
+  box-sizing:border-box;
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:0; max-width:100%;
+  height:calc(var(--ba-seg-height) - 4px);
+  gap:var(--ba-seg-content-gap);
+  padding:0 var(--ba-seg-inline);
+  border-radius:var(--ba-seg-inner);
+  white-space:nowrap;
+}
+.ba-segmented__option[data-selected][data-disabled] { opacity:.45; }
+.ba-segmented[data-emphasis='strong'] .ba-segmented__option[data-selected] { color:#fff; }
+.ba-segmented[data-emphasis='subtle'] .ba-segmented__option[data-selected] { color:var(--ba-color-content-primary); }
+.ba-segmented__option[data-hovered]:not([data-selected]):not([data-disabled]) .ba-segmented__content { background:rgba(7,46,81,.05); }
+.ba-segmented__option[data-focus-visible] .ba-segmented__content {
+  outline:2px solid var(--ba-control-focus,#2364db);
+  outline-offset:-2px;
+}
+.ba-segmented__option[data-disabled] { opacity:.35; cursor:not-allowed; }
+.ba-segmented__icon { display:inline-flex; justify-content:center; align-items:center; flex:none; width:20px; height:20px; }
+.ba-segmented__icon .ba-icon { max-width:100%; max-height:100%; }
+.ba-segmented__label { overflow:hidden; text-overflow:ellipsis; min-width:0; }
+.ba-segmented[data-size='36'] { min-height:40px; align-items:center; } /* Figma minimum layout hot zone for 36 */
+@media (prefers-reduced-motion:reduce) {
+  .ba-segmented__surface { transition:none; }
+}

@@ -77,3 +77,14 @@
 .ba-showcase__icon-gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(102px,1fr)); gap:12px; margin-block:20px; }
 .ba-showcase__icon-card { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; min-height:96px; border:1px solid var(--ba-color-border-default); border-radius:var(--ba-radius-control-regular); }
 .ba-showcase__icon-card code { max-width:100%; font-size:11px; overflow-wrap:anywhere; text-align:center; }
+
+/* Live Figma V2 Button / V1 Segmented inspection gallery */
+.ba-showcase__figma-matrix { display:grid; gap:12px; margin:24px 0; }
+.ba-showcase__figma-matrix-row { display:flex; flex-wrap:wrap; align-items:center; gap:14px; padding:8px 0; border-bottom:1px solid var(--ba-color-border-default); }
+.ba-showcase__figma-matrix-row > strong { min-width:56px; font-family:var(--ba-font-digit); font-weight:800; }
+.ba-showcase__segmented-examples { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:18px; margin-block:20px; }
+.ba-showcase__segmented-examples > div { min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:12px; padding:16px; border:1px solid var(--ba-color-border-default); border-radius:var(--ba-radius-card-regular); }
+.ba-showcase__segmented-examples > div > span { font-size:13px; font-weight:700; }
+.ba-showcase__segmented-examples small { color:var(--ba-color-content-muted); }
+.ba-showcase__segmented-examples .ba-segmented { max-width:100%; }
+.ba-showcase__section h3 { margin:22px 0 12px; font-size:17px; }

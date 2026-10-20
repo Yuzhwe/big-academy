@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 const registryPath = resolve(process.cwd(), 'apps/writing/contracts/components.json');
 
 describe('component registry', () => {
-  it('keeps the pilot theme temporary and marks only the slice composites implemented', () => {
+  it('tracks implemented source-backed components separately from visual approval', () => {
     const registry = JSON.parse(readFileSync(registryPath, 'utf8')) as {
       status: string;
       components: { id: string; status: string; visualStatus?: string; runtimeEvidence: string | null }[];
@@ -23,11 +23,15 @@ describe('component registry', () => {
       expect(byId[id]?.visualStatus).toBe('candidate-warm-frame');
       expect(byId[id]?.status).not.toBe('validated');
     }
+    const implemented = new Set([
+      'BA-UI-001', 'BA-UI-006', 'BA-UI-008', 'BA-UI-009', 'BA-UI-010', 'BA-UI-011',
+      'BA-WR-001', 'BA-WR-002', 'BA-WR-005', 'BA-WR-006',
+    ]);
     for (const component of registry.components) {
-      if (!['BA-UI-001', 'BA-UI-006', 'BA-WR-001', 'BA-WR-002', 'BA-WR-005', 'BA-WR-006'].includes(component.id)) {
-        expect(component.status).toBe('planned');
-      }
+      expect(component.status).toBe(implemented.has(component.id) ? 'implemented' : 'planned');
+      // Engineering implementation is not final designer visual acceptance.
       expect(component.status).not.toBe('validated');
+      expect(component.status).not.toBe('approved');
     }
   });
 });

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BAButton, BAIcon, BAText, BANumber, BATaskProgress, type TaskProgressItem, type BAIconName } from '@big-academy/design-system';
+import { BAButton, BAIcon, BAText, BANumber, BATaskProgress, BASegmentedControl, type TaskProgressItem, type BAIconName } from '@big-academy/design-system';
 import './DesignSystemPreview.css';
 
 type FoundationTheme = 'neutral' | 'writing';
@@ -30,6 +30,8 @@ export function DesignSystemPreview() {
   const [locale, setLocale] = useState<'en' | 'zh'>('en');
   const [pressCount, setPressCount] = useState(0);
   const [selectedTask, setSelectedTask] = useState(1);
+  const [period, setPeriod] = useState('week');
+  const [alignment, setAlignment] = useState('left');
   const zh = locale === 'zh';
 
   return (
@@ -167,6 +169,68 @@ export function DesignSystemPreview() {
           ))}
         </div>
         <p className="ba-showcase__small-label">{zh ? '真实应用：LessonTopBar 返回图标、BATaskProgress 完成与锁定图标。' : 'Real usage: LessonTopBar back action and BATaskProgress done/locked markers.'}</p>
+      </section>
+
+      <section className="ba-showcase__section" aria-labelledby="figma-controls-title">
+        <h2 id="figma-controls-title">{zh ? 'Figma · Button & Segmented Control' : 'Figma · Button & Segmented Control'}</h2>
+        <p>{zh ? '源自设计稿 30:2 和 806:3。可直接操作；除另行注明外，组件样式按照 Figma V1/V2。' : 'Directly mapped from Figma nodes 30:2 and 806:3. Live interactions, size/shape/state comparisons.'}</p>
+        <div className="ba-showcase__figma-matrix" data-testid="figma-button-matrix">
+          {([36, 50, 70, 90] as const).map(size => (
+            <div className="ba-showcase__figma-matrix-row" key={size}>
+              <strong>{size}px</strong>
+              <BAButton variant="primary" size={size} onPress={() => setPressCount(n => n+1)}>{zh ? '主要按钮' : 'Primary'}</BAButton>
+              <BAButton variant="secondary" size={size}>{zh ? '次要按钮' : 'Secondary'}</BAButton>
+              <BAButton variant="tertiary" size={size}>{zh ? '三级按钮' : 'Tertiary'}</BAButton>
+              <BAButton variant="primary" radius="standard" size={size}>{zh ? '标准圆角' : 'Standard'}</BAButton>
+            </div>
+          ))}
+        </div>
+        <h3>{zh ? '图标、危险操作和状态' : 'Icon content, destructive actions and states'}</h3>
+        <div className="ba-showcase__button-group">
+          <BAButton variant="primary" size={50} leadingIcon={<BAIcon name="arrow-left"/>}>Back</BAButton>
+          <BAButton variant="secondary" size={50} trailingIcon={<BAIcon name="check"/>}>Continue</BAButton>
+          <BAButton iconOnly size={50} variant="primary" aria-label="Open menu"><BAIcon name="menu"/></BAButton>
+          <BAButton iconOnly radius="standard" variant="secondary" size={50} aria-label="Go back"><BAIcon name="arrow-left"/></BAButton>
+          <BAButton variant="primary" size={50} intent="destructive">Delete</BAButton>
+          <BAButton variant="secondary" size={50} intent="destructive">Remove</BAButton>
+          <BAButton variant="primary" size={50} disabled>Disabled</BAButton>
+          <BAButton variant="primary" size={50} busy busyLabel="Working">Processing</BAButton>
+        </div>
+        <h3>{zh ? '分段选择 · 同页单选（非 Tabs）' : 'Segmented Control · local single selection (not Tabs)'}</h3>
+        <div className="ba-showcase__segmented-examples">
+          <div>
+            <span>Strong · Full · Hug</span>
+            <BASegmentedControl aria-label="Period" size={50} emphasis="strong" radius="full"
+              selectedKey={period} onSelectionChange={setPeriod}
+              options={[{id:'day',label:'Day'},{id:'week',label:'Week'},{id:'month',label:'Month'},{id:'year',label:'Year'}]}/>
+            <small data-testid="selected-period">Selected: {period}</small>
+          </div>
+          <div>
+            <span>Subtle · Standard · Equal</span>
+            <BASegmentedControl aria-label="Alignment" size={50} emphasis="subtle" radius="standard" distribution="equal"
+              selectedKey={alignment} onSelectionChange={setAlignment}
+              options={[
+                {id:'left',label:'Left',icon:<BAIcon name="arrow-left" size={18}/>},
+                {id:'center',label:'Center',icon:<BAIcon name="check" size={18}/>},
+                {id:'right',label:'Right',icon:<BAIcon name="menu" size={18}/>},
+              ]}/>
+          </div>
+          <div>
+            <span>Icon only · 36px</span>
+            <BASegmentedControl aria-label="Reading control" size={36} emphasis="strong" distribution="hug"
+              options={[
+                {id:'book',icon:<BAIcon name="book" size={18}/>,accessibleLabel:'Read'},
+                {id:'info',icon:<BAIcon name="info-circle" size={18}/>,accessibleLabel:'Information'},
+                {id:'globe',icon:<BAIcon name="globe" size={18}/>,accessibleLabel:'Language'},
+              ]}/>
+          </div>
+          <div>
+            <span>Large · 70px</span>
+            <BASegmentedControl aria-label="Display" size={70} emphasis="strong" radius="standard"
+              options={[{id:'list',label:'List'},{id:'board',label:'Board'}]}/>
+          </div>
+        </div>
+        <p className="ba-showcase__small-label">{zh ? 'Button 点击量：' : 'Button presses: '}<strong data-testid="figma-press-count">{pressCount}</strong></p>
       </section>
 
       <section className="ba-showcase__section" aria-labelledby="components-title">

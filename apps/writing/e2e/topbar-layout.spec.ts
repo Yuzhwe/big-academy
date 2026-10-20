@@ -83,6 +83,8 @@ test('keyboard activates back and an open task, and a locked task stays closed',
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?fixture=mixed&locale=en');
   const log = page.getByTestId('event-log');
+  // Wait until the React topbar has rendered before starting keyboard navigation.
+  await expect(page.getByRole('button', { name: 'Back to my path' })).toBeVisible();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Back to my path' })).toBeFocused();
   await page.keyboard.press('Enter');

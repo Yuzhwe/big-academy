@@ -14,17 +14,24 @@
       "kind": "primitive",
       "contractVersion": "0.1.0",
       "status": "implemented",
-      "visualStatus": "temporary-foundation-theme",
+      "visualStatus": "figma-v2-candidate-implementation",
       "implementation": "packages/design-system/src/components/ui/BAButton.tsx",
       "story": "packages/design-system/src/components/ui/BAButton.stories.tsx",
       "props": {
-        "variant": "primary | secondary | ghost",
+        "variant": "primary | secondary | tertiary | ghost (legacy tertiary alias)",
         "disabled": "boolean",
         "busy": "boolean",
         "children": "ReactNode",
         "busyLabel": "string, optional accessible name for the pending indicator",
         "aria-label": "string, optional accessible name",
-        "locale": "en | zh, optional chrome language for the pending indicator"
+        "locale": "en | zh, optional chrome language for the pending indicator",
+        "size": "36 | 50 | 70 | 90 (Figma)",
+        "radius": "full | standard (Figma)",
+        "intent": "default | destructive",
+        "tone": "default | accent (tertiary/default only)",
+        "iconOnly": "boolean; requires aria-label for icon-only",
+        "leadingIcon": "ReactNode optional",
+        "trailingIcon": "ReactNode optional"
       },
       "events": {
         "onPress": "(event) => void"
@@ -32,6 +39,7 @@
       "states": [
         "default",
         "hover",
+        "pressed",
         "focus-visible",
         "disabled",
         "busy"
@@ -46,11 +54,13 @@
         "Default",
         "FocusVisible",
         "Disabled",
-        "Busy"
+        "Busy",
+        "FigmaV2ButtonMatrix",
+        "FigmaV2IconAndStates"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Temporary foundation theme only. Not validated and not visually approved. busy maps to React Aria isPending plus an inner progressbar. aria-busy is not also set on the button."
+      "notes": "Figma node 30:2 Button V2. Visible assembly scales (hover 1.02, pressed 0.95, 200ms cubic-bezier(.2,0,0,1)); outer hit fixed. Bottom 3px border is a geometric stroke, not a generic elevation token. Provisional visuals awaiting designer browser comparison."
     },
     {
       "id": "BA-UI-002",
@@ -619,6 +629,52 @@
       "figma": null,
       "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts",
       "notes": "UI numerals use Dosis ExtraBold 800 in both languages; do not rewrite user-authored editable text."
+    },
+    {
+      "id": "BA-UI-011",
+      "name": "BASegmentedControl",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "figma-v1-candidate-implementation",
+      "implementation": "packages/design-system/src/components/ui/BASegmentedControl.tsx",
+      "story": "packages/design-system/src/components/ui/BASegmentedControl.stories.tsx",
+      "props": {
+        "options": "BASegmentOption[] (2–4, id / label / icon / accessibleLabel / disabled)",
+        "selectedKey": "string, optional controlled",
+        "defaultSelectedKey": "string, optional uncontrolled",
+        "size": "36|50|70|90",
+        "emphasis": "strong|subtle",
+        "radius": "full|standard",
+        "distribution": "equal|hug",
+        "aria-label": "required",
+        "width": "number|string optional",
+        "disabled": "boolean"
+      },
+      "events": {
+        "onSelectionChange": "(selectedKey:string)=>void"
+      },
+      "states": [
+        "selected",
+        "unselected",
+        "hover",
+        "focus-visible",
+        "disabled"
+      ],
+      "layoutOwner": "Component owns local choice selection and geometry, consumer owns surrounding content; never owns a TabPanel or route",
+      "requirements": [
+        "React Aria RadioGroup with arrow key selection",
+        "Icon only must provide accessibleLabel",
+        "One selected option; 2–4 items",
+        "200ms selected surface with reduced-motion fallback"
+      ],
+      "requiredStories": [
+        "Default",
+        "FigmaVariantMatrix"
+      ],
+      "figma": "06PPYhEQn3CqVYGlfopJWx/806:3",
+      "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts",
+      "notes": "Figma Segmented V1: outer heights 36/50/70/90; selected surface 32/46/66/86; Strong background product-mapped, Subtle shared neutral; future exact visual QA required."
     }
   ]
 }
