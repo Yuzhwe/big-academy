@@ -142,3 +142,14 @@
 .lesson-topbar__back-icon{height:30px;width:30px}
 .lesson-topbar__back-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 @media(max-width:834px){.lesson-topbar__back.ba-button{width:54px;height:54px;min-width:54px}}
+
+/* Mobile: keep lesson identity and activity indicators in separate rows to avoid overlap. */
+@media(max-width:600px){
+ .lesson-topbar{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:60px 46px;gap:4px;min-height:0;padding:6px 12px}
+ .lesson-topbar__start{grid-column:1;grid-row:1;max-width:100%;width:100%;gap:12px}
+ .lesson-topbar__identity{flex:1;min-width:0}
+ .lesson-topbar__title{display:flex;align-items:center;gap:5px;width:100%;font-size:17px}
+ .lesson-topbar__center{position:static;grid-column:1;grid-row:2;left:auto;top:auto;transform:none;width:100%;max-width:100%;justify-content:center}
+ .lesson-topbar__end{display:none}
+ .lesson-topbar__back.ba-button{width:54px;height:54px;min-width:54px;flex:0 0 54px}
+}

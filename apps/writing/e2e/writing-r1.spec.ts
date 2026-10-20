@@ -19,7 +19,7 @@ test('R1 E-01 and eight authored Lesson 1 screens including P7 mastery', async (
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Next' }).click();
 
   await expect(page.locator('[data-kind="task"]')).toBeVisible();
-  await page.getByRole('radio', { name: /Our school should have a garden/i }).click();
+  await page.locator('.course-choice', { hasText: 'Our school should have a garden' }).click();
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Check' }).click();
   await expect(page.getByTestId('feedback')).toContainText(/Right/);
   await expect(page.locator('.course-choice[data-correct="true"]')).toHaveCount(1);

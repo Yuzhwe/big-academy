@@ -76,7 +76,7 @@ function PathView({ session, variant }: { session: CourseSession; variant: Stair
           <div className="course-path__header-title">
             <p className="course-kicker course-visually-hidden">{zh ? '写作路径' : 'Writing path'}</p>
             <h1 className="course-title" title={session.text(level.name)}>
-              {zh ? '第 ' + level.id.slice(1) + ' 级' : 'Level ' + level.id.slice(1)} {session.text(level.name)}
+              <span className="course-path__short-level">{zh ? '第 ' + level.id.slice(1) + ' 级' : 'Level ' + level.id.slice(1)}</span><span className="course-path__full-level-name"> {session.text(level.name)}</span>
             </h1>
           </div>
           <BATabList className="course-level-tablist" size={36} radius="full" emphasis="strong" distribution="hug"
@@ -462,11 +462,11 @@ function LessonView({ session }: { session: CourseSession }) {
         }
         navigation={
           <>
-            <BAButton variant="secondary" locale={session.locale} disabled={footer.previousDisabled}
+            <BAButton size={70} variant="secondary" locale={session.locale} disabled={footer.previousDisabled}
               onPress={() => session.pressBack()}>
               {footer.backLabel}
             </BAButton>
-            <BAButton variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+            <BAButton size={70} variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
               <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
             </BAButton>
           </>

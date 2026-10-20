@@ -358,3 +358,22 @@
 .course-app :is(button,textarea,[role=radio],[role=checkbox]):focus-visible{outline:3px solid var(--ba-color-focus,#2f67c8);outline-offset:3px}
 @media(max-width:720px){.course-path__header{padding:10px}.course-instruction{padding:16px 60px 16px 12px}}
 @media(prefers-reduced-motion:reduce){.course-app *{scroll-behavior:auto!important;animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+
+/* R1 visual QA corrections after actual 1440/834/390 Playwright captures. */
+.course-path:has(.staircase-viewport){padding-top:0;background:#3b2424}
+.course-path .course-path__header{margin-inline:0;padding:12px 24px;background:#3b2424;color:#fff}
+.course-path__header-locale .ba-button{padding:0}
+.course-path__header-locale .ba-button__assembly{background:#fff;color:#133547;border-color:#ded5c8;margin:0}
+.course-level-tablist .ba-tabs__tablist{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;max-width:100%}
+.course-level-tablist .ba-tabs__tablist::-webkit-scrollbar{display:none}
+@media(max-width:600px){
+ .course-path .course-path__header{grid-template-columns:80px minmax(0,1fr) 48px;gap:8px;padding:10px 12px}
+ .course-path__header-title .course-title{font-size:16px;line-height:24px;overflow:visible;text-overflow:clip;white-space:nowrap}
+ .course-path__full-level-name{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+ .course-level-tablist{width:100%;max-width:none}
+ .course-level-tablist .ba-tabs__tablist{max-width:100%;min-width:0;overflow-x:auto;flex-wrap:nowrap}
+ .course-level-tablist .ba-tabs__option{flex-shrink:0}
+ .course-path__header-locale .ba-button{min-width:44px;width:44px;padding:0}
+ .course-path__header-locale .ba-button__assembly{padding-inline:6px;min-width:44px;width:44px;height:44px;font-size:13px}
+ .course-lesson .lesson-workspace{height:calc(100dvh - 136px);min-height:0}
+}
