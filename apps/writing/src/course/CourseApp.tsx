@@ -23,7 +23,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const [session] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
   // Visual A/B state is a review-only control, not saved to Alex's learning state.
-  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('A');
+  const staircaseVariant: StaircaseVariant = 'A';
   const locale = session.locale;
   const zh = locale === 'zh';
 
@@ -54,7 +54,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
       <a className="course-skip" href="#course-main">
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
-      {session.view === 'path' ? <PathView session={session} variant={staircaseVariant} onVariantChange={setStaircaseVariant} /> : null}
+      {session.view === 'path' ? <PathView session={session} variant={staircaseVariant} /> : null}
       {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
       {session.view === 'preview' ? <PreviewView session={session} /> : null}
       {session.celebration ? <Celebration session={session} /> : null}
@@ -62,7 +62,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   );
 }
 
-function PathView({ session, variant, onVariantChange }: { session: CourseSession; variant: StaircaseVariant; onVariantChange: (next: StaircaseVariant) => void }) {
+function PathView({ session, variant }: { session: CourseSession; variant: StaircaseVariant }) {
   const zh = session.zh;
   const level = session.level();
   const nodes = session.pathNodes();
@@ -465,7 +465,7 @@ function LessonView({ session }: { session: CourseSession }) {
         }
         navigation={
           <>
-            <BAButton variant="secondary" locale={session.locale} isDisabled={footer.previousDisabled}
+            <BAButton variant="secondary" locale={session.locale} disabled={footer.previousDisabled}
               onPress={() => session.pressBack()}>
               {footer.backLabel}
             </BAButton>
