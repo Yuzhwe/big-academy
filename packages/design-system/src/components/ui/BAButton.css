@@ -1,0 +1,118 @@
+/* Figma Big Academy Button V2 · node 30:2/44:24.
+ * Fixed hit area; the *visible assembly* scales 1.02 hover, .95 pressed.
+ * All color product changes come from semantic CSS variables.
+ */
+.ba-button {
+  --ba-button-height:50px;
+  --ba-button-side:16px;
+  --ba-button-radius:25px;
+  --ba-button-bg:var(--ba-color-surface-canvas);
+  --ba-button-ink:var(--ba-color-content-primary);
+  --ba-button-border:rgba(7,46,81,.2);
+  box-sizing:border-box;
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  vertical-align:middle;
+  flex:none;
+  gap:var(--ba-spacing-button-content-gap,8px);
+  min-width:var(--ba-hit-min,44px);
+  min-height:var(--ba-hit-min,44px);
+  padding:0 var(--ba-spacing-button-padding-inline,16px);
+  border:0;
+  border-radius:var(--ba-button-radius);
+  background:transparent;
+  color:var(--ba-button-ink);
+  font:var(--ba-type-control-weight,700) var(--ba-type-control-size,16px)/var(--ba-type-control-leading,1.2) var(--ba-type-control-family,sans-serif);
+  letter-spacing:0;
+  text-decoration:none;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.ba-button[data-size='36'] { --ba-button-height:36px; --ba-button-side:12px; --ba-button-radius:18px; --ba-button-font-size:14px; --ba-button-line-height:20px; --ba-button-icon-size:16px; }
+.ba-button[data-size='50'] { --ba-button-height:50px; --ba-button-side:16px; --ba-button-radius:25px; --ba-button-font-size:16px; --ba-button-line-height:24px; --ba-button-icon-size:20px; }
+.ba-button[data-size='70'] { --ba-button-height:70px; --ba-button-side:20px; --ba-button-radius:35px; --ba-button-font-size:20px; --ba-button-line-height:28px; --ba-button-icon-size:24px; }
+.ba-button[data-size='90'] { --ba-button-height:90px; --ba-button-side:24px; --ba-button-radius:45px; --ba-button-font-size:24px; --ba-button-line-height:32px; --ba-button-icon-size:28px; }
+.ba-button[data-radius='standard'][data-size='36'] { --ba-button-radius:var(--ba-radius-8,8px); }
+.ba-button[data-radius='standard'][data-size='50'] { --ba-button-radius:var(--ba-radius-12,12px); }
+.ba-button[data-radius='standard'][data-size='70'] { --ba-button-radius:var(--ba-radius-16,16px); }
+.ba-button[data-radius='standard'][data-size='90'] { --ba-button-radius:var(--ba-radius-24,24px); }
+.ba-button__assembly {
+  position:relative;
+  box-sizing:border-box;
+  height:var(--ba-button-height);
+  min-width:calc(var(--ba-button-height) - 4px);
+  margin-inline:calc(var(--ba-button-side) - var(--ba-spacing-button-padding-inline,16px));
+  padding:0 var(--ba-button-side);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--ba-button-content-gap,6px);
+  border-radius:var(--ba-button-radius);
+  border:1px solid var(--ba-button-border);
+  border-bottom-width:3px;
+  background:var(--ba-button-bg);
+  color:var(--ba-button-ink);
+  font-size:var(--ba-button-font-size,16px);
+  line-height:var(--ba-button-line-height,24px);
+  white-space:nowrap;
+  transform:scale(1);
+  transform-origin:center center;
+  transition:transform 200ms cubic-bezier(.2,0,0,1),
+    background-color 200ms cubic-bezier(.2,0,0,1), color 200ms cubic-bezier(.2,0,0,1);
+}
+.ba-button__label { display:inline-flex; align-items:center; justify-content:center; min-width:0; gap:var(--ba-button-content-gap,6px); }
+.ba-button__icon { display:inline-flex; align-items:center; justify-content:center; width:var(--ba-button-icon-size,20px); height:var(--ba-button-icon-size,20px); flex:none; }
+.ba-button__icon .ba-icon { max-width:100%; max-height:100%; }
+.ba-button[data-icon-only='true'] { padding-inline:0; }
+.ba-button[data-icon-only='true'] .ba-button__assembly { width:var(--ba-button-height); min-width:var(--ba-button-height); padding:0; margin:0; }
+.ba-button[data-kind='primary'] {
+  --ba-button-bg:var(--ba-button-primary-bg);
+  --ba-button-ink:#fff;
+}
+.ba-button[data-kind='secondary'] {
+  --ba-button-bg:var(--ba-button-secondary-bg);
+  --ba-button-ink:var(--ba-color-content-primary);
+}
+.ba-button[data-kind='tertiary'] {
+  --ba-button-bg:transparent;
+  --ba-button-ink:var(--ba-color-content-primary);
+  --ba-button-border:transparent;
+}
+.ba-button[data-kind='tertiary'] .ba-button__assembly { border-bottom-width:1px; }
+.ba-button[data-tone='accent'][data-kind='tertiary'][data-intent='default'] { --ba-button-ink:var(--ba-button-primary-bg); }
+.ba-button[data-intent='destructive'][data-kind='primary'] { --ba-button-bg:var(--ba-button-destructive-bg); --ba-button-ink:#fff; }
+.ba-button[data-intent='destructive'][data-kind='secondary'] { --ba-button-bg:var(--ba-color-danger-1); --ba-button-ink:var(--ba-button-destructive-bg); }
+.ba-button[data-intent='destructive'][data-kind='tertiary'] { --ba-button-ink:var(--ba-button-destructive-bg); }
+.ba-button[data-hovered]:not([data-disabled]):not([data-pending]) .ba-button__assembly { transform:scale(1.02); }
+.ba-button[data-pressed]:not([data-disabled]):not([data-pending]) .ba-button__assembly { transform:scale(.95); border-bottom-width:1px; }
+.ba-button[data-hovered][data-kind='tertiary']:not([data-disabled]) .ba-button__assembly { background:rgba(7,46,81,.05); }
+.ba-button[data-pressed][data-kind='tertiary']:not([data-disabled]) .ba-button__assembly { background:rgba(7,46,81,.12); }
+.ba-button[data-focus-visible] .ba-button__assembly {
+  outline:2px solid var(--ba-control-focus,#2364db);
+  outline-offset:-2px;
+}
+.ba-button[data-disabled] { cursor:not-allowed; }
+.ba-button[data-disabled] .ba-button__assembly {
+  --ba-button-bg:rgba(159,168,177,.1);
+  --ba-button-ink:#ccd2d6;
+  --ba-button-border:rgba(7,46,81,.2);
+  border-bottom-width:1px;
+  transform:none;
+}
+.ba-button[data-pending] { cursor:progress; }
+.ba-button[data-pending] .ba-button__assembly { transform:none; }
+.ba-button__pending {
+  width:var(--ba-button-icon-size,20px); height:var(--ba-button-icon-size,20px);
+  border:2px solid currentColor; border-right-color:transparent;
+  border-radius:50%; animation:ba-button-spin 800ms linear infinite;
+}
+.ba-button__accessible-content { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+@keyframes ba-button-spin { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce) {
+  .ba-button__assembly { transition:none; }
+  .ba-button[data-hovered] .ba-button__assembly,
+  .ba-button[data-pressed] .ba-button__assembly { transform:none; }
+  .ba-button__pending { animation:none; border-right-color:currentColor; }
+}

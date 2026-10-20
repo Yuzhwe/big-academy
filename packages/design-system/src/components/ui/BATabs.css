@@ -1,0 +1,16 @@
+/* Tabs visuals reuse BASegmentedControl.css for geometry, states and tokens.
+   Only the moving surface pseudo-element and panel focus treatment differ. */
+.ba-tabs__wrapper { width:max-content; max-width:100%; }
+.ba-tabs__wrapper[data-distribution='equal'] { width:min(100%,480px); }
+.ba-tabs__tablist { max-width:100%; }
+.ba-tabs__tablist::before {
+  content:'';
+  left:var(--ba-seg-indicator-x,2px);
+  width:var(--ba-seg-indicator-width,0px);
+  opacity:var(--ba-seg-indicator-opacity,0);
+  z-index:0;
+}
+.ba-tabs__option { z-index:1; }
+.ba-tabs__wrapper[data-size='36'] .ba-tabs__option { min-width:40px; }
+.ba-tabs__panel { outline:none; min-width:0; }
+.ba-tabs__panel[data-focus-visible] { outline:2px solid var(--ba-control-focus,#2364db); outline-offset:-2px; }

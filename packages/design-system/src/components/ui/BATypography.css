@@ -1,0 +1,9 @@
+/* Approved font families [A], numeric size and line-height [T/E]. */
+.ba-text { font-family:var(--ba-type-body-family); font-size:var(--ba-type-body-size); line-height:var(--ba-type-body-leading); }
+.ba-text[data-text-role='display'] { font-family:var(--ba-type-display-family); font-size:var(--ba-type-display-size); line-height:var(--ba-type-display-leading); font-weight:800; }
+.ba-text[data-text-role='heading'] { font-family:var(--ba-type-heading-family); font-size:var(--ba-type-heading-size); line-height:var(--ba-type-heading-leading); font-weight:800; }
+.ba-text[data-text-role='control'] { font-family:var(--ba-type-control-family); font-size:var(--ba-type-control-size); line-height:var(--ba-type-control-leading); font-weight:var(--ba-type-control-weight); }
+.ba-text[data-text-role='supporting'] { font-family:var(--ba-type-supporting-family); font-size:var(--ba-type-supporting-size); line-height:var(--ba-type-supporting-leading); }
+.ba-text[data-text-role='caption'] { font-family:var(--ba-type-supporting-family); font-size:var(--ba-type-caption-size); line-height:var(--ba-type-supporting-leading); }
+:lang(zh) .ba-text:is([data-text-role='display'],[data-text-role='heading']) { font-weight:700; } /* Douyin weight [T] */
+.ba-number { font-family:var(--ba-type-numeric-family); font-weight:800; font-variant-numeric:lining-nums; }
