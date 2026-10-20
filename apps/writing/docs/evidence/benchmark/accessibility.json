@@ -1,0 +1,14 @@
+[
+  {
+    "url": "http://127.0.0.1:5174/",
+    "violations": []
+  },
+  {
+    "url": "http://127.0.0.1:5174/?lesson=1",
+    "violations": []
+  },
+  {
+    "screen": "single-pick",
+    "violations": []
+  }
+]

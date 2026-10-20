@@ -16,3 +16,10 @@ export type { BASegmentedControlProps, BASegmentOption, BASegmentSize } from './
 
 export { BATabs, BATabList, BATabPanel } from './components/ui/BATabs';
 export type { BATabOption, BATabsProps, BATabListProps } from './components/ui/BATabs';
+
+export { ActivityScreenIndicator } from './components/ui/BATaskProgress';
+export type { ActivityScreenIndicatorProps } from './components/ui/BATaskProgress';
+export { BAChoice } from './components/ui/BAChoice';
+export type { BAChoiceProps, ChoiceState } from './components/ui/BAChoice';
+export { BAField } from './components/ui/BAField';
+export type { BAFieldProps } from './components/ui/BAField';

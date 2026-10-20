@@ -1,0 +1,11 @@
+
+> typecheck
+> npm run typecheck -w @big-academy/design-system && npm run typecheck -w @big-academy/writing && tsc -p tsconfig.pilot.json --noEmit
+
+
+> @big-academy/design-system@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+
+> @big-academy/writing@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit

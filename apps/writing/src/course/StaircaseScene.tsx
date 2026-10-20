@@ -89,13 +89,20 @@ export function StaircaseScene({
   useEffect(() => {
     const el = viewportRef.current;
     if (!el) return;
+    let wheelTimer: ReturnType<typeof setTimeout>;
     const onWheel = (event: WheelEvent) => {
       // Scrolling on a focused action does not bypass the product's permission logic.
       event.preventDefault();
       setCameraX((prev) => clamp(prev + event.deltaY + event.deltaX, 0, metricsRef.current.maxX));
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(() => {
+        const { width, count: total } = metricsRef.current;
+        const center = Math.round((cameraXRef.current + width / 2 - CARD_WIDTH / 2) / STEP_GAP);
+        setCameraX(cameraForStep(clamp(center, 0, total - 1), width, total));
+      }, 140); // local input-settle candidate, never a learning gate
     };
     el.addEventListener('wheel', onWheel, { passive: false });
-    return () => el.removeEventListener('wheel', onWheel);
+    return () => { el.removeEventListener('wheel', onWheel); clearTimeout(wheelTimer); };
   }, []);
 
   const snap = () => {
@@ -170,6 +177,12 @@ export function StaircaseScene({
       onPointerUp={pointerUp}
       onPointerCancel={pointerUp}
       onKeyDown={keyDown}
+      onFocusCapture={event => {
+        if (!(event.target as HTMLElement).matches(':focus-visible')) return;
+        const node = (event.target as HTMLElement).closest<HTMLElement>('.course-nodes > li');
+        const raw = node?.style.getPropertyValue('--step-index');
+        if (raw) setCameraX(cameraForStep(Number(raw), view.width, count));
+      }}
     >
       <div className="staircase-rail" style={style}>
         {variant === 'B' ? (

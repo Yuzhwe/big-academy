@@ -112,14 +112,15 @@
       "name": "BAChoice",
       "kind": "primitive",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BAChoice.tsx",
       "story": "packages/design-system/src/components/ui/BAChoice.stories.tsx",
       "props": {
+        "label": "string",
         "choiceMode": "single | multiple",
-        "options": "ChoiceOption[]",
+        "options": "{id,text,state?,stateLabel?}[]",
         "selectedKeys": "string[]",
-        "feedback": "ChoiceFeedback"
+        "disabled": "boolean"
       },
       "events": {
         "onChange": "(keys) => void"
@@ -129,8 +130,10 @@
         "selected",
         "correct",
         "wrong",
+        "revealed",
         "dim",
-        "disabled"
+        "disabled",
+        "focus-visible"
       ],
       "layoutOwner": "Choice owns option internals, content area owns column width",
       "requirements": [
@@ -144,25 +147,28 @@
         "CorrectDim"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/BENCHMARK_NOTES.md",
+      "visualStatus": "in-review",
+      "notes": "Native React Aria RadioGroup or CheckboxGroup; 50px min options; labels/icons distinguish states."
     },
     {
       "id": "BA-UI-004",
       "name": "BAField",
       "kind": "primitive",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BAField.tsx",
       "story": "packages/design-system/src/components/ui/BAField.stories.tsx",
       "props": {
         "value": "string",
         "label": "string",
-        "multiline": "boolean",
-        "readOnly": "boolean"
+        "readOnly": "boolean",
+        "ref": "HTMLTextAreaElement"
       },
       "events": {
-        "onChange": "(value) => void",
-        "onFocus": "() => void"
+        "onChange": "(value: string) => void",
+        "onPaste": "() => void",
+        "onSelect": "() => void"
       },
       "states": [
         "idle",
@@ -184,7 +190,8 @@
         "ReadOnly"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/BENCHMARK_NOTES.md",
+      "visualStatus": "in-review"
     },
     {
       "id": "BA-UI-005",
@@ -409,17 +416,16 @@
       "name": "WordGrid",
       "kind": "composite",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "apps/writing/src/components/writing/WordGrid.tsx",
       "story": "apps/writing/src/components/writing/WordGrid.stories.tsx",
       "props": {
-        "groups": "WordGroup[]",
-        "activeGroup": "string",
-        "presentation": "docked | overlay"
+        "groups": "WordGroup[] — id, label, words[]",
+        "activeGroup": "string"
       },
       "events": {
-        "onGroupChange": "(key) => void",
-        "onInsert": "(word) => void"
+        "onGroupChange": "(key: string) => void",
+        "onInsert": "(word: string) => void"
       },
       "states": [
         "hidden",
@@ -441,7 +447,8 @@
         "Chinese"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "apps/writing/docs/BENCHMARK_NOTES.md",
+      "visualStatus": "in-review"
     },
     {
       "id": "BA-WR-004",
@@ -720,6 +727,133 @@
       "figma": "06PPYhEQn3CqVYGlfopJWx/806:3",
       "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts",
       "notes": "Figma Segmented V1: outer heights 36/50/70/90; selected surface 32/46/66/86; Strong background product-mapped, Subtle shared neutral; future exact visual QA required."
+    },
+    {
+      "id": "BA-UI-012",
+      "name": "ActivityScreenIndicator",
+      "kind": "primitive",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "in-review",
+      "implementation": "packages/design-system/src/components/ui/BATaskProgress.tsx",
+      "story": "packages/design-system/src/components/ui/BATaskProgress.stories.tsx",
+      "props": {
+        "screenNumber": "number",
+        "progressStatus": "incomplete | done | locked | skipped",
+        "isSelected": "boolean",
+        "canOpen": "boolean",
+        "label": "string",
+        "answerRevealed": "boolean",
+        "size": "compact | regular",
+        "skippedLabel": "string"
+      },
+      "events": {
+        "onNavigate": "() => void"
+      },
+      "states": [
+        "incomplete",
+        "selected",
+        "done",
+        "done-selected",
+        "locked",
+        "skipped",
+        "shown-description",
+        "focus-visible"
+      ],
+      "slots": [],
+      "layoutOwner": "Component owns internal layout; product/page owns placement and permissions.",
+      "requirements": [
+        "Keyboard and touch",
+        "Visible focus, reduced motion and responsive layout",
+        "No scoring in presentation"
+      ],
+      "requiredStories": [
+        "IndicatorStates",
+        "DoneSelected",
+        "Regular",
+        "Shown"
+      ],
+      "runtimeEvidence": "apps/writing/docs/BENCHMARK_NOTES.md"
+    },
+    {
+      "id": "BA-WR-007",
+      "name": "LessonActivity",
+      "kind": "composite",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "in-review",
+      "implementation": "apps/writing/src/components/writing/LessonActivity.tsx",
+      "story": "apps/writing/src/components/writing/LessonActivity.stories.tsx",
+      "props": {
+        "session": "CourseSession — subscription owned by CourseApp"
+      },
+      "events": {},
+      "states": [
+        "learn",
+        "single-pick",
+        "tapword",
+        "multi-pick",
+        "build",
+        "frame-fill",
+        "apply",
+        "assessment",
+        "graded-review"
+      ],
+      "slots": [],
+      "layoutOwner": "Component owns internal layout; product/page owns placement and permissions.",
+      "requirements": [
+        "Keyboard and touch",
+        "Visible focus, reduced motion and responsive layout",
+        "No scoring in presentation"
+      ],
+      "requiredStories": [
+        "EightScreenJourney"
+      ],
+      "runtimeEvidence": "apps/writing/docs/BENCHMARK_NOTES.md"
+    },
+    {
+      "id": "BA-WR-008",
+      "name": "StairUnitCard",
+      "kind": "composite",
+      "contractVersion": "0.1.0",
+      "status": "implemented",
+      "visualStatus": "in-review",
+      "implementation": "apps/writing/src/components/writing/StairUnitCard.tsx",
+      "story": "apps/writing/src/components/writing/StairUnitCard.stories.tsx",
+      "props": {
+        "id": "string",
+        "number": "number",
+        "title": "string",
+        "typeLabel": "string",
+        "meta": "string",
+        "goals": "string[]",
+        "state": "done | current | locked",
+        "locale": "en | zh"
+      },
+      "events": {},
+      "states": [
+        "done",
+        "current",
+        "locked",
+        "long-english",
+        "long-chinese"
+      ],
+      "slots": [],
+      "layoutOwner": "Scene owns fixed width and bottom anchor; component owns paper fold and growing content.",
+      "requirements": [
+        "Noninteractive chapter banner",
+        "Fold only on Units",
+        "Decoration does not intercept pointers",
+        "No grading/progress mutation"
+      ],
+      "requiredStories": [
+        "Current",
+        "Done",
+        "Locked",
+        "LongEnglish",
+        "LongChinese"
+      ],
+      "runtimeEvidence": "apps/writing/docs/BENCHMARK_NOTES.md"
     }
   ],
   "reviewOverlay": {

@@ -1,0 +1,5 @@
+
+> check:docs
+> node scripts/check-document-sources.mjs
+
+P1-A documentation checks OK: global DESIGN, Writing PRODUCT, Alex source, contracts, HANDOFF, icon/font references

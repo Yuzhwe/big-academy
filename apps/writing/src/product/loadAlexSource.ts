@@ -29,6 +29,16 @@ export interface AlexTask {
     options?: Bilingual[];
     words?: Record<string, Bilingual>;
   };
+  cells?: (string | { t: string })[];
+  target?: string[];
+  answer_text?: string;
+  in_order?: boolean;
+  start?: string;
+  accept?: string[];
+  rules?: Record<string, unknown>;
+  frameFill?: { frame: string; blanks: { label: string; min_words: number }[]; vagueLast?: boolean };
+  tip?: Bilingual;
+  continue_after?: number;
   fields?: string[];
 }
 
@@ -64,6 +74,10 @@ export interface AlexPage {
   teach?: Bilingual | string;
   tasks?: string[];
   task?: string;
+  pool?: string[];
+  auto_per_attempt?: number;
+  writing?: string;
+  grid?: { level?: string; tabs?: string[] };
 }
 
 export interface AlexSkill {
@@ -99,6 +113,9 @@ export interface AlexConfig {
   skills: AlexSkill[];
   step_tags?: StepTag[];
   unit_goals?: Bilingual[];
+  grids?: {
+    tabs: Record<string, { label: string; zh: string; words: { t: string }[]; chunks?: { t: string }[] }>;
+  };
   unit?: { skill_skip?: { merge_below_min?: number } };
 }
 
@@ -140,6 +157,17 @@ export interface LevelPath {
 }
 
 export interface EngineApi {
+  practiceHow: (task: AlexTask, status: string, segs?: Segments) => string;
+  practiceCredit: (config: AlexConfig, how: string) => number;
+  frameFill: (text: string, frame: NonNullable<AlexTask['frameFill']>, ok?: Bilingual) => Grade;
+  masteryItems: (page: AlexPage, attempt: number) => string[];
+  masteryPass: (answers: { correct: boolean; writing: boolean }[]) => {
+    passed: boolean;
+    score: number;
+    total: number;
+  };
+  sameText: (a: string, b?: string) => boolean;
+  smartInsert: (value: string, start: number, end: number, text: string) => { value: string; caret: number };
   screens: (config: AlexConfig) => ScreenRef[];
   stepTags: (config: AlexConfig) => StepTag[];
   lessonIds: (config: AlexConfig) => { id?: string; n: number; screens: string[] }[];
@@ -161,7 +189,38 @@ export interface EngineApi {
   stripPictures: (text: string) => string;
 }
 
+export interface Grade {
+  correct: boolean;
+  explanation?: string;
+  zh?: string;
+}
+export interface ApplyResult {
+  passed: boolean;
+  checks: { label: string; met: boolean; tip?: string; zh?: string }[];
+  feedback: string;
+  zh: string;
+  glow: string;
+  source: string;
+  safety_flag?: boolean;
+}
+export type Segments = { t: string; s: string }[];
+export interface AnalyzerApi {
+  wordCount: (text: string) => number;
+  cjkRatio: (text: string) => number;
+  safetyScreen: (text: string) => boolean;
+  checkApply: (skill: string, text: string) => ApplyResult;
+  checkProduction: (
+    item: { check: Record<string, unknown>; success?: string; successZh?: string },
+    text: string,
+  ) => Grade;
+}
+export interface ProvenanceApi {
+  update: (segments: Segments, text: string, source: string) => Segments;
+  replaceRange: (segments: Segments, start: number, end: number, text: string, source: string) => Segments;
+}
 export interface AlexSource {
+  analyzer: AnalyzerApi;
+  provenance: ProvenanceApi;
   config: AlexConfig;
   levelPath: LevelPath;
   engine: EngineApi;
@@ -217,7 +276,18 @@ export function loadAlexSource(html: string): AlexSource {
   for (const level of levelPath.levels) {
     for (const unit of level.units) unit.level = level.id;
   }
-  const loaded = { config, levelPath, engine: loadEngine(html) };
+  const analyzerStart = html.indexOf('var Analyzer = (function () {');
+  const analyzerEnd = html.indexOf(
+    "if (typeof module !== 'undefined' && module.exports) module.exports = Analyzer;",
+    analyzerStart,
+  );
+  const analyzer = new Function(
+    html.slice(analyzerStart, analyzerEnd) + '; return Analyzer;',
+  )() as AnalyzerApi;
+  const provStart = html.indexOf('var Prov = (function () {');
+  const provEnd = html.indexOf('var Engine = (function () {', provStart);
+  const provenance = new Function(html.slice(provStart, provEnd) + '; return Prov;')() as ProvenanceApi;
+  const loaded = { config, levelPath, engine: loadEngine(html), analyzer, provenance };
   cache.set(html, loaded);
   return loaded;
 }

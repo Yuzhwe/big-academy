@@ -1,0 +1,13 @@
+Captured writing-stairunitcard--current
+Captured writing-stairunitcard--done
+Captured writing-stairunitcard--locked
+Captured writing-stairunitcard--long-english
+Captured writing-stairunitcard--long-chinese
+Captured ui-activityscreenindicator--indicator-states
+Captured ui-activityscreenindicator--done-selected
+Captured ui-activityscreenindicator--regular
+Captured ui-activityscreenindicator--shown
+Captured ui-bachoice--wrong-retry
+Captured ui-bachoice--correct-dim
+Captured ui-bachoice--revealed
+Captured writing-wordgrid--multi-group
