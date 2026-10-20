@@ -65,18 +65,25 @@ asset is introduced. Review PNGs are browser evidence of this implementation.
 
 ## Verification
 
-The final run results and remaining limitations are recorded in root
-`docs/HANDOFF.md`. The added controller tests exercise late async results after
+Engineering verification passed: `npm run check:docs`, `npm run typecheck`,
+`npm test` (39 tests in 11 files), the full `npm run build` (design system,
+Writing and Storybook), `npm run test:layout` (18 passed in official Playwright
+headless Chromium), and `git diff --check`. The added controller tests exercise late async results after
 Stop/unmount, rapid switching, reduced-motion changes during load, retry and the
 preview time limit. Browser tests run all ten actual runtimes, check painted
 pixels, test Cannon/Firefly interaction, Stop/Escape/navigation/reduced motion,
 compare local/session storage before and after previews, and capture desktop,
 tablet and narrow Chinese layouts. Tests are engineering evidence, not visual
-approval or Milestone integration acceptance.
+approval or Milestone integration acceptance. The finish reviewer inspected
+source and all six evidence PNGs without rerunning tests: **ship — ready for
+designer review as an isolated Demo**, with no material findings or required
+fixes. This disposition is not visual approval or production Milestone acceptance.
 
 Evidence: `docs/evidence/celebration/` within this Writing app. Dosis/Jost/Noto Sans
 SC loading still uses the branch's existing Google Fonts request; no new font is
 packaged, and Douyin distribution remains the previously recorded open issue.
+Physical touch, Safari and Firefox remain untested; existing large app/Storybook
+chunks remain. See root `docs/HANDOFF.md` for the closeout and remaining boundaries.
 
 ## Later integration
 
