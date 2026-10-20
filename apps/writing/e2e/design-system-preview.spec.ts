@@ -148,7 +148,7 @@ test('Figma Elevation computed tokens and React Aria BATabs share segmented sele
   await list.getByRole('tab',{name:'Lesson'}).focus();
   await page.keyboard.press('ArrowRight');
   await expect(list.getByRole('tab',{name:'Notes'})).toHaveAttribute('aria-selected','true');
-  await expect(page.getByRole('tabpanel')).toContainText('Notes content panel.');
+  await expect(page.getByRole('tabpanel', {name:'Notes'})).toContainText('Notes content panel.');
   await expect(page.getByTestId('demo-tab-value')).toHaveText('notes');
   await expect(list.locator('.ba-tabs__tablist')).toHaveCount(0);
 });
