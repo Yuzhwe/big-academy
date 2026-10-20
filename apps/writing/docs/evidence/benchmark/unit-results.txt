@@ -42,4 +42,3 @@ Celebration preview failed to load: Error: offline
       Tests  49 passed (49)
    Start at  16:38:43
    Duration  4.23s (transform 713ms, setup 2.89s, collect 7.18s, tests 6.27s, environment 9.26s, prepare 1.25s)
-

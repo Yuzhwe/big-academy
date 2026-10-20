@@ -230,4 +230,3 @@ dist/assets/index-CsC_fNUg.js                        1,196.33 kB │ gzip: 364.1
 │  Academy/apps/writing/storybook-static
 │
 └  Storybook build completed successfully
-
