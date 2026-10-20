@@ -23,7 +23,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const [session] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
   // Visual A/B state is a review-only control, not saved to Alex's learning state.
-  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('B');
+  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('A');
   const locale = session.locale;
   const zh = locale === 'zh';
 
@@ -74,7 +74,7 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
       <BATabs className="course-level-tabs" selectedKey={session.levelId} onSelectionChange={(key) => session.switchLevel(key)}>
         <header className="course-path__bar course-path__header">
           <div className="course-path__header-title">
-            <p className="course-kicker">{zh ? '写作路径' : 'Writing path'}</p>
+            <p className="course-kicker course-visually-hidden">{zh ? '写作路径' : 'Writing path'}</p>
             <h1 className="course-title" title={session.text(level.name)}>
               {zh ? '第 ' + level.id.slice(1) + ' 级' : 'Level ' + level.id.slice(1)} {session.text(level.name)}
             </h1>
@@ -102,15 +102,6 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             {session.openNotice}
           </p>
         ) : null}
-        <div className="course-ab-controls" role="group" aria-label={zh ? '路径形态 A/B' : 'Path shape A/B'}>
-          <button type="button" className="course-ab-button" aria-pressed={variant === 'A'} onClick={() => onVariantChange('A')}>
-            {zh ? 'A · 分立阶梯台面' : 'A · Separate platforms'}
-          </button>
-          <button type="button" className="course-ab-button" aria-pressed={variant === 'B'} onClick={() => onVariantChange('B')}>
-            {zh ? 'B · 连续斜坡 + 锚点' : 'B · Continuous slope + anchors'}
-          </button>
-          <span className="course-ab-hint">{zh ? '探索方案，均未获得视觉批准' : 'Visual exploration only — not approved'}</span>
-        </div>
         <StaircaseScene key={level.id} variant={variant} locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
         <ol className="course-nodes">
           {nodes.map((node, index) => {
@@ -133,7 +124,7 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
                     <h2>{node.unit.title}</h2>
                     <p>{node.unit.meta}</p>
                     {node.unit.goals.length ? (
-                      <ul>
+                      <ul className="course-unit-goals">
                         {node.unit.goals.map((goal) => (
                           <li key={goal}>{goal}</li>
                         ))}
@@ -192,11 +183,6 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
           })}
         </ol>
         </StaircaseScene>
-        <p className="course-candidate">
-          {zh
-            ? 'E-01 A/B 使用相同的卡片底边锚点算法、课程数据和权限；A 为分立台面，B 为连续斜坡与锚点。卡片内容增加时只向上生长。页面视觉仍待设计审核。'
-            : 'E-01 A/B share the exact same bottom-anchor algorithm and Alex permissions. A has separated platforms; B has a continuous slope with local anchors. Card height grows upward, not into the anchor. Visual approval pending.'}
-        </p>
       </main>
         </BATabPanel>
       </BATabs>
@@ -258,12 +244,12 @@ function LessonView({ session }: { session: CourseSession }) {
                     ) : null}
                   </div>
                 ) : null}
-                {activity.learn.nextUp ? <p>{activity.learn.nextUp}</p> : null}
+
               </>
             ) : null}
             {activity.pick ? (
               <>
-                <h1 className="course-title">{activity.ask}</h1>
+                <div className="course-instruction"><h1 className="course-title">{activity.ask}</h1><button type="button" className="course-listen" aria-label={session.zh?'朗读题目':'Listen to instruction'} onClick={() => {if ('speechSynthesis' in window) {window.speechSynthesis.cancel();window.speechSynthesis.speak(new SpeechSynthesisUtterance(activity.ask));}}}>◖))</button></div>
                 {activity.pick.hint ? <p>{activity.pick.hint}</p> : null}
                 {activity.pick.multi ? (
                   <div className="course-choices" role="group" aria-label={activity.ask}>
@@ -272,6 +258,8 @@ function LessonView({ session }: { session: CourseSession }) {
                         key={option.index}
                         className="course-choice"
                         data-wrong={option.wrong ? 'true' : undefined}
+                        data-correct={option.correct ? 'true' : undefined}
+                        data-revealed={option.revealed ? 'true' : undefined}
                         isSelected={option.selected}
                         onChange={() => session.pick(option.index)}
                       >
@@ -313,6 +301,8 @@ function LessonView({ session }: { session: CourseSession }) {
                       className="course-word"
                       data-selected={word.selected ? 'true' : undefined}
                       data-wrong={word.wrong ? 'true' : undefined}
+                      data-correct={word.correct ? 'true' : undefined}
+                      data-revealed={word.revealed ? 'true' : undefined}
                       onClick={() => session.tapWord(word.index)}
                     >
                       {word.text}
@@ -321,6 +311,47 @@ function LessonView({ session }: { session: CourseSession }) {
                 </p>
               </>
             ) : null}
+
+            {activity.writing ? (
+              <section className="course-writing">
+                <div className="course-instruction"><h1 className="course-title">{activity.ask}</h1></div>
+                {activity.writing.type === 'build' ? (
+                  <>
+                    <p className="course-build-line" aria-live="polite">{activity.writing.built.join(' ') || (session.zh ? '按顺序选择词语' : 'Build it here')}</p>
+                    <div className="course-word-grid" role="group" aria-label="Word grid">
+                      {activity.writing.tokens.map((word,index)=><button key={index} disabled={activity.writing?.status !== 'open' || index < (activity.writing?.built.filter(w=>w===word).length ?? 0)} onClick={()=>session.addBuildWord(word)}>{word}</button>)}
+                    </div>
+                    <BAButton variant="secondary" onPress={()=>session.clearBuild()}>Start again</BAButton>
+                  </>
+                ) : (
+                  <>
+                    <label htmlFor="writing-frame">{session.zh?'你的句子':'Your sentence'}</label>
+                    <textarea id="writing-frame" rows={5} value={activity.writing.text} disabled={activity.writing.status!=='open'} onChange={e=>session.setWriting(e.target.value)} />
+                    {activity.writing.tokens.length>0 ? <div className="course-word-grid">{activity.writing.tokens.map((word,index)=><button key={index} onClick={()=>session.setWriting(activity.writing!.text.replace('___',word))}>{word}</button>)}</div>:null}
+                  </>
+                )}
+              </section>
+            ) : null}
+            {activity.apply ? (
+              <section className="course-writing">
+                <div className="course-instruction"><h1 className="course-title">{activity.ask}</h1></div>
+                <label htmlFor="apply-text">{session.zh?'写下三个不同的主题句':'Your three topic sentences'}</label>
+                <textarea id="apply-text" rows={9} value={activity.apply.text} onChange={e=>session.setWriting(e.target.value)}/>
+                {activity.apply.tries>=2 && !activity.apply.passed ? <BAButton variant="secondary" onPress={()=>session.moveOnApply()}>{session.zh?'暂时跳过':'Move on for now'}</BAButton>:null}
+              </section>
+            ) : null}
+            {activity.assessment ? (
+              <section className="course-assessment">
+                <span className="course-question-number" aria-label={`Question ${activity.assessment.index+1} of 4`}>{activity.assessment.index+1}</span>
+                <h1 className="course-title">{activity.ask}</h1>
+                <nav className="course-question-dots" aria-label="Assessment questions">{[0,1,2,3].map(n=><button aria-label={`Question ${n+1} of 4`} aria-current={n===activity.assessment?.index?'step':undefined} key={n} onClick={()=>session.assessmentQuestion(n)}>{n+1}</button>)}</nav>
+                {activity.assessment.question.type === 'pick' ? <div className="course-choices">{(activity.assessment.question.lines??[]).map((option,index)=>{
+                  const answer=Array.isArray(activity.assessment?.answer)?activity.assessment.answer:[];
+                  return <button key={index} className="course-choice" data-selected={answer.includes(index)?'true':undefined} data-correct={activity.assessment?.results?.[activity.assessment.index] && (activity.assessment.question.answers??[]).includes(index)?'true':undefined} onClick={()=>session.answerAssessment(activity.assessment?.question.multi ? (answer.includes(index)?answer.filter(i=>i!==index):[...answer,index]):[index])}>{String.fromCharCode(65+index)} · {option}</button>;
+                })}</div> : <textarea rows={6} aria-label="Writing answer" value={typeof activity.assessment.answer==='string'?activity.assessment.answer:''} onChange={e=>session.answerAssessment(e.target.value)} />}
+                {activity.assessment.results ? <p role="status">{activity.assessment.passed?'You passed this check.':'Not yet.'} {activity.assessment.results.filter(Boolean).length} / 4</p>:null}
+              </section>
+            ):null}
             {!activity.supported && !activity.learn ? (
               <>
                 <h1 className="course-title">{activity.ask || activity.title}</h1>
@@ -346,25 +377,25 @@ function LessonView({ session }: { session: CourseSession }) {
         coach={
           <div>
             {activity.coach.map((line) => (
-              <p key={line}>{line}</p>
+              <p key={line} className="course-coach-message" data-tone="orientation">{line}</p>
             ))}
             {activity.hints.map((hint) => (
-              <p key={hint} data-testid="hint">
+              <p key={hint} data-testid="hint" className="course-coach-message" data-tone="hint">
                 {hint}
               </p>
             ))}
             {activity.coachMore ? (
-              <BAButton variant="ghost" locale={session.locale} onPress={() => session.showAnother()}>
+              <BAButton variant="secondary" locale={session.locale} onPress={() => session.showAnother()}>
                 {session.zh ? '再看一个' : 'Show me another'}
               </BAButton>
             ) : null}
             {hintLabel ? (
-              <BAButton variant="ghost" locale={session.locale} onPress={() => session.openHint()}>
+              <BAButton variant="secondary" locale={session.locale} onPress={() => session.openHint()}>
                 {hintLabel}
               </BAButton>
             ) : null}
             {activity.feedback ? (
-              <p className="course-feedback" role="status" data-testid="feedback">
+              <p className="course-feedback course-coach-message" data-tone={activity.feedback.match(/Right|Yes|passed|met|对|正确/i) ? "success" : "error"} role="status" data-testid="feedback">
                 {activity.feedback}
               </p>
             ) : null}
@@ -372,7 +403,8 @@ function LessonView({ session }: { session: CourseSession }) {
         }
         navigation={
           <>
-            <BAButton variant="secondary" locale={session.locale} onPress={() => session.pressBack()}>
+            <BAButton variant="secondary" locale={session.locale} isDisabled={footer.previousDisabled}
+              onPress={() => session.pressBack()}>
               {footer.backLabel}
             </BAButton>
             <BAButton variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
