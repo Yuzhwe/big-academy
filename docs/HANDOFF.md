@@ -3,6 +3,10 @@
 **Date:** 2026-10-19  
 **Status:** **P1-A IN PROGRESS** — integration candidate, **not merged to `main`** and no automatic sign-off.
 
+## R6 scope correction — single Lesson demo
+
+Current Grokbot implementation target is **only original L2/G2-O Lesson 1 (Topic sentences), 8 ordered Activity Screens**. Refer to `apps/writing/docs/L2_LESSON1_DEMO_CONTRACT_R6.md`; retain 52-Screen inventory as reference, **not** an implementation checklist. Acceptance requires first-screen-to-last-screen navigation, original choices, right/wrong/retry/shown and P7 assessment flow, real progress/return, responsive accessible hi-fi with designer review. Do not assign remaining 44 Screens or Lessons 2–9 to Grokbot in this round.
+
 ## R6 approved decisions and handoff overlay — 2026-10-20
 
 **Documentation branch:** `docs/writing-r6-spec-sync-20261020`, based on unmerged Celebration Effects PR #22 branch, **not main**. Older sections below describe their original checkpoint and may be stale; this overlay is the current R6 decision register.
