@@ -1,4 +1,31 @@
-# HANDOFF — Big Academy cross-agent integration
+# Big Academy — Current Handoff
+
+**Status:** SPEC CONSOLIDATION IN REVIEW · 2026-10-20. This document records current integration state; it does not override the two primary specifications.
+
+## Current authority and integration
+
+1. **Product behavior:** `apps/writing/PRODUCT.md`. Exact lesson content, scoring, attempts, shown, gates, navigation, reentry and acceptance live here. Scope is eight screens of L2/G2-O Lesson 1; other course inventory is reference.
+2. **Visual system and UX design guidance:** root `DESIGN.md`. Complete Spacing/Gap and Shape/Radius rules are embedded within this one authority; old focused design proposals are reference material only.
+3. **Executable tokens:** `packages/design-system/src/tokens.css`; CSS custom properties are the numeric source of truth. Indicator/Popover semantic aliases are candidate [E], pending live visual review.
+4. **Component interfaces:** `apps/writing/contracts/components.json`. BA-UI-006/BATaskProgress composes one shared ActivityScreenIndicator for TopBar and all-screen popover; BA-WR-001/LessonTopBar consumes it. The updated contract is not evidence that old component code was updated.
+
+## Current branch and PR
+
+- Integration branch: `spec/writing-product-consolidation-20261020`.
+- Review PR #26 targets `docs/writing-r6-spec-sync-20261020`, not `main`, because upstream integration commits are not on main.
+- Open PR #25 separately proposes a PRODUCT rewrite and overlaps PR #26; reconcile, then close the obsolete proposal only after checking no unique valid behavior was lost.
+- The repository has a long chain of unmerged PRs. Merge/rebase in dependency order before calling `main` authoritative or clean. Do not close active implementation PRs to make the list look short.
+
+## Remaining validation and cleanup
+
+- Compare latest product specifications and source content against real L2 Lesson 1 runtime, including P4/P5/P7; validate initial first-only unlocking, Back/resume, `shown`, and P7 second-round failure.
+- Implement shared round ActivityScreenIndicator and nonmodal anchored All activity screens popover; current code/stories still require synchronization with amended contract and tokens.
+- Validate EN/ZH layout, keyboard focus, 1440/1024/834/390 and 200% zoom, and designer screenshot signoff.
+- Identify historical documents only after searching actual repository references and open PRs; delete genuinely redundant ones through a separate reviewed cleanup. Keep source HTML, tests, screenshots, copyright notices and significant decision history where still needed.
+- `main` is not yet the integrated product and design baseline; do not advertise that it contains PR #26 changes.
+
+---
+## Historical handoff log (reference only)
 
 **Date:** 2026-10-19  
 **Status:** **P1-A IN PROGRESS** — integration candidate, **not merged to `main`** and no automatic sign-off.

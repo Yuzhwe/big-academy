@@ -1,10 +1,10 @@
 {
-  "registryVersion": "0.1.0",
+  "registryVersion": "0.2.0",
   "project": "Big Academy Writing (pilot)",
   "status": "pilot-in-review",
   "sourceOfTruth": {
-    "product": "apps/writing/PRODUCT.md (Alex original source and approved UX; detailed E-01 product + page spec)",
-    "design": "/DESIGN.md (global only) + packages/design-system/src/tokens.css + designer visual approval",
+    "product": "apps/writing/PRODUCT.md — only current Writing product rules, screen data and state/navigation contracts",
+    "design": "/DESIGN.md — only current design rules, including complete spacing/radius guidance and activity indicator visual system; tokens.css stores executable values",
     "components": "this registry maps to code and interactive stories when implemented"
   },
   "components": [
@@ -190,7 +190,7 @@
       "id": "BA-UI-005",
       "name": "BAOverlay",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.2.0",
       "status": "planned",
       "implementation": "packages/design-system/src/components/ui/BAOverlay.tsx",
       "story": "packages/design-system/src/components/ui/BAOverlay.stories.tsx",
@@ -212,7 +212,9 @@
         "Return focus",
         "Escape semantics",
         "Tablet touch and keyboard",
-        "No cover Coach/Footer"
+        "No cover Coach/Footer",
+        "Anchored nonmodal Popover for all Activity Screens, no blocking modal backdrop",
+        "Escape/outside-dismiss and focus return; max-height and internal scrolling"
       ],
       "requiredStories": [
         "Closed",
@@ -226,9 +228,9 @@
       "id": "BA-UI-006",
       "name": "BATaskProgress",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.2.0",
       "status": "implemented",
-      "visualStatus": "temporary-foundation-theme",
+      "visualStatus": "in-review",
       "implementation": "packages/design-system/src/components/ui/BATaskProgress.tsx",
       "story": "packages/design-system/src/components/ui/BATaskProgress.stories.tsx",
       "props": {
@@ -236,33 +238,54 @@
         "activeIndex": "number, lesson-local index",
         "canOpen": "(index) => boolean, lesson-local gate supplied by the product adapter",
         "locale": "en | zh, optional status chrome",
-        "label": "string, optional accessible name for the group"
+        "label": "string, optional accessible name for the group",
+        "indicatorComponent": "ActivityScreenIndicator (one shared visual primitive in TopBar and popover)",
+        "overflowMode": "anchored nonmodal popover; entire lesson index",
+        "visibleCapacity": "responsive available-width measurement; no 8-screen data cap; 8/6/4 only review targets"
       },
       "events": {
-        "onNavigate": "(index) => void"
+        "onNavigate": "(index) => void",
+        "onPopoverOpenChange": "(open:boolean) => void; presentation-only, no task or grading mutation"
       },
       "states": [
-        "done",
-        "current",
-        "available",
+        "incomplete-unselected",
+        "incomplete-selected",
+        "done-unselected",
+        "done-selected",
         "locked",
-        "skipped"
+        "skipped-unselected",
+        "skipped-selected",
+        "shown-accessibility-distinction",
+        "popover-open",
+        "popover-closed"
       ],
       "layoutOwner": "TopBar owns global centering, progress owns internal overflow",
       "requirements": [
-        "Never infer domain unlock",
-        "Screen reader current/locked",
-        "Real geometric center"
+        "Same circle/number/check/lock geometry in topbar and All activity screens popover",
+        "No line connecting main numbered circle to lower status circle",
+        "Every Screen number stays visible; Dosis ExtraBold 800 numerals",
+        "Only canOpen-authorized screen navigation; locked never navigates",
+        "Popover shows full screen list with responsive grid and bounded internal scroll",
+        "Escape/outside/trigger dismiss, focus restoration, keyboard and touch accessibility",
+        "Screen reader distinguishes shown from correctly completed",
+        "Keep current screen visible in compact rail; no fixed eight-item data limit"
       ],
       "requiredStories": [
         "MixedStatus",
         "ManyTasks",
         "TabletCenter",
-        "Skipped"
+        "Skipped",
+        "IndicatorFiveStates",
+        "DoneSelected",
+        "Locked",
+        "ShownAccessible",
+        "AllScreensPopover",
+        "PopoverKeyboardFocus",
+        "Overflow16Screens"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Temporary foundation theme only. Not validated and not visually approved. Numeric chips confirmed for this round. Visible status caption is skipped only (dashed circle + number + skipped/已跳过). Other states use check, number, lock, or current fill and ring, plus the accessible name. Does not call Pages.canOpen or Skip.skipped. Locked never navigates; every other status navigates only when canOpen(index) is true. Indexes are lesson-local."
+      "notes": "New interaction/visual contract in review; current implementation may still use legacy chips/scroll rail. BA-UI-006 owns shared marker rendering and overflow presentation, but not product gate or completion decisions. Do not label code visually approved."
     },
     {
       "id": "BA-UI-007",
@@ -301,9 +324,9 @@
       "id": "BA-WR-001",
       "name": "LessonTopBar",
       "kind": "composite",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.2.0",
       "status": "implemented",
-      "visualStatus": "temporary-foundation-theme",
+      "visualStatus": "in-review",
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
       "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
       "props": {
@@ -329,16 +352,21 @@
       "requirements": [
         "No hamburger menu",
         "Center progress across whole bar",
-        "Preserve Alex page gate"
+        "Initial Lesson entry selects first Screen and all successors are locked until earned",
+        "Use BA-UI-006 shared ActivityScreenIndicator + anchored All activity screens popover, not an alternative marker design",
+        "Full-bar geometric centering, no hamburger, no extra right-side action"
       ],
       "requiredStories": [
         "Desktop",
         "TabletLongTitle",
-        "ManyTasks"
+        "ManyTasks",
+        "FirstScreenOnlyUnlocked",
+        "OverflowPopoverSharedIndicator",
+        "BackAndResume"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Temporary foundation theme only. Not validated and not visually approved. Progress group is absolutely centered on the header. No hamburger and no end-slot control. Mock preview is not Alex course state."
+      "notes": "Product and design contract updated; rendered implementation needs separate QA. Popover and TopBar reuse exactly one ActivityScreenIndicator implementation."
     },
     {
       "id": "BA-WR-002",
@@ -458,9 +486,9 @@
       "id": "BA-WR-005",
       "name": "StairLessonCard",
       "kind": "composite",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.2.0",
       "status": "implemented",
-      "visualStatus": "candidate-warm-frame",
+      "visualStatus": "in-review-folded-corner",
       "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx",
       "props": {
@@ -483,14 +511,22 @@
       "requirements": [
         "Number at top left",
         "No local progress authority",
-        "Preserve skip badge"
+        "Preserve skip badge",
+        "Reusable CSS folded-paper corner across every Unit, no cut-only geometry",
+        "45-degree inward fold with separate paper layer and subtle shadow",
+        "Preserve Unit bounding box, anchor, existing text, color, state and interaction",
+        "No pointer interception, focus clipping or overlap with title/progress",
+        "Desktop and Tablet visual evidence, EN/ZH long-title checks; designer signoff required"
       ],
       "requiredStories": [
         "Start",
         "Continue",
         "Review",
         "Locked",
-        "Skipped"
+        "Skipped",
+        "FoldedUnitAllStates",
+        "FoldedUnitDesktopTablet",
+        "FoldedUnitLongContent"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",

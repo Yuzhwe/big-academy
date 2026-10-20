@@ -209,6 +209,25 @@
   --ba-radius-card-regular: var(--ba-radius-12); /* [E] */
   --ba-radius-badge-pill: var(--ba-radius-full); /* [E] */
 
+  /* ActivityScreenIndicator / All Activity Screens · v0.3 [E: values require rendered approval].
+   * Shared by TopBar and popover; business status and canOpen come from PRODUCT.md.
+   * Do not assume these token mappings are visually signed off.
+   */
+  --ba-activity-indicator-radius: var(--ba-radius-circle);
+  --ba-activity-indicator-number-font: var(--ba-type-numeric-family);
+  --ba-activity-indicator-number-weight: 800;
+  --ba-activity-indicator-border: var(--ba-color-content-primary);
+  --ba-activity-indicator-selected-bg: var(--ba-color-content-primary);
+  --ba-activity-indicator-selected-text: #ffffff;
+  --ba-activity-indicator-incomplete-bg: var(--ba-color-surface-canvas);
+  --ba-activity-indicator-locked-bg: var(--ba-color-neutral-6);
+  --ba-activity-indicator-locked-text: #ffffff;
+  --ba-activity-indicator-badge-radius: var(--ba-radius-circle);
+  --ba-activity-indicator-grid-gap: var(--ba-space-3);
+  --ba-activity-indicator-popover-radius: var(--ba-radius-floating-menu);
+  --ba-activity-indicator-popover-inset: var(--ba-space-4);
+  /* No connector line token: number circle and badge overlap/contact by geometry. */
+
   /* Motion System v0.1 [A/T]: exact upstream spring numeric parameters.
    * Source: Caho1/open-claude-ui code-examples/ClaudeMotionPresets.ts (MIT).
    * Inline spring masses are absent by design and MUST NOT be invented here.
