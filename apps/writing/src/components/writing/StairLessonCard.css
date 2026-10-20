@@ -73,3 +73,20 @@
   outline: 2px solid var(--ba-brand-dark, #133547);
   outline-offset: 2px;
 }
+
+.stair-lesson-card{display:flex;flex-direction:column;align-items:stretch;min-height:278px;border-radius:28px;padding:24px;box-shadow:0 5px 0 rgba(113,88,72,.5),0 10px 22px rgba(19,53,71,.05)}
+.stair-lesson-card__number{display:grid;place-items:center;border:1px solid var(--ba-color-warm-5);border-radius:50%;width:56px;height:56px;min-width:56px;font-size:30px;background:#fff}
+.stair-lesson-card__body{flex:1;display:flex;flex-direction:column;justify-content:center}
+.stair-lesson-card__title{font-size:24px;line-height:1.2}
+.stair-lesson-card__detail{font-size:16px}
+.stair-lesson-card__action{width:100%;height:70px;min-height:70px;border-radius:999px;background:#fff;color:var(--ba-color-writing-7);font:800 26px/1 Dosis,sans-serif;border:2px solid var(--ba-color-writing-7)}
+.stair-lesson-card[data-state='locked'] .stair-lesson-card__action{color:var(--ba-color-neutral-6);border-color:var(--ba-color-neutral-5);cursor:not-allowed}
+.stair-lesson-card[data-state='continue'] .stair-lesson-card__number{background:#2f67c8;color:#fff}
+.stair-lesson-card[data-state='review'] .stair-lesson-card__number{background:var(--ba-color-success-7);color:#fff}
+.stair-lesson-card[data-state='locked'] .stair-lesson-card__number{background:var(--ba-color-neutral-4);color:var(--ba-color-neutral-9)}
+.stair-lesson-card__badge{font-size:12px;font-weight:700;align-self:flex-start;margin:2px 0 0;color:var(--ba-color-brand-10)}
+
+/* Current location is independent of Start/Continue, per R1 state anatomy. */
+.stair-lesson-card[data-current='true'] .stair-lesson-card__number{background:var(--ba-writing-lesson-current-fill,#2f67c8);color:#fff;border-color:transparent}
+.stair-lesson-card[data-current='true'] .stair-lesson-card__badge{background:var(--ba-writing-lesson-current-fill,#2f67c8);color:#fff;border-radius:999px;padding:5px 12px;margin-top:-8px;position:relative;white-space:nowrap}
+.stair-lesson-card[data-current='true'] .stair-lesson-card__badge::after{content:'';position:absolute;left:20px;bottom:-5px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--ba-writing-lesson-current-fill,#2f67c8)}

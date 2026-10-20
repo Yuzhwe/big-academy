@@ -1,0 +1,44 @@
+name: Writing R1 independent QA
+on:
+  push:
+    branches:
+      - feat/writing-hifi-r1-gpt6-independent
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck-and-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npx vitest run apps/writing/src/product/courseSession.test.tsx
+      - run: npm run build -w @big-academy/design-system && npm run build -w @big-academy/writing
+
+  browser-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium --with-deps
+      - run: npx playwright test e2e/writing-r1.spec.ts
+        working-directory: apps/writing
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: writing-r1-browser-evidence
+          path: |
+            apps/writing/docs/evidence/r1/*.png
+            apps/writing/test-results/**
+          if-no-files-found: warn

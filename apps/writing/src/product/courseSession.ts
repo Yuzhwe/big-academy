@@ -40,6 +40,8 @@ export interface TaskProgress {
   hintLv?: number;
   sel?: number | null;
   bad?: number | null;
+  built?: string[];
+  missStreak?: number;
 }
 
 export interface AlexState {
@@ -61,7 +63,8 @@ export interface AlexState {
   tasks: Record<string, TaskProgress>;
   checks: Record<string, { passed?: boolean; finished?: boolean }>;
   plan: { topic: string; checks: number; result: unknown };
-  applies: Record<string, unknown>;
+  applies: Record<string, { text: string; tries: number; passed: boolean; result?: string }>;
+  assessment?: Record<string, { attempt: number; index: number; answers: Record<string, number[] | string>; warning: boolean; results?: boolean[]; passed: boolean; finished: boolean }>;
   feedback: { drafts: { text?: string }[]; cups: Record<string, unknown>; finished?: boolean };
   reflection: unknown;
   events: { t: number; type: string; page?: string; screen?: number; data?: Record<string, unknown> }[];
@@ -137,11 +140,11 @@ export interface ActivityModel {
   };
   pick?: {
     multi: boolean;
-    options: { index: number; letter: string; text: string; selected: boolean; wrong: boolean }[];
+    options: { index: number; letter: string; text: string; selected: boolean; wrong: boolean; correct?: boolean; revealed?: boolean }[];
     hint: string;
   };
   tapword?: {
-    words: { index: number; text: string; selected: boolean; wrong: boolean }[];
+    words: { index: number; text: string; selected: boolean; wrong: boolean; correct?: boolean; revealed?: boolean }[];
   };
   unsupportedReason?: string;
   skip: SkipOffer | null;
@@ -150,12 +153,17 @@ export interface ActivityModel {
   coach: string[];
   coachMore: boolean;
   feedback: string;
+  feedbackTone?: 'success' | 'error' | 'revealed';
+  writing?: { text: string; tokens: string[]; built: string[]; status: TaskProgress['status']; tries: number; type: 'build' | 'write'; frame?: string };
+  apply?: { text: string; tries: number; passed: boolean; result: string };
+  assessment?: { attempt: number; index: number; question: AlexTask; answer: number[] | string; answers: Record<string, number[] | string>; results?: boolean[]; passed: boolean; finished: boolean; warning: boolean };
 }
 
 export interface FooterModel {
   backLabel: string;
   primaryLabel: string;
   primaryTestId: string;
+  previousDisabled?: boolean;
 }
 
 export interface TopBarModel {
@@ -581,10 +589,12 @@ export class CourseSession {
         return false;
       }
       let target =
-        lessonIndex === this.curLesson()
-          ? this.state.screen
-          : (indexes.find((index) => !this.screenDone(index) && !this.stepSkipped(this.screens[index].step)) ??
-            indexes[0]);
+        courseState === 'done'
+          ? indexes[0]
+          : lessonIndex === this.curLesson()
+            ? this.state.screen
+            : (indexes.find((index) => !this.screenDone(index) && !this.stepSkipped(this.screens[index].step)) ??
+              indexes[0]);
       if (!this.canOpen(target)) target = indexes[0];
       this.remember(unitId, lessonNumber);
       this.view = 'lesson';
@@ -767,6 +777,17 @@ export class CourseSession {
       coach,
       coachMore: this.coachHasMore(screen),
       feedback: this.feedback,
+      feedbackTone: (
+        screen.task && this.state.tasks[`${screen.page}:${screen.task}`]?.status === 'done'
+          ? 'success'
+          : screen.task && this.state.tasks[`${screen.page}:${screen.task}`]?.status === 'shown'
+            ? 'revealed'
+            : screen.kind === 'apply' && this.state.applies[screen.page]?.passed
+              ? 'success'
+              : screen.kind === 'check' && this.state.assessment?.[screen.page]?.passed
+                ? 'success'
+                : 'error'
+      ) as ActivityModel['feedbackTone'],
     };
 
     if (screen.kind === 'learn' && screen.template === 'P2') {
@@ -789,12 +810,24 @@ export class CourseSession {
       };
     }
 
+    if (screen.kind === 'apply') {
+      const a = this.state.applies[screen.page] ?? {text:'',tries:0,passed:false};
+      return {...base,supported:true,ask:this.text(this.task(this.pageOf(screen.page)?.task ?? 'L2-04.apply').ask),apply:{...a,result:a.result ?? ''}};
+    }
+    if (screen.kind === 'check') {
+      const c = this.assessmentState(screen.page);
+      const question = this.assessmentQuestions(screen.page,c.attempt)[c.index];
+      return {...base,supported:true,ask:this.text(question.ask),assessment:{...c,question,answer:c.answers[question.id] ?? (question.type === 'pick' ? [] : '')}};
+    }
     if ((screen.kind === 'task' || screen.kind === 'model_task') && screen.task) {
       const task = this.task(screen.task);
       const key = this.taskKey(screen);
       const taskState = this.taskState(key);
       const hints = (task.coach?.hints ?? []).slice(0, taskState.hintLv ?? 0).map((hint) => this.text(hint));
       const hintAction = this.hintAction(task, taskState);
+      if ((task.type === 'build' || task.type === 'write') && screen.template === 'P4') {
+        return {...base,supported:true,ask:this.text(task.ask),hints,hintAction,writing:{type:task.type,text:regionText(this.state.regions[key]) || (task.type === 'write' ? (task as AlexTask & {start?:string}).start ?? '' : ''),tokens:(task as AlexTask & {cells?: (string | {t:string})[]}).cells?.map(c=>typeof c==='string'?c:c.t) ?? [],built:taskState.built ?? [],status:taskState.status,tries:taskState.tries,frame:(task as AlexTask & {start?:string}).start}};
+      }
       if (task.type === 'pick' && task.lines && task.answers) {
         const picked = taskState.picked ?? [];
         const wrong = taskState.wrong ?? [];
@@ -817,7 +850,9 @@ export class CourseSession {
               letter: this.engine.choiceLetter(index),
               text: line,
               selected: picked.includes(index),
-              wrong: wrong.includes(index) && !closed,
+              wrong: wrong.includes(index),
+              correct: closed && (task.answers ?? []).includes(index),
+              revealed: taskState.status === 'shown',
             })),
           },
         };
@@ -836,6 +871,8 @@ export class CourseSession {
               text: token.w,
               selected: taskState.sel === index && taskState.status === 'open',
               wrong: taskState.bad === index,
+              correct: taskState.status !== 'open' && (task.targets ?? []).some(target => this.engine.locate(task.text ?? '', target) === index),
+              revealed: taskState.status === 'shown',
             })),
           },
         };
@@ -868,17 +905,23 @@ export class CourseSession {
       };
     }
     const index = this.state.screen;
-    const backLabel =
-      index === 0 ? (this.zh ? '我的路径' : 'My path') : this.zh ? '上一页' : 'Back';
+    const backLabel = this.zh ? '上一页' : 'Previous';
+    const screen = this.screens[index]?.screen;
+    if (screen?.kind === 'check') {
+      const c=this.assessmentState(screen.page);
+      return {backLabel,previousDisabled:index===0 && c.index===0,primaryLabel:c.results ? (c.passed || c.finished ? (this.zh?'课程结束':'End of lesson') : (this.zh?'再试一组':'Try a new set')) : c.index===3 ? (c.warning ? 'Hand in anyway' : 'Hand in my check') : 'Next question',primaryTestId:'assessment-action'};
+    }
     if (!this.canNext(index)) {
       return {
         backLabel,
+        previousDisabled: index === 0,
         primaryLabel: this.blockedLabel(index),
         primaryTestId: 'check',
       };
     }
     return {
       backLabel,
+      previousDisabled: index === 0,
       primaryLabel: this.nextLabel(index),
       primaryTestId: 'next',
     };
@@ -894,10 +937,9 @@ export class CourseSession {
       this.emit();
       return;
     }
-    if (this.state.screen === 0) {
-      this.backToPath();
-      return;
-    }
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind === 'check') { const c=this.assessmentState(screen.page); if(c.index>0){c.index--;this.save();this.emit();return;} }
+    if (this.state.screen === 0) return;
     this.go(this.state.screen - 1, true);
   }
 
@@ -912,11 +954,14 @@ export class CourseSession {
     }
     const index = this.state.screen;
     const screen = this.screens[index].screen;
+    if (screen.kind === 'check') { this.assessmentNext(screen.page); return; }
+    if (screen.kind === 'apply' && !this.canNext(index)) { this.checkApply(screen.page); return; }
     if (!this.canNext(index)) {
       if (screen.kind === 'task' || screen.kind === 'model_task') {
         const task = screen.task ? this.task(screen.task) : null;
         if (task?.type === 'pick') this.pickCheck(task, this.taskKey(screen));
         else if (task?.type === 'tapword' && task.need !== 'all') this.wordCheck(task, this.taskKey(screen));
+        else if (task && (task.type === 'build' || task.type === 'write')) this.checkWriting(task,this.taskKey(screen));
         else {
           this.feedback = `${this.lockedMsg(index)} ${this.activity()?.unsupportedReason ?? ''}`.trim();
           this.emit();
@@ -1106,6 +1151,123 @@ export class CourseSession {
     return true;
   }
 
+
+  setWriting(text: string): void {
+    const screen=this.screens[this.state.screen].screen, key=this.taskKey(screen);
+    if (screen.kind==='apply') {
+      const a=this.state.applies[screen.page] ?? {text:'',tries:0,passed:false};
+      a.text=text; this.state.applies[screen.page]=a;
+    } else {
+      this.state.regions[key]=[{t:text,s:'typed'}];
+    }
+    this.save();this.emit();
+  }
+  addBuildWord(word: string): void {
+    const screen=this.screens[this.state.screen].screen,task=this.task(screen.task!),key=this.taskKey(screen);
+    const s=this.taskState(key), target=(task as AlexTask & {target?:string[]}).target ?? [];
+    if(s.status!=='open')return;
+    const built=s.built ?? [];
+    if(target[built.length] !== word) {
+      s.missStreak=(s.missStreak ?? 0)+1;
+      this.feedback=s.missStreak>=3?this.text(task.why):this.zh?'再试一次':'Try another word';
+    } else {
+      s.missStreak=0;s.built=[...built,word];
+      if(s.built.length===target.length){s.tries++;this.finish(task,key,'done');return;}
+    }
+    this.save();this.emit();
+  }
+  clearBuild():void {
+    const screen=this.screens[this.state.screen].screen;
+    this.taskState(this.taskKey(screen)).built=[];
+    this.save();this.emit();
+  }
+  private checkWriting(task:AlexTask,key:string):void {
+    const s=this.taskState(key), t=regionText(this.state.regions[key]);
+    if(s.status!=='open')return;
+    const f=(task as AlexTask & {frameFill?:{frame:string;blanks:{min_words:number}[];vagueLast?:boolean}}).frameFill;
+    let pass=false;
+    if(f){
+      const match = t.match(/^In my opinion, recess should (.+?) because (.+?)\.$/i);
+      pass=!!match && (match[1].match(/[A-Za-z']+/g)?.length??0)>=2 && (match[2].match(/[A-Za-z']+/g)?.length??0)>=3 && !/___/.test(t);
+      if(pass && f.vagueLast)pass=!/^(?:(?:it is|very|really|so)\s+)*(?:good|nice|fun|cool|great|bad)[.!? ]*$/i.test(match![2].trim());
+    }
+    if(!t.trim()){this.feedback='Write your sentence first';this.emit();return;}
+    s.tries++;
+    if(pass || s.tries>=2)this.finish(task,key,pass?'done':'shown');
+    else {this.feedback=this.text(task.why)||'Try again.';this.save();this.emit();}
+  }
+  moveOnApply():void {
+    const screen=this.screens[this.state.screen].screen,a=this.state.applies[screen.page];
+    if(!a||a.tries<2||a.passed)return;
+    this.state.done[screen.page]=true;this.save();this.emit();
+  }
+  private checkApply(pageId:string):void {
+    const a=this.state.applies[pageId] ?? {text:'',tries:0,passed:false};
+    const value=a.text.trim(),words=value.match(/[a-z']+/gi)??[];
+    if(words.length<3 || (value.match(/[\u3400-\u9fff]/g)??[]).length/Math.max(1,value.length)>.3){
+      this.feedback=this.zh?'请先用英语多写一点。':'Write a little more first. Use English sentences.';
+      this.emit();return;
+    }
+    let lines=value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+    if(lines.length===1)lines=value.split(/(?<=[.!?])\s+/).filter(Boolean);
+    const opinion=/\b(i think|i believe|i feel|i know|in my opinion|should|shouldn't|must|ought to|is better|are better|would be better|the best|is the best|i agree|i disagree|it is important|we need|needs? to)\b/i;
+    const good=lines.filter(x=>/garden/i.test(x)&&opinion.test(x));
+    const similarity=(x:string,y:string)=>{const A=new Set(x.toLowerCase().match(/[a-z]+/g)??[]),B=new Set(y.toLowerCase().match(/[a-z]+/g)??[]);return [...A].filter(w=>B.has(w)).length/Math.max(1,new Set([...A,...B]).size);};
+    const passed=lines.length>=3&&good.length>=3&&good.slice(0,3).every((x,i)=>good.slice(i+1,3).every(y=>similarity(x,y)<.8));
+    a.tries++;a.passed=passed;a.result=passed?'All four writing criteria met.':lines.length<3?'Write three topic sentences.':good.length<3?'Each sentence needs a garden opinion.':'Make your sentences more different.';
+    this.state.applies[pageId]=a;this.feedback=a.result;
+    if(passed)this.state.done[pageId]=true;
+    this.save();this.emit();
+  }
+  private assessmentState(pageId:string){
+    this.state.assessment ??={};
+    return this.state.assessment[pageId] ??= {attempt:0,index:0,answers:{},warning:false,passed:false,finished:false};
+  }
+  private assessmentQuestions(pageId:string,attempt:number):AlexTask[]{
+    const page=this.pageOf(pageId) as ReturnType<CourseSession['pageOf']> & {pool?:string[];writing?:string};
+    const pool=page?.pool??['tq1','tq2','tq3','tq4','tq5'];
+    return [0,1,2].map(n=>this.task(pool[(attempt*3+n)%pool.length])).concat(this.task(page?.writing??'L2-04.mw'));
+  }
+  answerAssessment(answer:number[]|string):void{
+    const screen=this.screens[this.state.screen].screen,c=this.assessmentState(screen.page);
+    if(c.results)return;
+    const question=this.assessmentQuestions(screen.page,c.attempt)[c.index];
+    c.answers[question.id]=answer;
+    c.warning=false;
+    this.save();this.emit();
+  }
+  assessmentQuestion(index:number):void{
+    const screen=this.screens[this.state.screen].screen,c=this.assessmentState(screen.page);
+    if(index<0||index>3)return;c.index=index;c.warning=false;this.save();this.emit();
+  }
+  private gradeAssessmentQuestion(q:AlexTask,answer:number[]|string):boolean{
+    if(q.type==='pick')return this.engine.choiceGrade(q,Array.isArray(answer)?answer:[]).correct;
+    if(q.type==='tapword') {
+      const selected=Array.isArray(answer)?answer:[];
+      return selected.length===1 && (q.targets??[]).some(target=>this.engine.locate(q.text??'',target)===selected[0]);
+    }
+    const t=typeof answer==='string'?answer.trim():'';
+    if(t.split(/\s+/).length<5)return false;
+    const rules=(q as AlexTask & {rules?:{mustInclude?:{re:string}[];minWords?:number;capital?:boolean;endPunct?:boolean}}).rules;
+    return (rules?.mustInclude??[]).every(r=>new RegExp(r.re,'i').test(t))&&(!rules?.minWords||t.split(/\s+/).length>=rules.minWords)&&(!rules?.capital||/^[A-Z]/.test(t))&&(!rules?.endPunct||/[.!?]$/.test(t));
+  }
+  private assessmentNext(pageId:string):void{
+    const c=this.assessmentState(pageId);
+    if(c.results){
+      if(c.passed||c.finished){this.next();return;}
+      c.attempt++;c.index=0;c.warning=false;c.results=undefined;c.answers={};this.feedback='';this.save();this.emit();return;
+    }
+    if(c.index<3){c.index++;this.save();this.emit();return;}
+    const qs=this.assessmentQuestions(pageId,c.attempt);
+    const blanks=qs.map((q,i)=>!c.answers[q.id]||(Array.isArray(c.answers[q.id])&&!c.answers[q.id].length)?i+1:null).filter(Boolean);
+    if(blanks.length&&!c.warning){c.warning=true;this.feedback='Unanswered questions: '+blanks.join(', ')+'. Hand in anyway?';this.save();this.emit();return;}
+    c.results=qs.map(q=>this.gradeAssessmentQuestion(q,c.answers[q.id]??''));
+    c.passed ||= c.results.slice(0,3).filter(Boolean).length>=2 && !!c.results[3];
+    c.finished=c.passed||c.attempt>=1;
+    if(c.finished)this.state.done[pageId]=true;
+    this.feedback=(c.passed?'You passed this check. ':'Not yet. ')+c.results.filter(Boolean).length+' of 4.';
+    this.save();this.emit();
+  }
   private pickCheck(task: AlexTask, key: string): void {
     const taskState = this.taskState(key);
     const picked = (taskState.picked ?? []).slice();
@@ -1367,6 +1529,10 @@ export class CourseSession {
   private blockedLabel(index: number): string {
     const kind = this.screens[index].screen.kind;
     if (kind === 'task' || kind === 'model_task') return this.zh ? '检查' : 'Check';
+    if (kind === 'apply') {
+      const apply = this.state.applies[this.screens[index].screen.page];
+      return apply?.tries ? (this.zh ? '再次检查' : 'Check again') : (this.zh ? '检查我的写作' : 'Check my writing');
+    }
     if (kind === 'check') return this.zh ? '交卷' : 'Hand in';
     return this.zh ? '下一页' : 'Next';
   }

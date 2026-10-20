@@ -11,6 +11,8 @@ export interface StairLessonCardProps {
   state: StairLessonState;
   detail?: string;
   locale?: BALocale;
+  /** Current course location; independent from Start/Continue label. */
+  isCurrent?: boolean;
   onEnter?: (lessonId: string) => void;
 }
 
@@ -44,13 +46,15 @@ export function StairLessonCard({
   state,
   detail,
   locale = 'en',
+  isCurrent = false,
   onEnter,
 }: StairLessonCardProps) {
   const label = actionLabel[locale][state];
   const skipped = state === 'skipped';
   return (
-    <article className="stair-lesson-card" data-component="BA-WR-005" data-state={state} data-lesson-id={lessonId}>
+    <article className="stair-lesson-card" data-component="BA-WR-005" data-state={state} data-current={isCurrent} data-lesson-id={lessonId}>
       <p className="stair-lesson-card__number">{number}</p>
+      <span className="stair-lesson-card__badge">{state === "review" ? (locale === "zh" ? "完成 ✓" : "Completed ✓") : state === "locked" ? (locale === "zh" ? "请先完成前置课程 🔒" : "Finish prior unit 🔒") : isCurrent ? (locale === "zh" ? "你在这里" : "You’re here") : ""}</span>
       <div className="stair-lesson-card__body">
         <h3 className="stair-lesson-card__title">{title}</h3>
         {detail ? <p className="stair-lesson-card__detail">{detail}</p> : null}
@@ -63,6 +67,7 @@ export function StairLessonCard({
         data-testid="lesson-row"
         data-state={state}
         data-lesson-focus={lessonId}
+        isDisabled={state === "locked"}
         onPress={() => onEnter?.(lessonId)}
       >
         {label}
