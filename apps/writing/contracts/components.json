@@ -486,9 +486,9 @@
       "id": "BA-WR-005",
       "name": "StairLessonCard",
       "kind": "composite",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.2.0",
       "status": "implemented",
-      "visualStatus": "candidate-warm-frame",
+      "visualStatus": "in-review-folded-corner",
       "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx",
       "props": {
@@ -511,14 +511,22 @@
       "requirements": [
         "Number at top left",
         "No local progress authority",
-        "Preserve skip badge"
+        "Preserve skip badge",
+        "Reusable CSS folded-paper corner across every Unit, no cut-only geometry",
+        "45-degree inward fold with separate paper layer and subtle shadow",
+        "Preserve Unit bounding box, anchor, existing text, color, state and interaction",
+        "No pointer interception, focus clipping or overlap with title/progress",
+        "Desktop and Tablet visual evidence, EN/ZH long-title checks; designer signoff required"
       ],
       "requiredStories": [
         "Start",
         "Continue",
         "Review",
         "Locked",
-        "Skipped"
+        "Skipped",
+        "FoldedUnitAllStates",
+        "FoldedUnitDesktopTablet",
+        "FoldedUnitLongContent"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
