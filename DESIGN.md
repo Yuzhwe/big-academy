@@ -5,6 +5,19 @@
 **Scope:** all Big Academy products. **This is the only DESIGN.md in the repository.** Writing feature-specific requirements and page specifications are combined inside `apps/writing/PRODUCT.md`.  
 **Authority:** approved designer decisions override external design prompts; actual checked component code and Storybook demonstrate implementations but never grant design approval. Product-specific business rules belong in each `apps/<product>/PRODUCT.md`.
 
+## R6 decision overlay — 2026-10-20
+
+This section supersedes **conflicting earlier descriptions** without deleting their provenance. Root `DESIGN.md` is the single shared design authority; Writing-specific page/interaction specifications belong to `apps/writing/PRODUCT.md`, not a parallel `apps/writing/DESIGN.md`.
+
+- **Staircase:** the approved forward path form is **A · separate platforms**, ascending lower-left → upper-right with a viewport-height-derived rise and bottom-anchored cards. Earlier A/B continuous slope tests and contrasting A/B color themes are historical explorations only. Writing Warm Frame + White Canvas remains the approved product foundation. Dusk gradient, beams and ornamental card treatments remain **visual exploration**, not approved colors for production.
+- **Staircase hierarchy:** Intro = readable introduction; Unit = chapter banner and non-interactive Stub; Lesson = strongest available action and real access gate; completed Mile = optional replayable reward; Goal = distinct achievement with original eligibility.
+- **Celebration:** reuse original ten tsParticles effects from Writing Celebration PR #22; **Ribbons count 30** for Writing lesson composition, with three explosions when applicable; Milestone confetti is distinct and originates at the completed flag center. A shared renderer is permissible, shared learning/achievement receipts are not.
+- **Answer options:** minimum 50px height is a Writing **option** rule, not a global BAButton rule. Allow content height growth; single-line center alignment, wrapped multiline first-line alignment and number alignment. Selection/feedback states must convey meaning without color alone; dimming options to 40%, shake and audio remain subject to design/accessibility validation.
+- **Coach:** instruction and user-invoked hints are separate from checked answer feedback; selection edits do not generate fresh grading feedback.
+- **Typography v0.1 temporary designer-accepted ramp** (font-size/line-height CSS px; ordered desktop → mobile): Display 40/48 → 32/40; Heading XL 32/40 → 28/36; Heading L 26/34 → 24/32; Heading M 22/30 → 20/28; Body L 18/28 → 18/28; Body M 16/24 → 16/24; Body S 14/20 → 14/20; Caption 12/18 → 12/18. Preserve Dosis ExtraBold 800 EN heading/numerals, Jost EN body, Douyin ZH headings, Noto Sans SC ZH body. This is **Big Academy's own interim scale informed by general Apple HIG readability/dynamic text principles**, not claimed Apple tokens or exact Figma values. Font asset identification/license, text zoom, long-form Chinese legibility and EN/ZH parity still require tests.
+- **Governance:** approved principles and visual review candidates must retain separate status. Neither completion of code nor passing automated tests amounts to visual approval.
+
+
 ## 1. Overview — one design language, multiple product themes
 
 Big Academy is a K–12 learning ecosystem. Maintain coherent typography, spacing, form controls, navigation, accessible state affordances, layouts and component quality across Writing, Reading and future experiences. Differentiate product identity **primarily through theme color**, without forcing different learning experiences into identical screen structures.
