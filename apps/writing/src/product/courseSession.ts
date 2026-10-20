@@ -1517,6 +1517,10 @@ export class CourseSession {
   private blockedLabel(index: number): string {
     const kind = this.screens[index].screen.kind;
     if (kind === 'task' || kind === 'model_task') return this.zh ? '检查' : 'Check';
+    if (kind === 'apply') {
+      const apply = this.state.applies[this.screens[index].screen.page];
+      return apply?.tries ? (this.zh ? '再次检查' : 'Check again') : (this.zh ? '检查我的写作' : 'Check my writing');
+    }
     if (kind === 'check') return this.zh ? '交卷' : 'Hand in';
     return this.zh ? '下一页' : 'Next';
   }
