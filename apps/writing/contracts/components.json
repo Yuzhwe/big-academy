@@ -12,9 +12,9 @@
       "id": "BA-UI-001",
       "name": "BAButton",
       "kind": "primitive",
-      "contractVersion": "0.3.0",
+      "contractVersion": "0.4.0-r2",
       "status": "implemented",
-      "visualStatus": "R1-candidate-pending-designer-review",
+      "visualStatus": "R2-candidate-pending-review",
       "implementation": "packages/design-system/src/components/ui/BAButton.tsx",
       "story": "packages/design-system/src/components/ui/BAButton.stories.tsx",
       "props": {
@@ -50,7 +50,9 @@
         "Touch >=44px",
         "No motion when reduced",
         "70px height for Writing Lesson Card CTA and Lesson Footer action pair, scoped variants; don't migrate all shared buttons",
-        "Secondary tone required for Coach Hint and Show me another"
+        "Secondary tone required for Coach Hint and Show me another",
+        "Reuse actual shared BAButton for all Writing Lesson CTAs, top Back and Footer actions; never replace with plain custom button",
+        "Preserve existing BAButton hover/pressed transitions and reduced-motion adaptation"
       ],
       "requiredStories": [
         "Default",
@@ -61,7 +63,8 @@
         "FigmaV2IconAndStates",
         "WritingLessonCTA70",
         "WritingFooterAction70",
-        "CoachSecondary"
+        "CoachSecondary",
+        "WritingSharedButtonHoverPressed"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
@@ -340,9 +343,9 @@
       "id": "BA-WR-001",
       "name": "LessonTopBar",
       "kind": "composite",
-      "contractVersion": "0.3.0",
+      "contractVersion": "0.4.0-r2",
       "status": "implemented",
-      "visualStatus": "R1-candidate-pending-designer-review",
+      "visualStatus": "R2-candidate-pending-review",
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
       "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
       "props": {
@@ -373,7 +376,9 @@
         "Full-bar geometric centering, no hamburger, no extra right-side action",
         "Retain Lesson metadata plus eight Activity Screen indicators and overflow",
         "Standalone visible icon-only top Back returns to Staircase; no visible helper words",
-        "Footer Previous is distinct, previous Activity Screen only, disabled on first screen"
+        "Footer Previous is distinct, previous Activity Screen only, disabled on first screen",
+        "Top Back 50x50 shared accessible button, hover/pressed/focus motion; keeps lesson title/meta and centered activity status indicators",
+        "Circle numbered ActivityScreenIndicator reused identically within TopBar and anchored popover, no line to small check/lock status circle"
       ],
       "requiredStories": [
         "Desktop",
@@ -383,7 +388,10 @@
         "OverflowPopoverSharedIndicator",
         "BackAndResume",
         "IconOnlyBack",
-        "R1HeaderLessonInfoProgress"
+        "R1HeaderLessonInfoProgress",
+        "Back50HoverPressed",
+        "CenteredTopBarLongTitle",
+        "PopoverMatchingIndicators"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
@@ -393,9 +401,9 @@
       "id": "BA-WR-002",
       "name": "LessonWorkspace",
       "kind": "composite",
-      "contractVersion": "0.3.0",
+      "contractVersion": "0.4.0-r2",
       "status": "implemented",
-      "visualStatus": "R1-candidate-pending-designer-review",
+      "visualStatus": "R2-candidate-pending-review",
       "implementation": "apps/writing/src/components/writing/LessonWorkspace.tsx",
       "story": "apps/writing/src/components/writing/LessonWorkspace.stories.tsx",
       "props": {
@@ -417,7 +425,9 @@
         "Footer outside Coach pinned",
         "Footer Previous and primary actions use height 70px, gap 8px, flex proportions 1:2",
         "Coach independently scrolls, semantic message containers, footer outside Coach",
-        "Listen icon-only floats in instruction container top-right with fixed safe inset"
+        "Listen icon-only floats in instruction container top-right with fixed safe inset",
+        "Footer action group fills entire right-column width, 1:2 CSS grid minmax(0,1fr)/minmax(0,2fr), gap 8px and children width 100%, min-width 0, 70px height",
+        "P2 Not yet vs Better teaching example panels contrast in favor of Better, never scored"
       ],
       "requiredStories": [
         "Desktop",
@@ -426,7 +436,10 @@
         "FooterFirstScreenDisabled",
         "FooterTwoThirdsPrimary",
         "CoachSemanticMessages",
-        "FloatingListen"
+        "FloatingListen",
+        "FullWidthFooter1440Tablet",
+        "FirstScreenDisabledPrevious",
+        "P2BetterEmphasis"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
@@ -525,9 +538,9 @@
       "id": "BA-WR-005",
       "name": "StairLessonCard",
       "kind": "composite",
-      "contractVersion": "0.3.0",
+      "contractVersion": "0.4.0-r2",
       "status": "implemented",
-      "visualStatus": "R1-candidate-pending-designer-review",
+      "visualStatus": "R2-candidate-pending-review",
       "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx",
       "props": {
@@ -551,14 +564,15 @@
         "Number at top left",
         "No local progress authority",
         "Preserve skip badge",
-        "Reusable CSS folded-paper corner across every Unit, no cut-only geometry",
-        "45-degree inward fold with separate paper layer and subtle shadow",
-        "Preserve Unit bounding box, anchor, existing text, color, state and interaction",
         "No pointer interception, focus clipping or overlap with title/progress",
         "Desktop and Tablet visual evidence, EN/ZH long-title checks; designer signoff required",
-        "Top-left number and status visually integrated: blue current bubble, warm-outline available, green completed capsule, gray locked capsule",
         "CTA height 70px, Start/Continue/Review according to real status; completed always Review",
-        "Paper surface white with rounded corners, warm base shadow and readable long content"
+        "Paper surface white with rounded corners, warm base shadow and readable long content",
+        "Title fixed to exactly 2 line boxes; text clamped at 2, reserve empty second line, accessible complete title",
+        "Duration number + localized unit immediately below title on same left content axis",
+        "State badge current blue number only, no You are here; locked grey number+lock only, no Finish prior unit; completed green joined completion capsule",
+        "CTA MUST render shared BAButton height 70px with working hover/pressed/focus/reduced-motion states",
+        "All Lesson cards same height for equivalent viewport/tier"
       ],
       "requiredStories": [
         "Start",
@@ -566,14 +580,16 @@
         "Review",
         "Locked",
         "Skipped",
-        "FoldedUnitAllStates",
-        "FoldedUnitDesktopTablet",
-        "FoldedUnitLongContent",
         "LessonCurrentHere",
         "LessonAvailableOutlined",
         "LessonCompletedReview",
         "LessonLockedPrerequisite",
-        "LessonLongTitle70CTA"
+        "LessonLongTitle70CTA",
+        "TwoLineTitleShortAndLong",
+        "TitleDurationAligned",
+        "CardCurrentNoBubble",
+        "CardLockedNoSlogan",
+        "SharedBAButtonHoverPressed"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
@@ -767,6 +783,71 @@
       "figma": "06PPYhEQn3CqVYGlfopJWx/806:3",
       "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts",
       "notes": "Figma Segmented V1: outer heights 36/50/70/90; selected surface 32/46/66/86; Strong background product-mapped, Subtle shared neutral; future exact visual QA required."
+    },
+    {
+      "id": "BA-WR-007",
+      "name": "StairUnitCard",
+      "kind": "writing-product-composite",
+      "contractVersion": "0.1.0-r2",
+      "status": "specified-not-implemented",
+      "visualStatus": "R2-candidate-pending-review",
+      "implementation": "apps/writing/src/course/CourseApp.tsx (.course-unit; extraction optional)",
+      "props": {
+        "unit": "PathUnit",
+        "status": "CourseUnitStatus",
+        "locale": "Locale"
+      },
+      "events": [],
+      "states": [
+        "normal",
+        "current",
+        "done",
+        "locked"
+      ],
+      "layoutOwner": "Staircase scene owns placement and anchor; UnitCard owns its paper surface and fold",
+      "requirements": [
+        "Distinct light tinted informative card with decorative warm border",
+        "45-degree top-right genuine layered fold with rounded flap tip, cream under-fold, gentle warm shadow and no alpha holes",
+        "Fold must not cover text and preserve outer body round corners",
+        "Unit goals rendered as plain paragraphs, 16px supporting type; all statuses maintain same folded structure",
+        "No Lesson CTA or lesson status-number assembly",
+        "Ensure complete card visible at pan terminal bounds"
+      ],
+      "requiredStories": [
+        "UnitFoldCornerAt200Zoom",
+        "UnitDistinctTintAndBorder",
+        "UnitLongChineseCopy",
+        "UnitAllStatuses"
+      ],
+      "notes": "R2 fixes earlier misassignment of Unit folded-corner requirements to BA-WR-005, which is StairLessonCard, not UnitCard."
+    },
+    {
+      "id": "BA-WR-008",
+      "name": "StairLevelIntroCard",
+      "kind": "writing-product-composite",
+      "contractVersion": "0.1.0-r2",
+      "status": "specified-not-implemented",
+      "visualStatus": "R2-candidate-pending-review",
+      "implementation": "apps/writing/src/course/CourseApp.tsx (.course-intro)",
+      "props": {
+        "level": "PathLevel",
+        "locale": "Locale"
+      },
+      "events": [],
+      "states": [
+        "display"
+      ],
+      "layoutOwner": "Staircase scene owns position; LevelIntroCard owns its informational surface",
+      "requirements": [
+        "Light tinted decorative border visually distinguishes Level/Intro from Lesson action cards",
+        "Level introduction typography 16px body",
+        "No Lesson CTA; complete card accessible at terminal pan bounds"
+      ],
+      "requiredStories": [
+        "LevelIntroDecorativeBorder",
+        "LongLevelIntroAndGradient"
+      ],
+      "notes": "Keep path navigation and lesson state separate."
     }
   ],
   "reviewOverlay": {
@@ -862,5 +943,13 @@
       "All major reference visuals expressed numerically/textually; not image dependent"
     ],
     "status": "spec-only; implementation and visual QA pending"
+  },
+  "reviewR2": {
+    "date": "2026-10-20",
+    "source": "User review: fold, shared BAButton, no slogans, two-line title, time label, terminal pan bounds, Level/Unit distinctions, Back50, TopBar parity, P2 strong contrast, Footer full-width",
+    "designAuthority": "DESIGN.md Writing Hi-Fi Review R2",
+    "status": "documented only, not visually implemented/tested",
+    "sourceBranch": "docs/writing-hifi-review-r2-20261020",
+    "r1Parent": "docs/writing-hifi-review-r1-20261020"
   }
 }

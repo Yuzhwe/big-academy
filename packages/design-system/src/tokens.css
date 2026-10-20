@@ -248,10 +248,10 @@
   --ba-writing-lesson-locked-fill: #929aa2; /* [E] */
   --ba-writing-lesson-card-title-size: 24px; /* [E] */
   --ba-writing-lesson-cta-label-size: 28px; /* [E] */
-  --ba-writing-back-size: 72px; /* [E] */
-  --ba-writing-back-icon-stroke: 7px; /* [E] */
+  --ba-writing-back-size: 50px; /* [A] */
+  --ba-writing-back-icon-stroke: 3.5px; /* [E] */
   --ba-writing-back-icon-color: #405d6d; /* [E] */
-  --ba-writing-back-shadow: 0 10px 20px rgba(19,53,71,.23); /* [E] */
+  --ba-writing-back-shadow: 0 5px 12px rgba(19,53,71,.22); /* [E] */
   --ba-writing-unit-fold-size: 32px; /* [E] */
   --ba-writing-unit-fold-tip-radius: 4px; /* [E] */
   --ba-writing-choice-radius: 14px; /* [E] */
@@ -274,6 +274,19 @@
   --ba-writing-coach-surface-correct: var(--ba-color-success-1); /* [E] */
   --ba-writing-coach-surface-incorrect: var(--ba-color-danger-1); /* [E] */
   --ba-writing-coach-surface-revealed: var(--ba-color-info-1); /* [E] */
+  --ba-writing-lesson-title-max-lines: 2; /* [A] */
+  --ba-writing-lesson-title-line-height: 30px; /* [E] */
+  --ba-writing-lesson-title-slot-height: 60px; /* [E] */
+  --ba-writing-lesson-duration-size: 16px; /* [E] */
+  --ba-writing-unit-paper-surface: #fff9f2; /* [E] */
+  --ba-writing-unit-paper-border: #dcc3ab; /* [E] */
+  --ba-writing-unit-fold-under: #f8f1ea; /* [E] */
+  --ba-writing-unit-fold-shadow: 0 2px 4px rgba(71,44,34,.12); /* [E] */
+  --ba-writing-unit-fold-face-light: #fffdf9; /* [E] */
+  --ba-writing-unit-fold-face-dark: #e7d6c9; /* [E] */
+  --ba-writing-p2-better-surface: #eaf7ef; /* [E] */
+  --ba-writing-p2-better-border: #12ad5c; /* [E] */
+  --ba-writing-p2-weak-border: #d7c7bd; /* [E] */
   --ba-writing-hamburger-title-size: 20px; /* [E] */
   --ba-writing-hamburger-support-size: 16px; /* [E] */
   --ba-writing-hamburger-tier-gap: 6px; /* [E] */
