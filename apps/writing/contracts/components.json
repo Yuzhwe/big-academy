@@ -685,5 +685,85 @@
       "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts",
       "notes": "Figma Segmented V1: outer heights 36/50/70/90; selected surface 32/46/66/86; Strong background product-mapped, Subtle shared neutral; future exact visual QA required."
     }
-  ]
+  ],
+  "reviewOverlay": {
+    "version": "R6-2026-10-20",
+    "status": "proposed-contract-reconciliation",
+    "source": "apps/writing/PRODUCT.md R6 overlay",
+    "components": [
+      {
+        "id": "BA-WR-ANS-BASE",
+        "kind": "writing-composite-foundation",
+        "props": [
+          "value",
+          "options",
+          "selectedKeys",
+          "feedback",
+          "disabled"
+        ],
+        "events": [
+          "onSelectionChange",
+          "onCheckRequested"
+        ],
+        "states": [
+          "idle",
+          "selected",
+          "incorrect",
+          "correct",
+          "shown",
+          "disabled",
+          "focus-visible"
+        ],
+        "slots": [
+          "label",
+          "leading-index",
+          "feedback"
+        ],
+        "layout": {
+          "minHeightPx": 50,
+          "multiline": "first-line top aligned",
+          "singleLine": "vertically centered"
+        },
+        "businessOwner": "Alex CourseSession; no grading in renderer",
+        "acceptance": [
+          "keyboard",
+          "touch",
+          "wrapped content",
+          "50px min",
+          "shown distinct from correct"
+        ]
+      },
+      {
+        "id": "BA-WR-CELEBRATION-ADAPTER",
+        "kind": "writing-adapter-proposal",
+        "props": [
+          "effect",
+          "eventId",
+          "anchorElement",
+          "disabledByReducedMotion"
+        ],
+        "events": [
+          "onPlaybackFinished",
+          "onPlaybackCancelled"
+        ],
+        "states": [
+          "idle",
+          "locating",
+          "loading",
+          "playing",
+          "stopped",
+          "suppressed",
+          "error"
+        ],
+        "businessOwner": "Alex milestone/lesson eligibility",
+        "requirements": [
+          "Ribbons count 30 for lesson",
+          "Milestone startCount 50, quantity 0, life count 1",
+          "completed flags manual replay",
+          "multi-new milestones display highest and handle other auto receipts",
+          "no grade/unlock mutation"
+        ]
+      }
+    ]
+  }
 }
