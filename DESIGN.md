@@ -574,7 +574,7 @@ Capture proof for: card fold corner at 200% zoom, current/available/complete/loc
 
 ### R1.2 Top-back and Lesson shell
 
-Retain Lesson title, metadata, 8-screen ActivityScreenIndicator and overflow Popover. **Top Back icon button**: standalone round white disc, candidate diameter 72px [E] with dark blue-gray #405D6D candidate chevron left, candidate thick rounded stroke 7px [E], balanced optical centering; deep soft dark-navy shadow falling down, e.g. 0 10px 20px rgba(19,53,71,.23) [E], not a generic flat shadow. Keep an arrow-only visible treatment; no visible explanatory label, but meaningful accessible name (“Back to Staircase”). Large circle is decoration, not an extra global button variant. Focus ring unobscured, hover/pressed treatment subtle; reduced-motion safe.
+Retain Lesson title, metadata, 8-screen ActivityScreenIndicator and overflow Popover. **Top Back icon button**: standalone round white disc, 50px [A] diameter with dark blue-gray #405D6D candidate chevron left, candidate round-capped stroke 3.5px [E], balanced optical centering; deep soft dark-navy shadow falling down, e.g. 0 10px 20px rgba(19,53,71,.23) [E], not a generic flat shadow. Keep an arrow-only visible treatment; no visible explanatory label, but meaningful accessible name (“Back to Staircase”). Large circle is decoration, not an extra global button variant. Focus ring unobscured, hover/pressed treatment subtle; reduced-motion safe.
 
 Instruction Listen icon-only button floats *within instruction container* at fixed top/right inset using 16px [E] semantic inset. Reserve text clearance so it never obscures copy; content wraps naturally. Proper aria-label; click/tap does not grade.
 
