@@ -115,7 +115,7 @@ The UI/UX Designer has explicitly selected the following **font roles**. These a
 
 ### Spatial, Grid & Layout System v0.2 [A principles, E values · 2026-10-19]
 
-The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, supported by **Element First / Content First** sizing, context-sensitive **Column / Modular / Baseline Grid**, and **Responsive / Adaptive / Strict** layout strategies. Full rules and statuses: `docs/design-system/SPATIAL_GRID_LAYOUT_SYSTEM_v0.2.md`.
+The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, supported by **Element First / Content First** sizing, context-sensitive **Column / Modular / Baseline Grid**, and **Responsive / Adaptive / Strict** layout strategies. Full rules and statuses: `root DESIGN.md §4 (complete Spacing/Grid/Layout guide)`.
 
 - **[A]** Spacing records relationships between elements; it must not be confused with interactive hit targets, border widths, typography metrics or path/world geometry.
 - **[A]** Page-level grids and overall placement belong to the application; shared components own only their internal layout. E-01's separately approved bottom-to-anchor staircase behavior in Writing PRODUCT.md overrides generic grid guidance.
@@ -142,7 +142,7 @@ The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, sup
 
 **P6 Hamburger:** each row is **one shared visual layer**, label and editable content on same background. Focus changes whole-layer treatment and gives editable line a clear underline, no nested white input card. Distinguish P5 paragraph scaffold colors from P6 plan-layer palette; do not mix them.
 
-**Other P1–P7 templates:** unique structure/feedback from Alex product source, visually informed by `apps/writing/source/Writing-activity-style-prompt.md`; that reference's simplified P1/P7 and generic completion logic **cannot override Alex**.
+**Other P1–P7 templates:** unique structure/feedback from Alex product source, visually informed by `apps/writing/PRODUCT.md §10 and root DESIGN.md`; that reference's simplified P1/P7 and generic completion logic **cannot override Alex**.
 
 ### 4.X Complete Spacing / Gap usage guide (normative within this DESIGN.md)
 
@@ -291,7 +291,7 @@ Use **depth to communicate hierarchy, not decoration**. Consume the existing Fig
 
 ### BA-DS-RADIUS-001 · Shape & Radius System v0.1 [A principles, E values · 2026-10-19]
 
-**Approved method:** Inspired by [Geist Materials](https://vercel.com/geist/materials), choose radius from **surface type, component size, visual/elevation role, and nested geometry**; never assign random rounded corners. Detailed decision tree and component mapping: `docs/design-system/SHAPE_RADIUS_SYSTEM_v0.1.md`.
+**Approved method:** Inspired by [Geist Materials](https://vercel.com/geist/materials), choose radius from **surface type, component size, visual/elevation role, and nested geometry**; never assign random rounded corners. Detailed decision tree and component mapping: `root DESIGN.md §6 (complete Shape/Radius guide)`.
 
 1. **First classify the surface:** full-bleed canvas (square edge), on-page base/small/medium/large material, or floating tooltip/menu/modal/fullscreen. The bigger/floating tier *may* use a larger corner, but must not assume every overlay needs a large shadow.
 2. **Then check the component size/variant:** small controls need restrained corners; regular/large controls may widen; explicit pills use a full capsule, circular task markers use a 50% radius on square boxes. Ordinary button and field sizes are not forced to be pills.
