@@ -15,6 +15,7 @@ import {
   type AlexConfig,
   type AlexScreen,
   type AlexTask,
+  type AnalyzerApi,
   type Bilingual,
   type EngineApi,
   type LevelPath,
@@ -23,6 +24,19 @@ import {
   type ScreenRef,
   type StepTag,
 } from './loadAlexSource';
+import {
+  blankNumbers,
+  blankSentence,
+  cellText,
+  diagnosis,
+  gradeWriting,
+  joinBuilt,
+  judgeBuild,
+  readCheck,
+  type ApplyRecord,
+  type CheckRecord,
+  type CheckResult,
+} from './lessonOne';
 
 export const ALEX_STATE_KEY = 'g2o_unit_state_v4';
 export const CELEBRATION_KEY = 'ba_writing_milestone_receipts_v1';
@@ -40,6 +54,10 @@ export interface TaskProgress {
   hintLv?: number;
   sel?: number | null;
   bad?: number | null;
+  built?: string[];
+  miss?: number;
+  how?: string;
+  credit?: number;
 }
 
 export interface AlexState {
@@ -59,9 +77,10 @@ export interface AlexState {
   listen: boolean;
   regions: Record<string, { t: string; s: string }[]>;
   tasks: Record<string, TaskProgress>;
-  checks: Record<string, { passed?: boolean; finished?: boolean }>;
+  checks: Record<string, CheckRecord>;
+  welcomePending?: boolean;
   plan: { topic: string; checks: number; result: unknown };
-  applies: Record<string, unknown>;
+  applies: Record<string, ApplyRecord>;
   feedback: { drafts: { text?: string }[]; cups: Record<string, unknown>; finished?: boolean };
   reflection: unknown;
   events: { t: number; type: string; page?: string; screen?: number; data?: Record<string, unknown> }[];
@@ -137,13 +156,81 @@ export interface ActivityModel {
   };
   pick?: {
     multi: boolean;
-    options: { index: number; letter: string; text: string; selected: boolean; wrong: boolean }[];
+    closed: boolean;
+    options: {
+      index: number;
+      letter: string;
+      text: string;
+      selected: boolean;
+      wrong: boolean;
+      mark: 'idle' | 'selected' | 'correct' | 'wrong' | 'revealed' | 'dimmed';
+      markLabel: string;
+    }[];
     hint: string;
   };
   tapword?: {
-    words: { index: number; text: string; selected: boolean; wrong: boolean }[];
+    words: {
+      index: number;
+      text: string;
+      selected: boolean;
+      wrong: boolean;
+      mark: 'idle' | 'selected' | 'correct' | 'wrong' | 'revealed' | 'dimmed';
+      markLabel: string;
+    }[];
   };
   unsupportedReason?: string;
+  build?: {
+    cards: { index: number; text: string; pulse: boolean; shake: boolean; used: boolean }[];
+    line: string;
+    readOnly: boolean;
+    revealed?: string;
+  };
+  writing?: {
+    value: string;
+    readOnly: boolean;
+    revealed?: string;
+    placeholder?: string;
+  };
+  wordGrid?: { tabs: { id: string; label: string; cells: string[] }[] };
+  apply?: {
+    value: string;
+    tip: string;
+    tries: number;
+    passed: boolean;
+    movedOn: boolean;
+    canMoveOn: boolean;
+    feedback: string;
+    also?: string;
+    glow?: string;
+    checks: { label: string; met: boolean }[];
+    safety: boolean;
+    nudge?: string;
+    praise?: string;
+  };
+  check?: {
+    stage: 'answering' | 'results' | 'graded';
+    question: number;
+    total: number;
+    note: string;
+    blankWarning: string;
+    passed: boolean;
+    scoreLabel: string;
+    canRetry: boolean;
+    prompt: string;
+    items: { index: number; answered: boolean; correct?: boolean }[];
+    pick?: ActivityModel['pick'];
+    tapword?: ActivityModel['tapword'];
+    writing?: ActivityModel['writing'];
+    results?: { index: number; ask: string; correct: boolean; why: string }[];
+  };
+  ending?: {
+    mastered: boolean;
+    assessed: boolean;
+    doneCount: number;
+    total: number;
+    nextTitle: string;
+    summary: string;
+  };
   skip: SkipOffer | null;
   hints: string[];
   hintAction: 'hint' | 'another' | 'reveal' | null;
@@ -162,7 +249,7 @@ export interface TopBarModel {
   lessonNumber: string;
   lessonTitle: string;
   tags: string[];
-  tasks: { id: string; label: string; status: TaskChipStatus; number: number }[];
+  tasks: { id: string; label: string; status: TaskChipStatus; number: number; revealed?: boolean }[];
   current: number;
 }
 
@@ -233,6 +320,7 @@ export class CourseSession {
   readonly config: AlexConfig;
   readonly levelPath: LevelPath;
   readonly engine: EngineApi;
+  readonly analyzer: AnalyzerApi;
   readonly screens: ScreenRef[];
 
   private readonly storage: Storage;
@@ -241,6 +329,10 @@ export class CourseSession {
   private yesCount = 0;
   private coachBeat: Record<string, number> = {};
   private receipt: CelebrationReceipt;
+  private buildFx: { cell: string; index: number; nonce: number } | null = null;
+  /** Presentation only. Never written into the course record. */
+  lessonBurst = false;
+  private buildTimer: ReturnType<typeof setTimeout> | null = null;
 
   state: AlexState;
   view: CourseView = 'path';
@@ -258,6 +350,7 @@ export class CourseSession {
     this.config = source.config;
     this.levelPath = source.levelPath;
     this.engine = source.engine;
+    this.analyzer = source.analyzer;
     this.screens = this.engine.screens(this.config);
     this.storage = options.storage ?? localStorage;
     this.levelId = this.levelPath.current_level;
@@ -273,6 +366,11 @@ export class CourseSession {
     this.state.page = this.pageIndex(this.screens[this.state.screen]?.screen.page ?? '');
     this.save();
     this.applyEntryQuery(options.search ?? '');
+    if (this.state.stoppedAt && this.view === 'path') {
+      this.openNotice = this.state.zh
+        ? '进度已保存在这台设备上。'
+        : 'Your work is saved on this device.';
+    }
   }
 
   subscribe = (listener: () => void) => {
@@ -580,17 +678,27 @@ export class CourseSession {
         this.emit();
         return false;
       }
-      let target =
-        lessonIndex === this.curLesson()
-          ? this.state.screen
-          : (indexes.find((index) => !this.screenDone(index) && !this.stepSkipped(this.screens[index].step)) ??
-            indexes[0]);
+      let target: number;
+      if (courseState === 'done' || courseState === 'skipped') target = indexes[0];
+      else if (lessonIndex === this.curLesson() && this.canOpen(this.state.screen)) target = this.state.screen;
+      else {
+        target =
+          indexes.find((index) => !this.screenDone(index) && !this.stepSkipped(this.screens[index].step)) ??
+          indexes[0];
+      }
       if (!this.canOpen(target)) target = indexes[0];
       this.remember(unitId, lessonNumber);
       this.view = 'lesson';
       this.feedback = '';
       this.message = '';
       this.go(target);
+      if (this.state.welcomePending) {
+        this.state.welcomePending = false;
+        this.feedback = this.zh ? '欢迎回来。' : 'Welcome back.';
+        this.state.stoppedAt = null;
+        this.save();
+        this.emit();
+      }
       return true;
     }
     const courseState = this.lessonStates(unit)[lessonNumber - 1];
@@ -719,11 +827,13 @@ export class CourseSession {
         else if (globalIndex === this.state.screen) status = 'current';
         else if (!open) status = 'locked';
         else status = 'available';
+        const taskState = ref.screen.task ? this.state.tasks[`${ref.screen.page}:${ref.screen.task}`] : undefined;
         return {
           id: ref.screen.id,
           label: this.text(ref.screen.title) || ref.screen.id,
           status,
           number: localIndex + 1,
+          revealed: taskState?.status === 'shown',
         };
       }),
     };
@@ -795,52 +905,17 @@ export class CourseSession {
       const taskState = this.taskState(key);
       const hints = (task.coach?.hints ?? []).slice(0, taskState.hintLv ?? 0).map((hint) => this.text(hint));
       const hintAction = this.hintAction(task, taskState);
-      if (task.type === 'pick' && task.lines && task.answers) {
-        const picked = taskState.picked ?? [];
-        const wrong = taskState.wrong ?? [];
-        const closed = taskState.status !== 'open';
-        return {
-          ...base,
-          supported: true,
-          ask: this.text(task.ask),
-          hints,
-          hintAction,
-          pick: {
-            multi: !!task.multi,
-            hint: task.multi
-              ? this.zh
-                ? `选择 ${task.answers.length} 项 · 已选 ${picked.length}`
-                : `Choose ${task.answers.length} · ${picked.length} chosen`
-              : '',
-            options: task.lines.map((line, index) => ({
-              index,
-              letter: this.engine.choiceLetter(index),
-              text: line,
-              selected: picked.includes(index),
-              wrong: wrong.includes(index) && !closed,
-            })),
-          },
-        };
-      }
+      const shared = { ...base, supported: true, ask: this.text(task.ask), hints, hintAction };
+      if (task.type === 'pick' && task.lines && task.answers) return { ...shared, pick: this.pickModel(task, taskState) };
       if (task.type === 'tapword' && task.text && task.need !== 'all') {
-        const tokens = this.engine.tokens(task.text);
-        return {
-          ...base,
-          supported: true,
-          ask: this.text(task.ask),
-          hints,
-          hintAction,
-          tapword: {
-            words: tokens.map((token, index) => ({
-              index,
-              text: token.w,
-              selected: taskState.sel === index && taskState.status === 'open',
-              wrong: taskState.bad === index,
-            })),
-          },
-        };
+        return { ...shared, tapword: this.tapModel(task, taskState, false) };
       }
+      if (task.type === 'build') return this.buildModel(shared, task, taskState);
+      if (task.type === 'write' || task.frameFill) return this.writeModel(shared, task, key, taskState);
     }
+
+    if (screen.kind === 'apply') return this.applyModel(base, screen);
+    if (screen.kind === 'check') return this.checkModel(base, screen);
 
     return {
       ...base,
@@ -868,20 +943,58 @@ export class CourseSession {
       };
     }
     const index = this.state.screen;
-    const backLabel =
-      index === 0 ? (this.zh ? '我的路径' : 'My path') : this.zh ? '上一页' : 'Back';
-    if (!this.canNext(index)) {
+    const backLabel = index === 0 ? (this.zh ? '我的路径' : 'My path') : this.zh ? '上一页' : 'Back';
+    const screen = this.screens[index]?.screen;
+    if (screen?.kind === 'check') {
+      const page = this.pageOf(screen.page);
+      const record = readCheck(page ? this.state.checks[page.id] : undefined);
+      if (page && !record.finished) {
+        const total = this.engine.masteryItems(page, record.attempt).length;
+        const question = Math.min(record.q, Math.max(0, total - 1));
+        if (record.view != null) {
+          return { backLabel: this.zh ? '全部结果' : 'All results', primaryLabel: this.zh ? '全部结果' : 'All results', primaryTestId: 'all-results' };
+        }
+        return {
+          backLabel: this.zh ? '返回' : 'Back',
+          primaryLabel:
+            question < total - 1
+              ? this.zh
+                ? '下一题'
+                : 'Next question'
+              : record.blankAsk
+                ? this.zh
+                  ? '仍要交卷'
+                  : 'Hand in anyway'
+                : this.zh
+                  ? '交上我的检查'
+                  : 'Hand in my check',
+          primaryTestId: question < total - 1 ? 'next-question' : 'hand-in-check',
+        };
+      }
+      if (page && record.finished && record.view != null) {
+        return { backLabel: this.zh ? '全部结果' : 'All results', primaryLabel: this.nextLabel(index), primaryTestId: 'next' };
+      }
+      if (page && record.finished && !record.passed && !this.state.done[page.id]) {
+        return { backLabel, primaryLabel: this.zh ? '换一套题' : 'Try a new set', primaryTestId: 'retry-check-foot' };
+      }
+    }
+    if (screen?.kind === 'apply' && !this.screenDone(index)) {
+      const page = this.pageOf(screen.page);
+      const apply = page?.skill ? this.state.applies[page.skill] : undefined;
       return {
         backLabel,
-        primaryLabel: this.blockedLabel(index),
-        primaryTestId: 'check',
+        primaryLabel: apply?.tries ? (this.zh ? '再检查一次' : 'Check again') : this.zh ? '检查我的写作' : 'Check my writing',
+        primaryTestId: 'check-writing',
       };
     }
-    return {
-      backLabel,
-      primaryLabel: this.nextLabel(index),
-      primaryTestId: 'next',
-    };
+    if (!this.canNext(index)) {
+      const task = screen?.task ? this.task(screen.task) : null;
+      if (task?.type === 'build') {
+        return { backLabel, primaryLabel: this.zh ? '在这里拼' : 'Build it here', primaryTestId: 'build-next' };
+      }
+      return { backLabel, primaryLabel: this.blockedLabel(index), primaryTestId: 'check' };
+    }
+    return { backLabel, primaryLabel: this.nextLabel(index), primaryTestId: 'next' };
   }
 
   pressBack(): void {
@@ -893,6 +1006,24 @@ export class CourseSession {
       this.view = 'lesson';
       this.emit();
       return;
+    }
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind === 'check') {
+      const page = this.pageOf(screen.page);
+      const record = page ? this.ensureCheck(page.id) : null;
+      if (record && !record.finished && record.view != null) {
+        record.view = null;
+        this.save();
+        this.emit();
+        return;
+      }
+      if (record && !record.finished && record.q > 0) {
+        record.q -= 1;
+        record.blankAsk = false;
+        this.save();
+        this.emit();
+        return;
+      }
     }
     if (this.state.screen === 0) {
       this.backToPath();
@@ -907,17 +1038,47 @@ export class CourseSession {
       return;
     }
     if (this.view === 'lessonEnd') {
-      this.go(this.nextTarget(this.state.screen));
+      this.continueAfterLesson();
       return;
     }
     const index = this.state.screen;
     const screen = this.screens[index].screen;
+    if (screen.kind === 'check') {
+      const page = this.pageOf(screen.page);
+      const record = page ? readCheck(this.state.checks[page.id]) : null;
+      if (page && record && !record.finished) {
+        if (record.view != null) {
+          this.closeCheckResults();
+          return;
+        }
+        const total = this.engine.masteryItems(page, record.attempt).length;
+        if (record.q < total - 1) {
+          this.setCheckQuestion(record.q + 1);
+          return;
+        }
+        this.tryHandIn();
+        return;
+      }
+      if (page && record && record.finished && !record.passed && !this.state.done[page.id]) {
+        this.retryCheck();
+        return;
+      }
+    }
+    if (screen.kind === 'apply' && !this.screenDone(index)) {
+      this.applyCheck();
+      return;
+    }
     if (!this.canNext(index)) {
       if (screen.kind === 'task' || screen.kind === 'model_task') {
         const task = screen.task ? this.task(screen.task) : null;
         if (task?.type === 'pick') this.pickCheck(task, this.taskKey(screen));
         else if (task?.type === 'tapword' && task.need !== 'all') this.wordCheck(task, this.taskKey(screen));
-        else {
+        else if (task?.type === 'write' || task?.frameFill) this.writeCheck(task, this.taskKey(screen));
+        else if (task?.type === 'build') {
+          this.feedback = this.zh ? '按顺序放下一个词。点错的卡片不会算一次尝试。' : 'Place the next word in order. A wrong card is not a try.';
+          this.log('next_blocked');
+          this.emit();
+        } else {
           this.feedback = `${this.lockedMsg(index)} ${this.activity()?.unsupportedReason ?? ''}`.trim();
           this.emit();
         }
@@ -931,13 +1092,11 @@ export class CourseSession {
   }
 
   pick(index: number): void {
-    const screen = this.screens[this.state.screen]?.screen;
-    if (!screen?.task) return;
-    const task = this.task(screen.task);
-    if (task.type !== 'pick') return;
-    const key = this.taskKey(screen);
+    const focus = this.focusItem('pick');
+    if (!focus) return;
+    const { task, key } = focus;
     const taskState = this.taskState(key);
-    if (taskState.status !== 'open') return;
+    if (!focus.editable) return;
     taskState.picked = taskState.picked ?? [];
     taskState.wrong = [];
     if (task.multi) {
@@ -953,20 +1112,178 @@ export class CourseSession {
   }
 
   tapWord(index: number): void {
-    const screen = this.screens[this.state.screen]?.screen;
-    if (!screen?.task) return;
-    const task = this.task(screen.task);
-    if (task.type !== 'tapword' || task.need === 'all') return;
-    const taskState = this.taskState(this.taskKey(screen));
-    if (taskState.status !== 'open') return;
+    const focus = this.focusItem('tapword');
+    if (!focus || focus.task.need === 'all') return;
+    const taskState = this.taskState(focus.key);
+    if (!focus.editable) return;
     taskState.sel = taskState.sel === index ? null : index;
     taskState.bad = null;
     this.save();
     this.emit();
   }
 
+  placeBuild(index: number): void {
+    const focus = this.focusItem('build');
+    if (!focus?.editable) return;
+    const task = focus.task;
+    const taskState = this.taskState(focus.key);
+    const cells = (task.cells ?? []).map((cell) => cellText(cell));
+    const built = taskState.built ?? [];
+    const remaining = built.slice();
+    let available = false;
+    cells.forEach((text, cellIndex) => {
+      if (cellIndex !== index) {
+        const usedAt = remaining.indexOf(text);
+        if (usedAt >= 0) remaining.splice(usedAt, 1);
+        return;
+      }
+      available = remaining.indexOf(text) < 0;
+    });
+    const cell = cells[index];
+    if (!cell || !available) return;
+    const target = task.target ?? [];
+    const prospective = built.concat(cell);
+    const matches =
+      !!task.answer_text &&
+      prospective.length === target.length &&
+      this.engine.sameText(joinBuilt(this.engine, prospective), task.answer_text);
+    const decision = judgeBuild({
+      inOrder: task.in_order !== false,
+      target,
+      built,
+      miss: taskState.miss ?? 0,
+      tries: taskState.tries,
+      cell,
+      matches,
+    });
+    this.buildFx = { cell, index, nonce: (this.buildFx?.nonce ?? 0) + 1 };
+    if (decision.kind === 'reject') {
+      taskState.miss = decision.miss;
+      this.feedback = decision.speak
+        ? this.text(task.why) || (this.zh ? '看下一个该放的词。' : 'Look at the next word.')
+        : this.zh
+          ? '这张卡片现在还不能放。点错的卡片不算一次尝试。'
+          : 'That card does not come next. A wrong card is not a try.';
+      this.log('build_miss');
+      this.save();
+      this.emit();
+      return;
+    }
+    taskState.built = decision.built;
+    taskState.miss = decision.miss;
+    taskState.tries = 'tries' in decision ? decision.tries : taskState.tries;
+    if (decision.kind === 'grow') {
+      this.feedback = '';
+      this.log('build_place');
+      this.save();
+      this.emit();
+      return;
+    }
+    if (decision.kind === 'done') {
+      this.finish(task, focus.key, 'done');
+      return;
+    }
+    if (decision.kind === 'shown') {
+      this.finish(task, focus.key, 'shown');
+      return;
+    }
+    this.feedback = this.text(task.why) || (this.zh ? '顺序还不对。再试一次。' : 'That order is not the sentence. Try again.');
+    this.log('task_try');
+    this.save();
+    this.emit();
+    if (this.buildTimer) clearTimeout(this.buildTimer);
+    const key = focus.key;
+    this.buildTimer = setTimeout(() => {
+      const current = this.state.tasks[key];
+      if (current?.status === 'open') current.built = [];
+      this.buildTimer = null;
+      this.save();
+      this.emit();
+    }, 1200);
+  }
+
+  resetBuild(): void {
+    const focus = this.focusItem('build');
+    if (!focus?.editable) return;
+    const taskState = this.taskState(focus.key);
+    taskState.built = [];
+    taskState.miss = 0;
+    this.feedback = '';
+    this.save();
+    this.emit();
+  }
+
+  setWriting(value: string): void {
+    const focus = this.writingFocus();
+    if (!focus?.editable) return;
+    this.state.regions[focus.key] = [{ t: value, s: 'typed' }];
+    this.save();
+    this.emit();
+  }
+
+  insertGrid(text: string): void {
+    const focus = this.writingFocus();
+    if (!focus?.editable || !text) return;
+    const current = this.state.regions[focus.key] ?? [];
+    const joined = regionText(current);
+    const inserted = this.engine.smartInsert(joined, joined.length, joined.length, text, /^[.,!?;:]$/.test(text) ? 'mark' : 'phrase');
+    const delta = inserted.value.slice(joined.length);
+    this.state.regions[focus.key] = delta ? [...current, { t: delta, s: 'grid' }] : current;
+    this.save();
+    this.emit();
+  }
+
+  moveOnApply(): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind !== 'apply') return;
+    const page = this.pageOf(screen.page);
+    const task = page?.task ? this.task(page.task) : null;
+    if (!page?.skill || !task) return;
+    const record = this.applyRecord(page.skill);
+    const limit = task.continue_after ?? 2;
+    if (record.passed || record.tries < limit || this.state.done[page.id]) return;
+    record.movedOn = true;
+    this.state.done[page.id] = true;
+    this.feedback = this.zh ? '先继续。这一页不算通过。' : 'Moving on for now. This page is not marked correct.';
+    this.log('apply_move_on');
+    this.save();
+    this.emit();
+  }
+
+  jumpCheckQuestion(index: number): void {
+    this.setCheckQuestion(index);
+  }
+
+  startNewCheckSet(): void {
+    this.retryCheck();
+  }
+
+  openCheckResult(index: number): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind !== 'check') return;
+    const page = this.pageOf(screen.page);
+    if (!page) return;
+    const record = this.ensureCheck(page.id);
+    if (!record.finished) return;
+    record.view = index;
+    this.save();
+    this.emit();
+  }
+
+  stopForToday(): void {
+    this.parkAtNextLesson(true);
+  }
+
+  backToPathFromEnd(): void {
+    this.parkAtNextLesson(false);
+  }
+
   openHint(): void {
     const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind === 'apply') {
+      this.applyHint(screen);
+      return;
+    }
     if (!screen?.task) return;
     const task = this.task(screen.task);
     const taskState = this.taskState(this.taskKey(screen));
@@ -1030,6 +1347,572 @@ export class CourseSession {
     return focus;
   }
 
+  private finishFeedback(task: AlexTask, status: 'done' | 'shown', graded: string): string {
+    if (task.type === 'build' && status === 'shown') {
+      return this.zh ? `答案在这里：${task.answer_text ?? ''}` : `Here it is: ${task.answer_text ?? ''}`;
+    }
+    if ((task.type === 'write' || task.frameFill) && status === 'shown') {
+      const sample = task.accept?.[0];
+      if (sample) return this.zh ? `一种写法：${sample}` : `One way: ${sample}`;
+      return this.text(task.why) || this.text(task.ok) || (this.zh ? '答案在这里。' : 'Here is the answer.');
+    }
+    if (task.type === 'pick' || (task.type === 'tapword' && status === 'shown' && (task.targets ?? []).length === 1)) return graded;
+    if (status === 'done') return this.affirm(this.text(task.ok) || this.text(task.why));
+    return this.zh ? `答案在这里。${this.text(task.why)}` : `Here is the answer. ${this.text(task.why)}`;
+  }
+
+  private focusItem(kind: 'pick' | 'tapword' | 'build' | 'write'): { task: AlexTask; key: string; editable: boolean } | null {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (!screen) return null;
+    if (screen.kind === 'check') {
+      const page = this.pageOf(screen.page);
+      if (!page) return null;
+      const record = this.ensureCheck(page.id);
+      if (record.finished && record.view == null) return null;
+      const items = this.engine.masteryItems(page, record.attempt);
+      const itemId = items[record.view ?? record.q];
+      if (!itemId) return null;
+      const task = this.task(itemId);
+      if (!this.taskMatches(task, kind)) return null;
+      return {
+        task,
+        key: this.checkItemKey(page.id, record.attempt, itemId),
+        editable: !record.finished && record.view == null,
+      };
+    }
+    if ((screen.kind === 'task' || screen.kind === 'model_task') && screen.task) {
+      const task = this.task(screen.task);
+      if (!this.taskMatches(task, kind)) return null;
+      const key = this.taskKey(screen);
+      return { task, key, editable: this.taskState(key).status === 'open' };
+    }
+    return null;
+  }
+
+  private writingFocus(): { task: AlexTask; key: string; editable: boolean } | null {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (!screen) return null;
+    if (screen.kind === 'apply') {
+      const page = this.pageOf(screen.page);
+      const task = page?.task ? this.task(page.task) : null;
+      if (!page || !task) return null;
+      return { task, key: page.id, editable: !this.state.done[page.id] };
+    }
+    const practice = this.focusItem('write');
+    return practice;
+  }
+
+  private taskMatches(task: AlexTask, kind: 'pick' | 'tapword' | 'build' | 'write'): boolean {
+    if (kind === 'pick') return task.type === 'pick';
+    if (kind === 'tapword') return task.type === 'tapword';
+    if (kind === 'build') return task.type === 'build';
+    return task.type === 'write' || !!task.frameFill || !!task.rules;
+  }
+
+  private pickModel(task: AlexTask, taskState: TaskProgress, opts?: { closed?: boolean; revealed?: boolean }): NonNullable<ActivityModel['pick']> {
+    const answers = new Set(task.answers ?? []);
+    const picked = new Set(taskState.picked ?? []);
+    const wrong = new Set(taskState.wrong ?? []);
+    const revealed = !!opts?.revealed || taskState.status === 'shown';
+    const done = taskState.status === 'done' && !revealed;
+    const closed = opts?.closed ?? taskState.status !== 'open';
+    const options = (task.lines ?? []).map((text, index) => {
+      const isAnswer = answers.has(index);
+      const isPicked = picked.has(index);
+      const isWrong = wrong.has(index) || ((revealed || done) && isPicked && !isAnswer);
+      let mark: NonNullable<ActivityModel['pick']>['options'][number]['mark'] = 'idle';
+      let markLabel = this.zh ? '未选' : 'Not selected';
+      if (revealed && isAnswer) {
+        mark = 'revealed';
+        markLabel = this.zh ? '正确答案' : 'Right answer';
+      } else if (done && isAnswer) {
+        mark = 'correct';
+        markLabel = this.zh ? '正确' : 'Correct';
+      } else if (isWrong) {
+        mark = 'wrong';
+        markLabel = this.zh ? '再看' : 'Look again';
+      } else if (isPicked) {
+        mark = 'selected';
+        markLabel = this.zh ? '已选' : 'Selected';
+      } else if (revealed || done) {
+        mark = 'dimmed';
+      }
+      return {
+        index,
+        letter: this.engine.choiceLetter(index),
+        text,
+        selected: isPicked || ((done || revealed) && isAnswer),
+        wrong: isWrong,
+        mark,
+        markLabel,
+      };
+    });
+    const need = task.answers?.length ?? 1;
+    return {
+      multi: !!task.multi,
+      closed,
+      options,
+      hint: task.multi ? (this.zh ? `选出 ${need} 项 · 已选 ${picked.size}` : `Choose ${need} · ${picked.size} chosen`) : '',
+    };
+  }
+
+  private tapModel(task: AlexTask, taskState: TaskProgress, revealedTargets: boolean): NonNullable<ActivityModel['tapword']> {
+    const tokens = this.engine.tokens(task.text ?? '');
+    const targets = new Set(
+      (task.targets ?? []).map((target) => this.engine.locate(task.text ?? '', target)).filter((index) => index >= 0),
+    );
+    const revealed = taskState.status === 'shown' || revealedTargets;
+    const done = taskState.status === 'done' && !revealed;
+    return {
+      words: tokens.map((token, index) => {
+        const isTarget = targets.has(index);
+        const selected = taskState.sel === index || ((done || revealed) && isTarget);
+        const wrong = taskState.bad === index || (revealed && taskState.sel === index && !isTarget);
+        let mark: NonNullable<ActivityModel['tapword']>['words'][number]['mark'] = 'idle';
+        let markLabel = this.zh ? '未选' : 'Not selected';
+        if (revealed && isTarget) {
+          mark = 'revealed';
+          markLabel = this.zh ? '正确答案' : 'Right answer';
+        } else if (done && isTarget) {
+          mark = 'correct';
+          markLabel = this.zh ? '正确' : 'Correct';
+        } else if (wrong) {
+          mark = 'wrong';
+          markLabel = this.zh ? '再看' : 'Look again';
+        } else if (selected) {
+          mark = 'selected';
+          markLabel = this.zh ? '已选' : 'Selected';
+        }
+        return { index, text: token.w, selected, wrong, mark, markLabel };
+      }),
+    };
+  }
+
+  private buildModel(shared: Omit<ActivityModel, 'supported' | 'build'> & { supported?: boolean }, task: AlexTask, taskState: TaskProgress): ActivityModel {
+    const cells = (task.cells ?? []).map((cell) => cellText(cell));
+    const built = taskState.built ?? [];
+    const remaining = built.slice();
+    const want = task.target?.[built.length];
+    let pulsed = false;
+    const cards = cells.map((text, index) => {
+      const usedAt = remaining.indexOf(text);
+      const used = usedAt >= 0;
+      if (used) remaining.splice(usedAt, 1);
+      const pulse = !pulsed && !used && (taskState.miss ?? 0) >= 3 && text === want;
+      if (pulse) pulsed = true;
+      const shake = !used && this.buildFx?.index === index && (taskState.miss ?? 0) > 0 && taskState.status === 'open';
+      return { index, text, pulse, shake, used };
+    });
+    return {
+      ...shared,
+      supported: true,
+      build: {
+        cards,
+        line: joinBuilt(this.engine, built),
+        readOnly: taskState.status !== 'open',
+        revealed: taskState.status === 'shown' ? task.answer_text : undefined,
+      },
+    };
+  }
+
+  private writeModel(
+    shared: Omit<ActivityModel, 'supported'> & { supported?: boolean },
+    task: AlexTask,
+    key: string,
+    taskState: TaskProgress,
+  ): ActivityModel {
+    const stored = regionText(this.state.regions[key]);
+    const frame = task.frameFill?.frame ?? '';
+    return {
+      ...shared,
+      supported: true,
+      writing: {
+        value: stored || (taskState.status === 'open' ? frame || task.start || task.given || '' : stored),
+        readOnly: taskState.status !== 'open',
+        revealed: taskState.status === 'shown' ? task.accept?.[0] : undefined,
+        placeholder: frame || undefined,
+      },
+      wordGrid: this.gridModel(task.grid?.tabs, task),
+    };
+  }
+
+  private applyModel(base: Omit<ActivityModel, 'supported'>, screen: AlexScreen): ActivityModel {
+    const page = this.pageOf(screen.page);
+    const task = page?.task ? this.task(page.task) : null;
+    if (!page?.skill || !task) {
+      return { ...base, supported: false, unsupportedReason: this.zh ? '这一页没有写作任务。' : 'This page has no writing task.' };
+    }
+    const record = this.applyRecord(page.skill);
+    const hints = (task.coach?.hints ?? []).slice(0, record.hintLv ?? 0).map((hint) => this.text(hint));
+    const hintLevel = record.hintLv ?? 0;
+    const hintCount = task.coach?.hints?.length ?? 0;
+    const text = regionText(this.state.regions[page.id]);
+    const live = text.trim() ? this.analyzer.liveNudges(text, { mode: 'apply', prompt: this.text(task.ask) }) : null;
+    const nudge = live?.nudge?.id ? this.config.coach?.nudges?.[live.nudge.id] : undefined;
+    const praise = live?.praise?.id ? this.config.coach?.praise?.[live.praise.id] : undefined;
+    const failed = (record.result?.checks ?? []).filter((item) => !item.met);
+    return {
+      ...base,
+      supported: true,
+      ask: this.text(task.ask),
+      hints,
+      hintAction: record.passed || this.state.done[page.id] || !hintCount || hintLevel >= hintCount ? null : hintLevel === 0 ? 'hint' : 'another',
+      writing: { value: text, readOnly: !!this.state.done[page.id] },
+      wordGrid: this.gridModel(page.grid?.tabs),
+      apply: {
+        value: text,
+        tip: this.text(task.tip),
+        tries: record.tries,
+        passed: record.passed,
+        movedOn: !!record.movedOn,
+        canMoveOn: !record.passed && !this.state.done[page.id] && record.tries >= (task.continue_after ?? 2),
+        feedback: record.result ? (this.zh && record.result.zh ? record.result.zh : record.result.feedback) : '',
+        also: failed[1] ? (this.zh && failed[1].zh ? failed[1].zh : failed[1].tip) : undefined,
+        glow: record.result?.glow,
+        checks: (record.result?.checks ?? []).map((item) => ({ label: this.zh && item.zh ? item.zh : item.label, met: item.met })),
+        safety: !!record.result?.safety_flag,
+        nudge: nudge ? this.text(nudge) : undefined,
+        praise: praise ? this.text(praise) : undefined,
+      },
+    };
+  }
+
+  private checkModel(base: Omit<ActivityModel, 'supported'>, screen: AlexScreen): ActivityModel {
+    const page = this.pageOf(screen.page);
+    if (!page) return { ...base, supported: false, unsupportedReason: this.zh ? '没有检查页。' : 'Check page is missing.' };
+    const record = this.ensureCheck(page.id);
+    const items = this.engine.masteryItems(page, record.attempt);
+    const latest = [...record.history].reverse().find((entry) => entry.attempt === record.attempt);
+    const graded = record.view != null;
+    const index = Math.min(graded ? record.view ?? 0 : record.q, Math.max(0, items.length - 1));
+    const itemId = items[index];
+    const task = itemId ? this.task(itemId) : null;
+    const taskState = itemId ? this.taskState(this.checkItemKey(page.id, record.attempt, itemId)) : null;
+    const stage: NonNullable<ActivityModel['check']>['stage'] = graded ? 'graded' : record.finished ? 'results' : 'answering';
+    const score = latest ? `${latest.score} of ${latest.total}` : '';
+    const results = latest?.results.map((result, resultIndex) => ({
+      index: resultIndex,
+      ask: this.text(this.task(items[resultIndex] ?? '').ask),
+      correct: result.correct,
+      why: this.zh && result.zh ? result.zh : result.explanation ?? '',
+    }));
+    return {
+      ...base,
+      supported: true,
+      ask: task ? this.text(task.ask) : '',
+      hints: [],
+      hintAction: null,
+      check: {
+        stage,
+        question: index,
+        total: items.length,
+        note: this.zh ? '这次没有词卡，也没有提示。' : 'No grid and no help this time.',
+        blankWarning: record.blankAsk ? this.feedback : '',
+        passed: record.passed,
+        scoreLabel: latest ? (latest.passed ? (this.zh ? `这次检查通过了。${score}。` : `You passed this check. ${score}.`) : this.zh ? `还没有掌握。${score}。` : `Not yet. ${score}.`) : '',
+        canRetry: record.finished && !record.passed,
+        prompt: task ? this.text(task.ask) : '',
+        items: items.map((id, itemIndex) => ({
+          index: itemIndex,
+          answered: this.checkAnswered(page.id, record.attempt, id),
+          correct: latest?.results[itemIndex]?.correct,
+        })),
+        pick: task?.type === 'pick' && taskState ? this.pickModel(task, taskState, { closed: stage !== 'answering', revealed: stage === 'graded' }) : undefined,
+        tapword: task?.type === 'tapword' && taskState ? this.tapModel(task, taskState, stage === 'graded') : undefined,
+        writing:
+          task && (task.type === 'write' || task.rules) && taskState
+            ? {
+                value: regionText(this.state.regions[this.checkItemKey(page.id, record.attempt, task.id)]),
+                readOnly: stage !== 'answering',
+              }
+            : undefined,
+        results: stage === 'results' ? results : undefined,
+      },
+    };
+  }
+
+  private gridModel(tabs: string[] | undefined, task?: AlexTask): ActivityModel['wordGrid'] {
+    if (!tabs?.length) return undefined;
+    const catalog = this.config.grids?.tabs ?? {};
+    return {
+      tabs: tabs.map((id) => {
+        if (id === 'task') {
+          return { id, label: this.zh ? '题目' : 'From the task', cells: (task?.cells ?? []).map((cell) => cellText(cell)).filter(Boolean) };
+        }
+        const tab = catalog[id];
+        const lists = [tab?.words, tab?.chunks, tab?.marks].filter((list): list is { t: string }[] => Array.isArray(list));
+        const cells = lists.flat().map((item) => item.t);
+        return { id, label: this.zh ? tab?.zh || tab?.label || id : tab?.label || id, cells };
+      }),
+    };
+  }
+
+  private applyRecord(skill: string): ApplyRecord {
+    return this.state.applies[skill] ?? (this.state.applies[skill] = { tries: 0, passed: false, hintLv: 0, result: null });
+  }
+
+  private applyHint(screen: AlexScreen): void {
+    const page = this.pageOf(screen.page);
+    const task = page?.task ? this.task(page.task) : null;
+    if (!page?.skill || !task || this.state.done[page.id]) return;
+    const record = this.applyRecord(page.skill);
+    const hints = task.coach?.hints ?? [];
+    const level = record.hintLv ?? 0;
+    if (level >= hints.length) return;
+    record.hintLv = level + 1;
+    this.log('hint_open', { task: task.id });
+    this.save();
+    this.emit();
+  }
+
+  private applyCheck(): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    const page = screen ? this.pageOf(screen.page) : null;
+    const task = page?.task ? this.task(page.task) : null;
+    if (!page?.skill || !task || this.state.done[page.id]) return;
+    const text = regionText(this.state.regions[page.id]).trim();
+    const record = this.applyRecord(page.skill);
+    if (this.analyzer.cjkRatio(text) > 0.3) {
+      this.feedback = this.zh ? '这一题请用英文写。' : 'Write this one in English sentences.';
+      this.log('apply_cjk');
+      this.emit();
+      return;
+    }
+    if (this.analyzer.wordCount(text) < 3) {
+      this.feedback = this.zh ? '先多写一点。' : 'Write a little first.';
+      this.log('apply_short');
+      this.emit();
+      return;
+    }
+    if (this.analyzer.safetyScreen(text)) {
+      record.result = {
+        passed: false,
+        checks: [],
+        feedback: 'Please show your teacher.',
+        zh: '请给老师看。',
+        safety_flag: true,
+      };
+      this.feedback = this.zh ? '请给老师看。这次不会算通过。' : 'Please show your teacher. This writing is not a pass.';
+      this.log('apply_safety');
+      this.save();
+      this.emit();
+      return;
+    }
+    const grade = this.analyzer.checkApply(page.skill, text);
+    record.tries += 1;
+    record.result = grade;
+    record.passed = grade.passed;
+    if (grade.passed) this.state.done[page.id] = true;
+    const failed = grade.checks.find((item) => !item.met);
+    this.feedback = grade.passed
+      ? this.zh && grade.zh
+        ? grade.zh
+        : grade.feedback
+      : this.zh && failed?.zh
+        ? failed.zh
+        : failed?.tip || grade.feedback;
+    this.log(grade.passed ? 'apply_pass' : 'apply_miss');
+    this.save();
+    this.emit();
+  }
+
+  private writeCheck(task: AlexTask, key: string): void {
+    const taskState = this.taskState(key);
+    if (taskState.status !== 'open') return;
+    const text = regionText(this.state.regions[key]) || task.frameFill?.frame || '';
+    const grade = gradeWriting(this.engine, this.analyzer, task, text);
+    taskState.tries += 1;
+    const found = diagnosis(this.analyzer, task, text, this.config.coach?.diagnostics);
+    const extra = found ? ` ${this.text(found)}` : '';
+    const message = `${this.zh && grade.zh ? grade.zh : grade.explanation}${extra}`.trim();
+    if (grade.correct) {
+      this.finish(task, key, 'done');
+      if (grade.explanation) this.feedback = this.affirm(this.zh && grade.zh ? grade.zh : grade.explanation);
+      this.save();
+      this.emit();
+      return;
+    }
+    if (taskState.tries >= 2) {
+      this.finish(task, key, 'shown');
+      if (!task.accept?.[0]) this.feedback = message;
+      this.save();
+      this.emit();
+      return;
+    }
+    this.feedback = message;
+    this.log('task_try');
+    this.save();
+    this.emit();
+  }
+
+  private ensureCheck(pageId: string): CheckRecord {
+    const record = readCheck(this.state.checks[pageId]);
+    this.state.checks[pageId] = record;
+    return record;
+  }
+
+  private setCheckQuestion(index: number): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    const page = screen ? this.pageOf(screen.page) : null;
+    if (!page) return;
+    const record = this.ensureCheck(page.id);
+    const total = this.engine.masteryItems(page, record.attempt).length;
+    record.q = Math.max(0, Math.min(index, total - 1));
+    record.blankAsk = false;
+    record.view = null;
+    this.feedback = '';
+    this.save();
+    this.emit();
+  }
+
+  private closeCheckResults(): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    const page = screen ? this.pageOf(screen.page) : null;
+    if (!page) return;
+    const record = this.ensureCheck(page.id);
+    record.view = null;
+    this.save();
+    this.emit();
+  }
+
+  private checkItemKey(pageId: string, attempt: number, itemId: string): string {
+    return `${pageId}:a${attempt}:${itemId}`;
+  }
+
+  private checkAnswered(pageId: string, attempt: number, itemId: string): boolean {
+    const task = this.task(itemId);
+    const key = this.checkItemKey(pageId, attempt, itemId);
+    const taskState = this.state.tasks[key];
+    if (task.type === 'pick') return (taskState?.picked?.length ?? 0) > 0;
+    if (task.type === 'tapword') return taskState?.sel != null;
+    const text = regionText(this.state.regions[key]).trim();
+    const start = (task.start || task.given || '').trim();
+    return !!text && text !== start;
+  }
+
+  private tryHandIn(): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    const page = screen ? this.pageOf(screen.page) : null;
+    if (!page) return;
+    const record = this.ensureCheck(page.id);
+    if (record.finished) return;
+    const items = this.engine.masteryItems(page, record.attempt);
+    const answered = items.map((id) => this.checkAnswered(page.id, record.attempt, id));
+    if (answered.some((flag) => !flag) && !record.blankAsk) {
+      record.blankAsk = true;
+      this.feedback = blankSentence(blankNumbers(answered), this.zh);
+      this.log('check_blank');
+      this.save();
+      this.emit();
+      return;
+    }
+    const results: CheckResult[] = items.map((id) => this.gradeCheckItem(page.id, record.attempt, id));
+    const pass = this.engine.masteryPass(results);
+    record.history.push({
+      at: Date.now(),
+      attempt: record.attempt,
+      results,
+      score: pass.score,
+      total: pass.total,
+      passed: pass.passed,
+    });
+    record.finished = true;
+    record.passed = record.passed || pass.passed;
+    record.blankAsk = false;
+    record.view = null;
+    record.q = 0;
+    if (record.passed || record.attempt >= 1) this.state.done[page.id] = true;
+    if (!pass.passed && page.skill) this.checkFailed(page.skill);
+    this.feedback = pass.passed
+      ? this.zh
+        ? `这次检查通过了。${pass.score} / ${pass.total}。`
+        : `You passed this check. ${pass.score} of ${pass.total}.`
+      : this.zh
+        ? `还没有掌握。${pass.score} / ${pass.total}。`
+        : `Not yet. ${pass.score} of ${pass.total}.`;
+    this.log(pass.passed ? 'check_pass' : 'check_miss');
+    this.save();
+    this.emit();
+  }
+
+  private gradeCheckItem(pageId: string, attempt: number, itemId: string): CheckResult {
+    const task = this.task(itemId);
+    const key = this.checkItemKey(pageId, attempt, itemId);
+    const taskState = this.state.tasks[key];
+    const writing = task.type === 'write' || !!task.rules;
+    if (task.type === 'pick') {
+      const picked = taskState?.picked ?? [];
+      const grade = this.engine.choiceGrade(task, picked);
+      const explanation = this.gradedText(task, taskState ?? { tries: 0, status: 'open', picked }, grade.correct);
+      return { id: itemId, correct: grade.correct, writing: false, explanation };
+    }
+    if (task.type === 'tapword') {
+      const targets = (task.targets ?? []).map((target) => this.engine.locate(task.text ?? '', target));
+      const correct = taskState?.sel != null && targets.includes(taskState.sel);
+      return {
+        id: itemId,
+        correct,
+        writing: false,
+        explanation: correct
+          ? this.affirm(this.text(task.ok) || this.text(task.why))
+          : this.zh
+            ? `还不对。${this.text(task.why)}`
+            : `Not yet. ${this.text(task.why)}`,
+      };
+    }
+    const text = regionText(this.state.regions[key]);
+    const grade = gradeWriting(this.engine, this.analyzer, task, text);
+    return { id: itemId, correct: grade.correct, writing, explanation: grade.explanation, zh: grade.zh };
+  }
+
+  private retryCheck(): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    const page = screen ? this.pageOf(screen.page) : null;
+    if (!page) return;
+    const record = this.ensureCheck(page.id);
+    if (!record.finished || record.passed) return;
+    record.attempt += 1;
+    record.finished = false;
+    record.q = 0;
+    record.view = null;
+    record.blankAsk = false;
+    this.feedback = '';
+    this.log('check_retry');
+    this.save();
+    this.emit();
+  }
+
+  private lessonMastered(index: number): boolean {
+    const lessonIndex = this.screens[index]?.li ?? 0;
+    const check = this.liveIdx(lessonIndex)
+      .map((item) => this.screens[item].screen)
+      .find((screen) => screen.kind === 'check');
+    if (!check) return false;
+    return !!this.state.checks[check.page]?.passed;
+  }
+
+  private parkAtNextLesson(stop: boolean): void {
+    const next = this.nextTarget(this.state.screen);
+    const ref = this.screens[next];
+    this.state.screen = next;
+    this.state.page = this.pageIndex(ref?.screen.page ?? '');
+    if (stop) {
+      this.state.stoppedAt = Date.now();
+      this.state.welcomePending = true;
+      this.openNotice = this.zh ? '进度已保存在这台设备上。' : 'Your work is saved on this device.';
+    }
+    const unit = this.playUnit();
+    const number = (ref?.li ?? 0) + 1;
+    this.remember(unit.id, number);
+    this.returnFocus = { unitId: unit.id, number };
+    this.view = 'path';
+    this.feedback = '';
+    this.message = '';
+    this.log(stop ? 'stop_for_today' : 'back_to_path');
+    this.save();
+    this.emit();
+  }
+
   private lessonEndActivity(): ActivityModel {
     const index = this.state.screen;
     const lessonIndex = this.screens[index]?.li ?? 0;
@@ -1063,7 +1946,34 @@ export class CourseSession {
         weakLabel: '',
         strongLabel: '',
       },
+      ending: {
+        mastered: this.lessonMastered(index),
+        assessed: !!this.state.checks[this.screens[indexes.find((item) => this.screens[item].screen.kind === 'check') ?? index]?.screen.page ?? '']?.history?.length,
+        doneCount,
+        total: indexes.length,
+        nextTitle: next ? `${this.lessonWord(next.n)} ${this.text(next.title)}` : '',
+        summary: this.lessonMastered(index)
+          ? this.zh
+            ? '这次检查通过了。'
+            : 'You passed the check.'
+          : this.zh
+            ? '这次还没有掌握。之后可以回来复习。'
+            : 'Not mastered yet. You can review this lesson anytime.',
+      },
     };
+  }
+
+  private continueAfterLesson(): void {
+    const welcome = !!this.state.welcomePending;
+    this.state.welcomePending = false;
+    this.state.stoppedAt = null;
+    const next = this.nextTarget(this.state.screen);
+    this.go(next);
+    if (welcome) {
+      this.feedback = this.zh ? '欢迎回来。' : 'Welcome back.';
+      this.save();
+      this.emit();
+    }
   }
 
   private next(): void {
@@ -1081,6 +1991,7 @@ export class CourseSession {
     }
     if (this.isLessonEnd(index)) {
       this.view = 'lessonEnd';
+      this.lessonBurst = this.lessonMastered(index);
       this.log('lesson_end');
       this.save();
       this.emit();
@@ -1205,14 +2116,7 @@ export class CourseSession {
     const taskState = this.taskState(key);
     taskState.status = status;
     const graded = this.gradedText(task, taskState, status === 'done');
-    this.feedback =
-      task.type === 'pick' || (task.type === 'tapword' && status === 'shown' && (task.targets ?? []).length === 1)
-        ? graded
-        : status === 'done'
-          ? this.affirm(this.text(task.ok) || this.text(task.why))
-          : this.zh
-            ? `答案在这里。${this.text(task.why)}`
-            : `Here is the answer. ${this.text(task.why)}`;
+    this.feedback = this.finishFeedback(task, status, graded);
     this.markPageIfTasksDone(task);
     this.log('task_done');
     this.save();
@@ -1403,6 +2307,7 @@ export class CourseSession {
   private hasResumableWork(lessonIndex: number): boolean {
     const indexes = this.liveIdx(lessonIndex);
     if (!indexes.length) return false;
+    if (this.state.stoppedAt && this.curLesson() === lessonIndex) return true;
     if (indexes.some((index) => this.state.seen[this.screens[index].screen.id])) return true;
     if (indexes.some((index) => this.state.done[this.screens[index].screen.page])) return true;
     if (
