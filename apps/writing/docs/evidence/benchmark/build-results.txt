@@ -1,0 +1,233 @@
+
+> build
+> npm run build -w @big-academy/design-system && npm run build -w @big-academy/writing && npm run build-storybook -w @big-academy/writing
+
+
+> @big-academy/design-system@0.1.0 build
+> vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 17 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.css  16.75 kB │ gzip: 3.37 kB
+dist/index.js   17.30 kB │ gzip: 5.37 kB
+✓ built in 77ms
+
+> @big-academy/writing@0.1.0 build
+> vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 1742 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                          0.74 kB │ gzip:   0.40 kB
+dist/assets/CelebrationEffectsDemo-Ror-JhKd.css          4.50 kB │ gzip:   1.08 kB
+dist/assets/index-CkIi0Udw.css                          70.56 kB │ gzip:  13.01 kB
+dist/assets/ImagePreloaderInstance-BNFNU3_2.js           0.13 kB │ gzip:   0.13 kB
+dist/assets/ShapeManager-uQywnqws.js                     0.20 kB │ gzip:   0.14 kB
+dist/assets/OverlapPluginInstance-BsFdYZS0.js            0.53 kB │ gzip:   0.35 kB
+dist/assets/EmittersPluginInstance-trsky8kf.js           0.66 kB │ gzip:   0.35 kB
+dist/assets/BlendPluginInstance-mwNbL_Pf.js              0.71 kB │ gzip:   0.35 kB
+dist/assets/MotionPluginInstance-DIsdxsMM.js             0.74 kB │ gzip:   0.43 kB
+dist/assets/EmittersInstancesManager-CMeqrdLV.js         1.50 kB │ gzip:   0.66 kB
+dist/assets/LinkInstance-Cs0ZwS9e.js                     2.96 kB │ gzip:   1.37 kB
+dist/assets/MovePluginInstance-TeEfavs-.js               4.02 kB │ gzip:   1.69 kB
+dist/assets/SoundsPluginInstance-BI7ngnTo.js             6.08 kB │ gzip:   2.28 kB
+dist/assets/EmitterInstance-Dhe1ETy3.js                  6.34 kB │ gzip:   2.14 kB
+dist/assets/InteractivityPluginInstance-BTGm-oyb.js      7.70 kB │ gzip:   2.54 kB
+dist/assets/CelebrationEffectsDemo-BTfGVdFi.js           8.34 kB │ gzip:   3.56 kB
+dist/assets/Container-6PtiFzTz.js                       37.75 kB │ gzip:  12.12 kB
+dist/assets/particleRuntime-B9qisiDl.js                153.95 kB │ gzip:  45.04 kB
+dist/assets/index-CsC_fNUg.js                        1,196.33 kB │ gzip: 364.16 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.08s
+
+> @big-academy/writing@0.1.0 build-storybook
+> storybook build -o storybook-static
+
+
+┌  Building storybook v10.6.2
+│
+◇  Cleaning outputDir: storybook-static
+│
+◇  Loading presets
+│
+◇  Building manager..
+│
+●  Building open services..
+│
+●  Building preview..
+│  Vite vite v7.3.7 building client environment for production...
+│  Vite transforming...
+│  Vite ✓ 1553 modules transformed.
+│  Vite rendering chunks...
+│  Vite computing gzip size...
+│  Vite storybook-static/iframe.html
+│  19.63 kB │ gzip:   5.56 kB
+│  Vite storybook-static/assets/BAIcon-DMfGkZkN.css
+│  0.09 kB │ gzip:   0.10 kB
+│  Vite storybook-static/assets/BATabs-C1wsIwS7.css
+│  0.55 kB │ gzip:   0.29 kB
+│  Vite storybook-static/assets/BATypography-D4rr11a8.css
+│  1.19 kB │ gzip:   0.28 kB
+│  Vite storybook-static/assets/LessonWorkspace-BSnhqooH.css
+│  1.21 kB │ gzip:   0.47 kB
+│  Vite storybook-static/assets/UnitMilestone-BLXwNPap.css
+│  1.29 kB │ gzip:   0.58 kB
+│  Vite storybook-static/assets/BAChoice-DKqzLNjd.css
+│  1.67 kB │ gzip:   0.58 kB
+│  Vite storybook-static/assets/StairLessonCard-4NwS2Wwf.css
+│  1.81 kB │ gzip:   0.67 kB
+│  Vite storybook-static/assets/LessonTopBar-DhghoZme.css
+│  2.44 kB │ gzip:   0.92 kB
+│  Vite storybook-static/assets/BATaskProgress-BptoCCrF.css
+│  3.64 kB │ gzip:   1.00 kB
+│  Vite storybook-static/assets/BASegmentedControl-TOOZ7J_2.css
+│  3.85 kB │ gzip:   1.08 kB
+│  Vite storybook-static/assets/BAButton-CP6yPl72.css
+│  5.76 kB │ gzip:   1.40 kB
+│  Vite storybook-static/assets/LessonActivity-BJAiXLw_.css
+│  6.34 kB │ gzip:   1.77 kB
+│  Vite storybook-static/assets/iframe-B5XTwh5R.css
+│  9.57 kB │ gzip:   2.23 kB
+│  Vite storybook-static/assets/course-C9uSivKH.css
+│  22.33 kB │ gzip:   4.58 kB
+│  Vite storybook-static/assets/Text-BOut73m3.js
+│  0.09 kB │ gzip:   0.10 kB
+│  Vite storybook-static/assets/index-C5qF1rZd.js
+│  0.13 kB │ gzip:   0.12 kB
+│  Vite storybook-static/assets/SharedElementTransition-D0OTG8Xj.js
+│  0.21 kB │ gzip:   0.19 kB
+│  Vite storybook-static/assets/formatter-L2YTDE3Q-CaqTm1bi.js
+│  0.38 kB │ gzip:   0.27 kB
+│  Vite storybook-static/assets/jsx-runtime-u17CrQMm.js
+│  0.48 kB │ gzip:   0.31 kB
+│  Vite storybook-static/assets/useControlledState-B7kYFSWR.js
+│  0.52 kB │ gzip:   0.35 kB
+│  Vite storybook-static/assets/useLabel-DGhVoJzL.js
+│  0.59 kB │ gzip:   0.38 kB
+│  Vite storybook-static/assets/chrome-DNlxlsDp.js
+│  0.64 kB │ gzip:   0.44 kB
+│  Vite storybook-static/assets/VisuallyHidden-D2IEwmUw.js
+│  0.65 kB │ gzip:   0.44 kB
+│  Vite storybook-static/assets/index-qxRzRgsH.js
+│  0.91 kB │ gzip:   0.48 kB
+│  Vite storybook-static/assets/LessonWorkspace-BZB4587k.js
+│  1.00 kB │ gzip:   0.46 kB
+│  Vite storybook-static/assets/UnitMilestone.stories-CXHKeQel.js
+│  1.19 kB │ gzip:   0.52 kB
+│  Vite storybook-static/assets/preload-helper-PPVm8Dsz.js
+│  1.23 kB │ gzip:   0.71 kB
+│  Vite storybook-static/assets/WordGrid.stories-bReylkQF.js
+│  1.25 kB │ gzip:   0.69 kB
+│  Vite storybook-static/assets/WordGrid-xTfIN-SX.js
+│  1.33 kB │ gzip:   0.62 kB
+│  Vite storybook-static/assets/LessonWorkspace.stories-D0ZKvNnV.js
+│  1.46 kB │ gzip:   0.63 kB
+│  Vite storybook-static/assets/BAField.stories-CPPH39Su.js
+│  1.56 kB │ gzip:   0.77 kB
+│  Vite storybook-static/assets/course-D2iu7Rxp.js
+│  1.58 kB │ gzip:   0.69 kB
+│  Vite storybook-static/assets/BAIcon.stories-D0BIwHJD.js
+│  1.62 kB │ gzip:   0.73 kB
+│  Vite storybook-static/assets/StairLessonCard.stories-BsC14nQ7.js
+│  1.75 kB │ gzip:   0.67 kB
+│  Vite storybook-static/assets/UnitMilestone-B9ABqc6G.js
+│  1.78 kB │ gzip:   0.91 kB
+│  Vite storybook-static/assets/BATypography-BUadm7SU.js
+│  1.82 kB │ gzip:   0.67 kB
+│  Vite storybook-static/assets/StairUnitCard.stories-Bl_V7Vu9.js
+│  1.85 kB │ gzip:   0.80 kB
+│  Vite storybook-static/assets/StairLessonCard-Bvrf2ZVA.js
+│  2.25 kB │ gzip:   0.96 kB
+│  Vite storybook-static/assets/BATypography.stories-Dphd3tBb.js
+│  2.55 kB │ gzip:   0.98 kB
+│  Vite storybook-static/assets/BATabs.stories-mx3WOufg.js
+│  2.57 kB │ gzip:   1.05 kB
+│  Vite storybook-static/assets/BAIcon-BRWmS6ZV.js
+│  2.59 kB │ gzip:   1.15 kB
+│  Vite
+│  storybook-static/assets/ActivityScreenIndicator.stories-Didnlflm.js
+│  2.88 kB │ gzip:   1.20 kB
+│  Vite storybook-static/assets/LessonTopBar-DyvSSMQt.js
+│  3.27 kB │ gzip:   1.34 kB
+│  Vite storybook-static/assets/BAChoice.stories-C7qYiIrY.js
+│  3.52 kB │ gzip:   1.36 kB
+│  Vite storybook-static/assets/index-BdKkKlqe.js
+│  3.97 kB │ gzip:   1.44 kB
+│  Vite storybook-static/assets/BAButton-Dok_cKoY.js
+│  4.21 kB │ gzip:   1.33 kB
+│  Vite storybook-static/assets/BATabs-DDo5tMoo.js
+│  4.24 kB │ gzip:   1.49 kB
+│  Vite storybook-static/assets/BATaskProgress.stories-BLu2A7jZ.js
+│  4.42 kB │ gzip:   1.68 kB
+│  Vite storybook-static/assets/useFormValidation-whGUG_Uh.js
+│  4.80 kB │ gzip:   1.84 kB
+│  Vite storybook-static/assets/BAField-BlHDcPwf.js
+│  4.99 kB │ gzip:   1.97 kB
+│  Vite storybook-static/assets/LessonTopBar.stories-D8nPCSkx.js
+│  5.56 kB │ gzip:   2.17 kB
+│  Vite storybook-static/assets/RadioGroup-2N0rh9hz.js
+│  6.86 kB │ gzip:   2.65 kB
+│  Vite storybook-static/assets/BAButton.stories-CpVZoCp5.js
+│  7.46 kB │ gzip:   2.09 kB
+│  Vite storybook-static/assets/Button-BQX6y4e4.js
+│  7.48 kB │ gzip:   3.08 kB
+│  Vite storybook-static/assets/BASegmentedControl.stories-CtIfM2hn.js
+│  7.87 kB │ gzip:   2.81 kB
+│  Vite storybook-static/assets/usePress-DdpX9w2g.js
+│  10.45 kB │ gzip:   4.04 kB
+│  Vite storybook-static/assets/BAChoice-1Po9G5Ym.js
+│  11.16 kB │ gzip:   3.67 kB
+│  Vite storybook-static/assets/FocusScope-0onjVYhw.js
+│  12.34 kB │ gzip:   3.91 kB
+│  Vite storybook-static/assets/animation-CzZc5kLw.js
+│  18.53 kB │ gzip:   5.79 kB
+│  Vite storybook-static/assets/useHover-1o3CaMor.js
+│  27.40 kB │ gzip:   9.65 kB
+│  Vite storybook-static/vite-inject-mocker-entry.js
+│  28.11 kB │ gzip:   9.82 kB
+│  Vite storybook-static/assets/matchers-JIUQ3HVY-N4FjKbka.js
+│  29.23 kB │ gzip:  10.05 kB
+│  Vite storybook-static/assets/Color-6AOWCN3U-2-E2A3Jj.js
+│  30.27 kB │ gzip:  11.51 kB
+│  Vite storybook-static/assets/WithTooltip-CDUNV5IS-Cvz-vXlD.js
+│  33.23 kB │ gzip:  11.71 kB
+│  Vite storybook-static/assets/BATaskProgress-Cyi9hBuJ.js
+│  36.15 kB │ gzip:  13.33 kB
+│  Vite storybook-static/assets/Tabs-B5cEbBc9.js
+│  38.89 kB │ gzip:  12.25 kB
+│  Vite storybook-static/assets/syntaxhighlighter-4REYKNEV-30kv0vV4.js
+│  78.08 kB │ gzip:  27.33 kB
+│  Vite storybook-static/assets/react-18-Bt2Qm31d.js
+│  209.75 kB │ gzip:  65.51 kB
+│  Vite storybook-static/assets/axe-HwCMGBHl.js
+│  675.80 kB │ gzip: 193.80 kB
+│  Vite storybook-static/assets/LessonActivity.stories-B-fWbBWj.js
+│  768.05 kB │ gzip: 230.84 kB
+│  Vite storybook-static/assets/DocsRenderer-JROSPFPF-CpNR3lQ5.js
+│  841.38 kB │ gzip: 269.06 kB
+│  Vite storybook-static/assets/iframe-D8bbyvtV.js
+│  1,159.60 kB │ gzip: 332.60 kB
+│
+▲  Vite
+│  (!) Some chunks are larger than 500 kB after minification. Consider:
+│  - Using dynamic import() to code-split the application
+│  - Use build.rollupOptions.output.manualChunks to improve chunking:
+│  https://rollupjs.org/configuration-options/#output-manualchunks
+│  - Adjust chunk size limit for this warning via
+│  build.chunkSizeWarningLimit.
+│  Vite ✓ built in 5.89s
+│
+◇  Output directory: /Users/yuzhe/Documents/ChatGPT/Big
+│  Academy/apps/writing/storybook-static
+│
+└  Storybook build completed successfully
+

@@ -78,7 +78,7 @@
   transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
-  width: max-content;
+  width: var(--ba-topbar-progress-max);
   max-width: var(--ba-topbar-progress-max);
   z-index: 2;
 }
@@ -135,4 +135,11 @@
     transition: none;
     animation: none;
   }
+}
+
+@media(max-width:600px) {
+ .lesson-topbar { min-height:116px; padding-top:8px; align-items:start; }
+ .lesson-topbar__start { max-width:calc(100vw - 32px); height:44px; }
+ .lesson-topbar__center { top:auto; bottom:2px; transform:translateX(-50%); width: min(288px,calc(100% - 32px)); max-width:calc(100% - 32px); }
+ .lesson-topbar__title { font-size:16px; }
 }

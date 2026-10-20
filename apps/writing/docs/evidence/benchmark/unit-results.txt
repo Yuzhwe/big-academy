@@ -1,0 +1,45 @@
+
+> test
+> vitest run
+
+
+ RUN  v3.2.7 /Users/yuzhe/Documents/ChatGPT/Big Academy
+
+ ✓ packages/design-system/src/components/ui/BAIcon.test.tsx (3 tests) 271ms
+ ✓ packages/design-system/src/components/ui/BATypography.test.tsx (2 tests) 280ms
+ ✓ packages/design-system/src/components/ui/BAButton.test.tsx (4 tests) 392ms
+ ✓ apps/writing/src/product/lessonOne.test.tsx (10 tests) 1341ms
+   ✓ Lesson 1 canonical journey > Apply needs two failures and an explicit move-on, without awarding a pass  506ms
+ ✓ packages/design-system/src/components/ui/BASegmentedControl.test.tsx (3 tests) 492ms
+   ✓ BA-UI-011 · Segmented local selection > selects precisely one accessible radio via click and keyboard  355ms
+ ✓ packages/design-system/src/components/ui/BATabs.test.tsx (2 tests) 472ms
+   ✓ BA-UI-002 accessible tab navigation > provides TabList and panels instead of RadioGroup  329ms
+ ✓ apps/writing/src/contracts/registry.test.tsx (1 test) 4ms
+stderr | apps/writing/src/celebration/celebrationController.test.tsx > presentation lifecycle > supports retry after a failed load and ignores obsolete errors
+Celebration preview failed to load: Error: offline
+    at /Users/yuzhe/Documents/ChatGPT/Big Academy/apps/writing/src/celebration/celebrationController.test.tsx:96:48
+    at file:///Users/yuzhe/Documents/ChatGPT/Big%20Academy/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///Users/yuzhe/Documents/ChatGPT/Big%20Academy/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///Users/yuzhe/Documents/ChatGPT/Big%20Academy/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/yuzhe/Documents/ChatGPT/Big%20Academy/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///Users/yuzhe/Documents/ChatGPT/Big%20Academy/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runSuite (file:///Users/yuzhe/Documents/ChatGPT/Big%20Academy/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///Users/yuzhe/Documents/ChatGPT/Big%20Academy/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+ ✓ apps/writing/src/celebration/celebrationController.test.tsx (6 tests) 9ms
+ ✓ packages/design-system/src/components/ui/BATaskProgress.test.tsx (4 tests) 853ms
+   ✓ BATaskProgress > names every state in English and marks the active task current  304ms
+   ✓ BATaskProgress > navigates only when the row is not locked and canOpen allows it  353ms
+ ✓ apps/writing/src/components/writing/LessonTopBar.test.tsx (3 tests) 772ms
+   ✓ LessonTopBar > puts back and the English lesson identity on the left and leaves the end slot empty  395ms
+ ✓ apps/writing/src/course/StaircaseScene.test.tsx (3 tests) 2ms
+ ✓ apps/writing/src/product/courseSession.test.tsx (8 tests) 1384ms
+   ✓ course slice UI > starts lesson 1, checks the topic sentence, and returns to Continue  1359ms
+
+ Test Files  12 passed (12)
+      Tests  49 passed (49)
+   Start at  16:38:43
+   Duration  4.23s (transform 713ms, setup 2.89s, collect 7.18s, tests 6.27s, environment 9.26s, prepare 1.25s)
+

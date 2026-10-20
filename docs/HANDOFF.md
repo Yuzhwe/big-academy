@@ -1,27 +1,16 @@
-# Big Academy — HANDOFF (current)
+# Big Academy — HANDOFF
 
-**Baseline:** v0.1 · 2026-10-20
-**Branch:** main is the single source for new work.
+2026-10-20 — independent Writing Lesson 1 benchmark; visual status **in review**.
 
-## Authorities
+Baseline main: `e0a96d867c393e168087a98bbe05277138459262`.
+Branch: `benchmark/writing-hifi-codex-01a15859`. Do not merge without designer review.
 
-- `apps/writing/PRODUCT.md` — product rules and Writing-specific page behavior.
-- `DESIGN.md` — global visual language, including complete Spacing/Gap and Radius decision rules.
-- `packages/design-system/src/tokens.css` — executable token values. Candidate values marked [E] still require visual approval.
-- `apps/writing/contracts/components.json` — component interfaces and status; latest contracts may be ahead of component code.
+Authorities remain `apps/writing/PRODUCT.md`, root `DESIGN.md`, shared `tokens.css`, and Writing component contracts. No curriculum or approved global token values changed.
 
-## Delivery scope
+The complete eight-screen Lesson 1 now runs from the separate-platform E-01 path through practice, Apply, both assessment sets and Lesson End. The source curriculum/graders and v4 state record are reused. Correctness, shown/deferred completion and mastery remain distinct. Later lessons retain original eligibility but show an explicit out-of-scope notice instead of invented activity content.
 
-Only **L2/G2-O Lesson 1: Topic sentences (eight screens)** is in scope for high-fidelity Writing v1. E-01 Staircase supports entry/return, and Lesson End reflects real mastered/unmastered assessment status.
+Review and launch instructions, component/token inventory, verification limits and specification questions: [benchmark notes](../apps/writing/docs/BENCHMARK_NOTES.md).
 
-## Known gaps
+Desktop/tablet screenshots, pass/fail/resume demonstrations and actual test evidence: [evidence index](../apps/writing/docs/evidence/benchmark/README.md).
 
-- Existing UI remains a pilot. Inspect implementation against current PRODUCT and DESIGN; do not infer a fully working eight-screen flow from existing sample demos.
-- BATaskProgress / ActivityScreenIndicator and the anchored All activity screens popover require implementation parity with the current contract and design.
-- Unit Folded Corner is a Writing-specific candidate documented in PRODUCT, DESIGN and BA-WR-005 contract; visual approval pending.
-- Validate P2–P7 grading, second tries/shown, Apply, P7 second assessment set, Back/Continue/refresh, keyboard/touch, EN/ZH, zoom and responsive screens.
-- Run `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, relevant browser/Storybook tests; record actual pass/fail evidence. No previous QA results are asserted as proof for this baseline.
-
-## Workflow
-
-Create independent feature branches from `main`, implement against the four authoritative assets, then request designer review before merging. Historical stacked PRs and other agents' prototypes are reference-only and should not be used as new baselines.
+Designer review is still required for the full rendered lesson, circular indicator/popover, folded Unit anatomy, typography fallback and provisional component-local geometry. Passing build/tests is engineering evidence only.

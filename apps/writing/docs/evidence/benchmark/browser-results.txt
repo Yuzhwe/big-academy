@@ -1,0 +1,15 @@
+
+Running 8 tests using 1 worker
+
+(node:39390) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 apps/writing/e2e/benchmark.spec.ts:32:1 › real eight-screen pass, back/resume, assessment review and Lesson End (14.1s)
+  ✓  2 apps/writing/e2e/benchmark.spec.ts:41:1 › wrong feedback, two misses/shown, Apply move-on, both failed assessment rounds (6.2s)
+  ✓  3 apps/writing/e2e/benchmark.spec.ts:53:114 › responsive 1440: EN/ZH, circle popover, keyboard, focus and reduced motion (9.3s)
+  ✓  4 apps/writing/e2e/benchmark.spec.ts:53:114 › responsive 1024: EN/ZH, circle popover, keyboard, focus and reduced motion (6.1s)
+  ✓  5 apps/writing/e2e/benchmark.spec.ts:53:114 › responsive 834: EN/ZH, circle popover, keyboard, focus and reduced motion (2.3s)
+  ✓  6 apps/writing/e2e/benchmark.spec.ts:53:114 › responsive 390: EN/ZH, circle popover, keyboard, focus and reduced motion (4.6s)
+  ✓  7 apps/writing/e2e/benchmark.spec.ts:61:1 › all L2 Unit folds preserve anchors and keyboard scene traversal (2.8s)
+  ✓  8 apps/writing/e2e/benchmark.spec.ts:73:1 › touch selection, long headings, 200% equivalent reflow and independent Coach scroll (4.0s)
+
+  8 passed (50.9s)

@@ -1,0 +1,34 @@
+[
+  {
+    "screen": "L2-04.learn",
+    "violations": []
+  },
+  {
+    "screen": "L2-04.t.ts1",
+    "violations": []
+  },
+  {
+    "screen": "L2-04.t.ts4",
+    "violations": []
+  },
+  {
+    "screen": "L2-04.t.ts3",
+    "violations": []
+  },
+  {
+    "screen": "L2-04.t.ss.L2-04",
+    "violations": []
+  },
+  {
+    "screen": "L2-04.t.ts8",
+    "violations": []
+  },
+  {
+    "screen": "L2-04.apply",
+    "violations": []
+  },
+  {
+    "screen": "L2-04.check",
+    "violations": []
+  }
+]

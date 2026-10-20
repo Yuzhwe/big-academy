@@ -16,6 +16,7 @@
     "check:docs": "node scripts/check-document-sources.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.56.1",
     "@storybook/addon-a11y": "^10.6.2",
     "@storybook/addon-docs": "^10.6.2",
