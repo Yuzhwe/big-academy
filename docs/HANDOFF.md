@@ -103,3 +103,10 @@ Design approval source: [PR #10](https://github.com/Yuzhwe/big-academy/pull/10),
 - Figma 15:5 / 25:2 exact Elevation 100/200/300/400 and Background Blur 20 now mapped into `--ba-effect-*` tokens; component roles not auto-assigned.
 - Tabs share Segmented Control visuals; React Aria Tab navigation keeps panels separate from local RadioGroup segmentation.
 - Feature branch feat/agent-a-elevation-shared-tabs-v1; designer visual signoff pending; main unchanged.
+
+
+## DESIGN.md v0.5 visual language and interaction refinement (2026-10-20)
+- Designer-approved global visual principles: light, low-visual-noise, readable, rounded, quiet elevation; button Full default, icon-only circle, generously rounded clickable components constrained by role/content. Increasing radius is not an unconditional attention metric.
+- Keep Figma Button V2 exact press visual targets: default 1, hover 1.02, pressing **0.95 without 50% opacity**. The proposed global 1.03/opacity .5 is NOT approved. Distinguish transition physics from target-state values; retain interim six Spring presets and no claim of runtime connection.
+- Add explicit nested interactive single-owner model: sibling targets over button-inside-button, no parent+child double visual response or double action, cancellation cleanup, independent focus, Contract/QA requirements.
+- Consolidate Elevation under §5; Motion & Interaction is an independent §7; replace stale E-01 A/B palette comparison with bottom-anchored path morphology; update component registry reference and stale token-gap status. **Only documentation has changed** in `docs/design-v05-visual-interaction-refinement`, based on PR #19 branch. No component styling/PRODUCT.md change and no main merge.
