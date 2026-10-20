@@ -33,6 +33,7 @@ export function DesignSystemPreview() {
   const [period, setPeriod] = useState('week');
   const [alignment, setAlignment] = useState('left');
   const [demoTab, setDemoTab] = useState('lesson');
+  const [subtleTab, setSubtleTab] = useState('one');
   const zh = locale === 'zh';
 
   return (
@@ -271,10 +272,10 @@ export function DesignSystemPreview() {
         </BATabs>
         <div className="ba-showcase__tab-variants">
           <div><strong>Subtle · Standard · 36</strong>
-            <BATabs defaultSelectedKey="one">
-              <BATabList selectedKey="one" size={36} emphasis="subtle" radius="standard"
+            <BATabs selectedKey={subtleTab} onSelectionChange={setSubtleTab}>
+              <BATabList selectedKey={subtleTab} size={36} emphasis="subtle" radius="standard"
                 aria-label="Subtle tab styling" options={[{id:'one',label:'One'},{id:'two',label:'Two'}]}/>
-              <BATabPanel id="one"><span>Tab visual example</span></BATabPanel>
+              <BATabPanel id={subtleTab}><span>Tab visual example: {subtleTab}</span></BATabPanel>
             </BATabs>
           </div>
         </div>
