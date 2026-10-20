@@ -34,6 +34,40 @@ function prepareEngine() {
   return enginePromise;
 }
 
+/** Lesson completion only: 30 ribbons plus the existing explosions preset. */
+export async function startLessonCelebration(id: string): Promise<{ destroy: () => void }> {
+  await prepareEngine();
+  const ribbon = await ribbons(`${id}-ribbons`, {
+    count: 30,
+    colors: RIBBON_COLORS,
+    disableForReducedMotion: true,
+    zIndex: 30,
+  });
+  const explosions = await tsParticles.load({
+    id: `${id}-explosions`,
+    options: {
+      preset: runtimePresets.explosions,
+      fullScreen: { enable: true, zIndex: 30 },
+      fpsLimit: 60,
+      background: { color: { value: 'transparent' } },
+      motion: { disable: true },
+    },
+  });
+  for (const container of [ribbon, explosions]) {
+    const canvas = container?.canvas.domElement;
+    if (!canvas) continue;
+    canvas.setAttribute('aria-hidden', 'true');
+    canvas.setAttribute('data-celebration-canvas', 'lesson');
+    canvas.style.pointerEvents = 'none';
+  }
+  return {
+    destroy() {
+      ribbon?.destroy();
+      explosions?.destroy();
+    },
+  };
+}
+
 export async function startEffect(preset: PresetId, id: string): Promise<Container> {
   await prepareEngine();
   let container: Container | undefined;

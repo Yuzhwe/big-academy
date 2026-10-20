@@ -1,7 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { StaircaseScene, type StaircaseVariant } from './StaircaseScene';
 import { useSyncExternalStore } from 'react';
-import { Checkbox, Radio, RadioGroup } from 'react-aria-components';
 import { BAButton, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { LessonWorkspace } from '../components/writing/LessonWorkspace';
@@ -9,6 +8,8 @@ import { StairLessonCard, type StairLessonState } from '../components/writing/St
 import { UnitMilestone } from '../components/writing/UnitMilestone';
 import alexHtml from '../../source/alex-original.html?raw';
 import { CourseSession } from '../product/courseSession';
+import { LessonStage } from './LessonStage';
+import { startLessonCelebration } from '../celebration/particleRuntime';
 import './course.css';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
@@ -23,7 +24,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const [session] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
   // Visual A/B state is a review-only control, not saved to Alex's learning state.
-  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('B');
+  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('A');
   const locale = session.locale;
   const zh = locale === 'zh';
 
@@ -58,6 +59,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
       {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
       {session.view === 'preview' ? <PreviewView session={session} /> : null}
       {session.celebration ? <Celebration session={session} /> : null}
+      {session.lessonBurst ? <LessonBurst session={session} /> : null}
     </div>
   );
 }
@@ -238,111 +240,7 @@ function LessonView({ session }: { session: CourseSession }) {
         onNavigate={(index) => session.navigateLocal(index)}
       />
       <LessonWorkspace
-        activity={
-          <article className="course-activity" data-template={activity.template} data-kind={activity.kind}>
-            {activity.learn ? (
-              <>
-                <h1 className="course-title">{activity.learn.heading || activity.title}</h1>
-                {activity.learn.teach ? <p className="course-teach">{activity.learn.teach}</p> : null}
-                {activity.learn.weak || activity.learn.strong ? (
-                  <div className="course-examples">
-                    {activity.learn.weak ? (
-                      <p>
-                        <span>{activity.learn.weakLabel}</span> {activity.learn.weak}
-                      </p>
-                    ) : null}
-                    {activity.learn.strong ? (
-                      <p>
-                        <span>{activity.learn.strongLabel}</span> {activity.learn.strong}
-                      </p>
-                    ) : null}
-                  </div>
-                ) : null}
-                {activity.learn.nextUp ? <p>{activity.learn.nextUp}</p> : null}
-              </>
-            ) : null}
-            {activity.pick ? (
-              <>
-                <h1 className="course-title">{activity.ask}</h1>
-                {activity.pick.hint ? <p>{activity.pick.hint}</p> : null}
-                {activity.pick.multi ? (
-                  <div className="course-choices" role="group" aria-label={activity.ask}>
-                    {activity.pick.options.map((option) => (
-                      <Checkbox
-                        key={option.index}
-                        className="course-choice"
-                        data-wrong={option.wrong ? 'true' : undefined}
-                        isSelected={option.selected}
-                        onChange={() => session.pick(option.index)}
-                      >
-                        <span className="course-choice__letter">{option.letter}</span>
-                        <span>{option.text}</span>
-                      </Checkbox>
-                    ))}
-                  </div>
-                ) : (
-                  <RadioGroup
-                    className="course-choices"
-                    aria-label={activity.ask}
-                    value={activity.pick.options.find((option) => option.selected)?.index.toString() ?? ''}
-                    onChange={(value) => session.pick(Number(value))}
-                  >
-                    {activity.pick.options.map((option) => (
-                      <Radio
-                        key={option.index}
-                        className="course-choice"
-                        data-wrong={option.wrong ? 'true' : undefined}
-                        value={String(option.index)}
-                      >
-                        <span className="course-choice__letter">{option.letter}</span>
-                        <span>{option.text}</span>
-                      </Radio>
-                    ))}
-                  </RadioGroup>
-                )}
-              </>
-            ) : null}
-            {activity.tapword ? (
-              <>
-                <h1 className="course-title">{activity.ask}</h1>
-                <p className="course-words">
-                  {activity.tapword.words.map((word) => (
-                    <button
-                      key={word.index}
-                      type="button"
-                      className="course-word"
-                      data-selected={word.selected ? 'true' : undefined}
-                      data-wrong={word.wrong ? 'true' : undefined}
-                      onClick={() => session.tapWord(word.index)}
-                    >
-                      {word.text}
-                    </button>
-                  ))}
-                </p>
-              </>
-            ) : null}
-            {!activity.supported && !activity.learn ? (
-              <>
-                <h1 className="course-title">{activity.ask || activity.title}</h1>
-                <p className="course-message" data-testid="unsupported-template">
-                  {activity.unsupportedReason}
-                </p>
-              </>
-            ) : null}
-            {activity.skip?.mode === 'note' ? <p data-testid="skip-note">{activity.skip.text}</p> : null}
-            {activity.skip?.mode === 'offer' ? (
-              <div className="course-skip-offer" data-testid="skip-offer">
-                <p>{activity.skip.text}</p>
-                <BAButton variant="secondary" locale={session.locale} onPress={() => session.chooseSkip('skip')}>
-                  {session.zh ? '跳过这个技能' : 'Skip this skill'}
-                </BAButton>
-                <BAButton variant="ghost" locale={session.locale} onPress={() => session.chooseSkip('review')}>
-                  {session.zh ? '先复习' : 'Review it'}
-                </BAButton>
-              </div>
-            ) : null}
-          </article>
-        }
+        activity={<LessonStage session={session} activity={activity} />}
         coach={
           <div>
             {activity.coach.map((line) => (
@@ -373,7 +271,7 @@ function LessonView({ session }: { session: CourseSession }) {
         navigation={
           <>
             <BAButton variant="secondary" locale={session.locale} onPress={() => session.pressBack()}>
-              {footer.backLabel}
+              <span data-testid={footer.backTestId}>{footer.backLabel}</span>
             </BAButton>
             <BAButton variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
               <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
@@ -395,6 +293,41 @@ function PreviewView({ session }: { session: CourseSession }) {
         {session.zh ? '我的路径' : 'My path'}
       </BAButton>
     </main>
+  );
+}
+
+function LessonBurst({ session }: { session: CourseSession }) {
+  const reduced = window.matchMedia(REDUCED_MOTION).matches;
+  useEffect(() => {
+    if (reduced) return undefined;
+    let cancel = false;
+    let handle: { destroy: () => void } | undefined;
+    const timer = window.setTimeout(() => handle?.destroy(), 15000);
+    void startLessonCelebration('writing-lesson-complete').then((next) => {
+      if (cancel) next.destroy();
+      else handle = next;
+    });
+    return () => {
+      cancel = true;
+      window.clearTimeout(timer);
+      handle?.destroy();
+    };
+  }, [reduced]);
+  return (
+    <div className="course-lesson-burst" role="status" data-testid="lesson-celebration" data-reduced={reduced ? 'true' : 'false'}>
+      <p>
+        {reduced
+          ? session.zh
+            ? '这一课完成了。减少动效时不播放彩带。'
+            : 'Lesson complete. Ribbons stay off when motion is reduced.'
+          : session.zh
+            ? '这一课完成了。'
+            : 'Lesson complete.'}
+      </p>
+      <BAButton variant="primary" locale={session.locale} onPress={() => session.dismissLessonBurst()}>
+        {session.zh ? '好' : 'OK'}
+      </BAButton>
+    </div>
   );
 }
 

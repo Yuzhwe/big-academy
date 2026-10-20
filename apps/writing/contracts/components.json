@@ -112,7 +112,8 @@
       "name": "BAChoice",
       "kind": "primitive",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
+      "visualStatus": "engineering-verified-not-designer-approved",
       "implementation": "packages/design-system/src/components/ui/BAChoice.tsx",
       "story": "packages/design-system/src/components/ui/BAChoice.stories.tsx",
       "props": {
@@ -151,7 +152,8 @@
       "name": "BAField",
       "kind": "primitive",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
+      "visualStatus": "engineering-verified-not-designer-approved",
       "implementation": "packages/design-system/src/components/ui/BAField.tsx",
       "story": "packages/design-system/src/components/ui/BAField.stories.tsx",
       "props": {

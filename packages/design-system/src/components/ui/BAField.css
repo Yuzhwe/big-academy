@@ -1,0 +1,39 @@
+.ba-field {
+  display: grid;
+  gap: 8px;
+  color: var(--ba-brand-dark, var(--ba-color-content-primary));
+  font: inherit;
+}
+
+.ba-field__label {
+  font-family: var(--ba-type-heading-family, "Dosis", sans-serif);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.ba-field__control {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--ba-choice-border, var(--ba-color-warm-4));
+  border-radius: 12px;
+  background: var(--ba-paper, var(--ba-color-surface-canvas));
+  color: inherit;
+  font: inherit;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.ba-field__control:focus-visible {
+  outline: 3px solid var(--ba-focus-ring, var(--ba-color-brand-10));
+  outline-offset: 2px;
+}
+
+.ba-field__control:read-only {
+  background: var(--ba-color-neutral-2, #f5f5f5);
+}
+
+.ba-field[data-populated='true'] .ba-field__control {
+  border-color: var(--ba-color-brand-5);
+}

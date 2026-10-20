@@ -1,0 +1,110 @@
+.ba-choice {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ba-choice__option {
+  box-sizing: border-box;
+  min-height: 50px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--ba-choice-border, var(--ba-color-warm-4));
+  border-radius: 12px;
+  background: var(--ba-paper, var(--ba-color-surface-canvas));
+  color: var(--ba-brand-dark, var(--ba-color-content-primary));
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.ba-choice__option[data-disabled],
+.ba-choice__option[data-disabled='true'] {
+  cursor: default;
+}
+
+.ba-choice__line {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.ba-choice__marker {
+  flex: 0 0 auto;
+  min-width: 1.5rem;
+  font-family: var(--ba-type-heading-family, "Dosis", sans-serif);
+  font-weight: 800;
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+
+.ba-choice__text {
+  flex: 1 1 auto;
+  line-height: 1.4;
+}
+
+.ba-choice__mark {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ba-color-success-text, var(--ba-color-success-10));
+}
+
+.ba-choice__mark--no {
+  color: var(--ba-color-error-text, var(--ba-color-danger-10));
+}
+
+.ba-choice__option[data-visual='selected'] {
+  border-color: var(--ba-writing-accent, var(--ba-color-writing-7));
+  box-shadow: inset 0 0 0 1px var(--ba-writing-accent, var(--ba-color-writing-7));
+}
+
+.ba-choice__option[data-visual='correct'] {
+  border-color: var(--ba-color-success-border);
+  background: var(--ba-color-success-surface);
+}
+
+.ba-choice__option[data-visual='incorrect'] {
+  border-color: var(--ba-color-error-border);
+  background: var(--ba-color-error-surface);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 6px,
+    color-mix(in srgb, var(--ba-color-error-fill) 18%, transparent) 6px,
+    color-mix(in srgb, var(--ba-color-error-fill) 18%, transparent) 7px
+  );
+}
+
+.ba-choice__option[data-visual='shown'] {
+  border-style: dashed;
+  border-color: var(--ba-color-success-fill);
+  background: var(--ba-color-success-surface);
+}
+
+.ba-choice__option[data-visual='dim'] {
+  opacity: 0.72;
+}
+
+.ba-choice__option[data-hovered='true']:not([data-disabled='true']) {
+  border-color: var(--ba-writing-accent, var(--ba-color-writing-7));
+}
+
+.ba-choice__option[data-focus-visible='true'] {
+  outline: 3px solid var(--ba-focus-ring, var(--ba-color-brand-10));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ba-choice__option {
+    transition: none;
+  }
+}
