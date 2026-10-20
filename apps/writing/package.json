@@ -1,0 +1,32 @@
+{
+  "name": "@big-academy/writing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "storybook": "storybook dev -p 6006 --host 127.0.0.1",
+    "build-storybook": "storybook build -o storybook-static",
+    "test:layout": "playwright test"
+  },
+  "dependencies": {
+    "@big-academy/design-system": "*",
+    "@tsparticles/engine": "4.4.0",
+    "@tsparticles/preset-confetti": "4.4.0",
+    "@tsparticles/preset-confetti-cannon": "4.4.0",
+    "@tsparticles/preset-confetti-explosions": "4.4.0",
+    "@tsparticles/preset-confetti-falling": "4.4.0",
+    "@tsparticles/preset-confetti-parade": "4.4.0",
+    "@tsparticles/preset-fire": "4.4.0",
+    "@tsparticles/preset-firefly": "4.4.0",
+    "@tsparticles/preset-fireworks": "4.4.0",
+    "@tsparticles/preset-party": "4.4.0",
+    "@tsparticles/ribbons": "4.4.0",
+    "@tsparticles/slim": "4.4.0",
+    "react": "^19.0.0",
+    "react-aria-components": "^1.13.0",
+    "react-dom": "^19.0.0"
+  }
+}

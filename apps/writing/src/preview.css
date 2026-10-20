@@ -1,0 +1,47 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--ba-surface-warm, #fef9ef);
+  color: var(--ba-brand-dark, #133547);
+  font-family: var(--ba-font-sans, sans-serif);
+}
+
+.pilot-main {
+  padding: 24px 16px 48px;
+}
+
+.pilot-banner,
+.pilot-switcher,
+.pilot-main p {
+  max-width: 72rem;
+  margin: 0 auto 16px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.pilot-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+}
+
+.pilot-switcher a {
+  color: var(--ba-writing-accent, #b25415);
+  font-weight: 700;
+}
+
+.pilot-switcher a:focus-visible {
+  outline: 2px solid var(--ba-brand-dark, #133547);
+  outline-offset: 2px;
+}

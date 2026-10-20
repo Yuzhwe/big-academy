@@ -1,0 +1,328 @@
+/*
+ * Big Academy Color System v0.2 — DESIGN APPROVED 2026-10-19.
+ * Sole executable color-value source: this CSS file.
+ * Inspired by Vercel Geist role scales; palette values are Big Academy originals.
+ * Designer explicitly waived component/browser/Storybook tests for this approval.
+ * Engineering verification and integration remain OPEN; no production signoff.
+ * Brand #133547, Writing #B25415 and white canvas remain exact existing anchors.
+ * Reading palette is NOT assigned. Dark theme is out of scope.
+ */
+:root {
+  /* NEUTRAL · 1–3 surfaces; 4–6 borders; 7–8 fills; 9–10 content */
+  --ba-color-neutral-1: #fafafa;
+  --ba-color-neutral-2: #f5f5f5;
+  --ba-color-neutral-3: #eeeeee;
+  --ba-color-neutral-4: #d4d4d4;
+  --ba-color-neutral-5: #b8b8b8;
+  --ba-color-neutral-6: #8d8d8d;
+  --ba-color-neutral-7: #656565;
+  --ba-color-neutral-8: #4c4c4c;
+  --ba-color-neutral-9: #363636;
+  --ba-color-neutral-10: #242424;
+
+  /* WARM · 1–3 surfaces; 4–6 borders; 7–8 fills; 9–10 content */
+  --ba-color-warm-1: #fef9ef;
+  --ba-color-warm-2: #fbf3e5;
+  --ba-color-warm-3: #f3e8d9;
+  --ba-color-warm-4: #c9b8b2;
+  --ba-color-warm-5: #b49c95;
+  --ba-color-warm-6: #957b73;
+  --ba-color-warm-7: #72574e;
+  --ba-color-warm-8: #5d463f;
+  --ba-color-warm-9: #4d3731;
+  --ba-color-warm-10: #3b2926;
+
+  /* BRAND · 1–3 surfaces; 4–6 borders; 7–8 fills; 9–10 content */
+  --ba-color-brand-1: #f2f7f9;
+  --ba-color-brand-2: #e6f0f5;
+  --ba-color-brand-3: #d3e4ec;
+  --ba-color-brand-4: #b7d0dc;
+  --ba-color-brand-5: #91b5c5;
+  --ba-color-brand-6: #5f92a7;
+  --ba-color-brand-7: #2c657b;
+  --ba-color-brand-8: #225365;
+  --ba-color-brand-9: #193e4f;
+  --ba-color-brand-10: #133547;
+
+  /* WRITING · 1–3 surfaces; 4–6 borders; 7–8 fills; 9–10 content */
+  --ba-color-writing-1: #fff9f2;
+  --ba-color-writing-2: #fff0df;
+  --ba-color-writing-3: #fde2c2;
+  --ba-color-writing-4: #edc69b;
+  --ba-color-writing-5: #d9a66e;
+  --ba-color-writing-6: #c3813c;
+  --ba-color-writing-7: #b25415;
+  --ba-color-writing-8: #944511;
+  --ba-color-writing-9: #78380e;
+  --ba-color-writing-10: #59290c;
+
+  /* SUCCESS · 1–3 surfaces; 4–6 borders; 7–8 fills; 9–10 content */
+  --ba-color-success-1: #f0fbf4;
+  --ba-color-success-2: #e1f8e9;
+  --ba-color-success-3: #c5f0d4;
+  --ba-color-success-4: #98e3b3;
+  --ba-color-success-5: #60cf8b;
+  --ba-color-success-6: #14ae5c;
+  --ba-color-success-7: #147c44;
+  --ba-color-success-8: #0e6637;
+  --ba-color-success-9: #0a502c;
+  --ba-color-success-10: #083a21;
+
+  /* DANGER · 1–3 surfaces; 4–6 borders; 7–8 fills; 9–10 content */
+  --ba-color-danger-1: #fff4f1;
+  --ba-color-danger-2: #ffe8e2;
+  --ba-color-danger-3: #ffd4c9;
+  --ba-color-danger-4: #edb3a5;
+  --ba-color-danger-5: #d88973;
+  --ba-color-danger-6: #bc654c;
+  --ba-color-danger-7: #9b4f36;
+  --ba-color-danger-8: #803c2d;
+  --ba-color-danger-9: #632e26;
+  --ba-color-danger-10: #4e231e;
+
+  /* WARNING · 1–3 surfaces; 4–6 borders; 7–8 fills; 9–10 content */
+  --ba-color-warning-1: #fff9e9;
+  --ba-color-warning-2: #fff1cf;
+  --ba-color-warning-3: #ffe2a5;
+  --ba-color-warning-4: #f3cd80;
+  --ba-color-warning-5: #dcaf4e;
+  --ba-color-warning-6: #b9852b;
+  --ba-color-warning-7: #865a19;
+  --ba-color-warning-8: #6f4815;
+  --ba-color-warning-9: #563711;
+  --ba-color-warning-10: #3e280d;
+
+  /* INFO · 1–3 surfaces; 4–6 borders; 7–8 fills; 9–10 content */
+  --ba-color-info-1: #f1f8fd;
+  --ba-color-info-2: #e3f2fa;
+  --ba-color-info-3: #cae6f5;
+  --ba-color-info-4: #9fcfec;
+  --ba-color-info-5: #72b1db;
+  --ba-color-info-6: #468ebf;
+  --ba-color-info-7: #176b9e;
+  --ba-color-info-8: #125682;
+  --ba-color-info-9: #104264;
+  --ba-color-info-10: #0d324d;
+
+  /* Neutral semantic roles — shared across products. */
+  --ba-color-background-primary: #ffffff;
+  --ba-color-background-secondary: var(--ba-color-neutral-1);
+  --ba-color-surface-canvas: #ffffff;
+  --ba-color-content-primary: var(--ba-color-brand-10);
+  --ba-color-content-secondary: var(--ba-color-neutral-9);
+  --ba-color-content-muted: var(--ba-color-neutral-7);
+  --ba-color-border-default: var(--ba-color-neutral-4);
+  --ba-color-border-hover: var(--ba-color-neutral-5);
+  --ba-color-border-active: var(--ba-color-neutral-6);
+  --ba-color-focus: var(--ba-color-brand-7);
+
+  /* Product-neutral action default. The app shell selects product color identity. */
+  --ba-color-action-primary: var(--ba-color-brand-7);
+  --ba-color-action-primary-hover: var(--ba-color-brand-8);
+  --ba-color-action-primary-active: var(--ba-color-brand-8);
+  --ba-color-on-action-primary: #ffffff;
+
+  /* Functional feedback: semantics do not vary by product theme. */
+  --ba-color-success-surface: var(--ba-color-success-1);
+  --ba-color-success-border: var(--ba-color-success-4);
+  --ba-color-success-fill: var(--ba-color-success-7);
+  --ba-color-success-text: var(--ba-color-success-10);
+  --ba-color-error-surface: var(--ba-color-danger-1);
+  --ba-color-error-border: var(--ba-color-danger-4);
+  --ba-color-error-fill: var(--ba-color-danger-7);
+  --ba-color-error-text: var(--ba-color-danger-10);
+  --ba-color-warning-surface: var(--ba-color-warning-1);
+  --ba-color-warning-border: var(--ba-color-warning-4);
+  --ba-color-warning-fill: var(--ba-color-warning-7);
+  --ba-color-warning-text: var(--ba-color-warning-10);
+  --ba-color-info-surface: var(--ba-color-info-1);
+  --ba-color-info-border: var(--ba-color-info-4);
+  --ba-color-info-fill: var(--ba-color-info-7);
+  --ba-color-info-text: var(--ba-color-info-10);
+
+  /* Backwards compatible pilot aliases: maintain existing rendered values. */
+  --ba-brand-dark: var(--ba-color-brand-10); /* [A] */
+  --ba-writing-accent: var(--ba-color-writing-7); /* [A] */
+  --ba-paper: var(--ba-color-surface-canvas); /* [A] */
+  --ba-surface-warm: var(--ba-color-warm-1); /* [A] Writing frame */
+  --ba-choice-border: var(--ba-color-warm-4); /* [A] available warm border role */
+  --ba-success: var(--ba-color-success-6); /* [A] legacy reference color, not primary fill */
+  --ba-error: var(--ba-color-danger-7); /* [A] */
+  --ba-border-weight: 0.5px; /* [A] ordinary separators */
+  --ba-border-temporary: #d9cbb8; /* [T] unchanged pilot separator */
+  --ba-control-border: #133547; /* [T] unchanged pilot control border */
+  --ba-muted: #4a5963; /* [T] unchanged pilot disabled/locked ink */
+  --ba-muted-surface: #f4f1ea; /* [T] unchanged pilot */
+  --ba-focus-ring: #133547; /* [T] unchanged pilot */
+  --ba-font-sans: "Noto Sans", "Noto Sans SC", "WenQuanYi Micro Hei", "PingFang SC",
+    "Microsoft YaHei", "Droid Sans Fallback", sans-serif;
+  --ba-hit-min: 44px;
+  --ba-focus-width: 2px;
+
+  /* P1-B integration: shared typeface role aliases, fonts approved but assets unverified. */
+  --ba-font-heading-en: "Dosis", "Arial Narrow", sans-serif;
+  --ba-font-body-en: "Jost", "Noto Sans", sans-serif;
+  --ba-font-heading-zh: "Douyin Sans", "PingFang SC", "Noto Sans SC", sans-serif;
+  --ba-font-body-zh: "Noto Sans SC", "PingFang SC", sans-serif;
+  --ba-font-digit: "Dosis", "Arial Narrow", sans-serif;
+
+  /* Spatial Grid & Layout System v0.2. Initial numerical scale [E], 4px / 8px rhythm [A]. */
+  --ba-space-0: 0px; /* [E] */
+  --ba-space-1: 4px; /* [E] */
+  --ba-space-2: 8px; /* [E] */
+  --ba-space-3: 12px; /* [E] */
+  --ba-space-4: 16px; /* [E] */
+  --ba-space-6: 24px; /* [E] */
+  --ba-space-8: 32px; /* [E] */
+  --ba-space-12: 48px; /* [E] */
+  --ba-space-16: 64px; /* [E] */
+
+  /* Provisional shared-component semantic spacing mapping [E].
+     Numeric output matches existing BAButton and BATaskProgress geometry. */
+  --ba-spacing-button-content-gap: var(--ba-space-2);
+  --ba-spacing-button-padding-inline: var(--ba-space-4);
+  --ba-spacing-progress-items-gap: var(--ba-space-1);
+
+  /* Radius System v0.1 [E]: proposed values, unused by components. */
+  --ba-radius-0: 0px; /* [E] */
+  --ba-radius-4: 4px; /* [E] */
+  --ba-radius-6: 6px; /* [E] */
+  --ba-radius-8: 8px; /* [E] */
+  --ba-radius-12: 12px; /* [E] */
+  --ba-radius-16: 16px; /* [E] */
+  --ba-radius-24: 24px; /* [E] */
+  --ba-radius-full: 9999px; /* [E] */
+  --ba-radius-circle: 50%; /* [E] */
+
+  /* Radius semantic roles [E], proposed Geist-style surface hierarchy. */
+  --ba-radius-surface-base: var(--ba-radius-6); /* [E] */
+  --ba-radius-surface-small: var(--ba-radius-6); /* [E] */
+  --ba-radius-surface-medium: var(--ba-radius-12); /* [E] */
+  --ba-radius-surface-large: var(--ba-radius-12); /* [E] */
+  --ba-radius-floating-tooltip: var(--ba-radius-6); /* [E] */
+  --ba-radius-floating-menu: var(--ba-radius-12); /* [E] */
+  --ba-radius-floating-modal: var(--ba-radius-12); /* [E] */
+  --ba-radius-floating-fullscreen: var(--ba-radius-16); /* [E] */
+  --ba-radius-control-compact: var(--ba-radius-6); /* [E] */
+  --ba-radius-control-regular: var(--ba-radius-8); /* [E] */
+  --ba-radius-control-large: var(--ba-radius-12); /* [E] */
+  --ba-radius-card-regular: var(--ba-radius-12); /* [E] */
+  --ba-radius-badge-pill: var(--ba-radius-full); /* [E] */
+
+  /* ActivityScreenIndicator / All Activity Screens · v0.3 [E: values require rendered approval].
+   * Shared by TopBar and popover; business status and canOpen come from PRODUCT.md.
+   * Do not assume these token mappings are visually signed off.
+   */
+  --ba-activity-indicator-radius: var(--ba-radius-circle);
+  --ba-activity-indicator-number-font: var(--ba-type-numeric-family);
+  --ba-activity-indicator-number-weight: 800;
+  --ba-activity-indicator-border: var(--ba-color-content-primary);
+  --ba-activity-indicator-selected-bg: var(--ba-color-content-primary);
+  --ba-activity-indicator-selected-text: #ffffff;
+  --ba-activity-indicator-incomplete-bg: var(--ba-color-surface-canvas);
+  --ba-activity-indicator-locked-bg: var(--ba-color-neutral-6);
+  --ba-activity-indicator-locked-text: #ffffff;
+  --ba-activity-indicator-badge-radius: var(--ba-radius-circle);
+  --ba-activity-indicator-grid-gap: var(--ba-space-3);
+  --ba-activity-indicator-popover-radius: var(--ba-radius-floating-menu);
+  --ba-activity-indicator-popover-inset: var(--ba-space-4);
+  /* No connector line token: number circle and badge overlap/contact by geometry. */
+
+  /* Motion System v0.1 [A/T]: exact upstream spring numeric parameters.
+   * Source: Caho1/open-claude-ui code-examples/ClaudeMotionPresets.ts (MIT).
+   * Inline spring masses are absent by design and MUST NOT be invented here.
+   * No runtime motion adapter exists yet; these CSS numeric variables are not animations.
+   */
+  --ba-motion-spring-bouncy-stiffness: 600; /* [A/T] */
+  --ba-motion-spring-bouncy-damping: 30; /* [A/T] */
+  --ba-motion-spring-bouncy-mass: 1.0; /* [A/T] */
+  --ba-motion-spring-snappy-stiffness: 320; /* [A/T] */
+  --ba-motion-spring-snappy-damping: 28; /* [A/T] */
+  --ba-motion-spring-snappy-mass: 1.0; /* [A/T] */
+  --ba-motion-spring-gentle-stiffness: 380; /* [A/T] */
+  --ba-motion-spring-gentle-damping: 18; /* [A/T] */
+  --ba-motion-spring-gentle-mass: 1.0; /* [A/T] */
+  --ba-motion-spring-heavy-snap-stiffness: 1200; /* [A/T] */
+  --ba-motion-spring-heavy-snap-damping: 80; /* [A/T] */
+  --ba-motion-spring-heavy-snap-mass: 0.1; /* [A/T] */
+  --ba-motion-spring-bubble-enter-stiffness: 450; /* [A/T] */
+  --ba-motion-spring-bubble-enter-damping: 24; /* [A/T] */
+  --ba-motion-spring-modal-enter-stiffness: 400; /* [A/T] */
+  --ba-motion-spring-modal-enter-damping: 32; /* [A/T] */
+
+  /* Typography: approved families [A], existing/pilot numerical metrics [T/E].
+     Dosis ExtraBold 800 exclusively; Douyin font asset still unverified. */
+  --ba-type-display-family: var(--ba-font-heading-en);
+  --ba-type-heading-family: var(--ba-font-heading-en);
+  --ba-type-body-family: var(--ba-font-body-en);
+  --ba-type-control-family: var(--ba-font-body-en);
+  --ba-type-supporting-family: var(--ba-font-body-en);
+  --ba-type-numeric-family: var(--ba-font-digit);
+  --ba-type-display-size: 48px; /* [E] */
+  --ba-type-heading-size: 32px; /* [T] */
+  --ba-type-body-size: 18px; /* [T] */
+  --ba-type-control-size: 16px; /* [T] */
+  --ba-type-supporting-size: 14px; /* [T] */
+  --ba-type-caption-size: 13px; /* [E] */
+  --ba-type-numeric-size: 32px; /* [T] */
+  --ba-type-display-leading: 1.15; /* [E] */
+  --ba-type-heading-leading: 1.2; /* [T] */
+  --ba-type-body-leading: 1.5; /* [T] */
+  --ba-type-control-leading: 1.2; /* [T] */
+  --ba-type-supporting-leading: 1.4; /* [E] */
+  --ba-type-control-weight: 700; /* [T] Jost / Noto Sans, not Dosis */
+
+  /* Figma Button V2 foundation: node 30:2, Figma dark primary #133547.
+     Writing product maps primary to its approved #B25415. */
+  --ba-button-primary-bg:var(--ba-color-brand-10);
+  --ba-button-secondary-bg:rgba(7,46,81,.05);
+  --ba-button-destructive-bg:#ae2314; /* Figma control-specific value */
+  --ba-control-focus:#2364db; /* Figma focus stroke */
+  --ba-button-content-gap:6px;
+  --ba-segmented-strong-selected:var(--ba-color-brand-10);
+  /* Elevation/Effect Styles v1 — from Figma 15:5 / 25:2, NOT button depth.
+   * Color effects based on rgba(7,46,81), no spread. Consume these semantic
+   * effects directly; do not duplicate box-shadow geometry in components. */
+  --ba-effect-shadow-subtle: rgba(7,46,81,0.05);
+  --ba-effect-shadow-default: rgba(7,46,81,0.10);
+  --ba-effect-shadow-strong: rgba(7,46,81,0.15);
+  --ba-elevation-100: 0 0 2px 0 var(--ba-effect-shadow-subtle), 0 2px 4px 0 var(--ba-effect-shadow-default);
+  --ba-elevation-200: 0 4px 16px 0 var(--ba-effect-shadow-subtle);
+  --ba-elevation-300: 0 2px 2px 0 var(--ba-effect-shadow-subtle), 0 8px 24px 0 var(--ba-effect-shadow-default);
+  --ba-elevation-400: 0 0 2px 0 var(--ba-effect-shadow-strong), 0 8px 24px 0 var(--ba-effect-shadow-strong);
+  /* Figma Background Blur radius 20 maps to CSS backdrop-filter blur(10px)
+   * in Figma-generated code — these are two distinct unit conventions. */
+  --ba-blur-background-20: blur(10px);
+
+  /* [T] pilot disabled semantics, unchanged values; not part of Color v0.2 approval. */
+  --ba-color-disabled-surface: var(--ba-muted-surface);
+  --ba-color-disabled-content: var(--ba-muted);
+  --ba-color-disabled-border: #c4b8aa;
+}
+
+/*
+ * Approved app/shell theme mapping for Writing.
+ * Add data-ba-product="writing" on a shell ancestor before consumers migrate.
+ * The existing BAButton/BATaskProgress do not yet consume these action aliases.
+ */
+[data-ba-product="writing"] {
+  --ba-button-primary-bg:var(--ba-color-writing-7);
+  --ba-segmented-strong-selected:var(--ba-color-writing-7);
+  --ba-color-action-primary: var(--ba-color-writing-7);
+  --ba-color-action-primary-hover: var(--ba-color-writing-8);
+  --ba-color-action-primary-active: var(--ba-color-writing-8);
+  --ba-color-on-action-primary: #ffffff;
+  --ba-color-background-secondary: var(--ba-color-warm-1);
+}
+
+/* Reading: no tokens or selectors until its brand accent is explicitly selected. */
+
+/* Same semantic text hierarchy, different locale font families. */
+:lang(zh) {
+  --ba-type-display-family: var(--ba-font-heading-zh);
+  --ba-type-heading-family: var(--ba-font-heading-zh);
+  --ba-type-body-family: var(--ba-font-body-zh);
+  --ba-type-control-family: var(--ba-font-body-zh);
+  --ba-type-supporting-family: var(--ba-font-body-zh);
+  /* Numeral remains Dosis 800 in either locale. */
+}
