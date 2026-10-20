@@ -97,3 +97,9 @@ Design approval source: [PR #10](https://github.com/Yuzhwe/big-academy/pull/10),
 - Segmented: one local selection 2-4 choices, Strong/Subtle, Full/Standard, Equal/Hug, icon+label/icon only, product-mapped Strong fill, 200ms moving selected surface, reduced-motion guard. Outer / selected heights differ by 4px.
 - Interactive `/?system` Figma matrix + Storybook and Playwright checks. Figma pixel-level visual approval and separate Tabs/Shadow design nodes **remain pending** (no invented Final values).
 - Work isolated in `feat/agent-a-figma-button-segmented-v1`; original PR #16 and `main` unchanged.
+
+
+## Elevation + shared BATabs (2026-10-20)
+- Figma 15:5 / 25:2 exact Elevation 100/200/300/400 and Background Blur 20 now mapped into `--ba-effect-*` tokens; component roles not auto-assigned.
+- Tabs share Segmented Control visuals; React Aria Tab navigation keeps panels separate from local RadioGroup segmentation.
+- Feature branch feat/agent-a-elevation-shared-tabs-v1; designer visual signoff pending; main unchanged.
