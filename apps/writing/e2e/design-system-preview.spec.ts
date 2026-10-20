@@ -161,3 +161,29 @@ test('BATabs share selected surface appearance but own tabpanel navigation', asy
   });
   expect(fills.tab).toBe(fills.segment);
 });
+
+test('v0.5 Figma Button target tokens preserve fixed hit target and 1.02 / 0.95 state scales', async ({page}) => {
+  await page.goto('/?system');
+  const button = page.getByRole('button', {name:'Test primary'});
+  await expect(button).toHaveAttribute('data-radius','full');
+  const assembly = button.locator('.ba-button__assembly');
+  const boxBefore = await button.boundingBox();
+  const metrics = () => assembly.evaluate(el => {
+    const c = getComputedStyle(el);
+    const matrix = new DOMMatrixReadOnly(c.transform);
+    return { scale: matrix.a, opacity: Number(c.opacity) };
+  });
+  await button.hover();
+  await expect.poll(async () => (await metrics()).scale).toBeGreaterThan(1.015);
+  await page.mouse.down();
+  await expect(button).toHaveAttribute('data-pressed','true');
+  await expect.poll(async () => (await metrics()).scale).toBeLessThan(0.955);
+  expect((await metrics()).opacity).toBe(1);
+  const boxDuring = await button.boundingBox();
+  expect(boxDuring?.width).toBeCloseTo(boxBefore?.width ?? 0, 2);
+  expect(boxDuring?.height).toBeCloseTo(boxBefore?.height ?? 0, 2);
+  await page.mouse.up();
+  await expect.poll(async () => (await metrics()).scale).toBeGreaterThan(1.015);
+  await page.mouse.move(0,0);
+  await expect.poll(async () => (await metrics()).scale).toBeCloseTo(1, 2);
+});
