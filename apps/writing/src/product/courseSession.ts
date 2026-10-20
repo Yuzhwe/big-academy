@@ -588,10 +588,12 @@ export class CourseSession {
         return false;
       }
       let target =
-        lessonIndex === this.curLesson()
-          ? this.state.screen
-          : (indexes.find((index) => !this.screenDone(index) && !this.stepSkipped(this.screens[index].step)) ??
-            indexes[0]);
+        courseState === 'done'
+          ? indexes[0]
+          : lessonIndex === this.curLesson()
+            ? this.state.screen
+            : (indexes.find((index) => !this.screenDone(index) && !this.stepSkipped(this.screens[index].step)) ??
+              indexes[0]);
       if (!this.canOpen(target)) target = indexes[0];
       this.remember(unitId, lessonNumber);
       this.view = 'lesson';
