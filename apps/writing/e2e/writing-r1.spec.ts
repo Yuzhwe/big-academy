@@ -59,6 +59,8 @@ test('R1 E-01 and eight authored Lesson 1 screens including P7 mastery', async (
   ].join('\n');
   await page.locator('#apply-text').fill(apply);
   await page.reload();
+  await expect(page.locator('.course-app')).toHaveAttribute('data-view', 'path');
+  await page.locator('[data-lesson-focus="G2-O:1"]').click();
   await expect(page.locator('#apply-text')).toHaveValue(apply);
   await page.getByTestId('lesson-footer').getByRole('button', { name: /Check my writing/i }).click();
   await expect(page.getByTestId('feedback')).toContainText(/criteria met/i);
@@ -79,6 +81,9 @@ test('R1 E-01 and eight authored Lesson 1 screens including P7 mastery', async (
   await expect(page.locator('.course-assessment')).toContainText('You passed this check.');
   await page.screenshot({ path: resolve(evidence, 'p7-mastered-1440.png') });
   await page.reload();
+  await page.locator('[data-lesson-focus="G2-O:1"]').click();
+  await expect(page.locator('[data-template="P2"]')).toBeVisible();
+  await page.getByRole('button', { name: /Task 8: Check/ }).click();
   await expect(page.locator('.course-assessment')).toContainText('You passed this check.');
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'End of lesson' }).click();
   await expect(page.locator('[data-kind="lesson_end"]')).toBeVisible();
