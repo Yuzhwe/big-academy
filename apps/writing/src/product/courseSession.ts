@@ -923,6 +923,17 @@ export class CourseSession {
         primaryTestId: 'back-to-path',
       };
     }
+    const page=this.screens[this.state.screen]?.screen;
+    if(page?.kind==='check' && !this.canNext(this.state.screen)){
+      const status=this.assessmentState(page.page);
+      const index=status.question??0;
+      return {backLabel:this.zh?'上一题':'Back',primaryLabel:index<3?(this.zh?'下一题':'Next question'):(status.blankConfirmed?(this.zh?'继续交卷':'Hand in anyway'):(this.zh?'交卷':'Hand in my check')),primaryTestId:'assessment-action'};
+    }
+    if(page?.kind==='apply' && !this.canNext(this.state.screen)){
+      const a=this.applyState(page.page);
+      const task=this.task(this.pageOf(page.page)?.task??page.page);
+      return {backLabel:this.zh?'上一页':'Previous',primaryLabel:a.checks>=(task.continue_after??2)?(this.zh?'先继续':'Move on for now'):(a.checks>0?(this.zh?'再检查':'Check again'):(this.zh?'检查写作':'Check my writing')),primaryTestId:'apply-action'};
+    }
     const index = this.state.screen;
     const backLabel =
       this.zh ? '上一页' : 'Previous';
@@ -950,6 +961,11 @@ export class CourseSession {
       this.emit();
       return;
     }
+    const screen=this.screens[this.state.screen]?.screen;
+    if(screen?.kind==='check' && !this.canNext(this.state.screen)){
+      const a=this.assessmentState(screen.page);
+      if((a.question??0)>0){a.question=(a.question??0)-1;this.save();this.emit();return;}
+    }
     if (this.state.screen === 0) return;
     this.go(this.state.screen - 1, true);
   }
@@ -965,11 +981,15 @@ export class CourseSession {
     }
     const index = this.state.screen;
     const screen = this.screens[index].screen;
+    if(screen.kind==='check'&&!this.canNext(index)){this.assessmentPrimary();return;}
+    if(screen.kind==='apply'&&!this.canNext(index)){this.applyPrimary();return;}
     if (!this.canNext(index)) {
       if (screen.kind === 'task' || screen.kind === 'model_task') {
         const task = screen.task ? this.task(screen.task) : null;
         if (task?.type === 'pick') this.pickCheck(task, this.taskKey(screen));
         else if (task?.type === 'tapword' && task.need !== 'all') this.wordCheck(task, this.taskKey(screen));
+        else if (task?.frameFill || task?.rules) this.checkPracticeWriting(task, this.taskKey(screen));
+        else if (task?.type === 'build') {this.feedback=this.zh?'请先拼好句子。':'Finish building your sentence first.';this.emit();}
         else {
           this.feedback = `${this.lockedMsg(index)} ${this.activity()?.unsupportedReason ?? ''}`.trim();
           this.emit();
