@@ -2445,13 +2445,13 @@ export class CourseSession {
     courseState: LessonCourseState,
   ): string {
     const lesson = unit.lessons[lessonIndex];
-    if (!level.current) return this.zh ? '之后打开' : 'Opens later';
     if (courseState === 'done') {
       return this.zh ? `完成 · ${lesson.pages ?? ''} 页` : `Done · ${lesson.pages ?? ''} pages`;
     }
+    if (courseState === 'skipped') return this.zh ? '已掌握 · 跳过' : 'Mastered · skipped';
+    if (!level.current) return this.zh ? '之后打开' : 'Opens later';
     if (courseState === 'current') return this.zh ? '你在这里' : 'You are here';
     if (courseState === 'available') return this.zh ? '可以开始' : 'Ready to start';
-    if (courseState === 'skipped') return this.zh ? '已掌握 · 跳过' : 'Mastered · skipped';
     if (courseState === 'view') return this.zh ? '之后打开' : 'Opens later';
     const states = this.lessonStates(unit);
     let previousNumber: number | null = null;

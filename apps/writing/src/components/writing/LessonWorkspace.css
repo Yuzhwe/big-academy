@@ -3,17 +3,22 @@
   box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--ba-workspace-rail);
-  gap: 16px;
+  grid-template-rows: minmax(0, 1fr) auto;
+  column-gap: 16px;
+  row-gap: 0;
   min-height: 0;
   height: 100%;
-  padding: 16px;
+  padding: 16px 0 0;
   background: var(--ba-surface-warm, #fef9ef); /* [E] candidate */
   color: var(--ba-brand-dark, #133547);
 }
 
 .lesson-workspace__paper {
+  grid-column: 1;
+  grid-row: 1;
   min-width: 0;
   min-height: 0;
+  margin: 0 0 16px 16px;
   overflow: auto;
   background: var(--ba-paper, #ffffff);
   border: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
@@ -22,8 +27,11 @@
 }
 
 .lesson-workspace__rail {
+  grid-column: 2;
+  grid-row: 1;
   min-width: 0;
   min-height: 0;
+  margin: 0 16px 16px 0;
   display: flex;
   flex-direction: column;
   background: var(--ba-paper, #ffffff);
@@ -39,13 +47,14 @@
 }
 
 .lesson-workspace__footer {
-  flex: 0 0 auto;
+  grid-column: 1 / -1;
+  grid-row: 2;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: var(--ba-space-2, 8px);
   width: 100%;
   box-sizing: border-box;
-  padding: 12px;
+  padding: 12px 16px;
   background: transparent;
   border: 0;
 }
@@ -68,8 +77,22 @@
 @media (max-width: 720px) {
   .lesson-workspace {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(16rem, 1fr) minmax(16rem, 0.8fr);
+    grid-template-rows: minmax(16rem, 1fr) minmax(16rem, 0.8fr) auto;
     height: auto;
     min-height: calc(100dvh - 80px);
+  }
+
+  .lesson-workspace__paper,
+  .lesson-workspace__rail {
+    grid-column: 1;
+    margin-inline: 16px;
+  }
+
+  .lesson-workspace__rail {
+    grid-row: 2;
+  }
+
+  .lesson-workspace__footer {
+    grid-row: 3;
   }
 }

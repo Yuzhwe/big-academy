@@ -11,7 +11,7 @@ export interface LessonWorkspaceProps {
 
 /**
  * BA-WR-002 · paper column and coach column.
- * The footer slot is a sibling of the scrolling coach, pinned to the rail.
+ * Previous and Next sit in a lesson-wide footer under both columns, outside Coach.
  * Visual treatment is a candidate Warm Frame. Not validated.
  */
 export function LessonWorkspace({ activity, coach, navigation, navigationLayout = 'pair' }: LessonWorkspaceProps) {
@@ -24,9 +24,9 @@ export function LessonWorkspace({ activity, coach, navigation, navigationLayout 
         <div className="lesson-workspace__coach" data-testid="coach">
           {coach}
         </div>
-        <div className="lesson-workspace__footer" data-testid="lesson-footer" data-layout={navigationLayout}>
-          {navigation}
-        </div>
+      </div>
+      <div className="lesson-workspace__footer" data-testid="lesson-footer" data-layout={navigationLayout} data-span="lesson">
+        {navigation}
       </div>
     </div>
   );

@@ -249,6 +249,8 @@ describe('designer preview seed', () => {
       const milestones = nodes.filter((node) => node.kind === 'milestone');
       expect(lessons.length).toBeGreaterThan(0);
       expect(lessons.every((node) => node.lesson?.courseState === 'done' && node.lesson.action === 'review')).toBe(true);
+      expect(lessons.every((node) => node.lesson?.detail?.startsWith('Done'))).toBe(true);
+      expect(lessons.some((node) => node.lesson?.detail === 'Opens later')).toBe(false);
       expect(milestones.every((node) => node.milestone?.completed)).toBe(true);
     }
     const earlier = course.pathNodes('L0').filter((node) => node.kind === 'lesson');
