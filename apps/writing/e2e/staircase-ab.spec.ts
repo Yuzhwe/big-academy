@@ -4,72 +4,73 @@ import { expect, test } from '@playwright/test';
 
 const evidenceDir = resolve(import.meta.dirname, '../docs/evidence/staircase-ab');
 
-for (const variant of ['A', 'B'] as const) {
-  test('E-01 diagonal interaction and real course permissions — ' + variant, async ({ page }) => {
-    test.setTimeout(60_000);
-    mkdirSync(evidenceDir, { recursive: true });
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
-    const scene = page.locator('.staircase-viewport');
+test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
+  test.setTimeout(60_000);
+  mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const scene = page.locator('.staircase-viewport');
 
-    await page.getByRole('button', { name: new RegExp('^' + variant + ' ·') }).click();
-    await expect(scene).toHaveAttribute('data-variant', variant);
-    await expect(scene).toHaveAttribute('data-rise-px', /^[0-9]+$/);
-    await page.screenshot({ path: resolve(evidenceDir, variant + '-1440.png'), fullPage: false });
+  await expect(scene).toHaveAttribute('data-landscape', 'v2-terraces');
+  await expect(scene).toHaveAttribute('data-sky', '#58A8E8');
+  await expect(page.getByTestId('path-sky')).toHaveAttribute('data-parallax', '0');
+  await expect(page.getByTestId('path-cloud')).toHaveAttribute('data-parallax', '0.12');
+  await expect(page.getByTestId('path-hill-2')).toHaveAttribute('data-parallax', '0.4');
+  await expect(page.getByTestId('path-hill-1')).toHaveAttribute('data-parallax', '0.72');
+  await expect(page.locator('.staircase-rail')).toHaveAttribute('data-parallax', '1');
+  await expect(page.getByRole('button', { name: /Separate platforms|Continuous slope/ })).toHaveCount(0);
+  await expect(scene).toHaveAttribute('data-rise-px', /^[0-9]+$/);
+  await page.screenshot({ path: resolve(evidenceDir, 'v2-terraces-1440.png'), fullPage: false });
 
-    const initial = Number(await scene.getAttribute('data-camera-x'));
-    await scene.focus();
-    await page.keyboard.press('ArrowRight');
-    await expect.poll(async () => Number(await scene.getAttribute('data-camera-x'))).toBeGreaterThan(initial);
-    await page.keyboard.press('Home');
-    await expect(scene).toHaveAttribute('data-camera-x', '0');
+  const initial = Number(await scene.getAttribute('data-camera-x'));
+  const cloudBefore = await page.getByTestId('path-cloud').evaluate((el) => getComputedStyle(el).transform);
+  await scene.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect.poll(async () => Number(await scene.getAttribute('data-camera-x'))).toBeGreaterThan(initial);
+  const cloudAfter = await page.getByTestId('path-cloud').evaluate((el) => getComputedStyle(el).transform);
+  expect(cloudAfter).not.toBe(cloudBefore);
+  await page.keyboard.press('Home');
+  await expect(scene).toHaveAttribute('data-camera-x', '0');
 
-    await scene.hover({ position: { x: 550, y: 250 } });
-    await page.mouse.wheel(640, 0);
-    await expect.poll(async () => Number(await scene.getAttribute('data-camera-x'))).toBeGreaterThan(0);
-    await page.keyboard.press('End');
-    const end = Number(await scene.getAttribute('data-camera-x'));
-    expect(end).toBeGreaterThan(0);
-
-    await scene.focus();
-    await page.keyboard.press('Home');
-    // Permission checks belong to the course session, not this A/B visual switch.
-    await page.locator('[data-lesson-focus="G2-O:2"]').click();
-    await expect(page.getByTestId('locked-note')).toContainText(/Lesson 1/);
-    await expect(page).toHaveURL(/\/$/);
-
-    await page.setViewportSize({ width: 834, height: 1112 });
-    await page.getByRole('button', { name: '中文' }).click();
-    await expect(scene).toHaveAttribute('data-variant', variant);
-    await page.screenshot({ path: resolve(evidenceDir, variant + '-834-zh.png'), fullPage: false });
+  const platform = await page.locator('.staircase-rail .course-nodes > li').first().evaluate((el) => {
+    const before = getComputedStyle(el, '::before');
+    return { width: before.width, height: before.height, content: before.content };
   });
-}
+  expect(platform.width).toBe('352px');
+  expect(platform.height).toBe('64px');
+  expect(platform.content).not.toBe('none');
 
+  await page.locator('[data-lesson-focus="G2-O:2"]').click();
+  await expect(page.getByTestId('locked-note')).toContainText(/Lesson 1/);
+  await expect(page).toHaveURL(/\/$/);
 
-for (const variant of ['A', 'B'] as const) {
-  test('card height never moves anchor / platform Y — ' + variant, async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
-    await page.getByRole('button', { name: new RegExp('^' + variant + ' ·') }).click();
-    const viewport = page.locator('.staircase-viewport');
-    await expect(viewport).toHaveAttribute('data-anchor-basis', 'pedestal-y');
-    const li = page.locator('.staircase-rail .course-nodes > li').filter({ has: page.locator('.stair-lesson-card') }).first();
-    const before = await li.evaluate(el => {
-      const r = el.getBoundingClientRect();
-      return { top:r.top, bottom:r.bottom, height:r.height };
-    });
-    await li.locator('.stair-lesson-card__title').evaluate(el => {
-      el.textContent = (el.textContent || '') + ' extra text to increase the height of this card'.repeat(14);
-    });
-    const after = await li.evaluate(el => {
-      const r = el.getBoundingClientRect();
-      return { top:r.top, bottom:r.bottom, height:r.height };
-    });
-    expect(after.height).toBeGreaterThan(before.height);
-    expect(Math.abs(after.bottom - before.bottom)).toBeLessThanOrEqual(1);
-    expect(after.top).toBeLessThan(before.top);
+  await page.setViewportSize({ width: 834, height: 1112 });
+  await page.getByRole('button', { name: '中文' }).click();
+  await expect(scene).toHaveAttribute('data-landscape', 'v2-terraces');
+  await page.screenshot({ path: resolve(evidenceDir, 'v2-terraces-834-zh.png'), fullPage: false });
+});
+
+test('card height never moves the terrace anchor', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const viewport = page.locator('.staircase-viewport');
+  await expect(viewport).toHaveAttribute('data-anchor-basis', 'pedestal-y');
+  const li = page.locator('.staircase-rail .course-nodes > li').filter({ has: page.locator('.stair-lesson-card') }).first();
+  const before = await li.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    return { top: rect.top, bottom: rect.bottom, height: rect.height };
   });
-}
+  await li.locator('.stair-lesson-card__title').evaluate((el) => {
+    el.textContent = (el.textContent || '') + ' extra text to increase the height of this card'.repeat(14);
+  });
+  const after = await li.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    return { top: rect.top, bottom: rect.bottom, height: rect.height };
+  });
+  expect(after.height).toBeGreaterThan(before.height);
+  expect(Math.abs(after.bottom - before.bottom)).toBeLessThanOrEqual(1);
+  expect(after.top).toBeLessThan(before.top);
+});
 
 test('desktop and 834: one row header with geometrically centered accessible Level Tablist', async ({ page }) => {
   await page.goto('/');

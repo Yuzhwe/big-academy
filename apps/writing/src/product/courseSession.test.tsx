@@ -191,7 +191,7 @@ describe('course slice UI', () => {
     await user.click(document.querySelector('[data-lesson-focus="G2-O:1"]') as HTMLElement);
 
     expect(screen.getByRole('heading', { name: /Topic sentences/ })).toBeInTheDocument();
-    expect(screen.getByText(/top bun/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/top bun/i).length).toBeGreaterThan(0);
     await user.click(screen.getByRole('button', { name: 'Next' }));
     await user.click(screen.getByRole('radio', { name: /Our school should have a garden/ }));
     await user.click(screen.getByRole('button', { name: 'Check' }));
@@ -206,5 +206,78 @@ describe('course slice UI', () => {
     expect(screen.getByTestId('locked-note')).toHaveTextContent(/Lesson 1/);
     expect(screen.getByRole('heading', { name: /Level 2/ })).toBeInTheDocument();
     expect(course.inspect().screen).toBe(1);
+  });
+});
+
+function reach(course: Session, match: (screen: Session['screens'][number]['screen']) => boolean) {
+  const target = course.screens.findIndex((ref) => match(ref.screen));
+  const state = course.inspect();
+  for (let index = 0; index < target; index += 1) {
+    const screenRef = course.screens[index].screen;
+    if (screenRef.kind === 'task' || screenRef.kind === 'model_task') {
+      state.tasks[`${screenRef.page}:${screenRef.task}`] = { tries: 1, status: 'done' };
+    } else if (screenRef.kind === 'apply' || screenRef.kind === 'check') {
+      state.done[screenRef.page] = true;
+    } else {
+      state.seen[screenRef.id] = true;
+    }
+  }
+  state.screen = target;
+  expect(course.openLesson('G2-O', 1)).toBe(true);
+  expect(course.inspect().screen).toBe(target);
+}
+
+describe('Lesson 1 screens 5–8', () => {
+  it('counts ordered-build misses across a correct tap and Start again', () => {
+    const course = session();
+    reach(course, (screen) => screen.task === 'ss.L2-04');
+    const before = course.inspect().tasks['L2-04.skill:ss.L2-04']?.miss ?? 0;
+    course.placeCard('garden');
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.miss).toBe(before + 1);
+    course.placeCard('our');
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.miss).toBe(before + 1);
+    course.startAgain();
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual([]);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.miss).toBe(before + 1);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+  });
+
+  it('does not count a short Apply, and offers Move on after two failed tries', () => {
+    const course = session();
+    reach(course, (screen) => screen.kind === 'apply' && screen.page === 'L2-04.apply');
+    course.setCanvas('Hi');
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/Write a little first/);
+    expect(course.inspect().applies['L2-04']?.tries ?? 0).toBe(0);
+    course.setCanvas('Hello there friend');
+    course.pressPrimary();
+    course.setCanvas('Hello there again');
+    course.pressPrimary();
+    expect(course.inspect().applies['L2-04']?.tries).toBe(2);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    expect(course.activity()?.applyMoveOn).toBe(true);
+    course.moveOn();
+    expect(course.screenDone(course.inspect().screen)).toBe(true);
+    expect(course.inspect().applies['L2-04']?.passed).toBe(false);
+  });
+
+  it('keeps the first failed check closed and completes the second hand-in without a pass', () => {
+    const course = session();
+    reach(course, (screen) => screen.kind === 'check' && screen.page === 'L2-04.check');
+    for (let step = 0; step < 3; step += 1) course.pressPrimary();
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/still blank/);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/Not yet/);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    expect(course.inspect().checks['L2-04.check']?.passed).toBe(false);
+    course.pressPrimary();
+    for (let step = 0; step < 3; step += 1) course.pressPrimary();
+    course.pressPrimary();
+    course.pressPrimary();
+    expect(course.screenDone(course.inspect().screen)).toBe(true);
+    expect(course.inspect().checks['L2-04.check']?.passed).toBe(false);
+    expect(JSON.stringify(course.inspect())).not.toContain('celebrated');
   });
 });

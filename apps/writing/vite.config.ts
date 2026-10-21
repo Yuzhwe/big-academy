@@ -10,6 +10,8 @@ export default defineConfig({
     exclude: ['@big-academy/design-system'],
   },
   server: {
+    // Quick tunnels send a public Host header. Vite otherwise refuses them.
+    allowedHosts: true,
     fs: {
       allow: [repoRoot],
     },

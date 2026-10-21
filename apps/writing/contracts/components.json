@@ -120,7 +120,7 @@
       "name": "BAChoice",
       "kind": "primitive",
       "contractVersion": "0.4.0-r3",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BAChoice.tsx",
       "story": "packages/design-system/src/components/ui/BAChoice.stories.tsx",
       "props": {
@@ -526,7 +526,7 @@
       "name": "WordGrid",
       "kind": "composite",
       "contractVersion": "0.4.0-r3",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "apps/writing/src/components/writing/WordGrid.tsx",
       "story": "apps/writing/src/components/writing/WordGrid.stories.tsx",
       "props": {
@@ -573,7 +573,7 @@
       "name": "HamburgerLayer",
       "kind": "composite",
       "contractVersion": "0.4.0-r3",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "apps/writing/src/components/writing/HamburgerLayer.tsx",
       "story": "apps/writing/src/components/writing/HamburgerLayer.stories.tsx",
       "props": {
@@ -938,9 +938,9 @@
       "name": "LandscapeBackdrop",
       "kind": "writing-presentation-composite",
       "contractVersion": "0.1.0-r3",
-      "status": "specified-not-implemented",
+      "status": "implemented",
       "visualStatus": "v2-terraces artwork checked in; sky color and parallax ratios are candidates pending Joe Approved",
-      "implementation": "apps/writing/src/course/LandscapeBackdrop.tsx",
+      "implementation": "apps/writing/src/course/StaircaseScene.tsx",
       "props": {
         "cameraShift": "number"
       },
@@ -966,7 +966,7 @@
         "V2Terraces390",
         "V2TerracesReducedMotion"
       ],
-      "notes": "Artwork: apps/writing/public/path/v2-terraces/. Behavior: apps/writing/PRODUCT.md. Compositing and candidate motion: DESIGN.md. The art and the spec are checked in; the page is not implemented in this change."
+      "notes": "Artwork: apps/writing/public/path/v2-terraces/. Behavior: apps/writing/PRODUCT.md. Compositing and candidate motion: DESIGN.md. Layers render inside StaircaseScene (sky color, cloud, hill 2, hill 1, then nodes). There is no separate LandscapeBackdrop file. Sky #58A8E8 and parallax ratios stay candidates pending Joe Approved. Not Approved."
     },
     {
       "id": "BA-WR-010",
@@ -997,7 +997,7 @@
         "V2TerracePlatformMobile",
         "V2TerracePlatformLocked"
       ],
-      "notes": "Per-node lesson platform in front of the v2-terraces mountains. Numeric geometry remains [E]."
+      "notes": "StaircaseScene paints one candidate platform per node (352×64, card bottom on the platform). The 2–3 shallow grass layers in this requirement are not built. Numeric geometry remains [E] and is not Approved."
     }
   ],
   "currentDirection": {

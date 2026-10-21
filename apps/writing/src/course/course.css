@@ -149,46 +149,6 @@
   text-transform: uppercase;
 }
 
-.course-choices {
-  display: grid;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.course-choice {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 44px;
-  padding: 10px 12px;
-  border: var(--ba-border-weight, 0.5px) solid var(--ba-brand-dark, #133547);
-  border-radius: 12px;
-  background: var(--ba-paper, #ffffff);
-  color: var(--ba-brand-dark, #133547);
-  cursor: pointer;
-}
-
-.course-choice[data-selected='true'],
-.course-choice[data-selected] {
-  border-color: var(--ba-writing-accent, #b25415);
-  box-shadow: inset 0 0 0 1px var(--ba-writing-accent, #b25415);
-}
-
-.course-choice[data-wrong='true'] {
-  border-color: #9b4f36;
-}
-
-.course-choice[data-focus-visible='true'] {
-  outline: 2px solid var(--ba-brand-dark, #133547);
-  outline-offset: 2px;
-}
-
-.course-choice__letter {
-  font-family: "Dosis", "Arial Narrow", sans-serif;
-  font-weight: 800;
-  font-size: 20px;
-}
-
 .course-words {
   display: flex;
   flex-wrap: wrap;
@@ -214,6 +174,10 @@
 
 .course-word[data-wrong='true'] {
   border-color: #9b4f36;
+}
+
+.course-word[data-revealed='true'] {
+  box-shadow: inset 0 0 0 2px #14ae5c;
 }
 
 .course-word:focus-visible {
@@ -312,4 +276,143 @@
 .course-app[lang='zh-CN'] .course-lesson .lesson-topbar__name {
   font-family: var(--ba-font-zh-title);
   font-weight: 700;
+}
+
+.course-bench,
+.course-revealed,
+.course-frame {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--ba-paper, #ffffff);
+  color: var(--ba-brand-dark, #133547);
+}
+
+.course-frame input {
+  min-width: 8ch;
+  margin: 0 4px;
+  padding: 6px 8px;
+  border: 1px solid var(--ba-choice-border, #c9b8b2);
+  border-radius: 12px;
+  font: inherit;
+  color: inherit;
+}
+
+.course-canvas {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.course-canvas textarea {
+  min-height: 140px;
+  padding: 12px;
+  border: 1px solid var(--ba-choice-border, #c9b8b2);
+  border-radius: 16px;
+  font: inherit;
+  color: var(--ba-brand-dark, #133547);
+  background: var(--ba-paper, #ffffff);
+}
+
+.course-check {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.course-check__number {
+  margin: 0;
+  font-family: var(--ba-font-heading-en, "Dosis", sans-serif);
+  font-weight: 800;
+  font-size: 64px;
+  line-height: 1;
+}
+
+.course-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.course-dot {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 2px solid var(--ba-brand-dark, #133547);
+  border-radius: 999px;
+  background: transparent;
+}
+
+.course-dot[data-answered='true'] {
+  background: var(--ba-brand-dark, #133547);
+}
+
+.course-dot[aria-current='true'] {
+  outline: 2px solid var(--ba-brand-dark, #133547);
+  outline-offset: 3px;
+}
+
+.course-results ol {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.course-results button {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  min-height: 50px;
+  padding: 10px 12px;
+  border: 1px solid var(--ba-choice-border, #c9b8b2);
+  border-radius: 16px;
+  background: var(--ba-paper, #ffffff);
+  color: inherit;
+  text-align: left;
+  font: inherit;
+}
+
+.course-practice {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: var(--ba-paper, #ffffff);
+  color: var(--ba-brand-dark, #133547);
+  box-shadow: 0 8px 24px rgba(19, 53, 71, 0.16);
+  pointer-events: none;
+}
+
+.course-practice button {
+  pointer-events: auto;
+  min-height: 36px;
+}
+
+.course-practice__sparks {
+  display: flex;
+  gap: 3px;
+}
+
+.course-practice__sparks i {
+  width: 6px;
+  height: 10px;
+  background: #14ae5c;
+  animation: course-spark 700ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-practice__sparks {
+    display: none;
+  }
+}
+
+@keyframes course-spark {
+  from { transform: translateY(6px) scale(0.6); opacity: 0; }
+  to { transform: translateY(-8px) scale(1); opacity: 1; }
 }

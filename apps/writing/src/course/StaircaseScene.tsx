@@ -2,8 +2,6 @@ import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type K
 import type { BALocale } from '@big-academy/design-system';
 import './StaircaseScene.css';
 
-export type StaircaseVariant = 'A' | 'B';
-
 const STEP_GAP = 290;
 const CARD_WIDTH = 260;
 const INSET = 40;
@@ -16,8 +14,8 @@ function clamp(value: number, lower: number, upper: number) {
 }
 
 /**
- * Staircase geometry is shared by both A/B visual treatments.
- * Adapted from the designer's E-01 staircase reference; 15 degrees is not hardcoded.
+ * Staircase geometry for the v2-terraces path.
+ * Rise comes from the viewport. 15 degrees is not hardcoded.
  */
 export function stepRise(viewWidth: number, viewHeight: number): number {
   const clearance = clamp(viewHeight * 0.4, 220, 280);
@@ -35,18 +33,24 @@ export function cameraForStep(index: number, viewportWidth: number, count: numbe
   return clamp(index * STEP_GAP + CARD_WIDTH / 2 - viewportWidth / 2, 0, maxX);
 }
 
-/** Review-only diagonal scene: the product supplies ordered nodes and all navigation eligibility. */
+const PARALLAX = { cloud: 0.12, hill2: 0.4, hill1: 0.72 } as const;
+const HILL_RATIO = 656 / 1568;
+const SKY = '#58A8E8';
+
+function coverWidth(viewport: number, maxTravel: number, ratio: number) {
+  return Math.ceil(Math.max(viewport, 1568) + (1 - ratio) * maxTravel + 160);
+}
+
+/** v2-terraces stage. The product supplies nodes and every navigation gate. */
 export function StaircaseScene({
   children,
   count,
   focusIndex,
-  variant,
   locale,
 }: {
   children: ReactNode;
   count: number;
   focusIndex: number;
-  variant: StaircaseVariant;
   locale: BALocale;
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -141,10 +145,6 @@ export function StaircaseScene({
     setCameraX(cameraForStep(clamp(target, 0, count - 1), view.width, count));
   };
 
-  const railWidth = Math.max(CARD_WIDTH, (count - 1) * STEP_GAP + CARD_WIDTH);
-  const pathD = Array.from({ length: count }, (_, i) =>
-    (i === 0 ? 'M ' : 'L ') + (i * STEP_GAP + CARD_WIDTH / 2) + ' ' + pedestalAnchorY(i, count, rise)
-  ).join(' ');
   const style = {
     '--step-count': count,
     '--step-rise': String(rise) + 'px',
@@ -152,16 +152,29 @@ export function StaircaseScene({
     '--rail-height': String(railHeight) + 'px',
     transform: 'translate3d(' + (-boundedX) + 'px, ' + (-cameraY) + 'px, 0)',
   } as CSSProperties;
+  const layer = (ratio: number): CSSProperties => ({
+    transform: 'translate3d(' + -ratio * boundedX + 'px, ' + -ratio * cameraY + 'px, 0)',
+  });
+  const hillBox = (ratio: number): CSSProperties => {
+    const width = coverWidth(view.width, maxX, ratio);
+    return {
+      width,
+      height: Math.round(width * HILL_RATIO),
+      ...layer(ratio),
+    };
+  };
 
   return (
     <div
       ref={viewportRef}
       className="staircase-viewport"
-      data-variant={variant}
+      data-landscape="v2-terraces"
       data-camera-x={Math.round(boundedX)}
+      data-camera-y={Math.round(cameraY)}
       data-rise-px={rise}
       data-anchor-basis="pedestal-y"
       data-dragging={dragging ? 'true' : 'false'}
+      data-sky={SKY}
       role="region"
       tabIndex={0}
       aria-label={locale === 'zh' ? '斜向课程阶梯：方向键浏览，Home 和 End 前往两端' : 'Diagonal lesson staircase: arrow keys navigate; Home and End reach the ends'}
@@ -171,12 +184,17 @@ export function StaircaseScene({
       onPointerCancel={pointerUp}
       onKeyDown={keyDown}
     >
-      <div className="staircase-rail" style={style}>
-        {variant === 'B' ? (
-          <svg className="staircase-continuous-path" width={railWidth} height={railHeight} aria-hidden="true">
-            <path d={pathD} />
-          </svg>
-        ) : null}
+      <div className="path-sky" data-testid="path-sky" data-parallax="0" aria-hidden="true" />
+      <div className="path-layer path-cloud" data-testid="path-cloud" data-parallax={PARALLAX.cloud} style={layer(PARALLAX.cloud)} aria-hidden="true">
+        <img src="/path/v2-terraces/cloud.png" alt="" width={1024} height={1024} />
+      </div>
+      <div className="path-layer path-hill path-hill-2" data-testid="path-hill-2" data-parallax={PARALLAX.hill2} style={hillBox(PARALLAX.hill2)} aria-hidden="true">
+        <img src="/path/v2-terraces/hill-2-mid.png" alt="" width={1568} height={656} />
+      </div>
+      <div className="path-layer path-hill path-hill-1" data-testid="path-hill-1" data-parallax={PARALLAX.hill1} style={hillBox(PARALLAX.hill1)} aria-hidden="true">
+        <img src="/path/v2-terraces/hill-1-foreground.png" alt="" width={1568} height={656} />
+      </div>
+      <div className="staircase-rail" data-parallax="1" style={style}>
         {children}
       </div>
     </div>

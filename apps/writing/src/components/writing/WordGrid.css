@@ -1,0 +1,92 @@
+/* BA-WR-003 candidate connected tabs. Not Approved. */
+.word-grid {
+  --word-tab: #f3d2bf;
+  margin-top: 16px;
+  min-width: 0;
+}
+
+.word-grid__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 8px;
+  padding: 0;
+}
+
+.word-grid__tab {
+  position: relative;
+  min-height: 44px;
+  padding: 8px 14px 10px;
+  border: 0;
+  border-radius: 14px 14px 0 0;
+  background: color-mix(in srgb, var(--word-tab) 55%, white);
+  color: var(--ba-brand-dark, #133547);
+  font: 700 15px/1.2 var(--ba-font-heading-en, "Dosis", sans-serif);
+  cursor: pointer;
+}
+
+.word-grid__tab[data-selected] {
+  background: var(--word-tab);
+  z-index: 1;
+  margin-bottom: -1px;
+}
+
+.word-grid__tab[data-focus-visible] {
+  outline: 2px solid var(--ba-focus-ring, #133547);
+  outline-offset: 2px;
+}
+
+.word-grid__panel,
+.word-grid[data-tabs='off'] .word-grid__cards {
+  background: var(--word-tab);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.word-grid__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.word-grid__card {
+  min-height: 50px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ba-brand-dark, #133547);
+  font: 600 16px/1.2 var(--ba-font-body-en, "Jost", sans-serif);
+  cursor: pointer;
+}
+
+.word-grid__card[data-used='true'] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.word-grid__card[data-hint='true'] {
+  outline: 2px solid var(--ba-brand-dark, #133547);
+}
+
+.word-grid__card:focus-visible {
+  outline: 2px solid var(--ba-focus-ring, #133547);
+  outline-offset: 2px;
+}
+
+.word-grid__card.shake {
+  animation: word-grid-shake 280ms linear;
+}
+
+@keyframes word-grid-shake {
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+.word-grid__empty {
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word-grid__card.shake { animation: none; }
+}
