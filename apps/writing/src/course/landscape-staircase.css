@@ -1,0 +1,283 @@
+/*
+ * E-01 landscape comparison theme. [E] candidate values live only under
+ * [data-staircase='landscape'] / [data-theme='landscape']. They are not
+ * global approved tokens and do not replace the R1 gradient staircase.
+ */
+.course-path[data-staircase='landscape'] {
+  --ba-staircase-landscape-sky-top: #b7dff6; /* [E] */
+  --ba-staircase-landscape-sky-mid: #e7f3ea; /* [E] */
+  --ba-staircase-landscape-horizon: #fff3cf; /* [E] */
+  --ba-staircase-landscape-grass: #d7eb86; /* [E] */
+  --ba-staircase-landscape-grass-deep: #3c7434; /* [E] */
+  position: relative;
+  overflow: hidden;
+  background: var(--ba-staircase-landscape-sky-top);
+  color: var(--ba-color-content-primary);
+}
+
+.course-path[data-staircase='landscape'] .course-path__header,
+.course-path[data-staircase='landscape'] .course-path__main {
+  position: relative;
+  z-index: 1;
+}
+
+.course-path[data-staircase='landscape'] .course-path__header .course-title {
+  color: var(--ba-color-content-primary);
+}
+
+.landscape-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.landscape-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--ba-staircase-landscape-sky-top) 0%,
+    #d7eef8 34%,
+    var(--ba-staircase-landscape-horizon) 62%,
+    #e7f6c8 100%
+  );
+}
+
+.landscape-sun {
+  position: absolute;
+  left: 62%;
+  top: 34%;
+  width: min(42vw, 340px);
+  height: min(22vw, 180px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 236, 186, 0.95) 0%, rgba(255, 244, 214, 0.4) 46%, transparent 72%);
+}
+
+.landscape-layer,
+.landscape-clouds,
+.landscape-plane-slot {
+  position: absolute;
+  pointer-events: none;
+}
+
+.landscape-layer--far,
+.landscape-layer--mid,
+.landscape-layer--near {
+  inset: 0;
+  transform: none;
+}
+
+.landscape-peaks,
+.landscape-hills,
+.landscape-foreground,
+.landscape-clouds {
+  display: block;
+  height: auto;
+}
+
+.landscape-layer--far .landscape-peaks {
+  position: absolute;
+  left: -14%;
+  width: 128%;
+  bottom: 24%;
+  transform: translate3d(calc(var(--landscape-shift, 0px) * -0.03), 0, 0);
+}
+
+.landscape-layer--mid .landscape-hills {
+  position: absolute;
+  left: -18%;
+  width: 136%;
+  bottom: 6%;
+  transform: translate3d(calc(var(--landscape-shift, 0px) * -0.06), 0, 0);
+}
+
+.landscape-layer--near .landscape-foreground {
+  position: absolute;
+  left: -22%;
+  width: 144%;
+  bottom: -36px;
+  transform: translate3d(calc(var(--landscape-shift, 0px) * -0.1), 0, 0);
+}
+
+.landscape-haze {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22%;
+  height: 24%;
+  background: linear-gradient(180deg, transparent, rgba(255, 247, 224, 0.55));
+}
+
+.landscape-clouds {
+  left: -6%;
+  top: 92px;
+  width: 112%;
+  transform: translate3d(calc(var(--landscape-shift, 0px) * -0.015), 0, 0);
+}
+
+.landscape-plane-slot {
+  left: 0;
+  right: 0;
+  top: 108px;
+  height: 90px;
+}
+
+.landscape-plane {
+  position: absolute;
+  left: 58%;
+  top: 0;
+  width: 168px;
+  height: 78px;
+}
+
+.landscape-plane svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.landscape-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+  background-size: 140px 140px;
+}
+
+.staircase-viewport[data-theme='landscape'] {
+  background: transparent;
+}
+
+.staircase-viewport[data-theme='landscape'] .staircase-rail {
+  z-index: 1;
+}
+
+.course-path[data-staircase='landscape'] .staircase-viewport .stair-lesson-card,
+.course-path[data-staircase='landscape'] .staircase-viewport .course-nodes :is(.course-unit, .course-intro, .course-goal, .unit-milestone) {
+  background: var(--ba-color-warm-1);
+  border-color: color-mix(in srgb, var(--ba-color-success-7) 24%, var(--ba-color-warm-3));
+  box-shadow:
+    0 8px 0 color-mix(in srgb, var(--ba-color-success-8) 22%, transparent),
+    0 16px 22px rgba(36, 78, 32, 0.12);
+}
+
+.course-path[data-staircase='landscape'] .stair-lesson-card[data-location='locked'] .stair-lesson-card__capsule {
+  background: var(--ba-color-neutral-8);
+  color: #fff;
+}
+
+.staircase-viewport[data-theme='landscape'] .course-nodes > li::after {
+  top: calc(100% - 2px);
+  left: -46px;
+  width: 352px;
+  height: 64px;
+  border: 0;
+  border-radius: 46% 46% 42% 42%;
+  background:
+    radial-gradient(14px 11px at 22% 46%, #e7f29a 97%, transparent 100%),
+    radial-gradient(16px 12px at 74% 40%, #8fbf55 97%, transparent 100%),
+    linear-gradient(180deg, var(--ba-staircase-landscape-grass) 0%, #8fbf55 48%, #4e8a3c 100%);
+  box-shadow:
+    0 12px 0 var(--ba-staircase-landscape-grass-deep),
+    0 18px 16px rgba(36, 78, 32, 0.18);
+}
+
+.staircase-viewport[data-theme='landscape'] .course-nodes > li::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  left: -22px;
+  right: auto;
+  top: calc(100% - 18px);
+  width: 42px;
+  height: 46px;
+  opacity: 1;
+  background:
+    radial-gradient(circle at 50% 28%, #f0d15c 0 10px, transparent 11px),
+    radial-gradient(circle at 24% 48%, #c6de62 0 11px, transparent 12px),
+    radial-gradient(circle at 72% 46%, #3f7340 0 12px, transparent 13px),
+    linear-gradient(#8a6244, #8a6244) center bottom / 3px 16px no-repeat;
+}
+
+.staircase-viewport[data-theme='landscape'] .course-nodes > li:nth-child(3n)::before {
+  left: auto;
+  right: -18px;
+  background:
+    radial-gradient(circle at 50% 30%, #7eaf45 0 11px, transparent 12px),
+    radial-gradient(circle at 28% 50%, #d5e56a 0 10px, transparent 11px),
+    radial-gradient(circle at 70% 48%, #4f8d3c 0 12px, transparent 13px),
+    linear-gradient(#8a6244, #8a6244) center bottom / 3px 16px no-repeat;
+}
+
+.staircase-viewport[data-theme='landscape'] .course-nodes > li:nth-child(3n + 2)::before {
+  transform: scale(0.82);
+  transform-origin: center bottom;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .landscape-cloud-drift {
+    animation: landscape-cloud 46s ease-in-out infinite alternate;
+  }
+
+  .landscape-plane {
+    animation: landscape-fly 28s ease-in-out infinite alternate;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landscape-cloud-drift,
+  .landscape-plane {
+    animation: none !important;
+  }
+}
+
+@keyframes landscape-cloud {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(36px, 6px, 0); }
+}
+
+@keyframes landscape-fly {
+  from { transform: translate3d(0, 6px, 0); }
+  to { transform: translate3d(64px, -16px, 0); }
+}
+
+@media (max-width: 834px) {
+  .landscape-plane {
+    left: 62%;
+    width: 132px;
+    height: 62px;
+  }
+
+  .landscape-clouds {
+    top: 84px;
+  }
+}
+
+@media (max-width: 500px) {
+  .landscape-plane {
+    left: 8%;
+    top: 0;
+    width: 112px;
+    height: 52px;
+  }
+
+  .landscape-plane-slot {
+    top: 96px;
+  }
+
+  .landscape-sun {
+    left: 82%;
+    top: 18%;
+  }
+
+  .staircase-viewport[data-theme='landscape'] .course-nodes > li::before {
+    transform: scale(0.8);
+    transform-origin: center bottom;
+  }
+}

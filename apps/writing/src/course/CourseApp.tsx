@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { StaircaseScene } from './StaircaseScene';
+import { staircaseThemeFromSearch } from './staircaseTheme';
 import { useSyncExternalStore } from 'react';
 import { BAButton, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
@@ -72,13 +73,14 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
 
 function PathView({ session }: { session: CourseSession }) {
   const zh = session.zh;
+  const staircaseTheme = staircaseThemeFromSearch(window.location.search);
   const level = session.level();
   const nodes = session.pathNodes();
   const freshMilestone = session.celebration && !session.celebration.replay ? session.celebration.unitId : null;
   const focusIndex = Math.max(0, nodes.findIndex((node) => node.kind === 'lesson' && node.lesson && (node.lesson.action === 'start' || node.lesson.action === 'continue')));
 
   return (
-    <div className="course-path">
+    <div className="course-path" data-staircase={staircaseTheme}>
       <BATabs className="course-level-tabs" selectedKey={session.levelId} onSelectionChange={(key) => session.switchLevel(key)}>
         <header className="course-path__bar course-path__header">
           <div className="course-path__header-title">
@@ -109,7 +111,7 @@ function PathView({ session }: { session: CourseSession }) {
             {session.openNotice}
           </p>
         ) : null}
-        <StaircaseScene key={level.id} variant="A" locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
+        <StaircaseScene key={level.id} variant="A" theme={staircaseTheme} locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
         <ol className="course-nodes">
           {nodes.map((node, index) => {
             if (node.kind === 'intro') {
