@@ -333,3 +333,20 @@
 .course-word[data-feedback="incorrect"] {background:var(--ba-color-danger-7);border-color:var(--ba-color-danger-7);color:#fff;}
 .course-word[data-feedback="dimmed"] {background:var(--ba-color-neutral-2);color:var(--ba-color-content-secondary);}
 .course-word:disabled {cursor:default;}
+
+/* R2 mobile: preserve independent paper/Coach scrolling and footer pinned in rail. */
+@media (max-width:640px) {
+  .course-lesson {height:100dvh;min-height:0;overflow:hidden;grid-template-rows:120px minmax(0,1fr);}
+  .course-lesson .lesson-workspace {
+    height:100%;
+    max-height:100%;
+    min-height:0;
+    overflow:hidden;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:minmax(0,1.6fr) minmax(0,1fr);
+  }
+  .course-lesson .lesson-workspace__paper {min-height:0;overflow-y:auto;}
+  .course-lesson .lesson-workspace__rail {min-height:0;overflow:hidden;}
+  .course-lesson .lesson-workspace__coach {min-height:0;overflow-y:auto;}
+  .course-lesson .lesson-workspace__footer {position:relative;bottom:0;z-index:1;}
+}
