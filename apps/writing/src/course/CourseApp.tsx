@@ -130,17 +130,18 @@ function PathView({ session }: { session: CourseSession }) {
               return (
                 <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
                   <section className="course-unit" data-testid="unit" data-unit={node.unit.id}>
+                    <span className="course-unit__fold" data-testid="unit-fold" aria-hidden="true" />
                     <p className="course-kicker">
                       {zh ? `第 ${node.unit.index} 单元` : `Unit ${node.unit.index}`} · {node.unit.typeLabel}
                     </p>
                     <h2>{node.unit.title}</h2>
-                    <p>{node.unit.meta}</p>
+                    <p className="course-unit__meta">{node.unit.meta}</p>
                     {node.unit.goals.length ? (
-                      <ul>
+                      <div className="course-unit__goals">
                         {node.unit.goals.map((goal) => (
-                          <li key={goal}>{goal}</li>
+                          <p key={goal} className="course-unit__goal">{goal}</p>
                         ))}
-                      </ul>
+                      </div>
                     ) : null}
                   </section>
                 </li>

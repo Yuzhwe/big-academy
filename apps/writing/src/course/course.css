@@ -108,6 +108,61 @@
   font-size: 28px;
 }
 
+/* BA-WR-007 folded sheet. Seam runs the F×F upper-right square. Decorative only. */
+.course-unit {
+  --unit-fold: var(--ba-writing-unit-fold-size, 32px);
+  position: relative;
+  background: var(--ba-writing-unit-paper-surface, #fff9f2);
+  border-color: var(--ba-writing-unit-paper-border, #dcc3ab);
+  padding-right: calc(16px + var(--unit-fold) * 0.45);
+}
+.course-unit__fold {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--unit-fold);
+  height: var(--unit-fold);
+  pointer-events: none;
+  border-top-right-radius: inherit;
+}
+.course-unit__fold::before,
+.course-unit__fold::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.course-unit__fold::before {
+  background: linear-gradient(to bottom left, var(--ba-writing-unit-fold-under, #f8f1ea) 50%, transparent 50%);
+  border-top-right-radius: inherit;
+}
+.course-unit__fold::after {
+  background: linear-gradient(
+    to bottom left,
+    var(--ba-writing-unit-fold-face-light, #fffdf9),
+    var(--ba-writing-unit-fold-face-dark, #e7d6c9)
+  );
+  clip-path: polygon(
+    0 0,
+    100% 100%,
+    var(--ba-writing-unit-fold-tip-radius, 4px) 100%,
+    0 calc(100% - var(--ba-writing-unit-fold-tip-radius, 4px))
+  );
+  filter: drop-shadow(var(--ba-writing-unit-fold-shadow, 0 2px 4px rgba(71, 44, 34, 0.12)));
+}
+.course-unit__meta,
+.course-unit__goal {
+  margin: 0;
+  font-size: var(--ba-writing-description-font-size, 16px);
+  line-height: 1.4;
+}
+.course-unit__goals {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
 .course-nodes {
   list-style: none;
   margin: 0;
