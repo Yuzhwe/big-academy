@@ -1,0 +1,15 @@
+.ba-choice-list { display:grid; gap:var(--ba-writing-choice-gap,10px); align-content:start; min-width:0; }
+.ba-choice { display:flex; align-items:flex-start; gap:var(--ba-writing-choice-gap,10px); min-height:var(--ba-writing-choice-min-height,50px); box-sizing:border-box; padding:var(--ba-writing-choice-padding-block,8px) var(--ba-writing-choice-padding-inline,12px); border:1px solid var(--ba-color-warm-4); border-radius:var(--ba-writing-choice-radius,14px); background:var(--ba-color-surface-canvas); color:var(--ba-color-content-primary); font:400 var(--ba-type-control-size,16px)/1.5 var(--ba-type-body-family); cursor:pointer; }
+.ba-choice__marker { display:grid; place-items:center; flex:none; box-sizing:border-box; width:26px; height:26px; border:2px solid currentColor; border-radius:50%; font:800 15px/1 var(--ba-type-numeric-family); margin-top:0; }
+.ba-choice__copy {min-width:0;overflow-wrap:anywhere;}
+.ba-choice[data-selected] { border-color:var(--ba-color-action-primary); box-shadow:inset 0 0 0 1px var(--ba-color-action-primary); }
+.ba-choice[data-selected] .ba-choice__marker {background:var(--ba-color-action-primary);border-color:var(--ba-color-action-primary);color:var(--ba-color-on-action-primary);}
+.ba-choice[data-feedback="correct"] {background:var(--ba-color-success-7);color:#fff;border-color:var(--ba-color-success-7);}
+.ba-choice[data-feedback="correct"] .ba-choice__marker {border-color:currentColor;background:transparent;color:inherit;}
+.ba-choice[data-feedback="incorrect"] {background:var(--ba-color-danger-7);color:#fff;border-color:var(--ba-color-danger-7);}
+.ba-choice[data-feedback="incorrect"] .ba-choice__marker {border-color:currentColor;background:transparent;color:inherit;}
+.ba-choice[data-feedback="revealed"] {border-color:var(--ba-color-success-6);background:var(--ba-color-success-1);}
+.ba-choice[data-feedback="dimmed"] {background:var(--ba-color-neutral-2);color:var(--ba-color-content-secondary);}
+.ba-choice[data-focus-visible] {outline:2px solid var(--ba-color-content-primary);outline-offset:2px;}
+.ba-choice[data-disabled] {cursor:default;}
+@media (prefers-reduced-motion: reduce) {.ba-choice {transition:none;}}
