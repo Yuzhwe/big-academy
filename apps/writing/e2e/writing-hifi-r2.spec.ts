@@ -42,7 +42,7 @@ test('R2 full authored 8-screen lesson actually passes by answering',async({page
   await page.locator('[data-lesson-focus="G2-O:1"]').click();
   const primary=()=>page.getByTestId('lesson-footer').locator('button').last();
   await primary().click(); // 1 Learn
-  await page.getByRole('radio',{name:/Our school should have a garden for two big reasons/}).click();
+  await page.locator('.ba-choice',{hasText:'Our school should have a garden for two big reasons.'}).click();
   await primary().click(); // 2 grade
   await expect(page.getByTestId('feedback')).toContainText('Right.');
   await primary().click(); // 2 -> 3
@@ -50,7 +50,7 @@ test('R2 full authored 8-screen lesson actually passes by answering',async({page
   await primary().click(); // 3 grade
   await primary().click(); // 3 -> 4
   for(const text of ['Dogs are the best pets','In my opinion, every kid','School lunch should have more fruit']){
-    await page.getByRole('checkbox',{name:new RegExp(text)}).click();
+    await page.locator('.ba-choice',{hasText:text}).click();
   }
   await primary().click(); // 4 grade
   await primary().click(); // 4 -> 5
@@ -71,9 +71,9 @@ test('R2 full authored 8-screen lesson actually passes by answering',async({page
   await expect(page.locator('.writing-compose__criteria')).toBeVisible();
   await primary().click(); // 7 -> 8
   await expect(page.getByTestId('mastery-assessment')).toBeVisible();
-  await page.getByRole('radio',{name:/I believe every student should learn to cook/}).click();
+  await page.locator('.ba-choice',{hasText:'I believe every student should learn to cook.'}).click();
   await primary().click();
-  await page.getByRole('radio',{name:/Our school has 300 students/}).click();
+  await page.locator('.ba-choice',{hasText:'Our school has 300 students.'}).click();
   await primary().click();
   await page.locator('.writing-assessment .course-word',{hasText:'should'}).click();
   await primary().click();
