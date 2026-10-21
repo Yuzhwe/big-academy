@@ -1,10 +1,15 @@
 # Big Academy — Writing PRODUCT.md
 
-**Version:** v0.4 · R3 canonical Writing behavior · 2026-10-21  
-**Status:** R3 design direction approved; terrace/status visual details pending designer signoff; engineering unchanged  
-**Current delivery:** L2 / G2-O / Lesson 1 — Topic sentences (8 Activity Screens)
+**Edition:** Canonical product specification v1 · 2026-10-21
+**Authority:** current Writing product behavior, curriculum content and learning state contracts.
+**Scope:** Writing L2 / G2-O / Lesson 1, eight Activity Screens; other templates are documented for system compatibility.
+**Status:** product behavior retained; R3 visual concepts require designer rendered approval.
 
-## Product Brief — Why, who, outcome
+## How to use this specification
+
+This is the sole active Writing PRODUCT.md. Section headings are topical rather than a historical change log. No R1/R2/R3 review overlay has authority outside this current specification. Design properties and visual tokens are defined in root DESIGN.md and tokens.css; use Component Contracts for component interfaces. Preserve authored tasks, answer validators, retry/shown/skip/assessment logic and saved state. New agents must not substitute generic “correct → next” flow for the template-specific gates below.
+
+## 1. Product context
 
 **User:** a K–12 writing learner at the assigned level. **Core scenario:** enter a Writing lesson from E-01, learn a rule, practise with task-specific checks, apply it in writing, submit a mastery check, and resume if interrupted.
 
@@ -16,7 +21,7 @@
 
 **Out of scope:** implementing the other 44 screens, adding new exercises, old Index/Analytics chrome, user-facing Save my paragraph/Print, or cross-level demo unlocking.
 
-## Information Architecture — What exists and how it connects
+## 2. Information architecture
 
 ```text
 Writing → Level → Unit → Lesson → Activity Screen → optional internal Task/Question
@@ -46,7 +51,7 @@ Shared visual foundations (Warm Frame, White Canvas, type ramp, Iconoir, motion,
 
 **Current build scope:** L2 unit G2-O, Lesson 1, Topic sentences, the eight Activity Screens in [Lesson 1](#lesson-1--topic-sentences). The other eight lessons and their 44 screens are specified here so later lessons use the same gates. They are not part of this build.
 
-## 1. Course shape
+## 3. Course structure
 
 Hierarchy is Level → Unit → Lesson → Activity Screen. A step tag (Skill, Model, Plan, Draft, Revise, Report) is a label on screens, not a separate level the learner navigates.
 
@@ -68,7 +73,7 @@ Lesson 1 goal, shown as the lesson aim: “I can write a topic sentence that tel
 
 The lesson top bar counts **Activity Screens inside the current lesson** (Lesson 1 is 1–8). It does not count questions inside a Check. P7 retains internal question navigation while showing only a prominent single current-question numeral at top-left; full count remains in accessible labeling.
 
-## 2. Four different actions
+## 4. Interaction primitives
 
 Selecting an answer, checking it, showing feedback, and allowing the next screen are four separate steps. A control that only changes a selection never grades. A grade never runs because the learner moved to another row, word, or field.
 
@@ -83,7 +88,7 @@ While a screen is unfinished, the footer primary **is** the action the screen st
 
 Forward jumps respect the lock. Backward moves never do.
 
-## 3. Page gates
+## 5. Activity screen gates
 
 `canOpen(i)` is true when the screen index is at or before the first unfinished screen, or the screen is already complete, or a teacher unlock-all flag is on. A locked screen does not navigate. A blocked forward attempt explains that an earlier screen must be finished. It does not unlock anything.
 
@@ -107,7 +112,7 @@ Completion is **not** “the answer was correct.” `shown` (answer revealed), �
 
 When Next would enter another lesson, the footer label is **End of lesson**. That press opens the lesson-break screen. It does not skip the break. On the last screen of the book, the label is **I’m done** until the screen is seen, then **Finished**.
 
-## 4. Save, Back, leave, and return
+## 6. Navigation and persistence
 
 Course state is one record in this browser, storage key `g2o_unit_state_v4`, schema version 4. Writes are debounced by 250 ms and flushed immediately on navigation, Check completion, Hand in, and leaving the lesson. Older keys (`v3`, `v2`, `v1`) are detected and left unread. There is no second progress store.
 
@@ -131,7 +136,7 @@ Changing the top-bar appearance, or pressing a chip that `canOpen` rejects, does
 
 Text regions restore from stored segments, including a printed frame or given sentence. Undo history is session-only; the text itself is what persists. Word-grid insertion, voice, typing, paste, pictures, and printed task text are stored as the source of each span. That source affects practice credit and in-writing weight. It does not change the correctness tests below.
 
-## 5. Item status, tries, and reveal
+## 7. Answer states, attempts and reveal
 
 Practice items (not Check questions) use status `open`, `done`, or `shown`.
 
@@ -165,7 +170,7 @@ Classification order for produced text: a paste span → paste; else a word-card
 
 In-writing weight is a different scale, threshold 2, and counts only Apply writing, Check writing items, and the genre final paragraph. Typed and voice weigh 1; plan notes, grid spans, and chunk spans weigh 0.5; pictures, paste, and printed text weigh 0. Word-card sets are not offered on Apply, Draft, Revise, or Check.
 
-## 6. Shared layout
+## 8. Shared learning shell behavior
 
 Every Activity Screen is one frame: prompt (instruction, read-aloud, Chinese line when 中文 is on), body, and in-page actions. The lesson shell is white task paper on the left and Coach on the right. Coach scrolls on its own. **Previous** and the one contextual primary action sit in a full-width footer under the right column, outside the Coach transcript.
 
@@ -175,7 +180,7 @@ Option states, each with a text label so color is not the only signal: idle, sel
 
 Keys 1–9 and A–I select a choice when a choice group is on screen. Enter activates Check when that button is enabled and the learner is not typing in a field. Read-aloud on the prompt is available on every template. It does not grade.
 
-## 7. Templates
+## 9. Activity template behavior
 
 ### P1 Book — read
 
@@ -315,7 +320,7 @@ One Check screen is four questions: three drawn from the page pool, then the pag
 
 If the model service is used for paragraph scores elsewhere, Check items themselves stay on the item grader. They are not sent out as a free-form grade.
 
-## 8. Graders
+## 10. Grading and correctness
 
 **Choice.** Sorted selected indexes equal sorted answer indexes, or the `any` rule above.
 
@@ -343,7 +348,7 @@ Success uses the item’s ok line. On a practice miss, if the item lists diagnos
 
 **Lesson 1 writing item on the Check** (`L2-04.mw`). Prompt: write a topic sentence for “Should kids have a pet at home?” Correct only if all of these hold: at least one of think / believe / should / best / opinion / feel; the word pet or pets; at least 5 words; a capital; an end mark. Ok line: “Yes. It answers the question and tells me what you think.”
 
-## 9. Skill skip and the lesson break
+## 11. Skill skip and lesson boundary
 
 Skill status is `learning`, `practice`, `writing`, `review`, or `frozen`. Skipping is allowed unless a teacher turns it off. Status arrives from the mastery record (in this product, from settings or a `skills` query). It is not a button the learner sets.
 
@@ -361,7 +366,7 @@ Lessons are re-counted after a skip. A lesson whose own remaining minutes are 0 
 
 **Lesson break.** End of lesson shows how many screens in the lesson are complete, names the next lesson and its minutes, and offers **Stop for today**, **Back to my path**, and **Keep going**. Stop for today and Back to my path both set the resume screen to the start of the next lesson. Keep going opens that screen. The stopped view says the work is saved on this device and offers a return to the path. Starting the next lesson clears the stopped flag and shows Welcome back once.
 
-## 10. Lesson 1 — Topic sentences
+## 12. Lesson 1 authored eight-screen slice
 
 Build this lesson in this order. Screen ids are stable.
 
@@ -389,21 +394,17 @@ Acceptance for this lesson:
 7. Back, leaving to E-01, and re-entering restore selections, text, tries, Check progress, and screen position as in [Save, Back, leave, and return](#4-save-back-leave-and-return).
 8. Keyboard selection, visible focus, and non-color state labels work on the choice and word tasks. Reduced motion does not block a gate.
 
-## 11A. Current R3 Writing presentation behavior (single source, 2026-10-21)
+## 15. Activity screen indicator and overflow navigation
 
-- **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, P7 assessment, saved answers, resume, Start/Continue/Review/Locked, keyboard/touch and reduced-motion behavior. The Writing demonstration remains eight Activity Screens.
-- **E-01 full-bleed stage:** landscape sky / distant peaks / hills / trees / clouds / subtle plane + parallax is the sole default presentation; no residual beige header/footer bands may occlude the scene. Level navigation and language selector remain usable above scenery without overlapping nodes. Background never captures pointer events or course state.
-- **Camera visibility:** drag, wheel, keyboard, Home and End must reach complete visible first/last nodes, including card bounds, decorative terraces, sticky header and viewport padding; no unreachable clipped upper-right or lower-left cards.
-- **Terrace:** choose the **Layered Landscape Terrace** family (2–3 shallow rounded grass/landform layers). Retire high translucent rectangular vertical pillars. Preserve Lesson card bottom anchors and existing path navigation geometry. Terrace colors/curves are R3 design candidates, not yet approved numeric specifications.
-- **Lesson state:** choose **Number Seal + Attached Symbol**. Lesson number remains dominant; attached small status icon encodes current, completed or locked. Do not restore giant colored status capsules or redundant You're here / Finish prior unit captions. Accessible status descriptions remain; actual state gates do not change. Exact final icon geometry is a designer review candidate.
-- **Unit fold:** folded face must be a continuous rounded corner integrated with the card's outer edge; no detached corner triangle or inner decorative border crossing the folded region. Decorative folded state is not an interactive target.
-- **Lesson card:** title uses exactly two reserved line boxes, 2-line truncation with accessible full title; estimated duration directly below title as number + localized unit, left aligned. CTA uses shared BAButton (height 70px), all approved hover/pressed/focus and reduced motion states. Outer/inner radius follows concentric relation rather than independent unrelated values.
-- **Activity hierarchy:** one primary separation treatment per structural boundary (surface OR stroke OR divider unless independently justified). Right-column action footer no longer draws its own filled panel or redundant divider; it remains pinned below independently scrolling Coach. Primary and Previous fill footer width at 1:2 with 8px gap and 70px heights. Quiet neutral container strokes must not obscure interactive focus/graded borders. Decrease gaps between peer content containers by one existing spacing scale step; do not tighten line-height or hit targets.
-- **TopBar:** keep title/meta and centered ActivityScreenIndicator shared with the anchored full-screen Popover. Icon Back to Staircase remains 50×50. P7's internal question count is distinct from top eight Activity Screen indicators.
-- **P2:** differentiate Not yet vs Better; Better is instructional emphasis, never a checked practice success event.
-- **Visual authority:** backdrop appearance originates from the user-supplied E01-landscape-backdrop-prompt.md visual record, baseline commit 913dbfe on feat/writing-hifi-r1-593dee37. That historical implementation requested R1 as default; **this instruction is superseded**: in R3 landscape is default. The recorded grass terrace is a useful source, but the new R3 terrace family must not be forced to reproduce the old geometry unchanged.
+**Single component:** `ActivityScreenIndicator` is shared between LessonTopBar and the **All activity screens** anchored popover. Both must render the same circle/number/status-icon visual component and state mappings; the popover must not create a separate rectangular-number design. Container layout, size and touch target may vary by a documented variant.
 
-## 11. Lesson chrome
+**Composite states:** `selected` (current view) is independent of progress status (`incomplete`, `done`, `locked`, `skipped`). A completed screen may be selected. Locked cannot be selected through user action. For `shown` provide an accessible answer-revealed description; do not pretend correctness. Numerals remain visible in all states. Done uses a small bottom check-circle, locked uses a bottom lock-circle; there is **no connecting line** between the large number circle and its lower status circle. The lower circle sits against or slightly overlaps the number circle without jumping across states. Visual tokens, relative positioning, and responsive variants are defined by root DESIGN.md and component contract.
+
+**Overflow:** do not impose an eight-screen data limit. Visible node count responds to available container width; 8 desktop / 6 tablet / 4 mobile are review targets, not enforced product limits or exact breakpoints. Keep current screen visible and collapse other numbers behind a clearly labeled ellipsis trigger. A nonmodal **anchored Popover**, not a blocking dialog, opens near that trigger and lists **all** Screen numbers (including those visible outside) in a responsive grid. Overflow scrolls within the popover and the current indicator is initially in view. On allowed screen selection: validate access, navigate, close. Locked indicators do not navigate. Outside click, trigger toggle, close affordance, and Escape dismiss; Escape returns focus to the trigger. Opening/closing never alters progress or attempts. Use accessible button names and keyboard navigation. A shown-but-unanswered assessment item does not count as an additional Lesson Screen.
+
+**Component contract:** separate `screenNumber`, `progressStatus`, `isSelected`, `canOpen`, and `onNavigate`; popover open/close is its container's state. Use the same React Aria focus/keyboard semantics across both locations. Document compact/regular sizes, hover/focus/pressed/disabled and Done+Selected combinations in Storybook; verify 1440/1024/834/390 widths, long headings, and 200% zoom.
+
+## 14. Lesson TopBar and footer actions
 
 **BA-WR-001 top bar.** No hamburger and no collapsible menu. Left: icon-only Back (returns to E-01, does not clear answers; no visible helper text), lesson name, and necessary metadata. Center: the lesson’s Activity Screen progress, centered on the full bar, not in the leftover space between the title and the right edge. Right: no learner action. Long English or Chinese titles truncate inside the left area and do not push the progress off center.
 
@@ -415,17 +416,7 @@ Progress reads the live lesson screen list. Chips distinguish done, current, ava
 
 **Language.** 中文 shows the authored Chinese line under the English. It does not change answers or gates.
 
-## Activity Screen indicator and overflow navigation — approved interaction direction
-
-**Single component:** `ActivityScreenIndicator` is shared between LessonTopBar and the **All activity screens** anchored popover. Both must render the same circle/number/status-icon visual component and state mappings; the popover must not create a separate rectangular-number design. Container layout, size and touch target may vary by a documented variant.
-
-**Composite states:** `selected` (current view) is independent of progress status (`incomplete`, `done`, `locked`, `skipped`). A completed screen may be selected. Locked cannot be selected through user action. For `shown` provide an accessible answer-revealed description; do not pretend correctness. Numerals remain visible in all states. Done uses a small bottom check-circle, locked uses a bottom lock-circle; there is **no connecting line** between the large number circle and its lower status circle. The lower circle sits against or slightly overlaps the number circle without jumping across states. Visual tokens, relative positioning, and responsive variants are defined by root DESIGN.md and component contract.
-
-**Overflow:** do not impose an eight-screen data limit. Visible node count responds to available container width; 8 desktop / 6 tablet / 4 mobile are review targets, not enforced product limits or exact breakpoints. Keep current screen visible and collapse other numbers behind a clearly labeled ellipsis trigger. A nonmodal **anchored Popover**, not a blocking dialog, opens near that trigger and lists **all** Screen numbers (including those visible outside) in a responsive grid. Overflow scrolls within the popover and the current indicator is initially in view. On allowed screen selection: validate access, navigate, close. Locked indicators do not navigate. Outside click, trigger toggle, close affordance, and Escape dismiss; Escape returns focus to the trigger. Opening/closing never alters progress or attempts. Use accessible button names and keyboard navigation. A shown-but-unanswered assessment item does not count as an additional Lesson Screen.
-
-**Component contract:** separate `screenNumber`, `progressStatus`, `isSelected`, `canOpen`, and `onNavigate`; popover open/close is its container's state. Use the same React Aria focus/keyboard semantics across both locations. Document compact/regular sizes, hover/focus/pressed/disabled and Done+Selected combinations in Storybook; verify 1440/1024/834/390 widths, long headings, and 200% zoom.
-
-## 12. E-01 path
+## 16. E-01 Staircase behavior
 
 E-01 is a diagonal staircase, lower-left to upper-right, not a vertical list. The path form is separate platforms: one thin platform per node. Card bottom sits on the platform top. Card height grows upward and does not move the anchor, the camera, or the slope.
 
@@ -445,7 +436,7 @@ Only G2-O lessons call the course session. A locked card never navigates and nev
 
 The E-01 default is the layered landscape environment specified by DESIGN.md; the formerly prescribed warm-brown vertical gradient is retired from the active Writing visual contract. Landscape layers are decorative only and cannot affect navigation, scoring or persistence.
 
-## 13. Celebration
+## 17. Celebration triggers
 
 Celebration is presentation. It never grades, never completes a screen, and never writes the course record.
 
@@ -461,13 +452,27 @@ Celebration is presentation. It never grades, never completes a screen, and neve
 
 The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribbons, Confetti, Cannon, Explosions, Falling, Parade, Party, Fire, Firefly, Fireworks). Nothing auto-plays on entry. Previews stop on Escape, on leaving the page, or after 15 seconds, and they do not block page controls. The gallery is not the milestone rule above.
 
-## 14. What is not in the lesson chrome
+## 13. Writing visual behavior requirements
+
+- **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, P7 assessment, saved answers, resume, Start/Continue/Review/Locked, keyboard/touch and reduced-motion behavior. The Writing demonstration remains eight Activity Screens.
+- **E-01 full-bleed stage:** landscape sky / distant peaks / hills / trees / clouds / subtle plane + parallax is the sole default presentation; no residual beige header/footer bands may occlude the scene. Level navigation and language selector remain usable above scenery without overlapping nodes. Background never captures pointer events or course state.
+- **Camera visibility:** drag, wheel, keyboard, Home and End must reach complete visible first/last nodes, including card bounds, decorative terraces, sticky header and viewport padding; no unreachable clipped upper-right or lower-left cards.
+- **Terrace:** choose the **Layered Landscape Terrace** family (2–3 shallow rounded grass/landform layers). Retire high translucent rectangular vertical pillars. Preserve Lesson card bottom anchors and existing path navigation geometry. Terrace colors/curves are R3 design candidates, not yet approved numeric specifications.
+- **Lesson state:** choose **Number Seal + Attached Symbol**. Lesson number remains dominant; attached small status icon encodes current, completed or locked. Do not restore giant colored status capsules or redundant You're here / Finish prior unit captions. Accessible status descriptions remain; actual state gates do not change. Exact final icon geometry is a designer review candidate.
+- **Unit fold:** folded face must be a continuous rounded corner integrated with the card's outer edge; no detached corner triangle or inner decorative border crossing the folded region. Decorative folded state is not an interactive target.
+- **Lesson card:** title uses exactly two reserved line boxes, 2-line truncation with accessible full title; estimated duration directly below title as number + localized unit, left aligned. CTA uses shared BAButton (height 70px), all approved hover/pressed/focus and reduced motion states. Outer/inner radius follows concentric relation rather than independent unrelated values.
+- **Activity hierarchy:** one primary separation treatment per structural boundary (surface OR stroke OR divider unless independently justified). Right-column action footer no longer draws its own filled panel or redundant divider; it remains pinned below independently scrolling Coach. Primary and Previous fill footer width at 1:2 with 8px gap and 70px heights. Quiet neutral container strokes must not obscure interactive focus/graded borders. Decrease gaps between peer content containers by one existing spacing scale step; do not tighten line-height or hit targets.
+- **TopBar:** keep title/meta and centered ActivityScreenIndicator shared with the anchored full-screen Popover. Icon Back to Staircase remains 50×50. P7's internal question count is distinct from top eight Activity Screen indicators.
+- **P2:** differentiate Not yet vs Better; Better is instructional emphasis, never a checked practice success event.
+- **Visual authority:** backdrop appearance originates from the user-supplied E01-landscape-backdrop-prompt.md visual record, baseline commit 913dbfe on feat/writing-hifi-r1-593dee37. That historical implementation requested R1 as default; **this instruction is superseded**: in R3 landscape is default. The recorded grass terrace is a useful source, but the new R3 terrace family must not be forced to reproduce the old geometry unchanged.
+
+## 18. Excluded chrome and non-goals
 
 - No hamburger, Index, or Analytics in the learner chrome. Session, screen, and score data stay in the course record for the path, the top bar, and the Coach.
 - No Save or Print button on the book page. Saving remains automatic.
 - No demo unlock on the student path.
 
-## 15. Open
+## 19. Open product decisions
 
 - R3 landscape is the E-01 default; old warm-brown gradient and old pillar-based terrace are historical, not alternative default requirements.
 - R1 Choice treatments including approximately 40% non-answer dimming require accessibility contrast review. Shake and audio cues remain optional candidates and cannot change gates.
@@ -475,3 +480,4 @@ The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribb
 - If a milestone becomes incomplete (for example after a failed Check revokes a skip) and later becomes complete again, whether that return auto-plays is not decided. Do not add a new celebration for that case.
 - Level Goal stays the next-level label. A scored Level Goal formula is not part of this product.
 - Live-screen visual sign-off (spacing, type, focus rings, screenshots) remains with the designer. Behavior in this document does not wait on that sign-off.
+
