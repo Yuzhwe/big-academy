@@ -13,7 +13,11 @@
     "test:layout": "npm run test:layout -w @big-academy/writing",
     "storybook": "npm run storybook -w @big-academy/writing",
     "build-storybook": "npm run build-storybook -w @big-academy/writing",
-    "check:docs": "node scripts/check-document-sources.mjs"
+    "check:docs": "node scripts/check-document-sources.mjs",
+    "check:reuse": "node scripts/check-component-reuse.mjs",
+    "check:tokens": "node scripts/check-design-tokens.mjs",
+    "check:system": "npm run check:docs && npm run check:reuse && npm run check:tokens && npm run check:motion && npm run typecheck && npm test && npm run build",
+    "check:motion": "node scripts/check-motion-runtime.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",

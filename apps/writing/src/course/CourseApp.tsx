@@ -1,12 +1,14 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { StaircaseScene, type StaircaseVariant } from './StaircaseScene';
 import { useSyncExternalStore } from 'react';
-import { Checkbox, Radio, RadioGroup } from 'react-aria-components';
-import { BAButton, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
+import { BAButton, BAChoice, BAStatus, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { LessonWorkspace } from '../components/writing/LessonWorkspace';
+import { LessonActivityExtras } from '../components/writing/LessonActivityExtras';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
+import { StairUnitCard } from '../components/writing/StairUnitCard';
+import { StairLevelIntroCard } from '../components/writing/StairLevelIntroCard';
 import alexHtml from '../../source/alex-original.html?raw';
 import { CourseSession } from '../product/courseSession';
 import './course.css';
@@ -23,9 +25,10 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const [session] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
   // Visual A/B state is a review-only control, not saved to Alex's learning state.
-  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('B');
+  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('A');
   const locale = session.locale;
   const zh = locale === 'zh';
+  const isExploration = new URLSearchParams(window.location.search).get('explore') === '1';
 
   useEffect(() => {
     document.documentElement.lang = localeTag(locale);
@@ -54,7 +57,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
       <a className="course-skip" href="#course-main">
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
-      {session.view === 'path' ? <PathView session={session} variant={staircaseVariant} onVariantChange={setStaircaseVariant} /> : null}
+      {session.view === 'path' ? <PathView session={session} variant={staircaseVariant} onVariantChange={setStaircaseVariant} isExploration={isExploration} /> : null}
       {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
       {session.view === 'preview' ? <PreviewView session={session} /> : null}
       {session.celebration ? <Celebration session={session} /> : null}
@@ -62,7 +65,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   );
 }
 
-function PathView({ session, variant, onVariantChange }: { session: CourseSession; variant: StaircaseVariant; onVariantChange: (next: StaircaseVariant) => void }) {
+function PathView({ session, variant, onVariantChange, isExploration }: { session: CourseSession; variant: StaircaseVariant; onVariantChange: (next: StaircaseVariant) => void; isExploration:boolean }) {
   const zh = session.zh;
   const level = session.level();
   const nodes = session.pathNodes();
@@ -102,7 +105,7 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             {session.openNotice}
           </p>
         ) : null}
-        <div className="course-ab-controls" role="group" aria-label={zh ? '路径形态 A/B' : 'Path shape A/B'}>
+        {isExploration ? <div className="course-ab-controls" role="group" aria-label={zh ? '路径形态 A/B' : 'Path shape A/B'}>
           <button type="button" className="course-ab-button" aria-pressed={variant === 'A'} onClick={() => onVariantChange('A')}>
             {zh ? 'A · 分立阶梯台面' : 'A · Separate platforms'}
           </button>
@@ -110,36 +113,21 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             {zh ? 'B · 连续斜坡 + 锚点' : 'B · Continuous slope + anchors'}
           </button>
           <span className="course-ab-hint">{zh ? '探索方案，均未获得视觉批准' : 'Visual exploration only — not approved'}</span>
-        </div>
+        </div> : null}
         <StaircaseScene key={level.id} variant={variant} locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
         <ol className="course-nodes">
           {nodes.map((node, index) => {
             if (node.kind === 'intro') {
               return (
                 <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
-                  <p className="course-intro" data-testid="level-intro">
-                    {node.intro}
-                  </p>
+                  <StairLevelIntroCard text={node.intro ?? ''}/>
                 </li>
               );
             }
             if (node.kind === 'unit' && node.unit) {
               return (
                 <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
-                  <section className="course-unit" data-testid="unit" data-unit={node.unit.id}>
-                    <p className="course-kicker">
-                      {zh ? `第 ${node.unit.index} 单元` : `Unit ${node.unit.index}`} · {node.unit.typeLabel}
-                    </p>
-                    <h2>{node.unit.title}</h2>
-                    <p>{node.unit.meta}</p>
-                    {node.unit.goals.length ? (
-                      <ul>
-                        {node.unit.goals.map((goal) => (
-                          <li key={goal}>{goal}</li>
-                        ))}
-                      </ul>
-                    ) : null}
-                  </section>
+                  <StairUnitCard unit={node.unit} locale={session.locale} status={session.unitDone(node.unit.id)?'done':node.unit.id===session.playUnit().id?'current':'locked'}/>
                 </li>
               );
             }
@@ -153,6 +141,8 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
                     title={lesson.title}
                     state={cardState(lesson.courseState, lesson.action)}
                     detail={lesson.detail}
+                    minutes={lesson.minutes}
+                    progressState={lesson.courseState}
                     locale={session.locale}
                     onEnter={() => session.openLesson(lesson.unitId, lesson.number)}
                   />
@@ -192,11 +182,11 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
           })}
         </ol>
         </StaircaseScene>
-        <p className="course-candidate">
+        {isExploration ? <p className="course-candidate">
           {zh
             ? 'E-01 A/B 使用相同的卡片底边锚点算法、课程数据和权限；A 为分立台面，B 为连续斜坡与锚点。卡片内容增加时只向上生长。页面视觉仍待设计审核。'
             : 'E-01 A/B share the exact same bottom-anchor algorithm and Alex permissions. A has separated platforms; B has a continuous slope with local anchors. Card height grows upward, not into the anchor. Visual approval pending.'}
-        </p>
+        </p> : null}
       </main>
         </BATabPanel>
       </BATabs>
@@ -265,41 +255,24 @@ function LessonView({ session }: { session: CourseSession }) {
               <>
                 <h1 className="course-title">{activity.ask}</h1>
                 {activity.pick.hint ? <p>{activity.pick.hint}</p> : null}
-                {activity.pick.multi ? (
-                  <div className="course-choices" role="group" aria-label={activity.ask}>
-                    {activity.pick.options.map((option) => (
-                      <Checkbox
-                        key={option.index}
-                        className="course-choice"
-                        data-wrong={option.wrong ? 'true' : undefined}
-                        isSelected={option.selected}
-                        onChange={() => session.pick(option.index)}
-                      >
-                        <span className="course-choice__letter">{option.letter}</span>
-                        <span>{option.text}</span>
-                      </Checkbox>
-                    ))}
-                  </div>
-                ) : (
-                  <RadioGroup
-                    className="course-choices"
-                    aria-label={activity.ask}
-                    value={activity.pick.options.find((option) => option.selected)?.index.toString() ?? ''}
-                    onChange={(value) => session.pick(Number(value))}
-                  >
-                    {activity.pick.options.map((option) => (
-                      <Radio
-                        key={option.index}
-                        className="course-choice"
-                        data-wrong={option.wrong ? 'true' : undefined}
-                        value={String(option.index)}
-                      >
-                        <span className="course-choice__letter">{option.letter}</span>
-                        <span>{option.text}</span>
-                      </Radio>
-                    ))}
-                  </RadioGroup>
-                )}
+                <BAChoice
+                  mode={activity.pick.multi ? 'multiple' : 'single'}
+                  className="course-choices"
+                  label={activity.ask}
+                  disabled={session.inspect().tasks[`${session.screens[session.inspect().screen].screen.page}:${session.screens[session.inspect().screen].screen.task}`]?.status !== 'open'}
+                  selectedKeys={activity.pick.options.filter(option => option.selected).map(option => String(option.index))}
+                  options={activity.pick.options.map(option => ({
+                    key: String(option.index), prefix: option.letter, label: option.text,
+                    state: option.state,
+                  }))}
+                  onChange={keys => {
+                    const previous = activity.pick?.options.filter(option => option.selected).map(option => String(option.index)) ?? [];
+                    if (activity.pick?.multi) {
+                      const changed = [...keys.filter(key => !previous.includes(key)), ...previous.filter(key => !keys.includes(key))][0];
+                      if (changed !== undefined) session.pick(Number(changed));
+                    } else if (keys[0] !== undefined) session.pick(Number(keys[0]));
+                  }}
+                />
               </>
             ) : null}
             {activity.tapword ? (
@@ -313,6 +286,9 @@ function LessonView({ session }: { session: CourseSession }) {
                       className="course-word"
                       data-selected={word.selected ? 'true' : undefined}
                       data-wrong={word.wrong ? 'true' : undefined}
+                      data-feedback={word.state}
+                      aria-pressed={word.selected}
+                      disabled={word.locked}
                       onClick={() => session.tapWord(word.index)}
                     >
                       {word.text}
@@ -321,6 +297,7 @@ function LessonView({ session }: { session: CourseSession }) {
                 </p>
               </>
             ) : null}
+            <LessonActivityExtras activity={activity} session={session}/>
             {!activity.supported && !activity.learn ? (
               <>
                 <h1 className="course-title">{activity.ask || activity.title}</h1>
@@ -346,12 +323,10 @@ function LessonView({ session }: { session: CourseSession }) {
         coach={
           <div>
             {activity.coach.map((line) => (
-              <p key={line}>{line}</p>
+              <BAStatus key={line} tone="information" className="course-coach-orientation">{line}</BAStatus>
             ))}
             {activity.hints.map((hint) => (
-              <p key={hint} data-testid="hint">
-                {hint}
-              </p>
+              <BAStatus key={hint} tone="hint" className="course-coach-hint"><span data-testid="hint">{hint}</span></BAStatus>
             ))}
             {activity.coachMore ? (
               <BAButton variant="ghost" locale={session.locale} onPress={() => session.showAnother()}>
@@ -364,18 +339,16 @@ function LessonView({ session }: { session: CourseSession }) {
               </BAButton>
             ) : null}
             {activity.feedback ? (
-              <p className="course-feedback" role="status" data-testid="feedback">
-                {activity.feedback}
-              </p>
+              <BAStatus tone={activity.feedback.startsWith('Right.') || activity.feedback.startsWith('Yes.') ? 'correct' : 'information'} className="course-feedback"><span data-testid="feedback">{activity.feedback}</span></BAStatus>
             ) : null}
           </div>
         }
         navigation={
           <>
-            <BAButton variant="secondary" locale={session.locale} onPress={() => session.pressBack()}>
+            <BAButton variant="secondary" size={70} disabled={bar.current === 0} locale={session.locale} onPress={() => session.pressBack()}>
               {footer.backLabel}
             </BAButton>
-            <BAButton variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+            <BAButton variant="primary" size={70} locale={session.locale} onPress={() => session.pressPrimary()}>
               <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
             </BAButton>
           </>

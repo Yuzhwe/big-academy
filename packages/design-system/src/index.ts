@@ -16,3 +16,15 @@ export type { BASegmentedControlProps, BASegmentOption, BASegmentSize } from './
 
 export { BATabs, BATabList, BATabPanel } from './components/ui/BATabs';
 export type { BATabOption, BATabsProps, BATabListProps } from './components/ui/BATabs';
+
+export { BAChoice } from './components/ui/BAChoice';
+export type { BAChoiceProps, BAChoiceOption, BAChoiceState } from './components/ui/BAChoice';
+export { BAStatus } from './components/ui/BAStatus';
+export type { BAStatusProps, BAStatusTone } from './components/ui/BAStatus';
+export { BAField } from './components/ui/BAField';
+export type { BAFieldProps } from './components/ui/BAField';
+
+export { BAOverlay } from './components/ui/BAOverlay';
+export type { BAOverlayProps } from './components/ui/BAOverlay';
+export { animateSpring, readSpringPreset } from './motion/spring';
+export type { BASpringPreset, SpringPhysics, SpringOptions } from './motion/spring';

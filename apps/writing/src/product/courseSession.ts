@@ -23,6 +23,7 @@ import {
   type ScreenRef,
   type StepTag,
 } from './loadAlexSource';
+import { gradeApply, gradeProduction, type ApplyResult } from './lessonOneGrading';
 
 export const ALEX_STATE_KEY = 'g2o_unit_state_v4';
 export const CELEBRATION_KEY = 'ba_writing_milestone_receipts_v1';
@@ -38,10 +39,24 @@ export interface TaskProgress {
   picked?: number[];
   wrong?: number[];
   hintLv?: number;
+  built?: string[];
+  misses?: number;
+  text?: string;
   sel?: number | null;
   bad?: number | null;
 }
 
+export interface AssessmentAnswer { picked?: number[]; sel?: number | null; text?: string; }
+export interface AssessmentState {
+  passed?: boolean;
+  finished?: boolean;
+  attempt?: number;
+  question?: number;
+  blankConfirmed?: boolean;
+  responses?: Record<string, Record<string, AssessmentAnswer>>;
+  result?: { score:number;total:number;passed:boolean;answers:{id:string;correct:boolean;writing:boolean}[] };
+}
+export interface ApplyState { text:string;checks:number;passed:boolean;moveOn?:boolean;hintLv?:number;result?:ApplyResult; }
 export interface AlexState {
   v: 4;
   screen: number;
@@ -59,9 +74,9 @@ export interface AlexState {
   listen: boolean;
   regions: Record<string, { t: string; s: string }[]>;
   tasks: Record<string, TaskProgress>;
-  checks: Record<string, { passed?: boolean; finished?: boolean }>;
+  checks: Record<string, AssessmentState>;
   plan: { topic: string; checks: number; result: unknown };
-  applies: Record<string, unknown>;
+  applies: Record<string, ApplyState>;
   feedback: { drafts: { text?: string }[]; cups: Record<string, unknown>; finished?: boolean };
   reflection: unknown;
   events: { t: number; type: string; page?: string; screen?: number; data?: Record<string, unknown> }[];
@@ -137,12 +152,15 @@ export interface ActivityModel {
   };
   pick?: {
     multi: boolean;
-    options: { index: number; letter: string; text: string; selected: boolean; wrong: boolean }[];
+    options: { index: number; letter: string; text: string; selected: boolean; wrong: boolean; state: 'idle'|'selected'|'correct'|'incorrect'|'revealed'|'dimmed' }[];
     hint: string;
   };
   tapword?: {
-    words: { index: number; text: string; selected: boolean; wrong: boolean }[];
+    words: { index: number; text: string; selected: boolean; wrong: boolean; state:'idle'|'selected'|'correct'|'incorrect'|'revealed'|'dimmed'; locked:boolean }[];
   };
+  build?: { cells:string[]; built:string[]; expected:string; locked:boolean };
+  writing?: { value:string; label:string; tip:string; type:'practice'|'apply'; locked:boolean; result?:ApplyResult };
+  assessment?: { index:number; count:number; attempt:number; id:string; ask:string; kind:string; options?:{index:number;text:string;letter:string;selected:boolean}[]; words?:{index:number;text:string;selected:boolean}[]; text:string; done:boolean[]; result?:{score:number;total:number;passed:boolean;answers:{id:string;correct:boolean;writing:boolean}[]} };
   unsupportedReason?: string;
   skip: SkipOffer | null;
   hints: string[];
@@ -162,7 +180,7 @@ export interface TopBarModel {
   lessonNumber: string;
   lessonTitle: string;
   tags: string[];
-  tasks: { id: string; label: string; status: TaskChipStatus; number: number }[];
+  tasks: { id: string; label: string; status: TaskChipStatus; number: number; shown?: boolean }[];
   current: number;
 }
 
@@ -724,6 +742,7 @@ export class CourseSession {
           label: this.text(ref.screen.title) || ref.screen.id,
           status,
           number: localIndex + 1,
+          shown: (ref.screen.kind === 'task' || ref.screen.kind === 'model_task') && !!ref.screen.task && this.state.tasks[this.taskKey(ref.screen)]?.status === 'shown',
         };
       }),
     };
@@ -771,7 +790,6 @@ export class CourseSession {
 
     if (screen.kind === 'learn' && screen.template === 'P2') {
       const skill = page?.skill ? this.engine.skillById(this.config, page.skill) : null;
-      const practiceCount = page?.tasks?.length ?? 0;
       return {
         ...base,
         supported: true,
@@ -782,9 +800,7 @@ export class CourseSession {
           strong: skill?.example?.strong,
           weakLabel: this.zh ? '还不是' : 'Not yet',
           strongLabel: this.zh ? '更好' : 'Better',
-          nextUp: this.zh
-            ? `接下来：${practiceCount} 个短练习，然后自己写，再做检查。`
-            : `Next: ${practiceCount} short practices, then you try it in your own writing, then a check.`,
+          nextUp: '', // R1 removes redundant upcoming count from visible P2
         },
       };
     }
@@ -818,6 +834,11 @@ export class CourseSession {
               text: line,
               selected: picked.includes(index),
               wrong: wrong.includes(index) && !closed,
+              state: closed
+                ? (task.answers?.includes(index)
+                    ? (taskState.status === 'done' && picked.includes(index) ? 'correct' : 'revealed')
+                    : (picked.includes(index) && taskState.status === 'shown' ? 'incorrect' : 'dimmed'))
+                : wrong.includes(index) ? 'incorrect' : picked.includes(index) ? 'selected' : 'idle',
             })),
           },
         };
@@ -834,14 +855,60 @@ export class CourseSession {
             words: tokens.map((token, index) => ({
               index,
               text: token.w,
-              selected: taskState.sel === index && taskState.status === 'open',
+              selected: taskState.sel === index,
               wrong: taskState.bad === index,
+              state: taskState.status === 'done'
+                ? (taskState.sel === index ? 'correct' : 'dimmed')
+                : taskState.status === 'shown'
+                  ? ((task.targets ?? []).some(target => this.engine.locate(task.text ?? '', target) === index) ? 'revealed' : taskState.bad === index ? 'incorrect' : 'dimmed')
+                  : taskState.bad === index ? 'incorrect' : taskState.sel === index ? 'selected' : 'idle',
+              locked: taskState.status !== 'open',
             })),
           },
         };
       }
     }
 
+
+    if (screen.kind === 'task' && screen.task) {
+      const task = this.task(screen.task);
+      const progress = this.taskState(this.taskKey(screen));
+      if (task.type === 'build') return {
+        ...base, supported:true, ask:this.text(task.ask),
+        hints:(task.coach?.hints ?? []).slice(0,progress.hintLv??0).map(h=>this.text(h)),
+        hintAction:this.hintAction(task,progress),
+        build: {cells:(task.cells??[]).map(c=>typeof c==='string'?c:c.t),built:progress.built??[],expected:task.answer_text??'',locked:progress.status!=='open'},
+      };
+      if (task.frameFill || task.rules) return {
+        ...base,supported:true,ask:this.text(task.ask),
+        hints:(task.coach?.hints??[]).slice(0,progress.hintLv??0).map(h=>this.text(h)),
+        hintAction:this.hintAction(task,progress),
+        writing:{value:progress.text ?? task.start ?? task.frameFill?.frame ?? '',label:this.zh?'你的句子':'Your sentence',tip:this.text(task.why),type:'practice',locked:progress.status!=='open'}
+      };
+    }
+    if (screen.kind === 'apply') {
+      const task = this.task(page?.task ?? screen.page);
+      const apply = this.applyState(screen.page);
+      const availableHints=task.coach?.hints??[];
+      const hintLv=apply.hintLv??0;
+      return {...base,supported:true,ask:this.text(task.ask),hints:availableHints.slice(0,hintLv).map(h=>this.text(h)),hintAction:apply.passed||apply.moveOn||hintLv>=availableHints.length?null:hintLv>0?'another':'hint',
+        writing:{value:apply.text,label:this.zh?'你的主题句':'Your topic sentences',tip:this.text(task.tip),type:'apply',locked:apply.passed||!!apply.moveOn,result:apply.result}};
+    }
+    if (screen.kind === 'check') {
+      const state = this.assessmentState(screen.page);
+      const ids=this.assessmentIds();
+      const ix=Math.min(state.question??0,ids.length-1);
+      const task=this.task(ids[ix]);
+      const ans=this.assessmentResponse(ids[ix]);
+      return {...base,supported:true,ask:this.text(task.ask),hints:[],hintAction:null,coachMore:false,
+        assessment:{index:ix,count:ids.length,attempt:state.attempt??0,id:task.id,ask:this.text(task.ask),kind:task.type,
+          options:task.lines?.map((line,index)=>({index,text:line,letter:this.engine.choiceLetter(index),selected:(ans.picked??[]).includes(index)})),
+          words:task.type==='tapword'&&task.text?this.engine.tokens(task.text).map((w,index)=>({index,text:w.w,selected:ans.sel===index})):undefined,
+          text:ans.text??task.start??task.text??'',
+          done:ids.map(id=>this.assessmentAnswered(this.task(id),this.assessmentResponse(id))),
+          result:state.result}
+      };
+    }
     return {
       ...base,
       supported: false,
@@ -867,9 +934,21 @@ export class CourseSession {
         primaryTestId: 'back-to-path',
       };
     }
+    const page=this.screens[this.state.screen]?.screen;
+    if(page?.kind==='check' && !this.canNext(this.state.screen)){
+      const status=this.assessmentState(page.page);
+      if(status.result&&!status.result.passed)return {backLabel:this.zh?'上一题':'Back',primaryLabel:this.zh?'再做一组':'Try a new set',primaryTestId:'assessment-retry'};
+      const index=status.question??0;
+      return {backLabel:this.zh?'上一题':'Back',primaryLabel:index<3?(this.zh?'下一题':'Next question'):(status.blankConfirmed?(this.zh?'继续交卷':'Hand in anyway'):(this.zh?'交卷':'Hand in my check')),primaryTestId:'assessment-action'};
+    }
+    if(page?.kind==='apply' && !this.canNext(this.state.screen)){
+      const a=this.applyState(page.page);
+      const task=this.task(this.pageOf(page.page)?.task??page.page);
+      return {backLabel:this.zh?'上一页':'Previous',primaryLabel:a.checks>=(task.continue_after??2)?(this.zh?'先继续':'Move on for now'):(a.checks>0?(this.zh?'再检查':'Check again'):(this.zh?'检查写作':'Check my writing')),primaryTestId:'apply-action'};
+    }
     const index = this.state.screen;
     const backLabel =
-      index === 0 ? (this.zh ? '我的路径' : 'My path') : this.zh ? '上一页' : 'Back';
+      this.zh ? '上一页' : 'Previous';
     if (!this.canNext(index)) {
       return {
         backLabel,
@@ -894,10 +973,12 @@ export class CourseSession {
       this.emit();
       return;
     }
-    if (this.state.screen === 0) {
-      this.backToPath();
-      return;
+    const screen=this.screens[this.state.screen]?.screen;
+    if(screen?.kind==='check' && !this.canNext(this.state.screen)){
+      const a=this.assessmentState(screen.page);
+      if((a.question??0)>0){a.question=(a.question??0)-1;this.save();this.emit();return;}
     }
+    if (this.state.screen === 0) return;
     this.go(this.state.screen - 1, true);
   }
 
@@ -912,11 +993,20 @@ export class CourseSession {
     }
     const index = this.state.screen;
     const screen = this.screens[index].screen;
+    if(screen.kind==='check'&&!this.canNext(index)){
+      const state=this.assessmentState(screen.page);
+      if(state.result&&!state.result.passed)this.assessmentNewSet();
+      else this.assessmentPrimary();
+      return;
+    }
+    if(screen.kind==='apply'&&!this.canNext(index)){this.applyPrimary();return;}
     if (!this.canNext(index)) {
       if (screen.kind === 'task' || screen.kind === 'model_task') {
         const task = screen.task ? this.task(screen.task) : null;
         if (task?.type === 'pick') this.pickCheck(task, this.taskKey(screen));
         else if (task?.type === 'tapword' && task.need !== 'all') this.wordCheck(task, this.taskKey(screen));
+        else if (task?.frameFill || task?.rules) this.checkPracticeWriting(task, this.taskKey(screen));
+        else if (task?.type === 'build') {this.feedback=this.zh?'请先拼好句子。':'Finish building your sentence first.';this.emit();}
         else {
           this.feedback = `${this.lockedMsg(index)} ${this.activity()?.unsupportedReason ?? ''}`.trim();
           this.emit();
@@ -928,6 +1018,171 @@ export class CourseSession {
       return;
     }
     this.next();
+  }
+
+
+  /** P4 ordered word cards; wrong taps do not use a grading attempt. */
+  chooseBuild(cellIndex:number):void {
+    const screen=this.screens[this.state.screen]?.screen;
+    if(screen?.kind!=='task'||!screen.task)return;
+    const task=this.task(screen.task);
+    if(task.type!=='build')return;
+    const progress=this.taskState(this.taskKey(screen));
+    if(progress.status!=='open')return;
+    const cell=task.cells?.[cellIndex];
+    const chosen=typeof cell==='string'?cell:cell?.t;
+    if(!chosen)return;
+    progress.built=progress.built??[];
+    const target=task.target??[];
+    if(task.in_order && chosen!==target[progress.built.length]){
+      progress.misses=(progress.misses??0)+1;
+      if(progress.misses%3===0)this.feedback=this.text(task.why)||'Look at the next word.';
+      this.save();this.emit();return;
+    }
+    progress.misses=0;
+    progress.built.push(chosen);
+    if(progress.built.length>=target.length) {
+      const composed=progress.built.reduce((text,value)=>this.engine.smartInsert(text,text.length,text.length,value,/^[.!?]/.test(value)?'mark':'phrase').value,'');
+      progress.tries++;
+      if(this.engine.norm(composed).toLowerCase()===this.engine.norm(task.answer_text??'').toLowerCase() || JSON.stringify(progress.built)===JSON.stringify(target)){
+        this.finish(task,this.taskKey(screen),'done');return;
+      }
+      if(progress.tries>=2){this.finish(task,this.taskKey(screen),'shown');return;}
+      progress.built=[];
+      this.feedback=this.text(task.why);
+    }
+    this.save();this.emit();
+  }
+  resetBuild():void {
+    const screen=this.screens[this.state.screen]?.screen;
+    if(!screen?.task)return;
+    const item=this.taskState(this.taskKey(screen));
+    if(item.status==='open'){item.built=[];this.save();this.emit();}
+  }
+  setWriting(value:string):void {
+    const screen=this.screens[this.state.screen]?.screen;
+    if(!screen)return;
+    if(screen.kind==='apply'){
+      const a=this.applyState(screen.page);if(a.passed||a.moveOn)return;
+      a.text=value;
+    }else if(screen.task){
+      const p=this.taskState(this.taskKey(screen));if(p.status!=='open')return;p.text=value;
+    }
+    this.save();this.emit();
+  }
+  private checkPracticeWriting(task:AlexTask,key:string):void {
+    const progress=this.taskState(key);
+    if(progress.status!=='open')return;
+    const result=gradeProduction(task,progress.text??task.start??'',this.engine);
+    progress.tries++;
+    if(result.correct){this.finish(task,key,'done');return;}
+    if(progress.tries>=2){this.finish(task,key,'shown');return;}
+    this.feedback=this.zh?(result.zh??result.explanation):result.explanation;
+    this.save();this.emit();
+  }
+  private applyState(id:string):ApplyState {
+    return this.state.applies[id]??(this.state.applies[id]={text:'',checks:0,passed:false});
+  }
+  private applyPrimary():void {
+    const screen=this.screens[this.state.screen].screen;
+    const a=this.applyState(screen.page);
+    const task=this.task(this.pageOf(screen.page)?.task??screen.page);
+    if(a.checks>=(task.continue_after??2)){
+      a.moveOn=true;this.state.done[screen.page]=true;
+      this.feedback=this.zh?'你可以先继续，之后回来修改。':'You can move on for now and return later.';
+      this.save();this.emit();return;
+    }
+    const words=a.text.match(/[A-Za-z0-9']+/g)??[];
+    const cjk=(a.text.match(/[\u3400-\u9fff]/g)??[]).length;
+    if(words.length<3||cjk/Math.max(1,a.text.length)>.3){
+      this.feedback=this.zh?'先多写一些英文句子。':'Write a little first, in English.';
+      this.emit();return;
+    }
+    a.checks++;
+    a.result=gradeApply(a.text);
+    if(a.result.correct){a.passed=true;this.state.done[screen.page]=true;this.feedback=this.zh?'很好，三个主题句都满足要求。':'Your three topic sentences meet the criteria.';}
+    else this.feedback=a.result.checks.find(x=>!x.passed)?.tip??'Check your sentences.';
+    this.log('apply_checked',{passed:a.passed,checks:a.checks});
+    this.save();this.emit();
+  }
+
+  private assessmentState(id:string):AssessmentState {
+    return this.state.checks[id]??(this.state.checks[id]={attempt:0,question:0,responses:{}});
+  }
+  private assessmentIds():string[] {
+    const page=this.pageOf(this.screens[this.state.screen].screen.page);
+    return page?this.engine.masteryItems(page,this.assessmentState(page.id).attempt??0):[];
+  }
+  private assessmentResponse(id:string):AssessmentAnswer {
+    const page=this.screens[this.state.screen].screen.page;
+    const state=this.assessmentState(page);
+    const attempt=String(state.attempt??0);
+    state.responses=state.responses??{};
+    state.responses[attempt]=state.responses[attempt]??{};
+    return state.responses[attempt][id]??(state.responses[attempt][id]={});
+  }
+  private assessmentAnswered(task:AlexTask,a:AssessmentAnswer):boolean {
+    if(task.type==='pick')return !!a.picked?.length;
+    if(task.type==='tapword')return a.sel!=null;
+    return !!(a.text?.trim()) && a.text?.trim()!==task.start?.trim();
+  }
+  assessmentPick(index:number):void {
+    const screen=this.screens[this.state.screen].screen;if(screen.kind!=='check')return;
+    if(this.assessmentState(screen.page).result)return;
+    const task=this.task(this.assessmentIds()[this.assessmentState(screen.page).question??0]);
+    const a=this.assessmentResponse(task.id);
+    if(task.multi) {a.picked=a.picked??[];a.picked=a.picked.includes(index)?a.picked.filter(i=>i!==index):[...a.picked,index];}
+    else a.picked=[index];
+    this.save();this.emit();
+  }
+  assessmentTap(index:number):void {
+    const screen=this.screens[this.state.screen].screen;if(screen.kind!=='check')return;
+    if(this.assessmentState(screen.page).result)return;
+    const task=this.task(this.assessmentIds()[this.assessmentState(screen.page).question??0]);
+    const a=this.assessmentResponse(task.id);a.sel=a.sel===index?null:index;this.save();this.emit();
+  }
+  assessmentText(value:string):void {
+    const screen=this.screens[this.state.screen].screen;if(screen.kind!=='check'||this.assessmentState(screen.page).result)return;
+    const id=this.assessmentIds()[this.assessmentState(screen.page).question??0];
+    this.assessmentResponse(id).text=value;this.save();this.emit();
+  }
+  assessmentNavigate(index:number):void {
+    const screen=this.screens[this.state.screen].screen;if(screen.kind!=='check')return;
+    this.assessmentState(screen.page).question=Math.max(0,Math.min(3,index));this.save();this.emit();
+  }
+  assessmentNewSet():void {
+    const screen=this.screens[this.state.screen].screen;if(screen.kind!=='check')return;
+    const state=this.assessmentState(screen.page);
+    if(state.result?.passed)return;
+    state.attempt=(state.attempt??0)+1;state.question=0;state.blankConfirmed=false;state.result=undefined;
+    this.feedback='';this.save();this.emit();
+  }
+  private assessmentPrimary():void {
+    const screen=this.screens[this.state.screen].screen;
+    const state=this.assessmentState(screen.page);
+    const ids=this.assessmentIds();
+    if((state.question??0)<ids.length-1){state.question=(state.question??0)+1;this.save();this.emit();return;}
+    const blank=ids.map((id,index)=>!this.assessmentAnswered(this.task(id),this.assessmentResponse(id))?index+1:0).filter(Boolean);
+    if(blank.length&&!state.blankConfirmed){
+      state.blankConfirmed=true;
+      this.feedback=(this.zh?'未完成：':'Unanswered questions: ')+blank.join(', ')+(this.zh?'。再次交卷可以跳过。':'. Hand in again to continue.');
+      this.save();this.emit();return;
+    }
+    const results=ids.map((id,index)=>{
+      const task=this.task(id),a=this.assessmentResponse(id);
+      const correct=task.type==='pick'?this.engine.choiceGrade(task,a.picked??[]).correct:
+        task.type==='tapword'?(task.targets??[]).some(t=>this.engine.locate(task.text??'',t)===a.sel):
+        gradeProduction(task,a.text??'',this.engine).correct;
+      return {id,correct,writing:index===ids.length-1};
+    });
+    const grade=this.engine.masteryPass(results);
+    state.result={score:grade.score,total:grade.total,passed:grade.passed,answers:results};
+    state.passed=!!state.passed||grade.passed;
+    state.finished=grade.passed||(state.attempt??0)>=1;
+    if(state.finished)this.state.done[screen.page]=true;
+    this.feedback=grade.passed?(this.zh?'通过了这次小测。':'You passed this check.'):(this.zh?'还需要再练习。':'Not yet.')+' '+grade.score+' of '+grade.total+'.';
+    this.log('assessment_submitted',{attempt:state.attempt,passed:grade.passed,score:grade.score});
+    this.save();this.emit();
   }
 
   pick(index: number): void {
@@ -967,6 +1222,18 @@ export class CourseSession {
 
   openHint(): void {
     const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind === 'apply') {
+      const state=this.applyState(screen.page);
+      if(state.passed||state.moveOn)return;
+      const task=this.task(this.pageOf(screen.page)?.task??screen.page);
+      const total=task.coach?.hints?.length??0;
+      if((state.hintLv??0)<total){
+        state.hintLv=(state.hintLv??0)+1;
+        this.log('hint_open',{task:task.id});
+        this.save();this.emit();
+      }
+      return;
+    }
     if (!screen?.task) return;
     const task = this.task(screen.task);
     const taskState = this.taskState(this.taskKey(screen));

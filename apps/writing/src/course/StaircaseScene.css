@@ -192,3 +192,13 @@
   .course-level-tablist .ba-tabs__option { min-width:38px; }
   .course-path__header-locale .ba-button { min-width:44px; padding-inline:7px; font-size:12px; }
 }
+
+/* Current Writing R2, overrides historical A/B pilot visual styling. */
+.staircase-viewport[data-variant="A"] {background:var(--ba-writing-staircase-stage-background);background-attachment:local;}
+.staircase-viewport[data-variant="A"] .course-nodes .stair-unit-card,
+.staircase-viewport[data-variant="A"] .course-nodes .stair-level-card {
+  background:var(--ba-writing-unit-paper-surface);
+  border-color:var(--ba-writing-unit-paper-border);
+}
+.staircase-viewport[data-variant="A"] .stair-lesson-card {border-radius:var(--ba-writing-lesson-card-radius);}
+.course-path__header-title .course-kicker {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}

@@ -30,6 +30,18 @@ export interface AlexTask {
     words?: Record<string, Bilingual>;
   };
   fields?: string[];
+  set?: string;
+  in_order?: boolean;
+  cells?: (string | {t:string})[];
+  target?: string[];
+  answer_text?: string;
+  start?: string;
+  frameFill?: { frame:string; blanks:{label:string;min_words:number}[]; vagueLast?:boolean };
+  rules?: { mustInclude?:{re:string;msg?:string;zh?:string}[]; mustNotMatch?:{re:string;msg?:string;zh?:string}[]; minWords?:number; stripRe?:string; notVague?:boolean; capital?:boolean; endPunct?:boolean; noRunOn?:boolean };
+  apply?: boolean;
+  criteria?: string[];
+  tip?: Bilingual;
+  continue_after?: number;
 }
 
 export interface AlexScreen {
@@ -64,6 +76,9 @@ export interface AlexPage {
   teach?: Bilingual | string;
   tasks?: string[];
   task?: string;
+  pool?: string[];
+  auto_per_attempt?: number;
+  writing?: string;
 }
 
 export interface AlexSkill {
@@ -159,6 +174,12 @@ export interface EngineApi {
   tokens: (text: string) => { w: string; start: number; end: number }[];
   skipMode: (status: string, allow: boolean) => 'auto' | 'offer' | 'none';
   stripPictures: (text: string) => string;
+  norm: (text: string) => string;
+  frameFill: (text:string, spec:NonNullable<AlexTask['frameFill']>, ok?:Bilingual)=> {correct:boolean;explanation:string;zh?:string};
+  masteryItems: (page: AlexPage, attempt:number)=>string[];
+  masteryPass: (answers:{correct:boolean;writing:boolean}[])=>{auto_correct:number;auto_total:number;writing_correct:boolean;score:number;total:number;passed:boolean};
+  smartInsert: (text:string,start:number,end:number,value:string,kind:string)=>{value:string};
+  cellsFor: (config:AlexConfig, tabId:string, level:string)=>{t:string}[];
 }
 
 export interface AlexSource {

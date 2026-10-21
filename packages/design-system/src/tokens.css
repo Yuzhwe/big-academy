@@ -228,6 +228,69 @@
   --ba-activity-indicator-popover-inset: var(--ba-space-4);
   /* No connector line token: number circle and badge overlap/contact by geometry. */
 
+  /* Writing Hi-Fi Review R1. [A] user-confirmed numeric values; [E] image-derived
+   * implementation candidates pending rendered designer approval. Scoped to
+   * Writing composition; NOT a replacement for global shared component defaults. */
+  --ba-writing-staircase-gradient-top: #3b2424; /* [A] */
+  --ba-writing-staircase-gradient-bottom: #e8946c; /* [A] */
+  --ba-writing-staircase-stage-background: linear-gradient(180deg, var(--ba-writing-staircase-gradient-top) 0%, var(--ba-writing-staircase-gradient-bottom) 100%); /* [A] */
+  --ba-writing-description-font-size: 16px; /* [A] */
+  --ba-writing-lesson-cta-height: 70px; /* [A] */
+  --ba-writing-lesson-footer-button-height: 70px; /* [A] */
+  --ba-writing-lesson-footer-gap: 8px; /* [A] */
+  --ba-writing-choice-min-height: 50px; /* [A] */
+  --ba-writing-tapword-min-height: var(--ba-writing-choice-min-height); /* [A] */
+  --ba-writing-lesson-card-radius: 28px; /* [E] */
+  --ba-writing-lesson-card-padding: 24px; /* [E] */
+  --ba-writing-lesson-card-status-size: 56px; /* [E] */
+  --ba-writing-lesson-current-fill: #2f67c8; /* [E] */
+  --ba-writing-lesson-completed-fill: var(--ba-color-success-6); /* [E] mapping */
+  --ba-writing-lesson-locked-fill: #929aa2; /* [E] */
+  --ba-writing-lesson-card-title-size: 24px; /* [E] */
+  --ba-writing-lesson-cta-label-size: 28px; /* [E] */
+  --ba-writing-back-size: 50px; /* [A] */
+  --ba-writing-back-icon-stroke: 3.5px; /* [E] */
+  --ba-writing-back-icon-color: #405d6d; /* [E] */
+  --ba-writing-back-shadow: 0 5px 12px rgba(19,53,71,.22); /* [E] */
+  --ba-writing-unit-fold-size: 32px; /* [E] */
+  --ba-writing-unit-fold-tip-radius: 4px; /* [E] */
+  --ba-writing-choice-radius: 14px; /* [E] */
+  --ba-writing-choice-gap: 10px; /* [E] */
+  --ba-writing-choice-padding-inline: 12px; /* [E] */
+  --ba-writing-choice-padding-block: 8px; /* [E] */
+  --ba-writing-grid-surface: #d0f7fc; /* [E] */
+  --ba-writing-grid-border: #009ac2; /* [E] */
+  --ba-writing-grid-tab-inactive: #dde9fc; /* [E] */
+  --ba-writing-grid-radius: 28px; /* [E] */
+  --ba-writing-grid-inset: 20px; /* [E] */
+  --ba-writing-grid-word-gap: 12px; /* [E] */
+  --ba-writing-grid-word-padding-inline: 20px; /* [E] */
+  --ba-writing-grid-word-padding-block: 12px; /* [E] */
+  --ba-writing-grid-tab-height: 60px; /* [E] */
+  --ba-writing-coach-message-radius: 12px; /* [E] */
+  --ba-writing-coach-message-padding: 12px; /* [E] */
+  --ba-writing-coach-surface-orientation: var(--ba-color-warm-2); /* [E] */
+  --ba-writing-coach-surface-hint: var(--ba-color-warning-1); /* [E] */
+  --ba-writing-coach-surface-correct: var(--ba-color-success-1); /* [E] */
+  --ba-writing-coach-surface-incorrect: var(--ba-color-danger-1); /* [E] */
+  --ba-writing-coach-surface-revealed: var(--ba-color-info-1); /* [E] */
+  --ba-writing-lesson-title-max-lines: 2; /* [A] */
+  --ba-writing-lesson-title-line-height: 30px; /* [E] */
+  --ba-writing-lesson-title-slot-height: 60px; /* [E] */
+  --ba-writing-lesson-duration-size: 16px; /* [E] */
+  --ba-writing-unit-paper-surface: #fff9f2; /* [E] */
+  --ba-writing-unit-paper-border: #dcc3ab; /* [E] */
+  --ba-writing-unit-fold-under: #f8f1ea; /* [E] */
+  --ba-writing-unit-fold-shadow: 0 2px 4px rgba(71,44,34,.12); /* [E] */
+  --ba-writing-unit-fold-face-light: #fffdf9; /* [E] */
+  --ba-writing-unit-fold-face-dark: #e7d6c9; /* [E] */
+  --ba-writing-p2-better-surface: #eaf7ef; /* [E] */
+  --ba-writing-p2-better-border: #12ad5c; /* [E] */
+  --ba-writing-p2-weak-border: #d7c7bd; /* [E] */
+  --ba-writing-hamburger-title-size: 20px; /* [E] */
+  --ba-writing-hamburger-support-size: 16px; /* [E] */
+  --ba-writing-hamburger-tier-gap: 6px; /* [E] */
+
   /* Motion System v0.1 [A/T]: exact upstream spring numeric parameters.
    * Source: Caho1/open-claude-ui code-examples/ClaudeMotionPresets.ts (MIT).
    * Inline spring masses are absent by design and MUST NOT be invented here.

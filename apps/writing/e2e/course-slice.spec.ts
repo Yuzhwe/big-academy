@@ -33,8 +33,7 @@ test('E-01 to lesson 1 check and back', async ({ page }) => {
   await expect(page.locator('[data-lesson-id="G2-O:1"]')).toHaveAttribute('data-state', 'continue');
   await shot('path-continue-1440');
 
-  await page.locator('[data-lesson-focus="G2-O:2"]').click();
-  await expect(page.getByTestId('locked-note')).toContainText(/Lesson 1/);
+  await expect(page.locator('[data-lesson-id="G2-O:2"] .ba-button')).toBeDisabled();
   await shot('path-locked-1440');
 
   await page.setViewportSize({ width: 1024, height: 768 });

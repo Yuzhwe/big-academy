@@ -1,0 +1,8 @@
+.ba-field {display:grid;gap:var(--ba-space-2,8px);min-width:0; }
+.ba-field__label {font:700 var(--ba-type-control-size,16px)/1.3 var(--ba-type-control-family);color:var(--ba-color-content-primary);}
+.ba-field__input {box-sizing:border-box;display:block;width:100%;min-height:50px;resize:vertical;padding:var(--ba-space-3,12px);background:var(--ba-color-surface-canvas);color:var(--ba-color-content-primary);border:1px solid var(--ba-color-warm-5);border-radius:var(--ba-radius-control-regular);font:400 var(--ba-type-control-size,16px)/1.5 var(--ba-type-body-family);}
+.ba-field__input[data-focused] {border-color:var(--ba-color-action-primary);}
+.ba-field__input[data-focus-visible] {outline:2px solid var(--ba-control-focus);outline-offset:2px;}
+.ba-field__input[data-disabled] {background:var(--ba-color-disabled-surface);}
+.ba-field__description,.ba-field__error {font-size:14px;line-height:1.4;}
+.ba-field__error {color:var(--ba-color-danger-10);}

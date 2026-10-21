@@ -1,129 +1,21 @@
-.ba-task-progress {
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  width: max-content;
-  max-width: 100%;
-  min-width: 0;
-  color: var(--ba-color-content-primary, #133547);
-  font-family: var(--ba-font-sans, sans-serif);
-}
+.ba-task-progress {display:flex;align-items:center;justify-content:center;gap:var(--ba-space-1,4px);width:100%;max-width:100%;min-width:0;color:var(--ba-color-content-primary);font-family:var(--ba-type-control-family);}
+.ba-task-progress__list,.ba-task-progress__grid {display:flex;align-items:center;gap:var(--ba-spacing-progress-items-gap,4px);margin:0;padding:2px;list-style:none;}
+.ba-task-progress__grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(52px,1fr));gap:var(--ba-activity-indicator-grid-gap,12px);}
+.ba-task-progress__item {flex:none;}
+.ba-activity-indicator {position:relative;display:grid;place-items:center;box-sizing:border-box;width:56px;height:60px;min-width:44px;min-height:44px;margin:0;padding:2px;border:0;border-radius:var(--ba-activity-indicator-radius);background:transparent;color:var(--ba-color-content-primary);cursor:pointer;}
+.ba-activity-indicator[data-size="compact"] {width:46px;height:52px;}
+.ba-activity-indicator__circle {display:grid;place-items:center;box-sizing:border-box;width:46px;height:46px;border:2px solid var(--ba-activity-indicator-border);border-radius:50%;font:var(--ba-activity-indicator-number-weight,800) 20px/1 var(--ba-activity-indicator-number-font);}
+.ba-activity-indicator[data-size="compact"] .ba-activity-indicator__circle {width:37px;height:37px;font-size:17px;}
+.ba-activity-indicator[data-selected] .ba-activity-indicator__circle {background:var(--ba-activity-indicator-selected-bg);color:var(--ba-activity-indicator-selected-text);border-color:var(--ba-activity-indicator-selected-bg);}
+.ba-activity-indicator[data-status="locked"] .ba-activity-indicator__circle {border-color:var(--ba-color-neutral-6);color:var(--ba-color-disabled-content);}
+.ba-activity-indicator[data-status="skipped"] .ba-activity-indicator__circle {border-style:dashed;}
+.ba-activity-indicator__badge {position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:grid;place-items:center;box-sizing:border-box;width:20px;height:20px;border:2px solid var(--ba-color-surface-canvas);border-radius:var(--ba-activity-indicator-badge-radius);background:var(--ba-color-success-7);color:white;}
+.ba-activity-indicator[data-status="locked"] .ba-activity-indicator__badge {background:var(--ba-color-neutral-7);}
+.ba-activity-indicator[data-disabled] {cursor:not-allowed;}
+.ba-activity-indicator[data-hovered]:not([data-disabled]) .ba-activity-indicator__circle {box-shadow:0 0 0 2px var(--ba-color-action-primary);}
+.ba-activity-indicator[data-focus-visible] {outline:2px solid var(--ba-control-focus);outline-offset:2px;}
+.ba-task-progress__overflow {min-width:44px;min-height:44px;border:1px solid var(--ba-color-warm-5);border-radius:var(--ba-radius-full);background:var(--ba-color-surface-canvas);color:var(--ba-color-content-primary);font:800 20px/1 var(--ba-type-numeric-family);cursor:pointer;}
+.ba-task-progress__overflow[data-focus-visible] {outline:2px solid var(--ba-control-focus);}
+@media (prefers-reduced-motion:reduce){.ba-activity-indicator,.ba-activity-indicator__circle,.ba-task-progress__overflow{animation:none;transition:none;}}
 
-.ba-task-progress__rail {
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
-}
-
-.ba-task-progress__list {
-  display: flex;
-  align-items: stretch;
-  gap: var(--ba-spacing-progress-items-gap, 4px);
-  margin: 0;
-  padding: 2px;
-  list-style: none;
-}
-
-.ba-task-progress__item {
-  flex: 0 0 auto;
-}
-
-.ba-task-progress__button {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  min-width: var(--ba-hit-min, 44px);
-  min-height: var(--ba-hit-min, 44px);
-  padding: 2px 4px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-
-.ba-task-progress__button[data-disabled='true'] {
-  cursor: not-allowed;
-}
-
-.ba-task-progress__marker {
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--ba-control-border, #133547);
-  border-radius: 50%;
-  background: var(--ba-color-surface-canvas, #ffffff);
-  color: var(--ba-color-content-primary, #133547);
-  font-family: var(--ba-type-numeric-family);
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.ba-task-progress__caption {
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: 0;
-  white-space: nowrap;
-}
-
-.ba-task-progress__button[data-state='done'] .ba-task-progress__marker {
-  background: var(--ba-color-surface-canvas, #ffffff);
-}
-
-.ba-task-progress__button[data-state='current'] .ba-task-progress__marker {
-  background: var(--ba-color-action-primary, #133547);
-  border-color: var(--ba-color-action-primary, #133547);
-  color: var(--ba-color-surface-canvas, #ffffff);
-  box-shadow: 0 0 0 2px var(--ba-color-surface-canvas, #ffffff), 0 0 0 4px var(--ba-color-action-primary, #133547);
-}
-
-.ba-task-progress__button[data-state='available'] .ba-task-progress__marker {
-  background: var(--ba-color-surface-canvas, #ffffff);
-}
-
-.ba-task-progress__button[data-state='locked'] .ba-task-progress__marker {
-  background: var(--ba-color-disabled-surface, #f4f1ea);
-  border-style: solid;
-  color: var(--ba-color-disabled-content, #4a5963);
-}
-
-.ba-task-progress__button[data-state='skipped'] .ba-task-progress__marker {
-  border-style: dashed;
-  border-width: 2px;
-  background: var(--ba-color-surface-canvas, #ffffff);
-}
-
-.ba-task-progress__button[data-hovered='true']:not([data-disabled='true']) .ba-task-progress__marker {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.ba-task-progress__button[data-focus-visible='true'] {
-  outline: var(--ba-focus-width, 2px) solid var(--ba-color-focus, #133547);
-  outline-offset: 2px;
-}
-
-.ba-task-progress__icon {
-  width: 16px;
-  height: 16px;
-  display: block;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ba-task-progress__button,
-  .ba-task-progress__marker {
-    transition: none;
-    animation: none;
-  }
-}
+.ba-activity-indicator__caption {position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);white-space:nowrap;font-size:10px;line-height:1.1;font-weight:700;}

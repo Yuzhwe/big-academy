@@ -1,4 +1,4 @@
-import { Button } from 'react-aria-components';
+import { BAButton } from '@big-academy/design-system';
 import type { BALocale } from '@big-academy/design-system';
 import './StairLessonCard.css';
 
@@ -10,63 +10,55 @@ export interface StairLessonCardProps {
   title: string;
   state: StairLessonState;
   detail?: string;
+  minutes?: number;
+  progressState?: 'current' | 'available' | 'done' | 'locked' | 'skipped' | 'view';
   locale?: BALocale;
   onEnter?: (lessonId: string) => void;
 }
 
 const actionLabel: Record<BALocale, Record<StairLessonState, string>> = {
-  en: {
-    start: 'Start',
-    continue: 'Continue',
-    review: 'Review',
-    locked: 'Locked',
-    skipped: 'Review',
-  },
-  zh: {
-    start: '开始',
-    continue: '继续',
-    review: '复习',
-    locked: '未解锁',
-    skipped: '复习',
-  },
+  en: { start: 'Start', continue: 'Continue', review: 'Review', locked: 'Locked', skipped: 'Review' },
+  zh: { start: '开始', continue: '继续', review: '复习', locked: '未解锁', skipped: '复习' },
 };
 
-/**
- * BA-WR-005 · path lesson card.
- * The lesson number stays in the top left for every state.
- * The card does not decide unlock. `onEnter` is the product session.
- * Candidate Warm Frame. Not validated.
- */
+const statusLabel: Record<BALocale, Record<StairLessonState, string>> = {
+  en: { start: 'Available', continue: 'Current', review: 'Completed', locked: 'Locked', skipped: 'Skipped' },
+  zh: { start: '可开始', continue: '进行中', review: '已完成', locked: '未解锁', skipped: '已跳过' },
+};
+
+/** BA-WR-005 · R2 candidate visuals. Eligibility is owned by the course session. */
 export function StairLessonCard({
-  lessonId,
-  number,
-  title,
-  state,
-  detail,
-  locale = 'en',
-  onEnter,
+  lessonId, number, title, state, detail, minutes, progressState, locale = 'en', onEnter,
 }: StairLessonCardProps) {
-  const label = actionLabel[locale][state];
-  const skipped = state === 'skipped';
+  const locked = state === 'locked';
+  const complete = state === 'review';
+  const current = progressState === 'current' || state === 'continue';
+  const caption = current ? (locale==='zh'?'当前课程':'Current lesson') : statusLabel[locale][state];
   return (
-    <article className="stair-lesson-card" data-component="BA-WR-005" data-state={state} data-lesson-id={lessonId}>
-      <p className="stair-lesson-card__number">{number}</p>
-      <div className="stair-lesson-card__body">
-        <h3 className="stair-lesson-card__title">{title}</h3>
-        {detail ? <p className="stair-lesson-card__detail">{detail}</p> : null}
-        {skipped ? (
-          <p className="stair-lesson-card__skip">{locale === 'zh' ? '已掌握 · 跳过' : 'Mastered · skipped'}</p>
-        ) : null}
+    <article className="stair-lesson-card" data-component="BA-WR-005" data-state={state} data-current={current?'true':undefined} data-lesson-id={lessonId}>
+      <div className="stair-lesson-card__status" aria-label={caption}>
+        <span className="stair-lesson-card__number">{number}</span>
+        {complete ? <span className="stair-lesson-card__state-word">{locale === 'zh' ? '完成 ✓' : 'Completed ✓'}</span> : null}
+        {locked ? <span className="stair-lesson-card__state-word" aria-hidden="true">🔒</span> : null}
       </div>
-      <Button
+      <div className="stair-lesson-card__body">
+        <h3 className="stair-lesson-card__title" title={title}>{title}</h3>
+        <p className="stair-lesson-card__detail">{minutes != null ? (locale==='zh' ? '约 '+minutes+' 分钟' : minutes+' mins') : progressState === 'current' || state === 'locked' ? '' : detail ?? ''}</p>
+      </div>
+      <BAButton
         className="stair-lesson-card__action"
-        data-testid="lesson-row"
-        data-state={state}
-        data-lesson-focus={lessonId}
+        variant={locked ? 'secondary' : 'primary'}
+        size={70}
+        radius="full"
+        locale={locale}
+        disabled={locked}
+        aria-label={`${title}: ${caption}, ${actionLabel[locale][state]}`}
         onPress={() => onEnter?.(lessonId)}
       >
-        {label}
-      </Button>
+        <span data-testid="lesson-row" data-state={state} data-lesson-focus={lessonId}>
+          {actionLabel[locale][state]}
+        </span>
+      </BAButton>
     </article>
   );
 }

@@ -27,7 +27,7 @@ if (existsSync(resolve(root, 'DESIGN.md'))) {
 }
 if (existsSync(resolve(root, 'apps/writing/PRODUCT.md'))) {
   const product = readFileSync(resolve(root, 'apps/writing/PRODUCT.md'), 'utf8');
-  if (!product.includes('E-01 · Staircase')) errors.push('Writing PRODUCT.md lacks combined E-01 Specification');
+  if (!(/(?:## 12\. E-01 path|E-01 · Staircase)/.test(product))) errors.push('Writing PRODUCT.md lacks an E-01 staircase specification');
 }
 if (existsSync(resolve(root, 'apps/writing/contracts/components.json'))) {
   try {
