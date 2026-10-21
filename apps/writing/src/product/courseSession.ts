@@ -926,6 +926,7 @@ export class CourseSession {
     const page=this.screens[this.state.screen]?.screen;
     if(page?.kind==='check' && !this.canNext(this.state.screen)){
       const status=this.assessmentState(page.page);
+      if(status.result&&!status.result.passed)return {backLabel:this.zh?'上一题':'Back',primaryLabel:this.zh?'再做一组':'Try a new set',primaryTestId:'assessment-retry'};
       const index=status.question??0;
       return {backLabel:this.zh?'上一题':'Back',primaryLabel:index<3?(this.zh?'下一题':'Next question'):(status.blankConfirmed?(this.zh?'继续交卷':'Hand in anyway'):(this.zh?'交卷':'Hand in my check')),primaryTestId:'assessment-action'};
     }
@@ -981,7 +982,12 @@ export class CourseSession {
     }
     const index = this.state.screen;
     const screen = this.screens[index].screen;
-    if(screen.kind==='check'&&!this.canNext(index)){this.assessmentPrimary();return;}
+    if(screen.kind==='check'&&!this.canNext(index)){
+      const state=this.assessmentState(screen.page);
+      if(state.result&&!state.result.passed)this.assessmentNewSet();
+      else this.assessmentPrimary();
+      return;
+    }
     if(screen.kind==='apply'&&!this.canNext(index)){this.applyPrimary();return;}
     if (!this.canNext(index)) {
       if (screen.kind === 'task' || screen.kind === 'model_task') {
