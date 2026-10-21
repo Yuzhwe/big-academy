@@ -60,3 +60,31 @@ Verification type: **static source/code inspection only**. No frontend code chan
 - Full original HTML-to-PRODUCT task-by-task equivalence not programmatically verified; require source fixture extraction and comparison.
 - Runtime test execution not performed by this documentation review.
 - Landscape/terrace/seal aesthetic details are still candidate [E] pending designer approval.
+
+## Original prototype source fixture audit — pass 4 (2026-10-21)
+
+**Inspected original source:** `apps/writing/source/alex-original.html` on the review branch, blob SHA `c06c8db7317092f081febcebc9eb70979d357c11` (664,669 UTF-8 characters). These findings concern **authored fixture data and selected engine functions**. They do not establish that the current React runtime implements every interaction.
+
+| Screen | Authored HTML source evidence | PRODUCT.md comparison |
+| --- | --- | --- |
+| `L2-04.learn` | First lesson screen is a P2 learning screen on the `L2-04` topic-sentence skill. | Matches |
+| `L2-04.t.ts1` | `ts1` type `pick`, three school-garden lines, `answers:[1]`, `multi:false`; correct sentence: “Our school should have a garden for two big reasons.” | Matches (B / index 1) |
+| `L2-04.t.ts4` | `ts4` type `tapword`; passage “I believe our class should get a pet fish.”; targets `believe` and `should`, `need:"one"`. | Matches two acceptable words |
+| `L2-04.t.ts3` | `ts3` type `pick`, `multi:true`, six options, `answers:[0,2,4]`. | Matches A/C/E and multi-select |
+| `L2-04.t.ss.L2-04` | `ss.L2-04` type `build`, `in_order:true`; 11-cell list `our school should have a garden for two big reasons .`, and identical target order. | Matches ordered-build requirement |
+| `L2-04.t.ts8` | `ts8` type `write`; exact frame “In my opinion, recess should ___ because ___.”; blank `min_words:2` and `min_words:3`; `vagueLast:true`. | Matches frame and minimum lengths |
+| `L2-04.apply` | `kind:"apply"`, P5, `purpose:"apply"`, `feedback:"constraint"`, topic-sentence garden assignment; Coach states write three different ways. | Matches assignment intent; precise evaluator path still requires function-by-function inspection |
+| `L2-04.check` | `kind:"check"`, P7, `items:"3 auto + 1 writing"`, `pass_rule:">=2/3 auto AND writing correct"`, `second_set:true`. | Matches top-level assessment contract; internal item set/evaluation still requires further verification |
+
+**Source Engine evidence:** `choiceGrade(t,picked)` compares sorted picked answer indices against sorted source `t.answers`; when `t.any` is set, it accepts precisely one index belonging to `t.answers`. This confirms original single/multi selector semantics and avoids replacing authored scoring with an unrelated generic grader.
+
+**Result:** Eight screen IDs/order and primary source data listed above have **no identified mismatch** in this inspection. This is a narrowed conclusion, not a claim that every prose instruction, feedback branch, attempt transition or P7 internal item was exhaustively verified. The React slice gaps from the earlier section remain open. Tests were not executed.
+
+### Further original-engine evidence still required before signoff
+
+- Step through the original `Pages` handlers for every first/second miss, reveal, forced progress and `shown` state.
+- Verify Word Build consecutive wrong-token counting, full-line attempt distinction and third-miss cue against its original handler.
+- Verify Frame Fill vague-reason rule in actual evaluator rather than inferring it solely from `vagueLast:true`.
+- Verify P5 four grading criteria, failure feedback and two-fail `Move on` branches.
+- Verify both complete P7 item sets, blank-warning-once, per-question navigation and mastery propagation.
+- Use an actual test runtime to run fixture assertions and compare saved-state behavior. None were executed in this documentation pass.
