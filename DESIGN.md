@@ -32,7 +32,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 | `--ba-paper` | `#FFFFFF` | [A] | White content / writing canvas |
 | `--ba-surface-warm` | `#FEF9EF` | [A] | Writing warm frame, warm-1 |
 | `--ba-choice-border` | `#C9B8B2` | [A] | Warm-4 border value; component usage remains contract-specific |
-| `--ba-success` | `#14AE5C` | [A] anchor | Success-6 border-active anchor. The global color role is not a white-text strong fill. BAChoice uses this hex for the solid `correct`（正确已选）fill and for the `shown`（正确未选）green outline |
+| `--ba-success` | `#14AE5C` | [A] anchor | Success-6 border-active anchor. BAChoice uses this hex for the `correct` green fill and for the `correctUnselected` green outline |
 | `--ba-error` | `#9B4F36` | [A] | Danger-7 strong error fill, never global brand primary |
 | Reading primary/accent | TBD | [Q] | **Do not assign a fabricated Reading palette** |
 
@@ -110,8 +110,8 @@ The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, sup
 
 - **[A]** Spacing records relationships between elements; it must not be confused with interactive hit targets, border widths, typography metrics or path/world geometry.
 - **[A]** Page-level grids and overall placement belong to the application; shared components own only their internal layout. E-01's separately approved bottom-to-anchor staircase behavior in Writing PRODUCT.md overrides generic grid guidance.
-- **[E]** Initial 0/4/8/12/16/24/32/48/64px primitives exist in shared CSS Tokens, along with three provisional semantic relationships for BAButton/BATaskProgress. Exact gutters, breakpoints, radii and large page spacings are not approved by this decision.
-- **[T]** BAButton and BATaskProgress consume only token references whose current values reproduce their pre-existing 8px/16px/4px sizing. This is an integration proof, not a redesign.
+- **[E]** Initial 0/4/8/12/16/24/32/48/64px primitives exist in shared CSS Tokens, along with three provisional semantic relationships for BAButton and ActivityScreenIndicator. Exact gutters, breakpoints, radii and large page spacings are not approved by this decision.
+- **[T]** BAButton and ActivityScreenIndicator consume only token references whose current values reproduce their pre-existing 8px/16px/4px sizing. This is an integration proof of those sizes.
 - **Validation:** browser and Storybook evidence for touch/keyboard/zoom/long EN/ZH text is required for future numeric approvals. Do not round approved 0.5px borders or E-01 anchor positions to a 4px grid.
 
 
@@ -348,7 +348,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 | Circular task marker / Avatar | 50% | square width/height required for true circle |
 | Long capsule button / progress rail | full | use only if intended pill geometry |
 
-**Important:** these candidate values do not change existing BAButton pill `999px`, BATaskProgress 10px target, or TopBar geometry. Apply changes through the component's own reviewed styling/contracts in later implementation.
+**Important:** these candidate values leave the existing BAButton pill `999px`, the ActivityScreenIndicator 10px target, and TopBar geometry in place. Apply changes through the component's own reviewed styling and contracts.
 
 #### 5. Concentric corners (nested radius) rule [A method]
 If an inner rounded surface sits inside a visible rounded parent, use the starting geometry:
@@ -440,7 +440,7 @@ Shared BA IDs from `apps/writing/contracts/components.json`: `BA-UI-001` … `BA
 - **Ownership before implementation:** record stable Component ID, Props/Events/States/Slots where appropriate, layout ownership, keyboard/touch/responsive/a11y responsibilities, Storybook examples, and test evidence. Product business logic remains outside shared primitives.
 - **Status is separate from classification and appearance:** a component can be implemented with Temporary Foundation Theme but remain visually unapproved. Being physically in `packages/design-system` does not by itself prove multi-product reuse.
 
-**Current boundary note:** `BA-UI-006 BATaskProgress` is implemented in the shared package for the Writing pilot, but cross-product applicability is not yet validated. Keep its ID/contract stable during the pilot; revisit ownership only through a compatible, reviewed change instead of silently moving it. This decision does not reclassify or rename any existing registry entry today.
+**Current boundary note:** ActivityScreenIndicator (BA-UI-006) is implemented in the shared package for the Writing pilot. The registry id stays in the component contract. Cross-product applicability waits for a reviewed check.
 
 Every reusable component needs stable ID, Props, Events, States, Slots (when applicable), layout responsibility, keyboard/touch/a11y requirements, and Storybook/visual test cases. Components may render with an explicitly **Temporary Foundation Theme** while visual design is pending; this may be implemented and tested but **must not be labeled visually approved**.
 
@@ -477,9 +477,9 @@ When changing a token, run its affected component stories, accessibility/contras
 
 ### Writing ActivityScreenIndicator — current design direction (2026-10-21)
 
-The TopBar and the anchored `All activity screens` popover **must reuse one ActivityScreenIndicator component**. In every state the circle shows the Activity Screen index as a Dosis ExtraBold numeral. Lesson 1 uses 1–8. Completed does not replace that digit with only a check. Locked does not replace that digit with only a lock. Status may use color, a ring, or a secondary mark, and the digit stays visible. Done uses a smaller check-circle at the main circle bottom; Locked uses a smaller lock-circle. There is no connecting line between the number and the bottom status badge. Keep the badge in a stable contact/slight-overlap position. Selected changes the main-circle fill, not the completion status itself. Incomplete, selected, done, locked, and skipped use that same mapping in the TopBar and in the popover. The popover may use regular rather than compact size, but never an unrelated rectangular numbered-card visual.
+The TopBar and the anchored `All activity screens` popover share one ActivityScreenIndicator. In every state the circle shows the Activity Screen index as a Dosis ExtraBold numeral. Lesson 1 uses 1–8. Status uses color, a ring, or a secondary mark. Done uses a smaller check-circle at the main circle bottom; Locked uses a smaller lock-circle. The number and that mark meet with no connecting line. The badge stays in a stable contact or slight overlap. Selected changes the main-circle fill and leaves the progress status as its own mark. Incomplete, selected, done, locked, and skipped use that same mapping in the TopBar and in the popover. The popover may use regular rather than compact size, and it uses the same numbered circle.
 
-Popover is an accessible, nonmodal anchored overlay opened by the ellipsis indicator; use the existing floating surface radius category (initial candidate 12px) and semantic inset/group spacing tokens rather than arbitrary values. Show **every** screen number in a responsive grid, restrict height and scroll within the popover if needed, keeping the current screen in view. Display capacity is based on measured width (8/6/4 are review examples, not data limits); status and access permissions remain the responsibility of PRODUCT.md. Focus-visible, Escape dismissal, outside-click dismissal, and focus return are required. Do not use color alone to communicate status, and keep reveal/shown distinct in accessible names. Actual rendered dimensions, icon mapping, badges and shadow are subject to designer screenshot approval.
+Popover is an accessible, nonmodal anchored overlay opened by the ellipsis indicator; use the existing floating surface radius category (initial candidate 12px) and semantic inset/group spacing tokens rather than arbitrary values. Show **every** screen number in a responsive grid, restrict height and scroll within the popover if needed, keeping the current screen in view. Display capacity is based on measured width (8/6/4 are review examples, not data limits); status and access permissions remain the responsibility of PRODUCT.md. Focus-visible, Escape dismissal, outside-click dismissal, and focus return are required. Status uses the icon and the accessible name together with color. The accessible name distinguishes a revealed answer from a correct completion. Actual rendered dimensions, icon mapping, badges and shadow are subject to designer screenshot approval.
 
 ### E-01 Unit Card — folded paper corner
 
@@ -495,7 +495,7 @@ This section specifies the current Writing visual system and its component-level
 
 ### E-01 path landscape · v2-terraces [A direction; sky normative; parallax speed normative]
 
-The Writing Staircase stage is the **v2-terraces** landscape. Scenic depth is three checked-in PNGs over the stage background. Lesson platforms and cards sit in front of that stack, one platform per node, as `apps/writing/PRODUCT.md` defines them. The PNGs are the artwork. This section states how to composite, place, and move them.
+The Writing Staircase stage is the **v2-terraces** landscape. Scenic depth is three checked-in PNGs over the sky gradient `linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)`. Lesson platforms and cards sit in front of that stack, one platform per node, as `apps/writing/PRODUCT.md` defines them. The PNGs are the artwork. This section states how to composite, place, and move them.
 
 **Alpha.** Each file is RGBA. Composite with the alpha channel. The stage background is the sky gradient and shows through every transparent pixel. A viewer that paints transparency black makes those regions look black; that preview is the alpha, not a painted sky.
 
@@ -511,7 +511,7 @@ Public URLs: `/path/v2-terraces/hill-1-foreground.png`, `/path/v2-terraces/hill-
 
 **Stack, back to front:**
 
-1. Sky: the stage background color, full bleed, including the area behind the level header.
+1. Sky: LandscapeBackdrop (BA-WR-009) paints `linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)`, full bleed, including the area behind the level header.
 2. Cloud: `cloud.png`, in the sky above the hill silhouettes.
 3. Hill 2: `hill-2-mid.png`.
 4. Hill 1: `hill-1-foreground.png`.
@@ -531,6 +531,8 @@ Candidate placement [E], pending Joe Approved: one cloud in the upper sky of the
 
 ### E-01 terrain terraces — Layered Landscape Terrace [A concept, E geometry]
 
+LandscapeTerrace (BA-WR-010) specifies 2–3 shallow rounded grass layers under each node. The interim scene uses one platform per node.
+
 Every Lesson retains its original diagonal node/card anchor. Each node sits on a shallow **rounded terrain platform** in front of hill 1: a wide soft-green top, a slightly darker middle landform, and optionally a narrow lowest side/shadow plane. Two to three flat overlapping organic curves. The platform is the per-node ground, separate from the v2-terraces mountain PNGs. Candidate footprint 352×64px relative to the 260px node, offset x=-46px, rounded top radius around 46% and 12px dark-green depth; the **final proportion is a candidate**, with a shallow height that leaves the card dominant. Reference grass gradient #D7EB86 to #8FBF55 to #4E8A3C, darker edge #3C7434 and rgba(36,78,32,.18) ambient shadow. Shrub details stay sparse. The card and CTA remain the strongest contrast, and the platform shares the green ground of hill 1. Platforms leave hit areas clear, stay inside the camera bounds, and keep a locked node looking locked. Status does not move the geometry. Use a fixed-width CSS/SVG layered profile with rounded curves. Record the selected candidate in its token contract. Visual approval remains pending.
 
 ### E-01 camera, cards and badges
@@ -541,11 +543,11 @@ Scene visible viewport: background fills the entire available stage; controls re
 
 **Lesson Card:** reserve two title lines exactly, candidate 24px font with 30px line height and 60px reserved block, clamp overflow on second line and preserve full accessible label. One-line titles keep empty reserved line. Estimated time directly beneath aligned to same left edge, numeric value + localized unit, candidate 16px. CTA is the actual shared BAButton (70px height [A]), with the shared click scale (hover 1.02, pressed 0.95), focus, and reduced-motion behavior. Card radius and inner CTA pill radius follow **concentric inset relation**, outer radius ≈ inner radius + consistent card inset; review candidate geometry rather than independent radius values. Keep all status/card heights and bottom anchors stable.
 
-**Number Seal + Attached Symbol [A direction, E geometry]:** dominant numbered circular seal in one fixed position (diameter candidate 54–56px); current blue fill with small attached current-point symbol, available warm outline with numeral only, completed warm-neutral number with a *small* green check badge attached to lower-right, locked desaturated number with attached lock badge. Badge candidate 20–24px with white 2px separating rim; anchor consistently overlaps the seal edge. No giant horizontal completed/locked capsule, no redundant visible "You're here" or "Finish prior unit" captions. Give full localized status/prerequisite accessible name and optional appropriate visually-hidden text; never rely solely on color. CTA communicates Start/Continue/Review or disabled Locked. Preserve existing gradings/gates.
+**Number Seal + Attached Symbol [A direction, E geometry]:** a numbered circular seal in one fixed position (diameter candidate 54–56px). Current uses a blue fill with a small attached point. Available uses a warm outline and the numeral. Completed uses the warm-neutral numeral with a small green check badge at the lower-right. Locked uses the desaturated numeral with an attached lock badge. Badge candidate 20–24px with a white 2px rim; the badge overlaps the seal edge. The accessible name carries status and any prerequisite. CTA reads Start, Continue, Review, or Locked. Gradings and gates stay as PRODUCT.md defines them.
 
 ### Writing Activity layout — restrained separation and rhythm
 
-**One boundary, one primary separator** [A]. For adjacent functional regions use either a distinct surface fill, a border, or a divider as the primary separation method; do not stack all three on the same structural seam. Multiple treatments require a documented different functional purpose (e.g. active focus ring). General container border is one semantic step quieter than current warm-stroke candidate; keep strong **selected/correct/wrong/focus** borders unchanged on controls that use a border to show those states. Writing Choice options are specified separately. `default` is white with a light border. `correct`（正确已选）is a green fill. `shown`（正确未选，Check 之后）is a green outline. `selected`（选中，Check 之前）is brown with a ring. The ring means selected. `selected` is not a shown/reveal mode. `wrong`（错误）uses an X. Do not indiscriminately reduce contrast on controls or change accessibility semantics.
+**One boundary, one primary separator** [A]. For adjacent functional regions use either a distinct surface fill, a border, or a divider as the primary separation method; do not stack all three on the same structural seam. Multiple treatments require a documented different functional purpose (e.g. active focus ring). General container border is one semantic step quieter than current warm-stroke candidate; keep strong **selected/correct/wrong/focus** borders unchanged on controls that use a border to show those states. Writing Choice options are specified separately. `default` is white with a light border. `selected` is the brown fill `#9B4F36` with a ring. `correct` is a green fill. `correctUnselected` (alias `shown`) is a green outline with a leading check and no solid green disc. `wrong` uses `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state. Keep contrast on controls and keep accessibility semantics.
 
 Reduce **peer content-container gaps by one existing spacing-token step**, consistently for horizontal and vertical layout as applicable; leave text line-height, minimum control heights, touch areas and meaningful internal content padding alone. Never invent an arbitrary px offset. Audit each current gap's token and select the immediate next smaller existing spacing step; at smallest valid step keep unchanged and document exception.
 
@@ -553,11 +555,11 @@ Coach is an independently scrolling region. Each lesson question feedback messag
 
 ### Activity control geometry and states
 
-Top Back: BAButton icon-only, 50×50 [A], visually white round surface and blue-gray chevron, with the shared click scale (hover 1.02, pressed 0.95), focus, and reduced motion. TopBar retains Lesson title/meta and a geometrically **whole-bar centered** ActivityScreenIndicator strip. The lesson TopBar has no horizontal divider between the bar and the lesson content. At tablet 834 the lesson-title ellipsis stays 「第1课 主·」. The anchored All activity screens Popover renders the identical numbered-circle component. In every state the circle shows the screen index. Completed does not replace that digit with only a check. Locked does not replace that digit with only a lock. Status may use color, a ring, or a secondary mark. Done uses a small check-circle and locked a small lock-circle, with no connecting line, and selected stays distinct from progress status. Visible counts adapt to width; overall task list is data driven.
+Top Back: BAButton icon-only, 50×50 [A], visually white round surface and blue-gray chevron, with the shared click scale (hover 1.02, pressed 0.95), focus, and reduced motion. TopBar retains Lesson title/meta and a geometrically **whole-bar centered** ActivityScreenIndicator strip. The lesson TopBar has no horizontal divider between the bar and the lesson content. At tablet 834 the lesson-title ellipsis stays 「第1课 主·」. The anchored All activity screens Popover renders the identical numbered-circle component. In every state the circle shows the screen index. Status uses color, a ring, or a secondary mark. Done uses a small check-circle and locked a small lock-circle, with no connecting line. Selected view stays distinct from progress status. Visible counts adapt to width; overall task list is data driven.
 
 P2 Not yet vs Better: two clearly distinguished teaching panels, Better gently elevated via pale green surface/border and positive cue, not graded/correct-check feedback. P3 single/multi choice uses BA-UI-003. Radius, padding, icon and state colors are the Writing Choice option candidate below; the minimum hit height stays 50px, and selection does not reveal correctness. Tapword is an inline token, not this option row. WordGrid has white pill vocabulary, real multi-set connected sticky-note Tabs (no lone tab for one set). On the build-topic-sentence screen, the visible controls are the word cards and the lesson footer. Hamburger three levels each have same two-tier title/support typographic roles. The hint control, including “Show me another,” is a secondary BAButton. P7 uses only a prominent current question numeral in its own question area; screen readers receive full question context. Practice first checked correct triggers brief one-time Ribbons+Explosions (including Apply), not for P7 internal taps; full lesson success uses Ribbons 30 + three Explosions. A completed milestone flag click plays the Confetti preset from the flag center (`startCount` 50, `rate.quantity` 0, `life.count` 1) and does not play Ribbons or Explosions. Practice does not play the milestone Confetti preset. Respect reduced motion and never let animations mutate product records.
 
-**Celebrations follow PRODUCT.md §17.** A first correct Check on a graded practice item plays Ribbons + Explosions once. A click on a completed milestone flag plays the Confetti preset from the center of that flag, with `startCount` 50, `rate.quantity` 0, and `life.count` 1. Those are separate sets. Playback does not grade or write the course record. Reduced motion shows a static success state and no particles. `?demo=preview-seed` renders Level 1 and Level 2 lesson cards with the completed appearance for a designer walk. It does not change learner progress or Mastery.
+**Celebrations follow PRODUCT.md §17.** Practice correct plays Ribbons + Explosions. A completed milestone plays the Confetti preset from the flag center (`startCount` 50, `rate.quantity` 0, `life.count` 1). Full-lesson mastery success plays Ribbons count 30 + three Explosions. Playback leaves the course record unchanged. Reduced motion shows a static success state. `?demo=preview-seed` renders Level 1 and Level 2 lesson cards with the completed appearance for a designer walk and leaves learner progress and Mastery unchanged.
 
 ### Lesson question feedback [E · candidate · not Approved · 2026-10-21]
 
@@ -578,7 +580,7 @@ The hint control is a secondary BAButton.
 
 ### Writing Choice option（选项）· BA-UI-003 / BAChoice
 
-**状态：** 六态、1px 边框、悬停 1.02 / 按下 0.95 是规范。缩放与 BAButton CTA 相同。reduced motion 下不缩放。选项上不出现状态文案。正确只用前置对勾。选中是 Check 之前的棕色行，圆环表示选中，不是 shown / 揭晓。评分时机和 Coach 反馈文案以 `apps/writing/PRODUCT.md` 为准。
+**状态：** 规范名是 `default`、`selected`、`correct`、`correctUnselected`、`wrong`、`dim`。别名只有 `idle`→`default`、`shown`→`correctUnselected`。1px 边框。悬停 1.02 / 按下 0.95，与 BAButton CTA 相同。reduced motion 下立即换状态。选项行是字母、正文和前置图标。正确是前置对勾。选中是棕色 `#9B4F36` 加圆环。`correctUnselected` 是绿色描边加前置对勾。评分时机和 Coach 反馈文案以 `apps/writing/PRODUCT.md` 为准。
 
 This is the Writing single/multi choice option row. `single` and `multiple` share one chrome. Short (one line) and long (wrapped) copy share that same chrome. The visible row is the option letter, the option body, and the leading status icon. A selectable word token and a WordGrid word card are different controls.
 
@@ -608,18 +610,18 @@ Board order is left to right. English ids are the BA-UI-003 contract ids.
 |---|---|---|---|---|---|
 | 1 默认 | `default` / `idle` | `#FFFFFF` (`--ba-paper`) | `#C9B8B2` (`--ba-choice-border`) | `#133547` (`--ba-brand-dark`) | Empty circle, stroke about `#C9B8B2`, no fill |
 | 2 正确已选 | `correct` | Green fill `#14AE5C` (`--ba-success`) | `#FFFFFF` | `#FFFFFF` | Leading check |
-| 3 正确未选（Check 之后） | `shown` | `#FFFFFF` (`--ba-paper`) | Green outline `#14AE5C` (`--ba-success`) | `#133547` (`--ba-brand-dark`) | Leading check |
-| 4 选中（Check 之前） | `selected` | Solid brown `#9B4F36` (`--ba-error`) | `#FFFFFF` | `#FFFFFF` | Ring. The ring means selected |
-| 5 错误 | `wrong` | Solid brown-red | `#FFFFFF` | `#FFFFFF` | X |
-| 6 变淡 40% | `dim` | Same as `default` | Same as `default` | Same as `default` | Same as `default` |
+| 3 正确未选（Check 之后） | `correctUnselected` (alias `shown`) | `#FFFFFF` (`--ba-paper`) | Green outline `#14AE5C` (`--ba-success`) | `#133547` (`--ba-brand-dark`) | Leading check. No solid green disc |
+| 4 选中（Check 之前） | `selected` | Selected fill `#9B4F36` | `#FFFFFF` | `#FFFFFF` | Ring |
+| 5 错误 | `wrong` | `#9B4F36` | `#FFFFFF` | `#FFFFFF` | X |
+| 6 变淡 40% | `dim` | Same as `default` at opacity 0.4 | Same as `default` | Same as `default` | Same as `default` |
 
-`dim` sets the whole option to **`opacity: 0.4`**. It keeps default chrome.
+`dim` is graded chrome at **opacity 0.4**. `disabled` is a separate non-interactive state.
 
-Before Check, a row is `default` or `selected`. `selected`（选中）is brown with a ring. The ring means selected. `selected` is not a shown/reveal mode. After Check, the option the learner picked that is correct is `correct`（正确已选）: green fill and a leading check. A correct option the learner did not pick is `shown`（正确未选）: green outline and a leading check. A wrong option is `wrong`（错误）: an X. `dim` is the default row at opacity 0.4 when needed.
+Before Check, a row is `default` or `selected`. `selected` uses the selected fill `#9B4F36` and a ring. After Check, the option the learner picked that is correct is `correct`: green fill `#14AE5C` and a leading check. A correct option the learner did not pick is `correctUnselected`: green outline `#14AE5C` and a leading check, with no solid green disc. A wrong option is `wrong`: `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state.
 
-`#14AE5C` is the green fill on `correct` and the green outline on `shown`.
+`#9B4F36` on these two rows is the selected fill. It is separate from the danger role of `--ba-error`.
 
-The visible row is the letter, the body, and the leading icon. The row does not paint state-copy text. `correct` and `shown` use the leading check only. The accessible name may include the state. Coach feedback stays in the feedback region.
+The visible row is the letter, the body, and the leading icon. `correct` and `correctUnselected` use the leading check. The accessible name carries the state. Coach feedback stays in the feedback region.
 
 #### Icon
 
@@ -633,16 +635,16 @@ Same padding, gap, radius, icon size and type size.
 
 The row and the text block use `align-items: flex-start`. The icon stays top-aligned with the first line. The body wraps (`min-width: 0`). The letter stays on one line.
 
-A one-line row uses this same alignment. Its content already fills the band, so it reads as one option strip. PRODUCT.md chapter 8 still says a one-line option is vertically centered and a wrapped line keeps the letter with the first line. This candidate keeps the 50 px minimum, one radius and one type size, with the icon on the first line for both lengths.
+A one-line row uses this same `align-items: flex-start` alignment. The 50 px minimum, one radius, and one type size apply to one-line and wrapped rows, with the icon on the first line for both lengths.
 
 #### Interaction
 
-The component paints the state it is given. The session and PRODUCT.md own grading, tries and when a row becomes `correct`, `wrong`, `shown` or `dim`.
+The component paints the state it is given. The session and PRODUCT.md own grading, tries, and when a row becomes `correct`, `wrong`, `correctUnselected`, or `dim`.
 
-- Before Check, a row is `default` or `selected` only. Single-choice puts one option in `selected`（选中）and returns the others to `default`. Multiple-choice toggles per PRODUCT. The ring means selected. `selected` is not a shown/reveal mode. The color means choice, not correctness.
-- A non-interactive option uses `dim` (opacity 0.4) or a disabled treatment PRODUCT already distinguishes from `dim`.
-- After Check, the picked correct option is `correct`（正确已选, green fill）. A correct unselected option is `shown`（正确未选, green outline）. A wrong option is `wrong`（错误, X）. `dim` applies where the session needs it.
-- The row does not paint state-copy text. `correct` and `shown` use the leading check only.
+- Before Check, a row is `default` or `selected` only. Single-choice puts one option in `selected` and returns the others to `default`. Multiple-choice toggles per PRODUCT. The ring marks `selected`. The color means the learner’s choice.
+- `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state.
+- After Check, the picked correct option is `correct` (green fill, leading check). A correct unselected option is `correctUnselected` (green outline, leading check, no solid green disc). A wrong option is `wrong` (`#9B4F36`, X).
+- The row shows the letter, the body, and the leading icon. `correct` and `correctUnselected` use the leading check.
 - `focus-visible` keeps the Writing focus ring (`--ba-focus-ring`). A solid fill does not remove it.
 - Border is **1 px solid**. Hover scales the row to 1.02. Press / pressed scales it to 0.95. This is the same click scale as the BAButton CTA. Under reduced motion the row updates its state immediately and does not scale.
 - Keys 1–9 and A–I stay a PRODUCT / session concern. The option chrome follows the state table.
@@ -668,7 +670,7 @@ Apply the following **one-name / one-role** vocabulary across all eight Writing 
 | Canonical name | Definition and cross-screen rule | Not the same as |
 | --- | --- | --- |
 | **LessonTopBar / Back** · BA-WR-001 | The top-left, icon-only Back returns one hierarchy level to the parent E-01 Staircase. This is the **only** Lesson exit control. The bar has no horizontal divider between the TopBar and the lesson content. At tablet 834 the lesson-title ellipsis stays 「第1课 主·」. | Footer Previous; P7 internal Back |
-| **ActivityScreenIndicator** · BA-UI-006 (`BATaskProgress` in the registry/runtime) | Shared numbered navigation for the eight Lesson screens, including the identical circle in its anchored popover. Every state shows the screen index inside the circle. Completed does not replace the digit with only a check. Locked does not replace the digit with only a lock. | P7 internal Question pager |
+| **ActivityScreenIndicator** · BA-UI-006 | Shared numbered navigation for the eight Lesson screens, including the identical circle in its anchored popover. Every state shows the screen index inside the circle. | P7 internal Question pager |
 | **LessonWorkspace** · BA-WR-002 | Warm Frame + White Canvas composition: left Activity area; right independently scrolling Coach and fixed Footer. | A self-contained single-column chat transcript |
 | **Footer / Previous / primary action** | Bottom-right controls used only for questions and actions **inside the current Lesson**. First Screen Previous is disabled; never label it My path or make it return to E-01. | LessonTopBar Back |
 | **Choice option** · BA-UI-003 | P3 single/multi list option. One chrome for both modes and both lengths: 24px radius, 1px border, 36×36 leading status icon, letter plus body. Click scale is hover 1.02 and pressed 0.95, the same scale as the BAButton CTA. Reduced motion does not scale. The row does not paint state-copy text. | **Word token**, **WordGrid word card** |
@@ -678,13 +680,13 @@ Apply the following **one-name / one-role** vocabulary across all eight Writing 
 | **Writing canvas / Frame blanks / Build bench** | Distinct task-area composites. Reuse shared typography, focus cues and card spacing; input semantics remain different. | One universal text input |
 | **P7 Question pager** | Four internal question positions inside the single P7 Activity Screen. | TopBar's eight Activity Screens |
 
-**Shared visual syntax [selected direction; exact sizes [E]]:** use a legible prompt heading followed by supporting instruction and the principal interactive region, in that consistent order. Keep the white reading/answer surface prominent, with restrained card edges, soft surfaces and deliberate whitespace. Short and long choice rows are both 24px. The choice row uses `align-items: flex-start` for one line and for wrapped lines, so the 36px status icon and the letter stay with the first line. Word tokens, word cards and inputs keep their own alignment and focus treatment. The same `selected`, `correct`, `wrong`, `shown`, `dim`, `disabled` and `focus-visible` names mark the same distinctions. On a choice option, before Check a row is `default` or `selected`. `selected` is 选中: brown and a ring. The ring means selected. `selected` is not a shown/reveal mode. After Check, `correct` is 正确已选: green fill and a leading check, the option the learner picked that is correct. `shown` is 正确未选: green outline and a leading check. `wrong` is 错误: an X. `dim` is the default row at opacity 0.4. The row does not paint state-copy text. Correct uses the leading check only. Before Check, color communicates choice, not correctness. Semantic Coach feedback stays a distinct surface from the selection.
+**Shared visual syntax [selected direction; exact sizes [E]]:** use a legible prompt heading followed by supporting instruction and the principal interactive region, in that consistent order. Keep the white reading/answer surface prominent, with restrained card edges, soft surfaces and deliberate whitespace. Short and long choice rows are both 24px. The choice row uses `align-items: flex-start` for one line and for wrapped lines, so the 36px status icon and the letter stay with the first line. Word tokens, word cards and inputs keep their own alignment and focus treatment. The same `default`, `selected`, `correct`, `correctUnselected`, `wrong`, `dim`, `disabled`, and `focus-visible` names mark the same distinctions. `idle` aliases `default`. `shown` aliases `correctUnselected`. On a choice option, the names are `default`, `selected`, `correct`, `correctUnselected`, `wrong`, and `dim`. Aliases are `idle` for `default` and `shown` for `correctUnselected`. Before Check a row is `default` or `selected` (selected fill `#9B4F36` and a ring). After Check, `correct` is a green fill and a leading check, `correctUnselected` is a green outline and a leading check with no solid green disc, and `wrong` is `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state. The row shows the letter, the body, and the leading icon. Semantic Coach feedback stays a distinct surface from the selection.
 
 **Activity variants use one shared language, not one identical layout:** P2 contrasts Not yet / Better teaching panels; P3 single and multi reuse the same list/card geometry with different choice semantics, while Tapword keeps text flowing as a sentence; P4 uses the same WordGrid anatomy for single Sentence set or multiple Frame Fill categories, but word-card insertion and grading gestures differ; P5 uses a spacious writing canvas plus a connected four-group WordGrid; P7 uses input appearances without practice hints or instant correctness markings. Do not insert a WordGrid on the P7 mastery screen to obtain visual uniformity.
 
 **WordGrid anatomy and visual states:** place connected raised category tabs directly over the rounded word-bank body; the active tab and body share a coordinated softly colored surface. Inactive category colors are softer but still differentiated and readable. Place discrete white rounded pill word cards within the body; preserve generous card padding and flexible line breaks. Maintain clear `tab active`, `tab inactive`, `word available`, `word used` (when a guided set consumes one), `word disabled`, `focused` and `empty group` appearances. When the source offers a single Sentence set, omit only the useless one-tab strip; do not remove or replace the word bank. Do not change global BATabs defaults.
 
-**Ordered build bench:** on `P4.build.word.guided-order`, each remaining blank is an underline, one horizontal line for each word still to place. Ellipsis placeholders and dotted placeholders are not used. The screen’s controls are the word cards and the lesson footer. A placed word stays in the line. The per-word hint stays in PRODUCT.md. WordGrid tab and pill chrome stays a candidate pending designer review.
+**Ordered build bench:** on `P4.build.word.guided-order`, each remaining blank is an underline, one horizontal line for each word still to place. Those underlines are the ordered-build bench. The WordGrid panel is the word-card palette. The screen’s controls are the word cards and the lesson footer. A placed word stays in the line. The per-word hint stays in PRODUCT.md. WordGrid tab and pill chrome stays a candidate pending designer review.
 
 **Designer sign-off remains separate:** the cross-activity direction above is descriptive. It is not approval of every shadow, elevation or page mockup. The Writing Choice option section records the six-state mapping, the 1px border, and the 1.02 / 0.95 click scale for BA-UI-003.
 
@@ -695,7 +697,7 @@ The **Screen IDs and interaction requirements** are owned by `apps/writing/PRODU
 | Layout Variant ID | Hierarchy / anatomy | Interaction presentation | Styling and responsive behavior |
 | --- | --- | --- | --- |
 | `P2.rule-pair.hamburger` | Readable teaching heading, weak/not-yet panel, prominent Better panel, three-layer hamburger/support hierarchy | Informational teaching only; no correct badge, checked border or success animation | White Canvas with quiet separation; Better has semantic soft-green support, not a graded-success treatment; all 3 hamburger tiers have heading/support; natural stacking on narrow widths |
-| `P3.list.option.single` | Prompt → vertical option list → inline feedback zone | Shared BAChoice single-select. The leading status icon shows the state. The letter is text beside that icon. Focus ring stays visible. Checked states render only after Check | Min height 50px; radius 24px; one line and wrapped lines share chrome; icon stays on the first line; padding stays intact when lines wrap. Feedback appears only after Check. State is the icon together with the fill |
+| `P3.list.option.single` | Prompt → vertical option list → inline feedback zone | Shared BAChoice single-select. The leading status icon shows the state. The letter is text beside that icon. Focus ring stays visible. Checked states render only after Check | Min height 50px; radius 24px; one line and wrapped lines share chrome; icon stays on the first line; padding stays intact when lines wrap. Feedback appears only after Check. State is the icon together with the fill or the green outline |
 | `P3.passage.word.single` | Prompt → flowing passage with individually focusable word tokens → feedback | One highlighted token at a time, clearly distinguish selected/focus/wrong/revealed; accessible word token label | Passage line breaks naturally; do not force equal-width option cards; minimum usable touch target and keyboard focus for words; status must survive reflow. This token does not use the choice-option row anatomy |
 | `P3.list.option.multi` | Prompt → option list → choose-count line → feedback | Same option chrome as single. Multiple mode toggles per PRODUCT | Same 50px minimum and 24px radius as single. Preserve all selected rows after an incorrect Check |
 | `P4.build.word.guided-order` | Prompt → WordGrid palette → ordered build bench → that word’s hint card | Word-card taps build the line. The hint for a word tile appears after two wrong taps on that same word. A placed word stays in the line. Visible controls are the word cards and the lesson footer. | Each remaining bench blank is an underline, one horizontal line per word still to place. Ellipsis placeholders and dotted placeholders are not used. White vocabulary pills in a group-colored WordGrid body; connected sticky-style tabs only when multiple groups exist; wrong-token nudge with a text alternative; the hint uses the lesson question feedback card |
@@ -711,16 +713,16 @@ The **Screen IDs and interaction requirements** are owned by `apps/writing/PRODU
 |---|---|
 | `idle` / `default` / 默认 | White `#FFFFFF`, border `#C9B8B2`, text `#133547`, empty circle |
 | `correct` / 正确已选 | After Check, the option the learner picked that is correct. Green fill `#14AE5C`, leading check |
-| `shown` / 正确未选 | After Check, a correct option the learner did not pick. Green outline `#14AE5C`, leading check |
-| `selected` / 选中 | Before Check. Brown `#9B4F36` and a ring. The ring means selected. Not a shown/reveal mode |
-| `wrong` / 错误 | After Check. Brown-red, X |
-| `dim` / 变淡 | Default chrome at `opacity: 0.4` |
-| `disabled` | Separate product state. `dim`, or an existing disabled treatment |
+| `correctUnselected` / 正确未选 (alias `shown`) | After Check, a correct option the learner did not pick. Green outline `#14AE5C`, leading check, no solid green disc |
+| `selected` / 选中 | Before Check. Selected fill `#9B4F36` and a ring |
+| `wrong` / 错误 | After Check. Fill `#9B4F36` and an X |
+| `dim` / 变淡 | Graded chrome at opacity 0.4 |
+| `disabled` | Separate non-interactive state |
 | `focus-visible` | Writing focus ring stays visible on solid fills |
 | `busy` | Async submit. Does not change learning status |
 | `reduced-motion` | The row updates its state immediately and does not use the 1.02 / 0.95 click scale |
 
-The visible choice row is the letter, the body, and the leading icon. The row does not paint state-copy text. `correct` and `shown` use the leading check only. Coach feedback stays its own surface, separate from the choice row. Other controls keep their own surfaces and use the same click scale.
+The visible choice row is the letter, the body, and the leading icon. `correct` and `correctUnselected` use the leading check. Coach feedback stays its own surface, separate from the choice row. Other controls keep their own surfaces and use the same click scale.
 
 **Layout quality gates:** 1440×900, 1024×768, 834×1112 and 390px; 100% and 200% zoom; English and Chinese copy including long wrap, pointer/touch/keyboard, focus and reduced motion. One primary separator per structural boundary; peer container gaps reduce exactly one existing spacing-token step (never arbitrary px); transparent pinned action Footer outside Coach. On lesson question feedback, Previous and Next span the full width of the footer action row at 1:2, gap 8px, height 70px each; Screen 1 Previous is disabled. Each feedback message is its own card: wrong is white with a light border, correct is white with a green border. The hint control is a secondary button. Overlays leave the caret, option feedback, Footer, and the last line of writing visible.
 

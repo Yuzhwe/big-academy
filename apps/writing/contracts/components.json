@@ -14,7 +14,7 @@
       "kind": "primitive",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "R2-candidate-pending-review",
+      "visualStatus": "pending-review",
       "implementation": "packages/design-system/src/components/ui/BAButton.tsx",
       "story": "packages/design-system/src/components/ui/BAButton.stories.tsx",
       "props": {
@@ -111,7 +111,7 @@
         "KeyboardFocus"
       ],
       "figma": "Design decision 2026-10-20: visual style same as Figma Segmented Control 806:3",
-      "runtimeEvidence": "apps/writing/e2e/staircase-ab.spec.ts",
+      "runtimeEvidence": null,
       "visualStatus": "figma-segmented-parity-candidate",
       "notes": "React Aria Tabs/TabList/Tab/TabPanel semantics; same selection geometry and CSS as segmented, no RadioGroup. Styling parity is user-approved direction; exact browser visual review pending."
     },
@@ -133,16 +133,19 @@
         "onChange": "(keys) => void"
       },
       "states": [
-        "idle",
         "default",
         "selected",
         "correct",
+        "correctUnselected",
         "wrong",
-        "shown",
         "dim",
         "disabled",
         "focus-visible"
       ],
+      "aliases": {
+        "idle": "default",
+        "shown": "correctUnselected"
+      },
       "layoutOwner": "Choice owns option internals, content area owns column width",
       "requirements": [
         "Use React Aria radio/checkbox semantics per task",
@@ -152,9 +155,9 @@
         "Letter Dosis ExtraBold 800 18/20 nowrap; body Jost Medium 18px line-height 1.1",
         "Min-height stays 50px; one-line composition is about 46px; wrapped rows grow and stay fully visible",
         "Row and text align flex-start so the icon stays with the first line",
-        "Before Check a row is default or selected only. After Check, the picked correct option is correct (green fill #14AE5C, leading check); a correct unselected option is shown (green outline #14AE5C, leading check); a wrong option is wrong (X). dim is default chrome at opacity 0.4 when needed",
-        "default 默认: white, light border #C9B8B2, empty circle. correct 正确已选: green fill #14AE5C. shown 正确未选: green outline #14AE5C. selected 选中: brown #9B4F36 and a ring. The ring means selected. selected is not a shown/reveal mode. wrong 错误: X. dim 变淡: opacity 0.4",
-        "Visible row is the letter, the body, and the leading status icon. No visible state-copy text on the option. correct and shown use the leading check only. The accessible name may carry the state and is not visible chrome",
+        "Before Check a row is default or selected only. After Check, the picked correct option is correct (green fill #14AE5C, leading check); a correct option the learner did not pick is correctUnselected (green outline #14AE5C, leading check, no solid green disc); a wrong option is wrong (fill #9B4F36, X). dim is graded chrome at opacity 0.4. disabled is a separate non-interactive state",
+        "default 默认: white, light border #C9B8B2, empty circle. selected 选中: selected fill #9B4F36 and a ring. correct 正确已选: green fill #14AE5C and a leading check. correctUnselected 正确未选: green outline #14AE5C and a leading check, no solid green disc. wrong 错误: fill #9B4F36 and an X. dim 变淡: graded chrome at opacity 0.4. #9B4F36 on selected and wrong is the selected fill, separate from the danger role of --ba-error. Aliases: idle is default, shown is correctUnselected",
+        "Visible row is the letter, the body, and the leading status icon. correct and correctUnselected use the leading check only. The accessible name carries the state",
         "Border 1px solid",
         "Hover scale 1.02 and pressed scale 0.95, the same scale as the BAButton CTA. Reduced motion updates state immediately and does not scale",
         "Keep the focus ring on solid fills. A non-interactive option uses dim or the existing disabled treatment",
@@ -168,7 +171,7 @@
         "ChoiceLongWrapped",
         "ChoiceSelectedBeforeCheck",
         "ChoiceCorrectFilled",
-        "ChoiceCorrectOutlined",
+        "ChoiceCorrectUnselected",
         "ChoiceWrongFilled",
         "ChoiceDimmed",
         "TapwordTokens"
@@ -217,27 +220,30 @@
             "text": "#FFFFFF",
             "icon": "leading check"
           },
-          "shown": {
+          "correctUnselected": {
             "name": "正确未选",
+            "alias": "shown",
             "when": "after Check, a correct option the learner did not pick",
             "background": "#FFFFFF",
             "border": "#14AE5C",
             "text": "#133547",
             "icon": "leading check",
-            "treatment": "green outline"
+            "treatment": "green outline, no solid green disc"
           },
           "selected": {
             "name": "选中",
             "when": "before Check",
             "background": "#9B4F36",
+            "fillRole": "selected fill",
             "border": "#FFFFFF",
             "text": "#FFFFFF",
-            "icon": "ring. The ring means selected. Not a shown/reveal mode"
+            "icon": "ring"
           },
           "wrong": {
             "name": "错误",
             "when": "after Check",
-            "background": "brown-red",
+            "background": "#9B4F36",
+            "fillRole": "selected fill",
             "border": "#FFFFFF",
             "text": "#FFFFFF",
             "icon": "X"
@@ -245,11 +251,14 @@
           "dim": {
             "name": "变淡",
             "opacity": 0.4,
-            "chrome": "default"
+            "chrome": "graded"
+          },
+          "disabled": {
+            "role": "separate non-interactive state"
           }
         }
       },
-      "notes": "Six-state mapping: default 默认; correct 正确已选 is the green fill after Check on the option the learner picked that is correct; shown 正确未选 is the green outline after Check on a correct option the learner did not pick; selected 选中 is brown with a ring before Check. The ring means selected. selected is not a shown/reveal mode. wrong 错误 is an X. dim 变淡 is opacity 0.4. Before Check a row is default or selected only. The row does not paint state-copy text. correct and shown use the leading check only. Border is 1px. Hover 1.02 and pressed 0.95 match the BAButton CTA. Reduced motion does not scale. Grading and Coach feedback stay in PRODUCT.md."
+      "notes": "Canonical states: default, selected, correct, correctUnselected, wrong, dim. Aliases: idle is default, shown is correctUnselected. selected and wrong use fill #9B4F36 as the selected fill, separate from the danger role of --ba-error. correct is green fill #14AE5C with a leading check. correctUnselected is a green outline #14AE5C with a leading check and no solid green disc. dim is graded chrome at opacity 0.4. disabled is a separate non-interactive state. Before Check a row is default or selected. The row shows the letter, the body, and the leading icon. Border is 1px. Hover 1.02 and pressed 0.95 match the BAButton CTA. Reduced motion does not scale. One-line and wrapped rows use align-items flex-start. Grading and Coach feedback stay in PRODUCT.md."
     },
     {
       "id": "BA-UI-004",
@@ -366,7 +375,7 @@
       ],
       "layoutOwner": "TopBar owns global centering, progress owns internal overflow",
       "requirements": [
-        "Same circle in the TopBar and the All activity screens popover. Every state shows the Activity Screen index inside the circle. Lesson 1 is 1-8. Completed does not replace the digit with only a check. Locked does not replace the digit with only a lock. Status may use color, a ring, or a secondary mark, and the digit stays visible",
+        "Public name ActivityScreenIndicator. Same circle in the TopBar and the All activity screens popover. Every state shows the Activity Screen index inside the circle. Lesson 1 is 1-8. Status uses color, a ring, or a secondary mark",
         "Done uses a smaller check-circle at the main circle bottom; locked uses a smaller lock-circle. No line connecting the numbered circle to the lower status circle",
         "Dosis ExtraBold 800 numerals",
         "Only canOpen-authorized screen navigation; locked never navigates",
@@ -390,7 +399,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Joe locked 2026-10-21: every Activity Screen circle shows its index digit in every state. Completed is not a check-only circle. Locked is not a lock-only circle. Status may use color, a ring, or a secondary mark. Exact colors and sizes stay in review. BA-UI-006 owns shared marker rendering and overflow presentation, but not product gate or completion decisions. Do not label code visually approved. Runtime was not changed for this docs update."
+      "notes": "Public name: ActivityScreenIndicator. Registry name: BATaskProgress. Every circle shows the Activity Screen index. Status uses color, a ring, or a secondary mark. BA-UI-006 owns shared marker rendering and overflow presentation. Product gates and completion stay in PRODUCT.md."
     },
     {
       "id": "BA-UI-007",
@@ -491,7 +500,7 @@
       "kind": "composite",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "R2-candidate-pending-review",
+      "visualStatus": "pending-review",
       "implementation": "apps/writing/src/components/writing/LessonWorkspace.tsx",
       "story": "apps/writing/src/components/writing/LessonWorkspace.stories.tsx",
       "props": {
@@ -635,7 +644,7 @@
       "kind": "composite",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "R2-candidate-pending-review",
+      "visualStatus": "pending-review",
       "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx",
       "props": {
@@ -890,7 +899,7 @@
       "kind": "writing-product-composite",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "R2-candidate-pending-review",
+      "visualStatus": "pending-review",
       "implementation": "apps/writing/src/course/CourseApp.tsx (.course-unit)",
       "props": {
         "unit": "PathUnit",
@@ -921,7 +930,7 @@
         "UnitLongChineseCopy",
         "UnitAllStatuses"
       ],
-      "notes": "R2 fixes earlier misassignment of Unit folded-corner requirements to BA-WR-005, which is StairLessonCard, not UnitCard."
+      "notes": "The unit folded corner belongs to StairUnitCard (BA-WR-007). StairLessonCard (BA-WR-005) is the lesson card."
     },
     {
       "id": "BA-WR-008",
@@ -929,7 +938,7 @@
       "kind": "writing-product-composite",
       "contractVersion": "0.4.0-r3",
       "status": "specified-not-implemented",
-      "visualStatus": "R2-candidate-pending-review",
+      "visualStatus": "pending-review",
       "implementation": "apps/writing/src/course/CourseApp.tsx (.course-intro)",
       "props": {
         "level": "PathLevel",
@@ -988,7 +997,7 @@
         "V2Terraces390",
         "V2TerracesReducedMotion"
       ],
-      "notes": "Artwork: apps/writing/public/path/v2-terraces/. Behavior: apps/writing/PRODUCT.md. Compositing, placement, normative parallax, and the sky gradient: DESIGN.md. Layers render inside StaircaseScene (sky gradient, cloud, hill 2, hill 1, then nodes). There is no separate LandscapeBackdrop file. The stage background is linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)."
+      "notes": "Public name: LandscapeBackdrop (BA-WR-009). Implementation: apps/writing/src/course/StaircaseScene.tsx. Artwork: apps/writing/public/path/v2-terraces/. Behavior: apps/writing/PRODUCT.md. Compositing, placement, normative parallax, and the sky gradient: DESIGN.md. The sky is linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)."
     },
     {
       "id": "BA-WR-010",
@@ -996,7 +1005,7 @@
       "kind": "writing-presentation-composite",
       "contractVersion": "0.1.0-r3",
       "status": "specified-not-implemented",
-      "visualStatus": "Selected A concept, numeric geometry pending designer approval",
+      "visualStatus": "specified 2-3 grass layers; interim scene uses one platform per node; numeric geometry pending designer approval",
       "implementation": "apps/writing/src/course/StaircaseScene.tsx (future component extraction possible)",
       "props": {
         "nodeId": "string",
@@ -1019,7 +1028,7 @@
         "V2TerracePlatformMobile",
         "V2TerracePlatformLocked"
       ],
-      "notes": "StaircaseScene paints one candidate platform per node (352×64, card bottom on the platform). The 2–3 shallow grass layers in this requirement are not built. Numeric geometry remains [E] and is not Approved."
+      "notes": "LandscapeTerrace (BA-WR-010) specifies 2–3 shallow rounded grass layers under each node. The interim scene, implemented in StaircaseScene, paints one platform per node (352×64, card bottom on the platform). Numeric geometry remains [E]."
     }
   ],
   "currentDirection": {
