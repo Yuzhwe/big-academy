@@ -10,6 +10,8 @@ export interface StairLessonCardProps {
   title: string;
   state: StairLessonState;
   detail?: string;
+  minutes?: number;
+  progressState?: 'current' | 'available' | 'done' | 'locked' | 'skipped' | 'view';
   locale?: BALocale;
   onEnter?: (lessonId: string) => void;
 }
@@ -26,13 +28,14 @@ const statusLabel: Record<BALocale, Record<StairLessonState, string>> = {
 
 /** BA-WR-005 · R2 candidate visuals. Eligibility is owned by the course session. */
 export function StairLessonCard({
-  lessonId, number, title, state, detail, locale = 'en', onEnter,
+  lessonId, number, title, state, detail, minutes, progressState, locale = 'en', onEnter,
 }: StairLessonCardProps) {
   const locked = state === 'locked';
   const complete = state === 'review';
-  const caption = statusLabel[locale][state];
+  const current = progressState === 'current' || state === 'continue';
+  const caption = current ? (locale==='zh'?'当前课程':'Current lesson') : statusLabel[locale][state];
   return (
-    <article className="stair-lesson-card" data-component="BA-WR-005" data-state={state} data-lesson-id={lessonId}>
+    <article className="stair-lesson-card" data-component="BA-WR-005" data-state={state} data-current={current?'true':undefined} data-lesson-id={lessonId}>
       <div className="stair-lesson-card__status" aria-label={caption}>
         <span className="stair-lesson-card__number">{number}</span>
         {complete ? <span className="stair-lesson-card__state-word">{locale === 'zh' ? '完成 ✓' : 'Completed ✓'}</span> : null}
@@ -40,7 +43,7 @@ export function StairLessonCard({
       </div>
       <div className="stair-lesson-card__body">
         <h3 className="stair-lesson-card__title" title={title}>{title}</h3>
-        <p className="stair-lesson-card__detail">{detail ?? ''}</p>
+        <p className="stair-lesson-card__detail">{minutes != null ? (locale==='zh' ? '约 '+minutes+' 分钟' : minutes+' mins') : progressState === 'current' || state === 'locked' ? '' : detail ?? ''}</p>
       </div>
       <BAButton
         className="stair-lesson-card__action"
