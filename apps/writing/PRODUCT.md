@@ -516,7 +516,7 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Lesson question feedback:** each feedback message sits in its own card. A wrong message uses a white background and a light border. A correct message uses a white background and a green border. Previous and Next span the full width of the footer action row. The hint control is a secondary button. This card treatment is a visual candidate in DESIGN.md and is not Approved. It applies to every lesson question feedback UI.
 - **TopBar:** keep title/meta and centered ActivityScreenIndicator shared with the anchored full-screen Popover. Icon Back to Staircase remains 50×50. P7's internal question count is distinct from top eight Activity Screen indicators.
 - **P2:** differentiate Not yet vs Better; Better is instructional emphasis, never a checked practice success event.
-- **Visual source:** path artwork and version id are the `v2-terraces` files above. DESIGN.md specifies compositing, placement, and candidate motion.
+- **Visual source:** path artwork and version id are the `v2-terraces` files above. DESIGN.md specifies compositing, placement, and the normative parallax rule. Sky color remains a visual candidate, pending Joe Approved.
 
 ## 14. Lesson TopBar and footer actions
 
