@@ -17,6 +17,8 @@ export interface TaskProgressItem {
   status: TaskProgressStatus;
   /** 1-based number drawn in the chip. Defaults to index + 1. */
   number?: number;
+  /** Practice item was revealed. Accessible name must not call this a correct completion. */
+  revealed?: boolean;
 }
 
 export type BALocale = 'en' | 'zh';

@@ -95,6 +95,8 @@ test('keyboard activates back and an open task, and a locked task stays closed',
   await page.keyboard.press(' ');
   await expect(log).toContainText('navigate:4');
 
+  const more = page.getByRole('button', { name: 'All activity screens' });
+  if (await more.count()) await more.click();
   const locked = page.getByRole('button', { name: 'Task 8: Check, locked' });
   await expect(locked).toBeDisabled();
   await locked.click({ force: true });
@@ -106,6 +108,8 @@ test('Chinese long title and skipped state stay distinct at 834', async ({ page 
   await page.goto('/?fixture=long&locale=zh');
   await expect(page.locator('[data-component="BA-WR-001"]')).toHaveAttribute('lang', 'zh-CN');
   await expect(page.getByText('我能写出说明话题和观点的主题句，并且把理由和例子写清楚给同学看的那一课')).toBeVisible();
+  const more = page.getByRole('button', { name: '全部活动屏' });
+  if (await more.count()) await more.click();
   await expect(page.getByRole('button', { name: '任务 3：找出观点词，已跳过' })).toBeEnabled();
   await expect(page.getByRole('button', { name: '任务 1：学一学，已完成' })).toBeEnabled();
   await expect(page.getByRole('button', { name: /菜单|Menu|Index/ })).toHaveCount(0);

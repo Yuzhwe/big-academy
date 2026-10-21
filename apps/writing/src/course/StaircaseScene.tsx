@@ -1,5 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type KeyboardEvent, type ReactNode, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import type { BALocale } from '@big-academy/design-system';
+import { LandscapeBackdrop } from './LandscapeBackdrop';
+import type { StaircaseTheme } from './staircaseTheme';
 import './StaircaseScene.css';
 
 export type StaircaseVariant = 'A' | 'B';
@@ -42,14 +45,17 @@ export function StaircaseScene({
   focusIndex,
   variant,
   locale,
+  theme = 'r1',
 }: {
   children: ReactNode;
   count: number;
   focusIndex: number;
   variant: StaircaseVariant;
   locale: BALocale;
+  theme?: StaircaseTheme;
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
+  const [pathHost, setPathHost] = useState<HTMLElement | null>(null);
   const gesture = useRef<{ x: number; y: number; camera: number; active: boolean } | null>(null);
   const [view, setView] = useState({ width: 1024, height: 600 });
   const [cameraX, setCameraX] = useState(0);
@@ -67,6 +73,15 @@ export function StaircaseScene({
   cameraXRef.current = boundedX;
   const metricsRef = useRef({ width: view.width, maxX, slope, count });
   metricsRef.current = { width: view.width, maxX, slope, count };
+
+  useLayoutEffect(() => {
+    setPathHost(viewportRef.current?.closest<HTMLElement>('.course-path') ?? null);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!pathHost || theme !== 'landscape') return;
+    pathHost.style.setProperty('--landscape-shift', Math.round(boundedX) + 'px');
+  }, [pathHost, theme, boundedX]);
 
   useLayoutEffect(() => {
     const el = viewportRef.current;
@@ -158,6 +173,7 @@ export function StaircaseScene({
       ref={viewportRef}
       className="staircase-viewport"
       data-variant={variant}
+      data-theme={theme}
       data-camera-x={Math.round(boundedX)}
       data-rise-px={rise}
       data-anchor-basis="pedestal-y"
@@ -171,6 +187,7 @@ export function StaircaseScene({
       onPointerCancel={pointerUp}
       onKeyDown={keyDown}
     >
+      {theme === 'landscape' && pathHost ? createPortal(<LandscapeBackdrop />, pathHost) : null}
       <div className="staircase-rail" style={style}>
         {variant === 'B' ? (
           <svg className="staircase-continuous-path" width={railWidth} height={railHeight} aria-hidden="true">

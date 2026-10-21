@@ -4,7 +4,9 @@ import { BAIcon, baIconPaths } from './BAIcon';
 
 describe('BA-UI-ICON · official Iconoir subset', () => {
   it('offers the eight checked regular icon names with non-empty source paths', () => {
-    expect(Object.keys(baIconPaths)).toHaveLength(8);
+    expect(Object.keys(baIconPaths)).toEqual([
+      'check', 'lock', 'arrow-left', 'menu', 'globe', 'book', 'warning-circle', 'info-circle', 'sound-high',
+    ]);
     for (const list of Object.values(baIconPaths)) expect(list.length).toBeGreaterThan(0);
   });
   it('hides decorative icons from assistive technology', () => {

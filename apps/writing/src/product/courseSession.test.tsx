@@ -202,9 +202,160 @@ describe('course slice UI', () => {
     expect(lessonOne).toHaveAttribute('data-state', 'continue');
     expect(lessonOne?.querySelector('[data-testid="lesson-row"]')).toHaveTextContent('Continue');
 
-    await user.click(document.querySelector('[data-lesson-focus="G2-O:2"]') as HTMLElement);
-    expect(screen.getByTestId('locked-note')).toHaveTextContent(/Lesson 1/);
+    const locked = document.querySelector('[data-lesson-focus="G2-O:2"]') as HTMLButtonElement;
+    expect(locked).toBeDisabled();
+    expect(locked.closest('[data-lesson-id="G2-O:2"]')).toHaveTextContent(/After Lesson 1/);
     expect(screen.getByRole('heading', { name: /Level 2/ })).toBeInTheDocument();
     expect(course.inspect().screen).toBe(1);
   });
 });
+
+describe('Lesson 1 eight-screen rules', () => {
+  function open() {
+    const storage = createMemoryStorage();
+    const course = session('', storage);
+    course.openLesson('G2-O', 1);
+    return { course, storage };
+  }
+
+  it('keeps Previous off on screen 1 and does not preview the practice count', () => {
+    const { course } = open();
+    expect(course.footer().previousDisabled).toBe(true);
+    expect(course.footer().backLabel).toBe('Previous');
+    expect(course.activity()?.learn?.nextUp).toBe('');
+    expect(course.activity()?.learn?.layers).toHaveLength(3);
+    course.pressBack();
+    expect(course.view).toBe('lesson');
+  });
+
+  it('grades tapword targets, multi-pick only on Check, and ignores a wrong build card', () => {
+    const { course } = open();
+    course.pressPrimary();
+    course.pick(0);
+    course.pressPrimary();
+    expect(course.activity()?.feedbackKind).toBe('incorrect');
+    expect(course.activity()?.pick?.options[0].visual).toBe('wrong');
+    course.pick(1);
+    course.pressPrimary();
+    expect(course.activity()?.feedback).toMatch(/Right\. You chose B/);
+    expect(course.particle?.kind).toBe('practice');
+
+    course.pressPrimary();
+    const tap = course.activity()?.tapword?.words ?? [];
+    const believe = tap.find((word) => word.text === 'believe');
+    const should = tap.find((word) => word.text === 'should');
+    expect(believe && should).toBeTruthy();
+    course.tapWord(believe!.index);
+    course.pressPrimary();
+    expect(course.activity()?.tapword?.words.find((word) => word.text === 'believe')?.visual).toBe('correct');
+
+    course.pressPrimary();
+    expect(course.activity()?.screenId).toBe('L2-04.t.ts3');
+    course.pick(0);
+    expect(course.activity()?.feedbackKind).toBe('none');
+    course.pressPrimary();
+    expect(course.activity()?.feedbackKind).toBe('incorrect');
+    expect(course.activity()?.screenId).toBe('L2-04.t.ts3');
+    course.pick(2);
+    course.pick(4);
+    course.pressPrimary();
+    course.pressPrimary();
+    expect(course.activity()?.screenId).toBe('L2-04.t.ss.L2-04');
+
+    const taskKey = `${course.screens[course.inspect().screen].screen.page}:ss.L2-04`;
+    course.placeCard('garden');
+    expect(course.inspect().tasks[taskKey].tries).toBe(0);
+    expect(course.inspect().tasks[taskKey].built ?? []).toEqual([]);
+    for (const card of ['our', 'school', 'should', 'have', 'a', 'garden', 'for', 'two', 'big', 'reasons', '.']) {
+      course.placeCard(card);
+    }
+    expect(course.inspect().tasks[taskKey].status).toBe('done');
+  });
+
+  it('checks frame fill, Apply pass versus move-on, and P7 fail versus mastery', () => {
+    const { course, storage } = open();
+    const state = course.inspect();
+    for (let index = 0; index < 5; index += 1) {
+      const screenRef = course.screens[index].screen;
+      state.tasks[`${screenRef.page}:${screenRef.task}`] = { tries: 1, status: 'done' };
+      state.done[screenRef.page] = true;
+      state.seen[screenRef.id] = true;
+    }
+    state.screen = 5;
+    expect(course.activity()?.screenId).toBe('L2-04.t.ts8');
+    course.setWriting('In my opinion, recess should be longer because kids need time to run.');
+    course.pressPrimary();
+    expect(course.inspect().tasks[`${course.screens[5].screen.page}:ts8`].status).toBe('done');
+
+    course.pressPrimary();
+    expect(course.activity()?.screenId).toBe('L2-04.apply');
+    course.setWriting('I think our school should have a garden.\nI believe a school garden should grow food.\nOur class should use the garden for science.');
+    course.pressPrimary();
+    expect(course.inspect().applies['L2-04'].passed).toBe(true);
+    expect(course.particle?.id).toBe('apply:L2-04.apply');
+    course.acknowledgeParticle('apply:L2-04.apply');
+
+    const fresh = session('', createMemoryStorage(storageSnapshot(storage)));
+    fresh.openLesson('G2-O', 1);
+    expect(fresh.inspect().screen).toBeGreaterThan(0);
+
+    const failed = open().course;
+    const failedState = failed.inspect();
+    for (let index = 0; index < 7; index += 1) {
+      const screenRef = failed.screens[index].screen;
+      if (screenRef.task) failedState.tasks[`${screenRef.page}:${screenRef.task}`] = { tries: 1, status: 'done' };
+      failedState.done[screenRef.page] = true;
+      failedState.seen[screenRef.id] = true;
+    }
+    failedState.screen = 7;
+    for (let step = 0; step < 4; step += 1) failed.pressPrimary();
+    expect(failed.activity()?.feedback).toMatch(/still blank/);
+    expect(failed.inspect().done['L2-04.check']).toBeUndefined();
+    failed.pressPrimary();
+    expect(failed.inspect().checks['L2-04.check'].passed).toBe(false);
+    expect(failed.inspect().done['L2-04.check']).toBeUndefined();
+    expect(failed.particle).toBeNull();
+    failed.pressPrimary();
+    for (let step = 0; step < 5; step += 1) failed.pressPrimary();
+    expect(failed.inspect().done['L2-04.check']).toBe(true);
+    expect(failed.inspect().checks['L2-04.check'].passed).toBe(false);
+    failed.pressPrimary();
+    expect(failed.view).toBe('lessonEnd');
+    expect(failed.particle).toBeNull();
+  });
+
+  it('celebrates mastery only after a passed check reaches lesson end', () => {
+    const course = open().course;
+    const state = course.inspect();
+    for (let index = 0; index < 7; index += 1) {
+      const screenRef = course.screens[index].screen;
+      if (screenRef.task) state.tasks[`${screenRef.page}:${screenRef.task}`] = { tries: 1, status: 'done' };
+      state.done[screenRef.page] = true;
+      state.seen[screenRef.id] = true;
+    }
+    state.screen = 7;
+    course.pick(1);
+    course.pressPrimary();
+    course.pick(2);
+    course.pressPrimary();
+    const should = course.activity()?.tapword?.words.find((word) => word.text === 'should');
+    course.tapWord(should!.index);
+    course.pressPrimary();
+    course.setWriting('I think our class should have a pet.');
+    course.pressPrimary();
+    expect(course.inspect().checks['L2-04.check'].passed).toBe(true);
+    expect(course.particle).toBeNull();
+    course.pressPrimary();
+    expect(course.view).toBe('lessonEnd');
+    expect(course.particle?.kind).toBe('mastery');
+  });
+});
+
+function storageSnapshot(storage: Storage): Record<string, string> {
+  const copy: Record<string, string> = {};
+  for (let index = 0; index < storage.length; index += 1) {
+    const key = storage.key(index);
+    if (key) copy[key] = storage.getItem(key) ?? '';
+  }
+  return copy;
+}

@@ -1,75 +1,145 @@
 .stair-lesson-card {
   box-sizing: border-box;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 12px 16px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
   min-height: 88px;
-  padding: 14px 16px;
-  background: var(--ba-paper, #ffffff);
-  border: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
-  border-radius: 16px;
-  color: var(--ba-brand-dark, #133547);
+  padding: var(--ba-writing-lesson-card-padding, 24px);
+  background: var(--ba-paper, #fff);
+  border: 1px solid var(--ba-color-warm-4);
+  border-radius: var(--ba-writing-lesson-card-radius, 28px);
+  color: var(--ba-color-content-primary, #133547);
+  box-shadow: 0 5px 0 color-mix(in srgb, #715848 50%, transparent), 0 8px 16px rgba(59, 41, 38, 0.06);
 }
 
-.stair-lesson-card[data-state='locked'],
-.stair-lesson-card[data-state='view'] {
-  background: color-mix(in srgb, var(--ba-surface-warm, #fef9ef) 72%, var(--ba-paper, #ffffff));
+.stair-lesson-card__status {
+  min-height: var(--ba-writing-lesson-card-status-size, 56px);
 }
 
-.stair-lesson-card__number {
+.stair-lesson-card__badge,
+.stair-lesson-card__capsule {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ba-writing-lesson-card-status-size, 56px);
+  min-height: var(--ba-writing-lesson-card-status-size, 56px);
   margin: 0;
-  min-width: 44px;
+  padding: 0 8px;
+  border-radius: 999px;
   font-family: "Dosis", "Arial Narrow", sans-serif;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
   line-height: 1;
-  font-variant-numeric: lining-nums;
 }
+
+.stair-lesson-card__badge {
+  border: 1px solid var(--ba-color-warm-5);
+  background: #fff;
+  color: var(--ba-color-danger-7, #9b4f36);
+}
+
+.stair-lesson-card[data-location='current'] .stair-lesson-card__badge {
+  border: 0;
+  background: var(--ba-writing-lesson-current-fill, #2f67c8);
+  color: #fff;
+}
+
+.stair-lesson-card__here {
+  display: inline-block;
+  margin: 0 0 6px;
+  padding: 4px 10px;
+  border-radius: 999px 999px 999px 4px;
+  background: var(--ba-writing-lesson-current-fill, #2f67c8);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.stair-lesson-card[data-location='completed'] .stair-lesson-card__capsule {
+  gap: 8px;
+  padding-right: 14px;
+  background: var(--ba-color-success-8);
+  color: #fff;
+  font-family: var(--ba-font-en-body, sans-serif);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.stair-lesson-card[data-location='completed'] .stair-lesson-card__badge {
+  min-width: 40px;
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 22px;
+}
+
+.stair-lesson-card[data-location='locked'] .stair-lesson-card__capsule {
+  gap: 6px;
+  max-width: 100%;
+  padding-right: 12px;
+  background: var(--ba-writing-lesson-locked-fill, #929aa2);
+  color: #fff;
+  font-family: var(--ba-font-en-body, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.stair-lesson-card[data-location='locked'] .stair-lesson-card__badge {
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 22px;
+}
+
+.stair-lesson-card__body { flex: 1; min-width: 0; }
 
 .stair-lesson-card__title {
   margin: 0;
   font-family: "Dosis", "Arial Narrow", sans-serif;
-  font-size: 22px;
+  font-size: var(--ba-writing-lesson-card-title-size, 24px);
   font-weight: 800;
   line-height: 1.2;
+  color: var(--ba-color-danger-7, #9b4f36);
 }
 
-.stair-lesson-card[lang='zh-CN'] .stair-lesson-card__title,
-.course-app[lang='zh-CN'] .stair-lesson-card__title {
+.stair-lesson-card[lang='zh-CN'] .stair-lesson-card__title {
   font-family: "Douyin Sans", "PingFang SC", "Noto Sans SC", sans-serif;
   font-weight: 700;
 }
 
 .stair-lesson-card__detail,
 .stair-lesson-card__skip {
-  margin: 4px 0 0;
-  font-size: 14px;
-  line-height: 1.4;
+  margin: 8px 0 0;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .stair-lesson-card__action {
   box-sizing: border-box;
-  min-width: 96px;
-  min-height: 44px;
+  width: 100%;
+  height: var(--ba-writing-lesson-cta-height, 70px);
+  min-height: var(--ba-writing-lesson-cta-height, 70px);
   padding: 0 16px;
-  border: 1px solid var(--ba-writing-accent, #b25415);
+  border: 1.5px solid var(--ba-writing-accent, #b25415);
   border-radius: 999px;
-  background: var(--ba-writing-accent, #b25415);
-  color: var(--ba-paper, #ffffff);
-  font: 700 16px/1 var(--ba-font-sans, sans-serif);
+  background: #fff;
+  color: var(--ba-writing-accent, #b25415);
+  font: 800 var(--ba-writing-lesson-cta-label-size, 28px)/1 var(--ba-font-en-body, sans-serif);
   cursor: pointer;
 }
 
-.stair-lesson-card[data-state='locked'] .stair-lesson-card__action,
-.stair-lesson-card[data-state='review'] .stair-lesson-card__action,
-.stair-lesson-card[data-state='skipped'] .stair-lesson-card__action {
-  background: var(--ba-paper, #ffffff);
-  color: var(--ba-brand-dark, #133547);
-  border-color: var(--ba-brand-dark, #133547);
+.stair-lesson-card[data-state='locked'] .stair-lesson-card__action {
+  border-color: var(--ba-color-neutral-5);
+  color: var(--ba-color-neutral-7);
+  cursor: not-allowed;
 }
 
-.stair-lesson-card__action[data-focus-visible='true'] {
-  outline: 2px solid var(--ba-brand-dark, #133547);
-  outline-offset: 2px;
+.stair-lesson-card__action[data-focus-visible='true'],
+.stair-lesson-card__action:focus-visible {
+  outline: 2px solid var(--ba-color-focus, #2c657b);
+  outline-offset: 3px;
 }

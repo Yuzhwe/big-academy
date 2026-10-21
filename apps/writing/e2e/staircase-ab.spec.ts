@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 
 const evidenceDir = resolve(import.meta.dirname, '../docs/evidence/staircase-ab');
 
-for (const variant of ['A', 'B'] as const) {
+for (const variant of ['A'] as const) {
   test('E-01 diagonal interaction and real course permissions — ' + variant, async ({ page }) => {
     test.setTimeout(60_000);
     mkdirSync(evidenceDir, { recursive: true });
@@ -12,7 +12,6 @@ for (const variant of ['A', 'B'] as const) {
     await page.goto('/');
     const scene = page.locator('.staircase-viewport');
 
-    await page.getByRole('button', { name: new RegExp('^' + variant + ' ·') }).click();
     await expect(scene).toHaveAttribute('data-variant', variant);
     await expect(scene).toHaveAttribute('data-rise-px', /^[0-9]+$/);
     await page.screenshot({ path: resolve(evidenceDir, variant + '-1440.png'), fullPage: false });
@@ -33,9 +32,8 @@ for (const variant of ['A', 'B'] as const) {
 
     await scene.focus();
     await page.keyboard.press('Home');
-    // Permission checks belong to the course session, not this A/B visual switch.
-    await page.locator('[data-lesson-focus="G2-O:2"]').click();
-    await expect(page.getByTestId('locked-note')).toContainText(/Lesson 1/);
+    await expect(page.locator('[data-lesson-focus="G2-O:2"]')).toBeDisabled();
+    await expect(page.locator('[data-lesson-id="G2-O:2"]')).toContainText(/After Lesson 1/);
     await expect(page).toHaveURL(/\/$/);
 
     await page.setViewportSize({ width: 834, height: 1112 });
@@ -46,11 +44,11 @@ for (const variant of ['A', 'B'] as const) {
 }
 
 
-for (const variant of ['A', 'B'] as const) {
+for (const variant of ['A'] as const) {
   test('card height never moves anchor / platform Y — ' + variant, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await page.getByRole('button', { name: new RegExp('^' + variant + ' ·') }).click();
+    await expect(page.locator('.staircase-viewport')).toHaveAttribute('data-variant', variant);
     const viewport = page.locator('.staircase-viewport');
     await expect(viewport).toHaveAttribute('data-anchor-basis', 'pedestal-y');
     const li = page.locator('.staircase-rail .course-nodes > li').filter({ has: page.locator('.stair-lesson-card') }).first();

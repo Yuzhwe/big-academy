@@ -40,12 +40,17 @@
 
 .lesson-workspace__footer {
   flex: 0 0 auto;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--ba-writing-lesson-footer-gap, 8px);
   padding: 12px;
   border-top: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
   background: var(--ba-paper, #ffffff);
+}
+
+.lesson-workspace__footer .ba-button {
+  width: 100%;
+  min-height: var(--ba-writing-lesson-footer-button-height, 70px);
 }
 
 @media (max-width: 720px) {

@@ -1,0 +1,72 @@
+[
+  {
+    "name": "desktop-1440-en-mixed",
+    "viewport": "1440x900",
+    "headerCenter": 720,
+    "progressCenter": 720,
+    "deltaPx": 0,
+    "overlapPx": -224.16,
+    "backHeight": 72,
+    "taskHeight": 44
+  },
+  {
+    "name": "desktop-1440-en-many",
+    "viewport": "1440x900",
+    "headerCenter": 720,
+    "progressCenter": 720,
+    "deltaPx": 0,
+    "overlapPx": -158.32,
+    "backHeight": 72,
+    "taskHeight": 44
+  },
+  {
+    "name": "tablet-1024-en-long",
+    "viewport": "1024x768",
+    "headerCenter": 512,
+    "progressCenter": 512,
+    "deltaPx": 0,
+    "overlapPx": -126.4,
+    "backHeight": 56,
+    "taskHeight": 44
+  },
+  {
+    "name": "tablet-1024-zh-mixed",
+    "viewport": "1024x768",
+    "headerCenter": 512,
+    "progressCenter": 512,
+    "deltaPx": 0,
+    "overlapPx": -192.34,
+    "backHeight": 56,
+    "taskHeight": 54.09
+  },
+  {
+    "name": "tablet-834-zh-long",
+    "viewport": "834x1112",
+    "headerCenter": 417,
+    "progressCenter": 417,
+    "deltaPx": 0,
+    "overlapPx": -56.53,
+    "backHeight": 56,
+    "taskHeight": 44
+  },
+  {
+    "name": "tablet-834-en-many",
+    "viewport": "834x1112",
+    "headerCenter": 417,
+    "progressCenter": 417,
+    "deltaPx": 0,
+    "overlapPx": -53.01,
+    "backHeight": 56,
+    "taskHeight": 44
+  },
+  {
+    "name": "phone-390-zh-long",
+    "viewport": "390x844",
+    "headerCenter": 195,
+    "progressCenter": 195,
+    "deltaPx": 0,
+    "overlapPx": -61.09,
+    "backHeight": 56,
+    "taskHeight": 44
+  }
+]

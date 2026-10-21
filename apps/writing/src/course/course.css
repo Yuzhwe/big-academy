@@ -43,6 +43,78 @@
   max-width: 880px;
   margin: 0 auto;
   padding: 24px 16px 64px;
+  background: var(--ba-writing-staircase-stage-background);
+  color: #fff;
+}
+
+.course-path__header .course-title {
+  color: #fff;
+}
+
+.course-intro,
+.course-unit,
+.course-goal,
+.course-message,
+.unit-milestone,
+.course-level-tablist {
+  color: var(--ba-color-content-primary, #133547);
+}
+
+.course-intro,
+.course-unit > p,
+.course-goals p {
+  font-size: var(--ba-writing-description-font-size, 16px);
+  line-height: 24px;
+}
+
+.course-goals {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.course-goals p {
+  margin: 0;
+}
+
+.course-unit {
+  position: relative;
+  overflow: hidden;
+  border-top-right-radius: 18px;
+}
+
+.course-unit::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--ba-writing-unit-fold-size, 32px);
+  height: var(--ba-writing-unit-fold-size, 32px);
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, transparent 48%, rgba(59, 41, 38, 0.16) 50%, var(--ba-color-warm-3) 52%);
+  border-bottom-left-radius: var(--ba-writing-unit-fold-tip-radius, 4px);
+  box-shadow: -1px 2px 3px rgba(59, 41, 38, 0.12);
+}
+
+.course-particle {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.course-particle p[role='status'] {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  max-width: 24rem;
+  margin: 0;
+  padding: 12px;
+  pointer-events: none;
+  background: var(--ba-writing-coach-surface-correct, #f0fbf4);
+  color: var(--ba-color-content-primary);
+  border-radius: 12px;
 }
 
 .course-path__bar,
