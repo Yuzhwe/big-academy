@@ -28,6 +28,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('A');
   const locale = session.locale;
   const zh = locale === 'zh';
+  const isExploration = new URLSearchParams(window.location.search).get('explore') === '1';
 
   useEffect(() => {
     document.documentElement.lang = localeTag(locale);
@@ -56,7 +57,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
       <a className="course-skip" href="#course-main">
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
-      {session.view === 'path' ? <PathView session={session} variant={staircaseVariant} onVariantChange={setStaircaseVariant} /> : null}
+      {session.view === 'path' ? <PathView session={session} variant={staircaseVariant} onVariantChange={setStaircaseVariant} isExploration={isExploration} /> : null}
       {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
       {session.view === 'preview' ? <PreviewView session={session} /> : null}
       {session.celebration ? <Celebration session={session} /> : null}
@@ -64,7 +65,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   );
 }
 
-function PathView({ session, variant, onVariantChange }: { session: CourseSession; variant: StaircaseVariant; onVariantChange: (next: StaircaseVariant) => void }) {
+function PathView({ session, variant, onVariantChange, isExploration }: { session: CourseSession; variant: StaircaseVariant; onVariantChange: (next: StaircaseVariant) => void; isExploration:boolean }) {
   const zh = session.zh;
   const level = session.level();
   const nodes = session.pathNodes();
@@ -104,7 +105,7 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             {session.openNotice}
           </p>
         ) : null}
-        <div className="course-ab-controls" role="group" aria-label={zh ? '路径形态 A/B' : 'Path shape A/B'}>
+        {isExploration ? <div className="course-ab-controls" role="group" aria-label={zh ? '路径形态 A/B' : 'Path shape A/B'}>
           <button type="button" className="course-ab-button" aria-pressed={variant === 'A'} onClick={() => onVariantChange('A')}>
             {zh ? 'A · 分立阶梯台面' : 'A · Separate platforms'}
           </button>
@@ -112,7 +113,7 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             {zh ? 'B · 连续斜坡 + 锚点' : 'B · Continuous slope + anchors'}
           </button>
           <span className="course-ab-hint">{zh ? '探索方案，均未获得视觉批准' : 'Visual exploration only — not approved'}</span>
-        </div>
+        </div> : null}
         <StaircaseScene key={level.id} variant={variant} locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
         <ol className="course-nodes">
           {nodes.map((node, index) => {
@@ -179,11 +180,11 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
           })}
         </ol>
         </StaircaseScene>
-        <p className="course-candidate">
+        {isExploration ? <p className="course-candidate">
           {zh
             ? 'E-01 A/B 使用相同的卡片底边锚点算法、课程数据和权限；A 为分立台面，B 为连续斜坡与锚点。卡片内容增加时只向上生长。页面视觉仍待设计审核。'
             : 'E-01 A/B share the exact same bottom-anchor algorithm and Alex permissions. A has separated platforms; B has a continuous slope with local anchors. Card height grows upward, not into the anchor. Visual approval pending.'}
-        </p>
+        </p> : null}
       </main>
         </BATabPanel>
       </BATabs>
