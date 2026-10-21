@@ -1,8 +1,23 @@
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const evidenceDir = resolve(import.meta.dirname, '../docs/evidence/staircase-ab');
+
+async function visibleTerraces(page: Page) {
+  return page.evaluate(() => {
+    const stage = document.querySelector('.staircase-viewport')!.getBoundingClientRect();
+    return [...document.querySelectorAll('.staircase-rail .course-nodes > li')].flatMap((node) => {
+      const box = node.getBoundingClientRect();
+      if (box.right <= stage.left + 1 || box.left >= stage.right - 1) return [];
+      const platform = parseFloat(getComputedStyle(node, '::before').height) || 0;
+      const top = box.top - stage.top;
+      const bottom = box.bottom + platform + 6 - stage.top;
+      if (top >= -1 && bottom <= stage.height + 1) return [];
+      return [{ top: Math.round(top), bottom: Math.round(bottom), stage: Math.round(stage.height) }];
+    });
+  });
+}
 
 test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
   test.setTimeout(60_000);
@@ -60,9 +75,13 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
   expect(layers.hill1Right).toBeGreaterThanOrEqual(layers.stageRight - 1);
   expect(layers.cloudBottom).toBeGreaterThan(layers.stageTop);
   expect(layers.cloudTop).toBeLessThan(layers.stageBottom);
+  const track = Number(await scene.getAttribute('data-track-length'));
+  const cameraMax = Number(await scene.getAttribute('data-camera-max'));
+  expect(layers.hill1).toBeCloseTo((track - cameraMax) / track, 4);
   await expect(page.getByRole('button', { name: /Separate platforms|Continuous slope/ })).toHaveCount(0);
   await expect(scene).toHaveAttribute('data-rise-px', /^[0-9]+$/);
   await page.screenshot({ path: resolve(evidenceDir, 'v2-terraces-1440.png'), fullPage: false });
+  expect(await visibleTerraces(page)).toEqual([]);
 
   const initial = Number(await scene.getAttribute('data-camera-x'));
   const before = await page.evaluate(() => ({
@@ -91,8 +110,14 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
   expect(hill1Move).toBeGreaterThan(hill2Move);
   expect(hill2Move).toBeGreaterThan(cloudMove);
   expect(hill1Move).toBeLessThan(cameraMove);
+  expect(await visibleTerraces(page)).toEqual([]);
   await page.keyboard.press('Home');
   await expect(scene).toHaveAttribute('data-camera-x', '0');
+  expect(await visibleTerraces(page)).toEqual([]);
+  await page.keyboard.press('End');
+  await expect.poll(async () => Number(await scene.getAttribute('data-camera-x'))).toBeGreaterThan(0);
+  expect(await visibleTerraces(page)).toEqual([]);
+  await page.keyboard.press('Home');
 
   const platform = await page.locator('.staircase-rail .course-nodes > li').first().evaluate((el) => {
     const before = getComputedStyle(el, '::before');
@@ -109,6 +134,7 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
   await page.setViewportSize({ width: 834, height: 1112 });
   await page.getByRole('button', { name: '中文' }).click();
   await expect(scene).toHaveAttribute('data-landscape', 'v2-terraces');
+  expect(await visibleTerraces(page)).toEqual([]);
   await page.screenshot({ path: resolve(evidenceDir, 'v2-terraces-834-zh.png'), fullPage: false });
 });
 

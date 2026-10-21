@@ -8,6 +8,10 @@ const INSET = 40;
 export const ANCHOR_BASE_Y = 356; // Absolute bottom/pedestal datum, never measured from card size.
 const MAX_RISE = 120;
 const MIN_RISE = 48;
+/** Terrace box in StaircaseScene.css, plus the 6px drop-shadow under that box. */
+const PLATFORM_HEIGHT = 64;
+const PLATFORM_SHADOW = 6;
+export const PLATFORM_EXTENT = PLATFORM_HEIGHT + PLATFORM_SHADOW;
 
 function clamp(value: number, lower: number, upper: number) {
   return Math.min(upper, Math.max(lower, value));
@@ -38,7 +42,6 @@ const HILL_HEIGHT = 656;
 const CLOUD_SIZE = 1024;
 /** Opaque puff of cloud.png, and the first solid ridge of hill-1-foreground.png. */
 const CLOUD_PUFF = { top: 310, bottom: 692, left: 120, right: 912 };
-const HILL_RIDGE_TOP = 280;
 const SKY = '#58A8E8';
 
 export function trackLength(count: number): number {
@@ -50,13 +53,22 @@ export function cameraMaxTravel(count: number, viewportWidth: number): number {
 }
 
 /**
- * Shared 1568×656 frame. Height is the stage, so the art is fully visible with
- * its ground on the stage bottom. Width follows that aspect. No scale multiplier.
+ * One 1568×656 tile, aspect preserved, never taller than the stage.
+ * When the stage is tall enough the tile is exactly as wide as the viewport,
+ * so the opening view shows the whole file, ground included.
  */
-export function hillFrame(stageHeight: number): { width: number; height: number } {
-  const height = Math.max(1, Math.round(stageHeight));
+export function hillTile(viewportWidth: number, stageHeight: number): { width: number; height: number } {
+  const widthLimit = Math.max(1, viewportWidth);
+  const heightLimit = Math.max(1, stageHeight);
+  const heightForWidth = widthLimit * (HILL_HEIGHT / HILL_WIDTH);
+  const height = Math.max(1, Math.round(Math.min(heightLimit, heightForWidth)));
   const width = Math.max(1, Math.round(height * (HILL_WIDTH / HILL_HEIGHT)));
   return { width, height };
+}
+
+/** Strip width that stays covered while a layer moves `speed` across the camera's max travel. */
+export function hillCoverWidth(viewportWidth: number, speed: number, maxTravel: number): number {
+  return Math.max(0, viewportWidth) + Math.max(0, speed) * Math.max(0, maxTravel);
 }
 
 export type ScenicSpeeds = {
@@ -68,36 +80,125 @@ export type ScenicSpeeds = {
 };
 
 /**
- * Horizontal speeds from the node count, track length, and camera max travel.
- * Cards stay on the camera. Sky is the full-bleed stage color, so it does not travel.
- * A hill can move at most (frame width − viewport) / camera max and still cover the stage.
- * That cover speed is also capped by camera max / track length, which is below card speed.
- * Each step farther from the cards keeps that same track share: hill 1, then hill 2, then cloud.
+ * Horizontal speeds from the node count, the track length, and camera max travel.
+ * Cards stay on the camera (1). Sky is the stage color, so it stays put.
+ * The viewport is the part of the track already on screen (track − camera max).
+ * That on-screen share, viewport / trackLength, is below 1 and shrinks as more nodes
+ * lengthen the path. Hill 1 uses it, so the layer shifts by less than one viewport
+ * across the whole camera travel. Each farther layer keeps that same share of the
+ * layer in front. A repeated tile covers only that shorter travel.
  */
-export function scenicSpeeds(count: number, viewportWidth: number, frameWidth: number): ScenicSpeeds {
+export function scenicSpeeds(count: number, viewportWidth: number): ScenicSpeeds {
   const track = trackLength(count);
   const maxTravel = cameraMaxTravel(count, viewportWidth);
   const cards = 1;
   const sky = 0;
   if (track <= 0 || maxTravel <= 0) return { sky, cloud: 0, hill2: 0, hill1: 0, cards };
-  const slack = Math.max(0, frameWidth - viewportWidth);
-  const cover = slack / maxTravel;
-  const share = maxTravel / track;
-  const hill1 = Math.min(cover, share);
+  const share = (track - maxTravel) / track;
+  const hill1 = share;
   const hill2 = hill1 * share;
   const cloud = hill2 * share;
   return { sky, cloud, hill2, hill1, cards };
 }
 
-/** Place the cloud square so its opaque puff sits in the sky above the hill-1 ridge. */
-export function cloudPlacement(stageHeight: number, viewportWidth: number): { size: number; top: number; left: number } {
-  const ridgeY = Math.max(0, stageHeight) * (HILL_RIDGE_TOP / HILL_HEIGHT);
-  const puffSpan = (CLOUD_PUFF.bottom - CLOUD_PUFF.top) / CLOUD_SIZE;
-  const size = puffSpan > 0 ? ridgeY / puffSpan : 0;
-  const top = ridgeY - size * (CLOUD_PUFF.bottom / CLOUD_SIZE);
+export type CameraYBounds = { min: number; max: number };
+
+/** Vertical camera window that keeps visible card tops and terrace bottoms inside the stage. */
+export function cameraYBounds(
+  count: number,
+  rise: number,
+  cameraX: number,
+  viewportWidth: number,
+  viewportHeight: number,
+  cardHeights: readonly number[],
+  platformExtent = PLATFORM_EXTENT,
+): CameraYBounds {
+  let min = 0;
+  let max = Number.POSITIVE_INFINITY;
+  for (let index = 0; index < count; index += 1) {
+    const left = index * STEP_GAP;
+    const right = left + CARD_WIDTH;
+    if (right <= cameraX || left >= cameraX + viewportWidth) continue;
+    const pedestal = pedestalAnchorY(index, count, rise);
+    const height = cardHeights[index] ?? 0;
+    min = Math.max(min, pedestal + platformExtent - viewportHeight);
+    max = Math.min(max, pedestal - height);
+  }
+  return { min, max };
+}
+
+/** True when some camera Y keeps every horizontally visible card and terrace inside the stage. */
+export function terracesFit(
+  count: number,
+  rise: number,
+  viewportWidth: number,
+  viewportHeight: number,
+  cardHeights: readonly number[],
+  platformExtent = PLATFORM_EXTENT,
+): boolean {
+  const maxX = cameraMaxTravel(count, viewportWidth);
+  const events = new Set<number>([0, maxX]);
+  for (let index = 0; index < count; index += 1) {
+    const left = index * STEP_GAP;
+    const enter = left - viewportWidth;
+    const exit = left + CARD_WIDTH;
+    if (enter > 0 && enter < maxX) events.add(enter);
+    if (exit > 0 && exit < maxX) events.add(exit);
+  }
+  const points = [...events].sort((a, b) => a - b);
+  for (let index = 0; index < points.length; index += 1) {
+    const cameraX = index + 1 < points.length ? (points[index] + points[index + 1]) / 2 : points[index];
+    const bounds = cameraYBounds(count, rise, cameraX, viewportWidth, viewportHeight, cardHeights, platformExtent);
+    if (bounds.min > bounds.max) return false;
+  }
+  return true;
+}
+
+/**
+ * Prefer the viewport rise. When visible cards and terraces cannot fit,
+ * step down inside the existing 48–120 clamp until they can.
+ */
+export function riseThatFits(
+  count: number,
+  viewportWidth: number,
+  viewportHeight: number,
+  cardHeights: readonly number[],
+  preferredRise: number,
+  platformExtent = PLATFORM_EXTENT,
+): number {
+  if (cardHeights.length < count || count === 0) return preferredRise;
+  const fits = (rise: number) => terracesFit(count, rise, viewportWidth, viewportHeight, cardHeights, platformExtent);
+  if (fits(preferredRise)) return preferredRise;
+  let lo = MIN_RISE;
+  let hi = Math.max(MIN_RISE, Math.round(preferredRise));
+  if (!fits(lo)) return MIN_RISE;
+  while (lo + 1 < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (fits(mid)) lo = mid;
+    else hi = mid;
+  }
+  return lo;
+}
+
+/** Keep the diagonal follow, then clamp it into the bounds the terraces actually occupy. */
+export function framedCameraY(raw: number, bounds: CameraYBounds, railLimit: number): number {
+  const cap = Math.max(0, railLimit);
+  if (!Number.isFinite(bounds.max)) return clamp(raw, 0, cap);
+  if (bounds.min <= bounds.max) return clamp(raw, Math.max(0, bounds.min), Math.min(cap, bounds.max));
+  return clamp((bounds.min + bounds.max) / 2, 0, cap);
+}
+
+/**
+ * The cloud square stays inside the stage. Its opaque puff ends at the hill tile's top,
+ * in the sky above the ridge, and the image itself is not shifted above the stage.
+ */
+export function cloudPlacement(stageHeight: number, viewportWidth: number, hillTop: number): { size: number; top: number; left: number } {
+  const sky = Math.max(0, Math.min(stageHeight, hillTop));
+  const puffBottom = CLOUD_PUFF.bottom / CLOUD_SIZE;
+  const size = puffBottom > 0 ? Math.min(stageHeight, sky / puffBottom) : 0;
   const puffCenter = (CLOUD_PUFF.left + CLOUD_PUFF.right) / 2 / CLOUD_SIZE;
   const left = viewportWidth / 2 - size * puffCenter;
-  return { size, top, left };
+  return { size, top: 0, left };
 }
 
 function speedAttr(speed: number): string {
@@ -121,7 +222,9 @@ export function StaircaseScene({
   const [view, setView] = useState({ width: 1024, height: 600 });
   const [cameraX, setCameraX] = useState(0);
   const [dragging, setDragging] = useState(false);
-  const rise = stepRise(view.width, view.height);
+  const [cardHeights, setCardHeights] = useState<number[]>([]);
+  const preferredRise = stepRise(view.width, view.height);
+  const rise = riseThatFits(count, view.width, view.height, cardHeights, preferredRise);
   const slope = rise / STEP_GAP;
   const maxX = Math.max(0, (count - 1) * STEP_GAP + CARD_WIDTH - view.width);
   const boundedX = clamp(cameraX, 0, maxX);
@@ -129,7 +232,11 @@ export function StaircaseScene({
   const visibleIndex = (boundedX + view.width / 2 - CARD_WIDTH / 2) / STEP_GAP;
   const cameraYRaw = ANCHOR_BASE_Y + (count - 1 - visibleIndex) * rise - view.height * 0.7; // Follow anchor line, not card center.
   const railHeight = Math.max(460, pedestalAnchorY(0, count, rise) + 120);
-  const cameraY = clamp(cameraYRaw, 0, Math.max(0, railHeight - view.height));
+  const cameraY = framedCameraY(
+    cameraYRaw,
+    cameraYBounds(count, rise, boundedX, view.width, view.height, cardHeights),
+    Math.max(0, railHeight - view.height),
+  );
   const cameraXRef = useRef(boundedX);
   cameraXRef.current = boundedX;
   const metricsRef = useRef({ width: view.width, maxX, slope, count });
@@ -148,6 +255,13 @@ export function StaircaseScene({
     window.addEventListener('resize', measure);
     return () => window.removeEventListener('resize', measure);
   }, []);
+
+  useLayoutEffect(() => {
+    const nodes = viewportRef.current?.querySelector('.course-nodes');
+    if (!nodes) return;
+    const heights = [...nodes.children].map((node) => Math.round((node as HTMLElement).offsetHeight));
+    setCardHeights((prev) => (prev.length === heights.length && prev.every((height, index) => height === heights[index]) ? prev : heights));
+  }, [count, locale, view.width, view.height]);
 
   useEffect(() => {
     setCameraX(cameraForStep(focusIndex, view.width, count));
@@ -215,14 +329,18 @@ export function StaircaseScene({
     '--rail-height': String(railHeight) + 'px',
     transform: 'translate3d(' + (-boundedX) + 'px, ' + (-cameraY) + 'px, 0)',
   } as CSSProperties;
-  const frame = hillFrame(view.height);
-  const speeds = scenicSpeeds(count, view.width, frame.width);
-  const cloudBox = cloudPlacement(view.height, view.width);
-  const hillBox = (speed: number): CSSProperties => ({
-    width: frame.width,
-    height: frame.height,
+  const tile = hillTile(view.width, view.height);
+  const speeds = scenicSpeeds(count, view.width);
+  const cloudBox = cloudPlacement(view.height, view.width, Math.max(0, view.height - tile.height));
+  const hillBox = (speed: number, src: string): CSSProperties => ({
+    width: hillCoverWidth(view.width, speed, maxX),
+    height: tile.height,
     left: -speed * boundedX,
     bottom: 0,
+    backgroundImage: `url("${src}")`,
+    backgroundRepeat: 'repeat-x',
+    backgroundSize: `${tile.width}px ${tile.height}px`,
+    backgroundPosition: 'left bottom',
   });
   const cloudStyle: CSSProperties = {
     width: cloudBox.size,
@@ -257,12 +375,8 @@ export function StaircaseScene({
       <div className="path-layer path-cloud" data-testid="path-cloud" data-parallax={speedAttr(speeds.cloud)} style={cloudStyle} aria-hidden="true">
         <img src="/path/v2-terraces/cloud.png" alt="" width={1024} height={1024} />
       </div>
-      <div className="path-layer path-hill path-hill-2" data-testid="path-hill-2" data-parallax={speedAttr(speeds.hill2)} style={hillBox(speeds.hill2)} aria-hidden="true">
-        <img src="/path/v2-terraces/hill-2-mid.png" alt="" width={1568} height={656} />
-      </div>
-      <div className="path-layer path-hill path-hill-1" data-testid="path-hill-1" data-parallax={speedAttr(speeds.hill1)} style={hillBox(speeds.hill1)} aria-hidden="true">
-        <img src="/path/v2-terraces/hill-1-foreground.png" alt="" width={1568} height={656} />
-      </div>
+      <div className="path-layer path-hill path-hill-2" data-testid="path-hill-2" data-parallax={speedAttr(speeds.hill2)} style={hillBox(speeds.hill2, '/path/v2-terraces/hill-2-mid.png')} aria-hidden="true" />
+      <div className="path-layer path-hill path-hill-1" data-testid="path-hill-1" data-parallax={speedAttr(speeds.hill1)} style={hillBox(speeds.hill1, '/path/v2-terraces/hill-1-foreground.png')} aria-hidden="true" />
       <div className="staircase-rail" data-parallax="1" style={style}>
         {children}
       </div>
