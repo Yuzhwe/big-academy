@@ -1,0 +1,9 @@
+.writing-build,.writing-compose,.writing-assessment {display:grid;gap:var(--ba-space-4,16px);align-content:start;min-width:0;}
+.writing-build__output {min-height:60px;padding:var(--ba-space-4);border:2px dashed var(--ba-color-warm-5);border-radius:var(--ba-radius-12);font-size:18px;}
+.writing-compose__criteria {display:grid;gap:var(--ba-space-2);}
+.writing-assessment__head {display:flex;align-items:center;justify-content:space-between;gap:var(--ba-space-4);}
+.writing-assessment__index {display:grid;place-items:center;width:56px;height:56px;margin:0;border-radius:50%;background:var(--ba-color-action-primary);color:#fff;font:800 32px/1 var(--ba-type-numeric-family);}
+.writing-assessment__dots {display:flex;gap:var(--ba-space-2);}
+.writing-assessment__dots button {min-width:40px;min-height:44px;border:1px solid var(--ba-color-warm-5);border-radius:var(--ba-radius-full);background:var(--ba-color-surface-canvas);font-size:20px;}
+.writing-assessment__dots button[aria-current] {outline:2px solid var(--ba-color-action-primary);}
+.writing-assessment__results {display:grid;gap:var(--ba-space-3);}
