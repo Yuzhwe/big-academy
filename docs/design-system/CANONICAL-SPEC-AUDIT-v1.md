@@ -77,3 +77,17 @@ Completed additional checks on the rewrite branch:
 ### Documentation review gate
 
 This work can be reviewed for **specification coherence**. It must not be represented as implemented UI, verified graders, CI passes, accessibility certification or designer visual approval.
+
+## Deep source-to-product parity audit — pass 3 (2026-10-21)
+
+See `docs/design-system/WRITING-REQUIREMENTS-TRACEABILITY-v1.md` for an evidence-based, eight-screen matrix and direct design-token/component mapping.
+
+**Finding P0 — Writing runtime slice incompleteness:** `courseSession.ts` contains generic screen-state support but `pressPrimary()` only dispatches checked `pick` and some `tapword` tasks. Unimplemented task types fall back to an unsupported message, and unfinished non-task activities such as Apply and Check follow a generic locked-message path. Accordingly, the complete Lesson 1 authored eight-screen behavior described in PRODUCT.md is **not established by current UI implementation**. This is a future implementation gap, not grounds to remove PRODUCT.md rules.
+
+**Finding P0 — first-screen Footer mismatch:** `CourseSession.footer()` currently displays “My path” as Screen 1's Footer Back label, and `pressBack()` exits to path at screen 0. The current Product contract requires Previous to be disabled on the first Activity Screen while TopBar Back alone exits to Staircase. Requires engineering change later.
+
+**Evidence granularity:** `courseSession.test.tsx` has 8 static test cases and `e2e/course-slice.spec.ts` one browser test that covers a pick/return route. Tests have **not been run** during this docs-only audit. The original HTML source / Engine exists; full original-data fixture parity and full browser UX verification remain open.
+
+**Foundations:** Tokens and component contracts express selected R3 direction but do not prove that every component consumes the shared code or any spring runtime. The traceability matrix names each relevant contract and its review status.
+
+Next stage after designer approval: use this matrix to implement missing product interactions on an isolated engineering branch, then collect full learner-journey browser evidence. No product code was edited in this pass.
