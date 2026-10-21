@@ -136,3 +136,7 @@
     animation: none;
   }
 }
+
+.lesson-topbar__back.ba-button {width:var(--ba-writing-back-size);height:var(--ba-writing-back-size);flex:none;padding:0;}
+.lesson-topbar__back.ba-button .ba-button__assembly {width:100%;height:100%;min-width:0;box-shadow:var(--ba-writing-back-shadow);--ba-button-bg:var(--ba-color-surface-canvas);}
+.lesson-topbar__back-icon {color:var(--ba-writing-back-icon-color);}
