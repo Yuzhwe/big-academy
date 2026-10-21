@@ -500,14 +500,14 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, P7 assessment, saved answers, resume, Start/Continue/Review/Locked, keyboard/touch and reduced-motion behavior. The Writing demonstration remains eight Activity Screens.
 - **E-01 full-bleed stage:** landscape sky / distant peaks / hills / trees / clouds / subtle plane + parallax is the sole default presentation; no residual beige header/footer bands may occlude the scene. Level navigation and language selector remain usable above scenery without overlapping nodes. Background never captures pointer events or course state.
 - **Camera visibility:** drag, wheel, keyboard, Home and End must reach complete visible first/last nodes, including card bounds, decorative terraces, sticky header and viewport padding; no unreachable clipped upper-right or lower-left cards.
-- **Terrace:** choose the **Layered Landscape Terrace** family (2–3 shallow rounded grass/landform layers). Retire high translucent rectangular vertical pillars. Preserve Lesson card bottom anchors and existing path navigation geometry. Terrace colors/curves are design candidates, not yet approved numeric specifications.
+- **Terrace:** the **Layered Landscape Terrace** (2–3 shallow rounded grass/landform layers) under each node. Preserve Lesson card bottom anchors and existing path navigation geometry. Terrace colors and curves are designer-review candidates [E].
 - **Lesson state:** choose **Number Seal + Attached Symbol**. Lesson number remains dominant; attached small status icon encodes current, completed or locked. Do not restore giant colored status capsules or redundant You're here / Finish prior unit captions. Accessible status descriptions remain; actual state gates do not change. Exact final icon geometry is a designer review candidate.
 - **Unit fold:** folded face must be a continuous rounded corner integrated with the card's outer edge; no detached corner triangle or inner decorative border crossing the folded region. Decorative folded state is not an interactive target.
 - **Lesson card:** title uses exactly two reserved line boxes, 2-line truncation with accessible full title; estimated duration directly below title as number + localized unit, left aligned. CTA uses shared BAButton (height 70px), all approved hover/pressed/focus and reduced motion states. Outer/inner radius follows concentric relation rather than independent unrelated values.
 - **Activity hierarchy:** one primary separation treatment per structural boundary (surface OR stroke OR divider unless independently justified). Right-column action footer no longer draws its own filled panel or redundant divider; it remains pinned below independently scrolling Coach. Primary and Previous fill footer width at 1:2 with 8px gap and 70px heights. Quiet neutral container strokes must not obscure interactive focus/graded borders. Decrease gaps between peer content containers by one existing spacing scale step; do not tighten line-height or hit targets.
 - **TopBar:** keep title/meta and centered ActivityScreenIndicator shared with the anchored full-screen Popover. Icon Back to Staircase remains 50×50. P7's internal question count is distinct from top eight Activity Screen indicators.
 - **P2:** differentiate Not yet vs Better; Better is instructional emphasis, never a checked practice success event.
-- **Visual source:** the landscape appearance is recorded in the E01-landscape-backdrop source at commit 913dbfe; DESIGN.md specifies the current default and controls terrace changes. Historical implementation toggles do not determine current product behavior.
+- **Visual source:** the landscape appearance is the layered backdrop recorded in DESIGN.md, including the source values from commit 913dbfe. DESIGN.md specifies the stage and the terrace.
 
 ## 14. Lesson TopBar and footer actions
 
@@ -543,7 +543,7 @@ If an existing authored Chinese UI/explanation string is absent, identify it for
 
 ## 16. E-01 Staircase behavior
 
-E-01 is a diagonal staircase, lower-left to upper-right, not a vertical list. The path form is separate platforms: one thin platform per node. Card bottom sits on the platform top. Card height grows upward and does not move the anchor, the camera, or the slope.
+E-01 is a diagonal staircase, lower-left to upper-right, not a vertical list. The path form is separate platforms on the layered landscape: one platform per node. Card bottom sits on the platform top. Card height grows upward and does not move the anchor or the camera.
 
 Anchor for node `i` of `n`: `anchorBaseY + (n - 1 - i) × rise`. Rise comes from the viewport height, clamped between 48 and 120 CSS px. Horizontal step is 290 CSS px. Node width is 260 CSS px. Do not hard-code a 15° angle. Drag, wheel, keyboard arrows, Home, and End use that same rise and snap to a step. The path is usable without a pointer, names itself to assistive tech, and honors reduced motion. There is no forced 1024 px minimum width.
 
@@ -559,7 +559,7 @@ Node roles:
 
 Only G2-O lessons call the course session. A locked card never navigates and never looks unlocked. Completed Lesson CTA is Review / 复习, not Start; current/available unfinished lessons show Start or Continue according to saved progress. The top-left number and completion/lock state form a single badge. Level tabs sit in one header row: level title at the left, the tab list centered on the header, language toggle at the right. Changing level changes which path is shown. It does not open a lesson and does not change score or progress. Phone widths may scroll the tab list inside that row.
 
-The E-01 default is the layered landscape environment specified by DESIGN.md; the formerly prescribed warm-brown vertical gradient is retired from the active Writing visual contract. Landscape layers are decorative only and cannot affect navigation, scoring or persistence.
+The E-01 stage is the layered landscape environment specified by DESIGN.md. Landscape layers are decorative only and cannot affect navigation, scoring or persistence.
 
 ## 17. Celebration triggers
 
@@ -590,7 +590,6 @@ The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribb
 - **Safety handling (Product Owner):** After two 3+-word safety-flagged Apply submissions, the original generic failed-tries branch can expose `Move on for now`; confirm whether the safety case needs a separate boundary before implementation. No new safety rule is approved by this observation.
 - **Feedback restoration (Product Owner / UX):** Saved attempts and answers persist, but the original in-memory `Pages.lastSaid` feedback cache is not persisted. Confirm desired exact Coach message restoration after hard reload; existing PRODUCT recovery intent remains pending runtime proof.
 
-- Landscape is the E-01 default; the former brown gradient and pillar-based terrace are not valid current requirements.
 - Non-answer dimming treatments, including the 40% candidate, require accessibility contrast review. Shake and audio cues remain optional candidates and cannot change gates.
 - Exact static artwork for the reduced-motion success state.
 - If a milestone becomes incomplete (for example after a failed Check revokes a skip) and later becomes complete again, whether that return auto-plays is not decided. Do not add a new celebration for that case.
