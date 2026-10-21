@@ -37,3 +37,33 @@ jobs:
             apps/writing/docs/evidence/r2-review/
             apps/writing/test-results/
           if-no-files-found: ignore
+
+  independent-clean-checkout:
+    # Independent reproducible validation, not two separately authored AI implementations.
+    needs: verification
+    strategy:
+      fail-fast: false
+      matrix:
+        pass: [validation-a, validation-b]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:layout -w @big-academy/writing -- writing-hifi-r2.spec.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: writing-${{ matrix.pass }}-evidence
+          path: |
+            apps/writing/docs/evidence/r2-review/
+            apps/writing/test-results/
+          if-no-files-found: ignore
