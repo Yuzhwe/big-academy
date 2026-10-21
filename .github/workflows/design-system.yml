@@ -27,3 +27,13 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:layout -w @big-academy/writing -- writing-hifi-r2.spec.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: writing-r2-browser-evidence
+          path: |
+            apps/writing/docs/evidence/r2-review/
+            apps/writing/test-results/
+          if-no-files-found: ignore
