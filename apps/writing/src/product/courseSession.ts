@@ -869,7 +869,7 @@ export class CourseSession {
     }
     const index = this.state.screen;
     const backLabel =
-      index === 0 ? (this.zh ? '我的路径' : 'My path') : this.zh ? '上一页' : 'Back';
+      this.zh ? '上一页' : 'Previous';
     if (!this.canNext(index)) {
       return {
         backLabel,
@@ -894,10 +894,7 @@ export class CourseSession {
       this.emit();
       return;
     }
-    if (this.state.screen === 0) {
-      this.backToPath();
-      return;
-    }
+    if (this.state.screen === 0) return;
     this.go(this.state.screen - 1, true);
   }
 
