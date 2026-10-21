@@ -537,6 +537,31 @@ Validate 1440×900, 1024×768, 834×1112, 390px, 100% and 200% zoom, English/Chi
 
 **Isolation:** this connected-tab styling belongs to `BA-WR-003 WordGrid` only. Do not change global `BATabs` / `BASegmentedControl` default skin or their established React Aria keyboard and panel semantics. Switching a tab updates the visible word category, not the learner's checked-answer status; a word pill inserts content or invokes Word Build's dedicated action. Preserve focus/caret on insertion, keyboard traversal and accessible selected-tab state. Refer to PRODUCT.md chapter 12 for exactly which group IDs each activity receives.
 
+### Consistent cross-Activity visual vocabulary and naming
+
+Apply the following **one-name / one-role** vocabulary across all eight Writing Activity Screens, Storybook examples and component-facing specifications. A shared element changes its content or selection mode by variant, **not its canonical name, baseline anatomy or basic states**.
+
+| Canonical name | Definition and cross-screen rule | Not the same as |
+| --- | --- | --- |
+| **LessonTopBar / Back** · BA-WR-001 | The top-left, icon-only Back returns one hierarchy level to the parent E-01 Staircase. This is the **only** Lesson exit control. | Footer Previous; P7 internal Back |
+| **ActivityScreenIndicator** · BA-UI-006 | Shared numbered navigation for the eight Lesson screens, including the identical circle in its anchored popover. | P7 internal Question pager |
+| **LessonWorkspace** · BA-WR-002 | Warm Frame + White Canvas composition: left Activity area; right independently scrolling Coach and fixed Footer. | A self-contained single-column chat transcript |
+| **Footer / Previous / primary action** | Bottom-right controls used only for questions and actions **inside the current Lesson**. First Screen Previous is disabled; never label it My path or make it return to E-01. | LessonTopBar Back |
+| **Choice option** · BA-UI-003 | P3 single/multi list option with consistent minimum hit area, padding, label/letter alignment, focus and post-grade states. `single` and `multi` are modes, not separate unrelated visual components. | **Word token**, **WordGrid word card** |
+| **Selectable word token** | Inline P3 Tapword token inside the original sentence; clicking chooses an answer for later Check, never inserts a word. | WordGrid word card |
+| **WordGrid** · BA-WR-003 | Writing vocabulary palette with named **WordGrid category tabs**, a connected **WordGrid body**, and selectable **word cards** for inserting into a writing region or executing a P4 ordered build. | Level Tabs (E-01); multiple-choice answers |
+| **Coach / Coach feedback** | The right-hand learning companion, with distinct arrival instruction, hint, checked feedback and writing commentary treatments. | Selection state on an option itself |
+| **Writing canvas / Frame blanks / Build bench** | Distinct task-area composites. Reuse shared typography, focus cues and card spacing; input semantics remain different. | One universal text input |
+| **P7 Question pager** | Four internal question positions inside the single P7 Activity Screen. | TopBar's eight Activity Screens |
+
+**Shared visual syntax [selected direction; exact sizes [E]]:** use a legible prompt heading followed by supporting instruction and the principal interactive region, in that consistent order. Keep the white reading/answer surface prominent, with restrained card edges, soft surfaces, visually nested radius relationships and deliberate whitespace. Each option, tappable token, word card and input has a visibly consistent baseline alignment and focus treatment. Single-line options center vertically; multiline text expands naturally and aligns letter + text to the first line. The same `selected`, `correct`, `wrong`, `shown`, `disabled`, `focus-visible` words designate the same state distinctions wherever applicable. Before grading, color communicates choice, **not** correctness. `shown` is a revealed solution, not a successful answer. Semantic Coach feedback stays a distinct surface from the selection.
+
+**Activity variants use one shared language, not one identical layout:** P2 contrasts Not yet / Better teaching panels; P3 single and multi reuse the same list/card geometry with different choice semantics, while Tapword keeps text flowing as a sentence; P4 uses the same WordGrid anatomy for single Sentence set or multiple Frame Fill categories, but word-card insertion and grading gestures differ; P5 uses a spacious writing canvas plus a connected four-group WordGrid; P7 uses input appearances without practice hints or instant correctness markings. Do not insert a WordGrid on the P7 mastery screen to obtain visual uniformity.
+
+**WordGrid anatomy and visual states:** place connected raised category tabs directly over the rounded word-bank body; the active tab and body share a coordinated softly colored surface. Inactive category colors are softer but still differentiated and readable. Place discrete white rounded pill word cards within the body; preserve generous card padding and flexible line breaks. Maintain clear `tab active`, `tab inactive`, `word available`, `word used` (when a guided set consumes one), `word disabled`, `focused` and `empty group` appearances. When the source offers a single Sentence set, omit only the useless one-tab strip; do not remove or replace the word bank. Do not change global BATabs defaults.
+
+**Designer sign-off remains separate:** this is a descriptive, implementation-guiding visual direction, not a precise pixel-for-pixel reproduction or approval of specific colors, shadow blur, corner radius, line-height, elevations or page mockups. These [E] dimensions need rendered examples and explicit UI/UX Designer confirmation.
+
 ### Writing Activity layout variants — canonical presentation matrix
 
 The **Screen IDs and interaction requirements** are owned by `apps/writing/PRODUCT.md` chapter 12. Template IDs are product structures; Layout Variant IDs identify distinct renderings under a template; Component IDs identify reusable implementation contracts. Do not give a template a single universal layout or treat a component name as a template. Variants below describe **appearance and accessibility**, not grading.
