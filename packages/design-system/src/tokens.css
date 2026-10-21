@@ -285,9 +285,21 @@
   --ba-writing-choice-gap: 10px; /* [E] */
   --ba-writing-choice-padding-inline: 12px; /* [E] */
   --ba-writing-choice-padding-block: 8px; /* [E] */
-  --ba-writing-grid-surface: #d0f7fc; /* [E] */
+  --ba-writing-grid-surface: #d0f7fc; /* [E] legacy single-cyan reference; category grids do not use this as their body */
   --ba-writing-grid-border: #009ac2; /* [E] */
   --ba-writing-grid-tab-inactive: #dde9fc; /* [E] */
+  --ba-writing-grid-opinion-surface: #f6d3bf; /* [E] soft peach candidate */
+  --ba-writing-grid-opinion-tab: #f0c2a8; /* [E] */
+  --ba-writing-grid-nouns-surface: #f3e6cf; /* [E] soft beige candidate */
+  --ba-writing-grid-nouns-tab: #e6d3b4; /* [E] */
+  --ba-writing-grid-adjectives-surface: #d5e4f6; /* [E] soft blue candidate */
+  --ba-writing-grid-adjectives-tab: #c5d7f0; /* [E] */
+  --ba-writing-grid-marks-surface: #e4e2df; /* [E] soft gray candidate */
+  --ba-writing-grid-marks-tab: #d5d2cd; /* [E] */
+  --ba-writing-grid-set-surface: #f6efe6; /* [E] */
+  --ba-writing-grid-set-tab: #e7dccb; /* [E] */
+  --ba-writing-grid-task-surface: #efe6da; /* [E] */
+  --ba-writing-grid-task-tab: #e0d3c2; /* [E] */
   --ba-writing-grid-radius: 28px; /* [E] */
   --ba-writing-grid-inset: 20px; /* [E] */
   --ba-writing-grid-word-gap: 12px; /* [E] */

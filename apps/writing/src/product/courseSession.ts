@@ -23,6 +23,7 @@ import {
   type ScreenRef,
   type StepTag,
 } from './loadAlexSource';
+import type { ChoiceVisualState } from '@big-academy/design-system';
 
 export const ALEX_STATE_KEY = 'g2o_unit_state_v4';
 export const CELEBRATION_KEY = 'ba_writing_milestone_receipts_v1';
@@ -137,9 +138,32 @@ export interface ActivityModel {
   };
   pick?: {
     multi: boolean;
-    options: { index: number; letter: string; text: string; selected: boolean; wrong: boolean }[];
+    closed: boolean;
+    options: {
+      index: number;
+      letter: string;
+      text: string;
+      selected: boolean;
+      wrong: boolean;
+      state: ChoiceVisualState;
+    }[];
     hint: string;
   };
+  apply?: {
+    ask: string;
+    tip: string;
+    draft: string;
+    activeGroup: string;
+    groups: {
+      id: string;
+      label: string;
+      tone: string;
+      words: { id: string; text: string }[];
+    }[];
+    /** Layout review while the real screen is still locked. Does not grant canOpen. */
+    lockedPreview: boolean;
+  };
+  feedbackTone: 'neutral' | 'hint' | 'correct' | 'incorrect' | 'revealed';
   tapword?: {
     words: { index: number; text: string; selected: boolean; wrong: boolean }[];
   };
@@ -154,6 +178,7 @@ export interface ActivityModel {
 
 export interface FooterModel {
   backLabel: string;
+  previousDisabled: boolean;
   primaryLabel: string;
   primaryTestId: string;
 }
@@ -247,6 +272,12 @@ export class CourseSession {
   levelId: string;
   message = '';
   feedback = '';
+  feedbackTone: ActivityModel['feedbackTone'] = 'neutral';
+  /**
+   * In-memory Apply layout review. Not stored in Alex state and not an unlock.
+   * Screen 7 stays locked until earlier screens are actually finished.
+   */
+  layoutReviewId: string | null = null;
   celebration: CelebrationEvent | null = null;
   openNotice = '';
   returnFocus: { unitId: string; number: number } | null = null;
@@ -630,11 +661,29 @@ export class CourseSession {
 
   backToPath(): void {
     if (this.returnTo) this.returnFocus = { ...this.returnTo };
+    this.layoutReviewId = null;
     this.view = 'path';
     this.feedback = '';
+    this.feedbackTone = 'neutral';
     this.message = '';
     this.save();
     this.emit();
+  }
+
+  /**
+   * Opens the Apply writing surface for layout review.
+   * Does not mark earlier screens done and does not change the saved screen index.
+   */
+  openLayoutReview(screenId = 'L2-04.apply'): boolean {
+    const ref = this.screens.find((item) => item.screen.id === screenId);
+    if (!ref || ref.screen.kind !== 'apply') return false;
+    this.layoutReviewId = screenId;
+    this.view = 'lesson';
+    this.feedback = '';
+    this.feedbackTone = 'neutral';
+    this.message = '';
+    this.emit();
+    return true;
   }
 
   /**
@@ -749,6 +798,10 @@ export class CourseSession {
   }
 
   activity(): ActivityModel | null {
+    if (this.view === 'lesson' && this.layoutReviewId) {
+      const reviewed = this.screens.find((item) => item.screen.id === this.layoutReviewId);
+      if (reviewed?.screen.kind === 'apply') return this.applyModel(reviewed, true);
+    }
     if (this.view === 'lessonEnd') return this.lessonEndActivity();
     if (this.view !== 'lesson') return null;
     const ref = this.screens[this.state.screen];
@@ -767,11 +820,11 @@ export class CourseSession {
       coach,
       coachMore: this.coachHasMore(screen),
       feedback: this.feedback,
+      feedbackTone: this.feedbackTone,
     };
 
     if (screen.kind === 'learn' && screen.template === 'P2') {
       const skill = page?.skill ? this.engine.skillById(this.config, page.skill) : null;
-      const practiceCount = page?.tasks?.length ?? 0;
       return {
         ...base,
         supported: true,
@@ -782,12 +835,12 @@ export class CourseSession {
           strong: skill?.example?.strong,
           weakLabel: this.zh ? '还不是' : 'Not yet',
           strongLabel: this.zh ? '更好' : 'Better',
-          nextUp: this.zh
-            ? `接下来：${practiceCount} 个短练习，然后自己写，再做检查。`
-            : `Next: ${practiceCount} short practices, then you try it in your own writing, then a check.`,
+          nextUp: '',
         },
       };
     }
+
+    if (screen.kind === 'apply') return this.applyModel(ref, false);
 
     if ((screen.kind === 'task' || screen.kind === 'model_task') && screen.task) {
       const task = this.task(screen.task);
@@ -807,6 +860,7 @@ export class CourseSession {
           hintAction,
           pick: {
             multi: !!task.multi,
+            closed,
             hint: task.multi
               ? this.zh
                 ? `选择 ${task.answers.length} 项 · 已选 ${picked.length}`
@@ -818,6 +872,7 @@ export class CourseSession {
               text: line,
               selected: picked.includes(index),
               wrong: wrong.includes(index) && !closed,
+              state: this.choiceVisual(index, task, taskState),
             })),
           },
         };
@@ -853,9 +908,18 @@ export class CourseSession {
   }
 
   footer(): FooterModel {
+    if (this.view === 'lesson' && this.layoutReviewId) {
+      return {
+        backLabel: this.zh ? '上一屏' : 'Previous',
+        previousDisabled: true,
+        primaryLabel: this.zh ? '检查我的写作' : 'Check my writing',
+        primaryTestId: 'check',
+      };
+    }
     if (this.view === 'lessonEnd') {
       return {
         backLabel: this.zh ? '返回' : 'Back',
+        previousDisabled: false,
         primaryLabel: this.zh ? '继续' : 'Keep going',
         primaryTestId: 'keep-going',
       };
@@ -863,22 +927,25 @@ export class CourseSession {
     if (this.view === 'preview') {
       return {
         backLabel: this.zh ? '我的路径' : 'My path',
+        previousDisabled: false,
         primaryLabel: this.zh ? '我的路径' : 'My path',
         primaryTestId: 'back-to-path',
       };
     }
     const index = this.state.screen;
-    const backLabel =
-      index === 0 ? (this.zh ? '我的路径' : 'My path') : this.zh ? '上一页' : 'Back';
+    const backLabel = this.zh ? '上一屏' : 'Previous';
+    const previousDisabled = this.isFirstActivity();
     if (!this.canNext(index)) {
       return {
         backLabel,
+        previousDisabled,
         primaryLabel: this.blockedLabel(index),
         primaryTestId: 'check',
       };
     }
     return {
       backLabel,
+      previousDisabled,
       primaryLabel: this.nextLabel(index),
       primaryTestId: 'next',
     };
@@ -894,14 +961,18 @@ export class CourseSession {
       this.emit();
       return;
     }
-    if (this.state.screen === 0) {
-      this.backToPath();
-      return;
-    }
-    this.go(this.state.screen - 1, true);
+    if (this.layoutReviewId || this.isFirstActivity()) return;
+    const previous = this.state.screen - 1;
+    if (previous < 0 || this.screens[previous]?.li !== this.screens[this.state.screen]?.li) return;
+    this.go(previous, true);
   }
 
   pressPrimary(): void {
+    if (this.layoutReviewId && this.view === 'lesson') {
+      const reviewed = this.screens.find((item) => item.screen.id === this.layoutReviewId);
+      if (reviewed?.screen.kind === 'apply') this.applyStub(reviewed.screen.page);
+      return;
+    }
     if (this.view === 'preview') {
       this.backToPath();
       return;
@@ -913,6 +984,10 @@ export class CourseSession {
     const index = this.state.screen;
     const screen = this.screens[index].screen;
     if (!this.canNext(index)) {
+      if (screen.kind === 'apply') {
+        this.applyStub(screen.page);
+        return;
+      }
       if (screen.kind === 'task' || screen.kind === 'model_task') {
         const task = screen.task ? this.task(screen.task) : null;
         if (task?.type === 'pick') this.pickCheck(task, this.taskKey(screen));
@@ -1030,6 +1105,147 @@ export class CourseSession {
     return focus;
   }
 
+  /** Switches a vocabulary group. Does not grade, count a try, or change the draft. */
+  setWordGroup(groupId: string): void {
+    const pageId = this.writingPageId();
+    if (!pageId) return;
+    this.state.grid.tab[pageId] = groupId;
+    this.save();
+    this.emit();
+  }
+
+  /** Replaces the writing draft from the textarea. Phase 1 stores one typed span. */
+  setWritingText(value: string): void {
+    const pageId = this.writingPageId();
+    if (!pageId) return;
+    if (regionText(this.state.regions[pageId]) === value) return;
+    this.state.regions[pageId] = value ? [{ t: value, s: 'typed' }] : [];
+    this.save();
+    this.emit();
+  }
+
+  /**
+   * Inserts a word-grid card at the caret using Alex smartInsert.
+   * Appending at the end keeps a grid span. A mid-text insert is stored as typed.
+   * Neither path grades.
+   */
+  insertWord(text: string, start: number, end: number): number {
+    const pageId = this.writingPageId();
+    if (!pageId) return start;
+    const before = regionText(this.state.regions[pageId]);
+    const kind = /^[.,!?;:]/.test(text) ? 'mark' : 'word';
+    const result = this.engine.smartInsert(before, start, end, text, kind);
+    const atEnd = start === before.length && end === before.length;
+    if (atEnd) {
+      const segments = [...(this.state.regions[pageId] ?? [])];
+      segments.push({ t: result.inserted, s: 'grid' });
+      this.state.regions[pageId] = segments;
+    } else {
+      this.state.regions[pageId] = [{ t: result.value, s: 'typed' }];
+    }
+    this.save();
+    this.emit();
+    return result.caret;
+  }
+
+  private isFirstActivity(): boolean {
+    const current = this.screens[this.state.screen];
+    if (!current) return true;
+    return this.liveIdx(current.li)[0] === this.state.screen;
+  }
+
+  private writingPageId(): string | null {
+    if (this.layoutReviewId) {
+      return this.screens.find((item) => item.screen.id === this.layoutReviewId)?.screen.page ?? null;
+    }
+    const screen = this.screens[this.state.screen]?.screen;
+    return screen?.kind === 'apply' ? screen.page : null;
+  }
+
+  private choiceVisual(index: number, task: AlexTask, taskState: TaskProgress): ChoiceVisualState {
+    const answers = task.answers ?? [];
+    const picked = taskState.picked ?? [];
+    const wrong = taskState.wrong ?? [];
+    const isAnswer = answers.includes(index);
+    const isPicked = picked.includes(index);
+    if (taskState.status === 'done') return isPicked && isAnswer ? 'correct' : 'dim';
+    if (taskState.status === 'shown') {
+      if (isAnswer) return 'shown';
+      if (wrong.includes(index) || isPicked) return 'wrong';
+      return 'dim';
+    }
+    if (wrong.includes(index)) return 'wrong';
+    if (isPicked) return 'selected';
+    return 'idle';
+  }
+
+  private applyModel(ref: ScreenRef, review: boolean): ActivityModel {
+    const page = this.pageOf(ref.screen.page);
+    const task = page?.task ? this.task(page.task) : null;
+    const spec = this.engine.gridFor(this.config, page, task);
+    const tabs = spec.tabs.length ? spec.tabs : ['opinion', 'nouns', 'adjectives', 'marks'];
+    const saved = this.state.grid.tab[ref.screen.page];
+    const activeGroup = saved && tabs.includes(saved) ? saved : tabs[0];
+    const groups = tabs.map((id) => {
+      const meta = this.config.grids?.tabs[id];
+      const cells = id === 'set' || id === 'task' ? [] : this.engine.cellsFor(this.config, id, spec.level === 'chunks' ? 'chunks' : 'words');
+      return {
+        id,
+        tone: id,
+        label: this.zh ? meta?.zh || meta?.label || id : meta?.label || id,
+        words: cells.map((cell) => ({ id: `${id}:${cell.t}`, text: cell.t })),
+      };
+    });
+    const index = this.screens.findIndex((item) => item.screen.id === ref.screen.id);
+    return {
+      supported: true,
+      template: ref.screen.template,
+      kind: ref.screen.kind,
+      title: this.text(ref.screen.title),
+      ask: this.text(task?.ask),
+      skip: null,
+      hints: [],
+      hintAction: null,
+      coach: this.coachLines(ref.screen),
+      coachMore: this.coachHasMore(ref.screen),
+      feedback: this.feedback,
+      feedbackTone: this.feedbackTone,
+      apply: {
+        ask: this.text(task?.ask),
+        tip: this.text(task?.tip),
+        draft: regionText(this.state.regions[ref.screen.page]),
+        activeGroup,
+        groups,
+        lockedPreview: review && !this.canOpen(index),
+      },
+    };
+  }
+
+  /**
+   * Phase 1 Apply check.
+   * Fewer than 3 words names the gap and does not count a try (settled product rule).
+   * A longer draft is saved only. The offline/AI grader, CJK-ratio counting, safety
+   * branch, and Move on for now stay unwired on purpose.
+   */
+  private applyStub(pageId: string): void {
+    const words = (regionText(this.state.regions[pageId]).match(/[A-Za-z0-9']+/g) ?? []).length;
+    if (words < 3) {
+      this.feedbackTone = 'hint';
+      this.feedback = this.zh
+        ? '先再写几个词。这次不算尝试。'
+        : 'Write a little first. This does not count as an attempt.';
+      this.log('next_blocked', { reason: 'apply_short' });
+      this.emit();
+      return;
+    }
+    this.feedbackTone = 'neutral';
+    this.feedback = this.zh
+      ? '草稿已留下。第一阶段还没有接入写作评分，所以这次不记尝试，也不会打开下一屏。'
+      : 'Your draft is saved. Phase 1 does not grade this writing yet, so this press does not count an attempt or open the next screen.';
+    this.log('next_blocked', { reason: 'apply_grader_pending' });
+    this.emit();
+  }
+
   private lessonEndActivity(): ActivityModel {
     const index = this.state.screen;
     const lessonIndex = this.screens[index]?.li ?? 0;
@@ -1050,6 +1266,7 @@ export class CourseSession {
       coach: [],
       coachMore: false,
       feedback: this.feedback,
+      feedbackTone: this.feedbackTone,
       learn: {
         heading: `${this.lessonWord(current?.n ?? lessonIndex + 1)} · ${this.text(current?.title)}`,
         teach: this.zh
@@ -1099,7 +1316,9 @@ export class CourseSession {
     this.state.screen = index;
     this.state.page = this.pageIndex(this.screens[index].screen.page);
     this.view = 'lesson';
+    this.layoutReviewId = null;
     this.feedback = '';
+    this.feedbackTone = 'neutral';
     this.log('screen');
     this.save();
     this.emit();
@@ -1110,6 +1329,7 @@ export class CourseSession {
     const taskState = this.taskState(key);
     const picked = (taskState.picked ?? []).slice();
     if (!picked.length) {
+      this.feedbackTone = 'hint';
       this.feedback = task.multi
         ? this.zh
           ? '先选出答案，我再和你一起检查。'
@@ -1161,6 +1381,7 @@ export class CourseSession {
       taskState.wrong = picked.slice();
       taskState.picked = [];
     }
+    this.feedbackTone = 'incorrect';
     this.feedback = message;
     this.log('task_try');
     this.save();
@@ -1205,6 +1426,7 @@ export class CourseSession {
     const taskState = this.taskState(key);
     taskState.status = status;
     const graded = this.gradedText(task, taskState, status === 'done');
+    this.feedbackTone = status === 'done' ? 'correct' : 'revealed';
     this.feedback =
       task.type === 'pick' || (task.type === 'tapword' && status === 'shown' && (task.targets ?? []).length === 1)
         ? graded
@@ -1367,6 +1589,7 @@ export class CourseSession {
   private blockedLabel(index: number): string {
     const kind = this.screens[index].screen.kind;
     if (kind === 'task' || kind === 'model_task') return this.zh ? '检查' : 'Check';
+    if (kind === 'apply') return this.zh ? '检查我的写作' : 'Check my writing';
     if (kind === 'check') return this.zh ? '交卷' : 'Hand in';
     return this.zh ? '下一页' : 'Next';
   }
@@ -1546,6 +1769,7 @@ export class CourseSession {
       const unit = this.playUnit();
       this.openLesson(unit.id, this.curLesson() + 1);
     }
+    if (params.get('phase1') === 'apply') this.openLayoutReview('L2-04.apply');
   }
 
   private readState(): { state: AlexState; fromStorage: boolean } {

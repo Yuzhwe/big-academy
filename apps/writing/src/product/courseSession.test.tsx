@@ -207,4 +207,46 @@ describe('course slice UI', () => {
     expect(screen.getByRole('heading', { name: /Level 2/ })).toBeInTheDocument();
     expect(course.inspect().screen).toBe(1);
   });
+
+  it('keeps Screen 1 Previous inside the lesson and disabled', async () => {
+    const user = userEvent.setup();
+    const course = session();
+    course.openLesson('G2-O', 1);
+    render(<CourseApp session={course} />);
+    const previous = screen.getByRole('button', { name: 'Previous' });
+    expect(previous).toBeDisabled();
+    await user.click(previous);
+    expect(course.view).toBe('lesson');
+    expect(course.inspect().screen).toBe(0);
+    expect(screen.getByRole('button', { name: 'Back to my path' })).toBeEnabled();
+  });
+
+  it('inserts Apply word-grid text without grading or unlocking', async () => {
+    const user = userEvent.setup();
+    const course = session();
+    expect(course.openLayoutReview('L2-04.apply')).toBe(true);
+    render(<CourseApp session={course} />);
+    expect(screen.getByTestId('layout-review')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Opinion' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.queryByRole('tablist', { name: 'Sentence set' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('tab', { name: 'Nouns' }));
+    expect(screen.getByRole('tab', { name: 'Nouns' })).toHaveAttribute('aria-selected', 'true');
+    const before = JSON.stringify(course.inspect().tasks);
+    await user.click(screen.getByRole('button', { name: 'garden' }));
+    expect((screen.getByTestId('apply-canvas') as HTMLTextAreaElement).value).toMatch(/garden/i);
+    expect(JSON.stringify(course.inspect().tasks)).toBe(before);
+    expect(course.inspect().done['L2-04.apply']).toBeUndefined();
+    expect(course.canOpen(6)).toBe(false);
+
+    await user.click(screen.getByRole('button', { name: 'Check my writing' }));
+    expect(screen.getByTestId('feedback')).toHaveTextContent(/does not count as an attempt/);
+    expect(course.inspect().done['L2-04.apply']).toBeUndefined();
+
+    await user.type(screen.getByTestId('apply-canvas'), 'I think our school should have a garden.');
+    await user.click(screen.getByRole('button', { name: 'Check my writing' }));
+    expect(screen.getByTestId('feedback')).toHaveTextContent(/does not grade this writing yet/);
+    expect(course.inspect().done['L2-04.apply']).toBeUndefined();
+    expect(course.canOpen(6)).toBe(false);
+  });
 });

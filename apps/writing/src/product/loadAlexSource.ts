@@ -30,6 +30,9 @@ export interface AlexTask {
     words?: Record<string, Bilingual>;
   };
   fields?: string[];
+  tip?: Bilingual | string;
+  grid?: { level?: string; tabs?: string[] };
+  cells?: Array<string | { t: string }>;
 }
 
 export interface AlexScreen {
@@ -64,6 +67,7 @@ export interface AlexPage {
   teach?: Bilingual | string;
   tasks?: string[];
   task?: string;
+  grid?: { level?: string; tabs?: string[] };
 }
 
 export interface AlexSkill {
@@ -100,6 +104,9 @@ export interface AlexConfig {
   step_tags?: StepTag[];
   unit_goals?: Bilingual[];
   unit?: { skill_skip?: { merge_below_min?: number } };
+  grids?: {
+    tabs: Record<string, { label?: string; zh?: string; words?: { t: string; zh?: string }[]; chunks?: { t: string }[] }>;
+  };
 }
 
 export interface PathLesson {
@@ -159,6 +166,19 @@ export interface EngineApi {
   tokens: (text: string) => { w: string; start: number; end: number }[];
   skipMode: (status: string, allow: boolean) => 'auto' | 'offer' | 'none';
   stripPictures: (text: string) => string;
+  gridFor: (
+    config: AlexConfig,
+    page: AlexPage | null,
+    task: AlexTask | null,
+  ) => { level: string; tabs: string[]; locked: boolean; collapsed: boolean };
+  cellsFor: (config: AlexConfig, tabId: string, level: string) => { t: string; zh?: string }[];
+  smartInsert: (
+    value: string,
+    start: number,
+    end: number,
+    text: string,
+    kind: string,
+  ) => { value: string; start: number; inserted: string; caret: number };
 }
 
 export interface AlexSource {

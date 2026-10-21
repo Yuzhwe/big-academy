@@ -1,0 +1,164 @@
+/* BA-UI-003 candidate visuals. Not designer-approved.
+ * Wrong uses brown --ba-error. Dim is opacity only, not a second wrong color.
+ * shown is a revealed answer and does not use the success fill.
+ */
+.ba-choice {
+  display: grid;
+  gap: var(--ba-writing-choice-gap, 10px);
+  margin: 0;
+  padding: var(--ba-space-3, 12px);
+  border-radius: var(--ba-radius-12, 12px);
+}
+
+.ba-choice__control {
+  position: relative;
+  display: block;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* React Aria clips the native input to 1px. Stretch that hit target over the row. */
+.ba-choice__control > span {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  clip: auto !important;
+  clip-path: none !important;
+  white-space: normal !important;
+}
+
+.ba-choice__control input {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ba-choice__control[data-disabled] {
+  cursor: not-allowed;
+}
+
+.ba-choice__option {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  column-gap: var(--ba-space-2, 8px);
+  align-items: start;
+  min-height: var(--ba-writing-choice-min-height, 50px);
+  padding: 0 var(--ba-writing-choice-padding-inline, 12px);
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-choice-border);
+  border-radius: var(--ba-radius-8, 8px);
+  background: var(--ba-paper, #fff);
+  color: var(--ba-color-content-primary);
+}
+
+.ba-choice__mark,
+.ba-choice__letter,
+.ba-choice__text,
+.ba-choice__status {
+  padding-block: calc((var(--ba-writing-choice-min-height, 50px) - 1.45em) / 2);
+}
+
+.ba-choice__mark {
+  width: 1.15em;
+  height: 1.15em;
+  margin-top: calc((var(--ba-writing-choice-min-height, 50px) - 1.45em) / 2);
+  padding-block: 0;
+  box-sizing: border-box;
+  border: 1.5px solid var(--ba-choice-border);
+  background: var(--ba-paper, #fff);
+}
+
+.ba-choice__mark[data-mark='single'] {
+  border-radius: var(--ba-radius-circle, 50%);
+}
+
+.ba-choice__mark[data-mark='multiple'] {
+  border-radius: var(--ba-radius-4, 4px);
+}
+
+.ba-choice__control[data-selected] .ba-choice__mark,
+.ba-choice__control[aria-checked='true'] .ba-choice__mark {
+  border-color: var(--ba-writing-accent);
+  background: var(--ba-writing-accent);
+  box-shadow: inset 0 0 0 3px var(--ba-paper, #fff);
+}
+
+.ba-choice__letter {
+  font-family: var(--ba-font-digit, "Dosis", sans-serif);
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1.45;
+}
+
+.ba-choice__text {
+  min-width: 0;
+  font-family: var(--ba-type-body-family, sans-serif);
+  font-size: var(--ba-type-body-size, 18px);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.ba-choice__status {
+  font-size: var(--ba-type-caption-size, 13px);
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: end;
+}
+
+.ba-choice__option[data-state='selected'] {
+  border-color: var(--ba-writing-accent);
+  background: color-mix(in srgb, var(--ba-writing-accent) 8%, var(--ba-paper, #fff));
+}
+
+.ba-choice__option[data-state='correct'][data-correct-appearance='filled'] {
+  border-color: var(--ba-success);
+  background: var(--ba-color-success-surface);
+}
+
+.ba-choice__option[data-state='correct'][data-correct-appearance='outlined'] {
+  border-color: var(--ba-success);
+  background: transparent;
+}
+
+.ba-choice__option[data-state='wrong'] {
+  border-color: var(--ba-error);
+  background: var(--ba-color-error-surface);
+  color: var(--ba-color-error-text);
+}
+
+.ba-choice__option[data-state='shown'] {
+  border-color: var(--ba-color-info-border);
+  background: var(--ba-color-info-surface);
+  color: var(--ba-color-info-text);
+}
+
+.ba-choice__option[data-state='dim'] {
+  opacity: 0.4;
+}
+
+.ba-choice__option[data-state='disabled'] {
+  border-color: var(--ba-color-disabled-border);
+  background: var(--ba-color-disabled-surface);
+  color: var(--ba-color-disabled-content);
+}
+
+.ba-choice__control[data-focus-visible] .ba-choice__option {
+  outline: 2px solid var(--ba-color-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ba-choice,
+  .ba-choice * {
+    transition: none;
+    animation: none;
+  }
+}

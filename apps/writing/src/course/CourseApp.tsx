@@ -1,10 +1,10 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { StaircaseScene, type StaircaseVariant } from './StaircaseScene';
 import { useSyncExternalStore } from 'react';
-import { Checkbox, Radio, RadioGroup } from 'react-aria-components';
-import { BAButton, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
+import { BAButton, BAChoice, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { LessonWorkspace } from '../components/writing/LessonWorkspace';
+import { WordGrid } from '../components/writing/WordGrid';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
 import alexHtml from '../../source/alex-original.html?raw';
@@ -110,6 +110,16 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             {zh ? 'B · 连续斜坡 + 锚点' : 'B · Continuous slope + anchors'}
           </button>
           <span className="course-ab-hint">{zh ? '探索方案，均未获得视觉批准' : 'Visual exploration only — not approved'}</span>
+        </div>
+        <div className="course-ab-controls" role="group" aria-label={zh ? '第一阶段预览' : 'Phase 1 preview'}>
+          <button type="button" className="course-ab-button" onClick={() => session.openLayoutReview('L2-04.apply')}>
+            {zh ? '第一阶段 · 应用写作词格' : 'Phase 1 · Apply word grid'}
+          </button>
+          <span className="course-ab-hint">
+            {zh
+              ? '版式预览，不解锁后面的屏幕，也不评分。'
+              : 'Layout review only. It does not unlock later screens or grade the draft.'}
+          </span>
         </div>
         <StaircaseScene key={level.id} variant={variant} locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
         <ol className="course-nodes">
@@ -247,12 +257,12 @@ function LessonView({ session }: { session: CourseSession }) {
                 {activity.learn.weak || activity.learn.strong ? (
                   <div className="course-examples">
                     {activity.learn.weak ? (
-                      <p>
+                      <p data-example="weak" lang="en">
                         <span>{activity.learn.weakLabel}</span> {activity.learn.weak}
                       </p>
                     ) : null}
                     {activity.learn.strong ? (
-                      <p>
+                      <p data-example="strong" lang="en">
                         <span>{activity.learn.strongLabel}</span> {activity.learn.strong}
                       </p>
                     ) : null}
@@ -265,43 +275,34 @@ function LessonView({ session }: { session: CourseSession }) {
               <>
                 <h1 className="course-title">{activity.ask}</h1>
                 {activity.pick.hint ? <p>{activity.pick.hint}</p> : null}
-                {activity.pick.multi ? (
-                  <div className="course-choices" role="group" aria-label={activity.ask}>
-                    {activity.pick.options.map((option) => (
-                      <Checkbox
-                        key={option.index}
-                        className="course-choice"
-                        data-wrong={option.wrong ? 'true' : undefined}
-                        isSelected={option.selected}
-                        onChange={() => session.pick(option.index)}
-                      >
-                        <span className="course-choice__letter">{option.letter}</span>
-                        <span>{option.text}</span>
-                      </Checkbox>
-                    ))}
-                  </div>
-                ) : (
-                  <RadioGroup
-                    className="course-choices"
-                    aria-label={activity.ask}
-                    value={activity.pick.options.find((option) => option.selected)?.index.toString() ?? ''}
-                    onChange={(value) => session.pick(Number(value))}
-                  >
-                    {activity.pick.options.map((option) => (
-                      <Radio
-                        key={option.index}
-                        className="course-choice"
-                        data-wrong={option.wrong ? 'true' : undefined}
-                        value={String(option.index)}
-                      >
-                        <span className="course-choice__letter">{option.letter}</span>
-                        <span>{option.text}</span>
-                      </Radio>
-                    ))}
-                  </RadioGroup>
-                )}
+                <BAChoice
+                  choiceMode={activity.pick.multi ? 'multiple' : 'single'}
+                  aria-label={activity.ask}
+                  locale={session.locale}
+                  disabled={activity.pick.closed}
+                  selectedKeys={activity.pick.options.filter((option) => option.selected).map((option) => String(option.index))}
+                  options={activity.pick.options.map((option) => ({
+                    id: String(option.index),
+                    letter: option.letter,
+                    label: option.text,
+                    state: option.state,
+                  }))}
+                  onChange={(keys) => {
+                    const pick = activity.pick;
+                    if (!pick || pick.closed) return;
+                    if (pick.multi) {
+                      const next = new Set(keys);
+                      const current = new Set(pick.options.filter((option) => option.selected).map((option) => String(option.index)));
+                      for (const key of keys) if (!current.has(key)) session.pick(Number(key));
+                      for (const key of current) if (!next.has(key)) session.pick(Number(key));
+                      return;
+                    }
+                    if (keys[0] != null) session.pick(Number(keys[0]));
+                  }}
+                />
               </>
             ) : null}
+            {activity.apply ? <ApplySurface session={session} /> : null}
             {activity.tapword ? (
               <>
                 <h1 className="course-title">{activity.ask}</h1>
@@ -344,27 +345,34 @@ function LessonView({ session }: { session: CourseSession }) {
           </article>
         }
         coach={
-          <div>
+          <div className="course-coach">
+            <div className="course-coach__locale">
+              <BAButton variant="secondary" locale={session.locale} onPress={() => session.toggleLocale()}>
+                {session.zh ? 'English' : '中文'}
+              </BAButton>
+            </div>
             {activity.coach.map((line) => (
-              <p key={line}>{line}</p>
+              <p key={line} className="course-coach-card" data-tone="orientation">
+                {line}
+              </p>
             ))}
             {activity.hints.map((hint) => (
-              <p key={hint} data-testid="hint">
+              <p key={hint} className="course-coach-card" data-tone="hint" data-testid="hint">
                 {hint}
               </p>
             ))}
             {activity.coachMore ? (
-              <BAButton variant="ghost" locale={session.locale} onPress={() => session.showAnother()}>
+              <BAButton variant="secondary" locale={session.locale} onPress={() => session.showAnother()}>
                 {session.zh ? '再看一个' : 'Show me another'}
               </BAButton>
             ) : null}
             {hintLabel ? (
-              <BAButton variant="ghost" locale={session.locale} onPress={() => session.openHint()}>
+              <BAButton variant="secondary" locale={session.locale} onPress={() => session.openHint()}>
                 {hintLabel}
               </BAButton>
             ) : null}
             {activity.feedback ? (
-              <p className="course-feedback" role="status" data-testid="feedback">
+              <p className="course-coach-card" role="status" data-tone={activity.feedbackTone} data-testid="feedback">
                 {activity.feedback}
               </p>
             ) : null}
@@ -372,16 +380,104 @@ function LessonView({ session }: { session: CourseSession }) {
         }
         navigation={
           <>
-            <BAButton variant="secondary" locale={session.locale} onPress={() => session.pressBack()}>
+            <BAButton
+              variant="secondary"
+              size={70}
+              locale={session.locale}
+              disabled={footer.previousDisabled}
+              onPress={() => session.pressBack()}
+            >
               {footer.backLabel}
             </BAButton>
-            <BAButton variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+            <BAButton variant="primary" size={70} locale={session.locale} onPress={() => session.pressPrimary()}>
               <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
             </BAButton>
           </>
         }
       />
     </div>
+  );
+}
+
+function useNarrow(query = '(max-width: 1024px)') {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const media = window.matchMedia(query);
+    const onChange = () => setNarrow(media.matches);
+    onChange();
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, [query]);
+  return narrow;
+}
+
+function ApplySurface({ session }: { session: CourseSession }) {
+  const activity = session.activity();
+  const apply = activity?.apply;
+  const narrow = useNarrow();
+  const [gridOpen, setGridOpen] = useState(true);
+  const field = useRef<HTMLTextAreaElement>(null);
+  const caret = useRef<{ start: number; end: number } | null>(null);
+  if (!activity || !apply) return null;
+  const overlay = narrow && gridOpen;
+  return (
+    <>
+      {apply.lockedPreview ? (
+        <p className="course-review-banner" data-testid="layout-review">
+          {session.zh
+            ? '版式预览 · 应用写作。前面的屏幕仍然锁定。检查不会评分，也不会解锁。'
+            : 'Layout review · Apply. Earlier screens stay locked. Check does not grade or unlock.'}
+        </p>
+      ) : null}
+      <p className="course-kicker">{activity.title}</p>
+      <h1 className="course-title">{apply.ask}</h1>
+      {apply.tip ? <p className="course-tip">{apply.tip}</p> : null}
+      <div className="course-writing" data-grid-presentation={overlay ? 'overlay' : 'docked'}>
+        <label className="course-writing__label">
+          <span className="visually-hidden">{session.zh ? '你的写作' : 'Your writing'}</span>
+          <textarea
+            ref={field}
+            data-testid="apply-canvas"
+            lang="en"
+            rows={6}
+            value={apply.draft}
+            onChange={(event) => session.setWritingText(event.target.value)}
+            onSelect={(event) => {
+              const node = event.currentTarget;
+              caret.current = { start: node.selectionStart ?? 0, end: node.selectionEnd ?? 0 };
+            }}
+          />
+        </label>
+        {narrow ? (
+          <BAButton variant="secondary" locale={session.locale} onPress={() => setGridOpen((open) => !open)}>
+            {gridOpen ? (session.zh ? '收起词格' : 'Hide word grid') : session.zh ? '词格' : 'Word grid'}
+          </BAButton>
+        ) : null}
+        {!narrow || gridOpen ? (
+          <WordGrid
+            groups={apply.groups}
+            activeGroup={apply.activeGroup}
+            presentation={overlay ? 'overlay' : 'docked'}
+            locale={session.locale}
+            onGroupChange={(key) => session.setWordGroup(key)}
+            onInsert={(word) => {
+              const element = field.current;
+              const live = element && document.activeElement === element;
+              const start = live ? element.selectionStart ?? apply.draft.length : caret.current?.start ?? apply.draft.length;
+              const end = live ? element.selectionEnd ?? start : caret.current?.end ?? start;
+              const next = session.insertWord(word.text, start, end);
+              caret.current = { start: next, end: next };
+              window.requestAnimationFrame(() => {
+                const node = field.current;
+                node?.focus();
+                node?.setSelectionRange(next, next);
+              });
+            }}
+          />
+        ) : null}
+      </div>
+    </>
   );
 }
 
