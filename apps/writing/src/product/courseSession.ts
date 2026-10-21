@@ -152,11 +152,11 @@ export interface ActivityModel {
   };
   pick?: {
     multi: boolean;
-    options: { index: number; letter: string; text: string; selected: boolean; wrong: boolean }[];
+    options: { index: number; letter: string; text: string; selected: boolean; wrong: boolean; state: 'idle'|'selected'|'correct'|'incorrect'|'revealed'|'dimmed' }[];
     hint: string;
   };
   tapword?: {
-    words: { index: number; text: string; selected: boolean; wrong: boolean }[];
+    words: { index: number; text: string; selected: boolean; wrong: boolean; state:'idle'|'selected'|'correct'|'incorrect'|'revealed'|'dimmed'; locked:boolean }[];
   };
   build?: { cells:string[]; built:string[]; expected:string; locked:boolean };
   writing?: { value:string; label:string; tip:string; type:'practice'|'apply'; locked:boolean; result?:ApplyResult };
@@ -790,7 +790,6 @@ export class CourseSession {
 
     if (screen.kind === 'learn' && screen.template === 'P2') {
       const skill = page?.skill ? this.engine.skillById(this.config, page.skill) : null;
-      const practiceCount = page?.tasks?.length ?? 0;
       return {
         ...base,
         supported: true,
@@ -801,9 +800,7 @@ export class CourseSession {
           strong: skill?.example?.strong,
           weakLabel: this.zh ? '还不是' : 'Not yet',
           strongLabel: this.zh ? '更好' : 'Better',
-          nextUp: this.zh
-            ? `接下来：${practiceCount} 个短练习，然后自己写，再做检查。`
-            : `Next: ${practiceCount} short practices, then you try it in your own writing, then a check.`,
+          nextUp: '', // R1 removes redundant upcoming count from visible P2
         },
       };
     }
@@ -837,6 +834,11 @@ export class CourseSession {
               text: line,
               selected: picked.includes(index),
               wrong: wrong.includes(index) && !closed,
+              state: closed
+                ? (task.answers?.includes(index)
+                    ? (taskState.status === 'done' && picked.includes(index) ? 'correct' : 'revealed')
+                    : (picked.includes(index) && taskState.status === 'shown' ? 'incorrect' : 'dimmed'))
+                : wrong.includes(index) ? 'incorrect' : picked.includes(index) ? 'selected' : 'idle',
             })),
           },
         };
@@ -853,8 +855,14 @@ export class CourseSession {
             words: tokens.map((token, index) => ({
               index,
               text: token.w,
-              selected: taskState.sel === index && taskState.status === 'open',
+              selected: taskState.sel === index,
               wrong: taskState.bad === index,
+              state: taskState.status === 'done'
+                ? (taskState.sel === index ? 'correct' : 'dimmed')
+                : taskState.status === 'shown'
+                  ? ((task.targets ?? []).some(target => this.engine.locate(task.text ?? '', target) === index) ? 'revealed' : taskState.bad === index ? 'incorrect' : 'dimmed')
+                  : taskState.bad === index ? 'incorrect' : taskState.sel === index ? 'selected' : 'idle',
+              locked: taskState.status !== 'open',
             })),
           },
         };
