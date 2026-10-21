@@ -4,6 +4,7 @@ import { useSyncExternalStore } from 'react';
 import { BAButton, BAChoice, BAStatus, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { LessonWorkspace } from '../components/writing/LessonWorkspace';
+import { LessonActivityExtras } from '../components/writing/LessonActivityExtras';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
 import alexHtml from '../../source/alex-original.html?raw';
@@ -303,6 +304,7 @@ function LessonView({ session }: { session: CourseSession }) {
                 </p>
               </>
             ) : null}
+            <LessonActivityExtras activity={activity} session={session}/>
             {!activity.supported && !activity.learn ? (
               <>
                 <h1 className="course-title">{activity.ask || activity.title}</h1>
