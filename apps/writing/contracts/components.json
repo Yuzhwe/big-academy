@@ -364,9 +364,9 @@
       ],
       "layoutOwner": "TopBar owns global centering, progress owns internal overflow",
       "requirements": [
-        "Same circle/number/check/lock geometry in topbar and All activity screens popover",
-        "No line connecting main numbered circle to lower status circle",
-        "Every Screen number stays visible; Dosis ExtraBold 800 numerals",
+        "Same circle in the TopBar and the All activity screens popover. Every state shows the Activity Screen index inside the circle. Lesson 1 is 1-8. Completed does not replace the digit with only a check. Locked does not replace the digit with only a lock. Status may use color, a ring, or a secondary mark, and the digit stays visible",
+        "Done uses a smaller check-circle at the main circle bottom; locked uses a smaller lock-circle. No line connecting the numbered circle to the lower status circle",
+        "Dosis ExtraBold 800 numerals",
         "Only canOpen-authorized screen navigation; locked never navigates",
         "Popover shows full screen list with responsive grid and bounded internal scroll",
         "Escape/outside/trigger dismiss, focus restoration, keyboard and touch accessibility",
@@ -388,7 +388,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "New interaction/visual contract in review; current implementation may still use legacy chips/scroll rail. BA-UI-006 owns shared marker rendering and overflow presentation, but not product gate or completion decisions. Do not label code visually approved."
+      "notes": "Joe locked 2026-10-21: every Activity Screen circle shows its index digit in every state. Completed is not a check-only circle. Locked is not a lock-only circle. Status may use color, a ring, or a secondary mark. Exact colors and sizes stay in review. BA-UI-006 owns shared marker rendering and overflow presentation, but not product gate or completion decisions. Do not label code visually approved. Runtime was not changed for this docs update."
     },
     {
       "id": "BA-UI-007",
@@ -462,7 +462,8 @@
         "Standalone visible icon-only top Back returns to Staircase; no visible helper words",
         "Footer Previous is distinct, previous Activity Screen only, disabled on first screen",
         "Top Back 50x50 shared accessible button, hover/pressed/focus motion; keeps lesson title/meta and centered activity status indicators",
-        "Circle numbered ActivityScreenIndicator reused identically within TopBar and anchored popover, no line to small check/lock status circle"
+        "Circle numbered ActivityScreenIndicator reused identically within TopBar and anchored popover. The digit stays visible in every state. No line to the small check/lock status circle",
+        "No horizontal divider between the lesson TopBar and the lesson content"
       ],
       "requiredStories": [
         "Desktop",
@@ -479,7 +480,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Product and design contract updated; rendered implementation needs separate QA. Popover and TopBar reuse exactly one ActivityScreenIndicator implementation."
+      "notes": "Product and design contract updated; rendered implementation needs separate QA. Popover and TopBar reuse exactly one ActivityScreenIndicator implementation. The lesson TopBar has no horizontal divider between the bar and the lesson content. Every step circle shows its index. Runtime was not changed for this docs update."
     },
     {
       "id": "BA-WR-002",
