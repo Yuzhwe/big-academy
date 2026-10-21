@@ -493,7 +493,7 @@ Popover is an accessible, nonmodal anchored overlay opened by the ellipsis indic
 
 This section specifies the current Writing visual system and its component-level implementation constraints. [A] means explicitly confirmed value/direction, [E] implementation candidate pending visual approval. The v2-terraces PNGs checked into the repo are the landscape artwork. No separate screenshot is required to implement the textual specification.
 
-### E-01 path landscape · v2-terraces [A direction; sky color and motion E]
+### E-01 path landscape · v2-terraces [A direction; sky color E; parallax speed normative]
 
 The Writing Staircase stage is the **v2-terraces** landscape. Scenic depth is three checked-in PNGs over the stage background. Lesson platforms and cards sit in front of that stack, one platform per node, as `apps/writing/PRODUCT.md` defines them. The PNGs are the artwork. This section states how to composite, place, and move them.
 
@@ -521,23 +521,13 @@ Level navigation and the language selector stay usable and leave the nodes clear
 
 **Registration and placement.** Hill 1 and hill 2 share one 1568×656 frame. At rest they occupy the same rectangle, scaled together, aspect ratio preserved, with the bottom of that frame on the bottom of the stage. The silhouettes already encode depth: hill 2’s ridges sit in the lower half of the shared frame; hill 1 rises higher and carries the nearer trees. The cloud is a separate 1024×1024 element. Its opaque puff sits in the middle band of that square, with transparent padding around it. Place the square so the puff floats in the upper sky, above the hill-1 treetops.
 
-Candidate placement [E], pending Joe Approved: one cloud in the upper sky of the opening view. Any further cloud uses this same file and id. Scale the shared hill frame so its width is at least the viewport, keep the ground on the bottom edge, and give each layer enough extra width that the stage stays covered across that layer’s parallax travel. Each hill file appears once in that shared frame.
+Candidate placement [E], pending Joe Approved: one cloud in the upper sky of the opening view. Any further cloud uses this same file and id. The shared hill frame keeps its aspect ratio, with the ground on the bottom edge of the stage. Each hill file appears once in that shared frame. Coverage across the full path is the parallax rule below.
 
 **Sky color [E], pending Joe Approved.** Candidate stage background `#58A8E8`, sampled from the lit fringe of `cloud.png`. It is not promoted to a token in this change.
 
-**Parallax [E], pending Joe Approved.** Path scroll moves the layers at different speeds. A layer’s offset is `ratio × cameraDisplacement` on the same axis as the staircase camera. Ratio 0 stays pinned to the viewport. Ratio 1 matches the lesson platforms and cards.
+**Parallax, normative for the v2-terraces PNGs.** Hill and mountain layer art width alone does not cover the path by scrolling those layers at the same horizontal speed as the card/camera track. Parallax horizontal speed is slower than the cards. Farther layers are slower: hill 1 (foreground) is faster than hill 2 (mid), and the clouds and sky are slower still. Speeds are computed from the card/node count and the resulting track length and camera max travel, so the layers stay covered across the full path without matching card velocity. Reduced motion adds no parallax drift.
 
-| Layer | Candidate ratio |
-|---|---|
-| Sky background | 0 |
-| Cloud | 0.12 |
-| Hill 2 | 0.40 |
-| Hill 1 | 0.72 |
-| Lesson platforms and cards | 1 |
-
-Nearer ground travels farther than the clouds, so the terraces read as separate depths. These ratios are candidates. Reduced motion uses the same camera-linked positions and adds no extra drift.
-
-**Boundary.** The PNGs, the stack, and the candidate ratios are the E-01 landscape. They are not global color tokens. Per-node platform shape is the next section.
+**Boundary.** The PNGs and the stack are the E-01 landscape. They are not global color tokens. Sky color remains a candidate. Per-node platform shape is the next section.
 
 ### E-01 terrain terraces — Layered Landscape Terrace [A concept, E geometry]
 
@@ -545,7 +535,7 @@ Every Lesson retains its original diagonal node/card anchor. Each node sits on a
 
 ### E-01 camera, cards and badges
 
-Scene visible viewport: background fills entire available stage; controls remain accessible and do not cover traversable nodes. Camera clamp derived from **full bounds** of Intro, Unit, Lesson, Milestone and Goal including their decorative terraces, accounting for safe visual insets and top navigation. Verify far-left/lower and far-right/upper accessible extremes are completely visible under drag, wheel, arrows and Home/End. Do not solve by hiding overflow or changing course unlock gates.
+Scene visible viewport: background fills the entire available stage; controls remain accessible and do not cover traversable nodes. On v2-terraces, the Path stage does not clip the header, cards, platforms, or hill/cloud layers at the top or bottom of the usable viewport. Hiding overflow is not the way to cut cards or terrain. Footer and dev banners do not eat the stage. Camera clamp comes from the **full bounds** of Intro, Unit, Lesson, Milestone, and Goal, including their decorative terraces, with safe visual insets and top navigation. Drag, wheel, arrows, and Home/End show the far-left/lower and far-right/upper extremes completely. Course unlock gates stay as PRODUCT.md defines them.
 
 **Unit paper fold:** preserve a real rounded folded *sheet*, not floating triangle. Card body and flap seam intersect at two exact points across an F×F square at its upper-right: (width-F,0) and (width,F), F candidate 32px bounded 26–40px [E]. Seam is continuous at approximately 45°. Under-fold cream #F8F1EA; flap face softly shaded #FFFDF9 → #E7D6C9; small shadow 0 2px 4px rgba(71,44,34,.12); flap tips smoothed ~3–4px, body radius continuous. Inner decorative border must terminate or mask beneath the folded region, never run through exposed flap. No hard 90-degree tip, alpha hole, detached patch, or clipping of title; same geometry in all states. Level/Intro and Unit informational cards use candidate #FFF9F2 paper and #DCC3AB subtle ornamental stroke distinct from white Lesson action cards; description 16px and plain text goals without bullets.
 
@@ -654,7 +644,7 @@ The component paints the state it is given. The session and PRODUCT.md own gradi
 
 ### Visual validation and status
 
-Validate 1440×900, 1024×768, 834×1112, 390px, 100% and 200% zoom, English/Chinese, long titles, keyboard/touch, reduced motion, all lesson states. Confirm the v2-terraces stack: sky through PNG alpha, cloud above the hills, hill 2 behind hill 1 in one shared frame, lesson platforms in front, and camera-linked parallax at the candidate ratios. Confirm the rounded paper fold seam, seal icon anchoring, and edge visibility. Test quiet container separation, smaller tokenized gaps and footer transparency. All [E] visual dimensions, colors and minor motifs remain pending UI/UX Designer approval. This is a **documentation-only change**: no current implementation/test pass or approval is implied.
+Validate 1440×900, 1024×768, 834×1112, 390px, 100% and 200% zoom, English/Chinese, long titles, keyboard/touch, reduced motion, all lesson states. Confirm the v2-terraces stack: sky through PNG alpha, cloud above the hills, hill 2 behind hill 1 in one shared frame, lesson platforms in front. Parallax horizontal speeds are slower than the cards, farther layers are slower, and the speeds are computed from the card/node count and camera max travel. The usable viewport shows the header, cards, platforms, and hill/cloud layers without top or bottom clipping, and footer and dev banners do not eat the stage. Reduced motion adds no parallax drift. Confirm the rounded paper fold seam, seal icon anchoring, and edge visibility. Test quiet container separation, smaller tokenized gaps and footer transparency. Sky color and other [E] visual dimensions, colors, and minor motifs remain pending UI/UX Designer approval. This is a **documentation-only change**: no current implementation/test pass or approval is implied.
 
 ### Writing Activity visual exploration — chat-inspired learning UI
 
