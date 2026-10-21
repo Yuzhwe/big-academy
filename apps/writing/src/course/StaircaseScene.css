@@ -56,8 +56,8 @@
   width: 100%;
   min-height: 0;
   height: auto;
-  /* Contains the off-screen rail and the extra hill repeat. Hills, the header,
-     and in-view cards are laid out inside this box, so this does not crop them. */
+  /* The off-screen rail is wider than the stage. In-view cards, terraces, and the
+     hill frame are laid out inside this box; this clip does not cut them. */
   overflow: hidden;
   touch-action: none;
   user-select: none;

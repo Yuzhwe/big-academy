@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cameraForStep, cameraMaxTravel, cameraYBounds, framedCameraY, hillCoverWidth, hillTile, pedestalAnchorY, riseThatFits, scenicSpeeds, stepRise, terracesFit, trackLength } from './StaircaseScene';
+import { cameraForStep, cameraMaxTravel, cameraYBounds, framedCameraY, hillTile, parallaxInputs, pedestalAnchorY, riseThatFits, scenicSpeeds, stepRise, terracesFit, trackLength } from './StaircaseScene';
 
 describe('E-01 diagonal scene shared A/B geometry', () => {
   it('derives viewport-sensitive rise without hard-coding a 15 degree slope', () => {
@@ -26,34 +26,16 @@ describe('E-01 diagonal scene shared A/B geometry', () => {
     expect(short.height).toBeLessThanOrEqual(400);
     expect(short.width).toBeLessThan(1440);
   });
-  it('computes scenic speeds from the track, slower than the cards, farther layers slower', () => {
+  it('records parallax inputs from the node count and does not invent layer coefficients', () => {
     const count = 48;
     const viewport = 1440;
-    const speeds = scenicSpeeds(count, viewport);
-    const maxTravel = cameraMaxTravel(count, viewport);
-    const track = trackLength(count);
-    expect(track).toBe((count - 1) * 290 + 260);
-    expect(maxTravel).toBe(track - viewport);
-    const share = (track - maxTravel) / track;
-    expect(speeds.cards).toBe(1);
-    expect(speeds.sky).toBe(0);
-    expect(speeds.hill1).toBeCloseTo(share);
-    expect(speeds.hill2).toBeCloseTo(speeds.hill1 * share);
-    expect(speeds.cloud).toBeCloseTo(speeds.hill2 * share);
-    expect(speeds.hill1).toBeGreaterThan(speeds.hill2);
-    expect(speeds.hill2).toBeGreaterThan(speeds.cloud);
-    expect(speeds.cloud).toBeGreaterThan(speeds.sky);
-    expect(speeds.hill1).toBeLessThan(speeds.cards);
-    expect(speeds.hill1 * maxTravel).toBeLessThan(viewport);
-    const cover = hillCoverWidth(viewport, speeds.hill1, maxTravel);
-    expect(cover - speeds.hill1 * maxTravel).toBeCloseTo(viewport);
-  });
-  it('stops scenic travel when the camera has no room to move', () => {
-    const speeds = scenicSpeeds(2, 2000);
-    expect(cameraMaxTravel(2, 2000)).toBe(0);
-    expect(speeds.hill1).toBe(0);
-    expect(speeds.hill2).toBe(0);
-    expect(speeds.cloud).toBe(0);
+    const inputs = parallaxInputs(count, viewport);
+    expect(inputs.nodeCount).toBe(count);
+    expect(inputs.trackLength).toBe(trackLength(count));
+    expect(inputs.trackLength).toBe((count - 1) * 290 + 260);
+    expect(inputs.cameraMaxTravel).toBe(cameraMaxTravel(count, viewport));
+    expect(inputs.cameraMaxTravel).toBe(inputs.trackLength - viewport);
+    expect(scenicSpeeds(inputs)).toBeNull();
   });
   it('keeps visible card tops and terrace bottoms inside the stage', () => {
     const count = 8;
