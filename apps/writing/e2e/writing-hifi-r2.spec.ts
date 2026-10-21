@@ -85,3 +85,28 @@ test('R2 full authored 8-screen lesson actually passes by answering',async({page
   await expect(page.locator('.course-app')).toHaveAttribute('data-view','lessonEnd');
   await shot(page,'lesson-end-1440');
 });
+
+test('R2 locale, overflow popover, reduced motion and high zoom evidence',async({page})=>{
+  test.setTimeout(80000);
+  page.setDefaultTimeout(8000);
+  await page.setViewportSize({width:390,height:844});
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto('/?locale=zh');
+  await expect(page.locator('.staircase-viewport')).toHaveAttribute('data-variant','A');
+  await expect(page.locator('[data-component="BA-WR-007"]').first()).toBeVisible();
+  await shot(page,'staircase-390-zh');
+  await page.locator('[data-lesson-focus="G2-O:1"]').click();
+  await expect(page.locator('.course-lesson')).toBeVisible();
+  await expect(page.getByTestId('lesson-footer')).toBeInViewport();
+  const nav=page.locator('[data-component="BA-UI-006"]');
+  await expect(nav.locator('[data-component="BA-UI-006-INDICATOR"]').first()).toBeVisible();
+  await nav.getByRole('button',{name:'查看全部活动页'}).click();
+  const overlay=page.locator('[data-component="BA-UI-005"]');
+  await expect(overlay).toBeVisible();
+  await expect(overlay.locator('[data-component="BA-UI-006-INDICATOR"]')).toHaveCount(8);
+  await page.keyboard.press('Escape');
+  await expect(overlay).toHaveCount(0);
+  await shot(page,'lesson-mobile-390-zh-reduced-motion');
+  await page.evaluate(()=>{document.documentElement.style.zoom='2';});
+  await shot(page,'lesson-mobile-200percent-zoom');
+});
