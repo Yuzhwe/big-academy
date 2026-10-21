@@ -50,6 +50,13 @@ export function hillFrame(viewportWidth: number, viewportHeight: number): { widt
   return { width, height };
 }
 
+/** Vertical scenic travel follows the rail, then clips so the ground stays in the stage. */
+export function scenicTravelY(ratio: number, cameraY: number, restY: number, viewportHeight: number): number {
+  const raw = ratio * (cameraY - restY);
+  const limit = Math.max(16, viewportHeight * 0.22) * Math.max(ratio, 0);
+  return clamp(raw, -limit, limit);
+}
+
 /** v2-terraces stage. The product supplies nodes and every navigation gate. */
 export function StaircaseScene({
   children,
@@ -76,6 +83,13 @@ export function StaircaseScene({
   const cameraYRaw = ANCHOR_BASE_Y + (count - 1 - visibleIndex) * rise - view.height * 0.7; // Follow anchor line, not card center.
   const railHeight = Math.max(460, pedestalAnchorY(0, count, rise) + 120);
   const cameraY = clamp(cameraYRaw, 0, Math.max(0, railHeight - view.height));
+  const restX = cameraForStep(focusIndex, view.width, count);
+  const restVisible = (restX + view.width / 2 - CARD_WIDTH / 2) / STEP_GAP;
+  const restY = clamp(
+    ANCHOR_BASE_Y + (count - 1 - restVisible) * rise - view.height * 0.7,
+    0,
+    Math.max(0, railHeight - view.height),
+  );
   const cameraXRef = useRef(boundedX);
   cameraXRef.current = boundedX;
   const metricsRef = useRef({ width: view.width, maxX, slope, count });
@@ -162,9 +176,12 @@ export function StaircaseScene({
     transform: 'translate3d(' + (-boundedX) + 'px, ' + (-cameraY) + 'px, 0)',
   } as CSSProperties;
   const layer = (ratio: number): CSSProperties => ({
-    // X follows path scroll. Y stays 0: these layers are already on the stage,
-    // and cameraY only exists to bring the tall card rail into the viewport.
-    transform: 'translate3d(' + (-ratio * boundedX) + 'px, 0, 0)',
+    transform:
+      'translate3d(' +
+      -ratio * boundedX +
+      'px, ' +
+      scenicTravelY(ratio, cameraY, restY, view.height) +
+      'px, 0)',
   });
   const hillBox = (ratio: number): CSSProperties => {
     const frame = hillFrame(view.width, view.height);
@@ -173,7 +190,7 @@ export function StaircaseScene({
       width: frame.width,
       height: frame.height,
       left: centered,
-      transform: 'translate3d(0, 0, 0)',
+      transform: 'translate3d(0, ' + scenicTravelY(ratio, cameraY, restY, view.height) + 'px, 0)',
     };
   };
 

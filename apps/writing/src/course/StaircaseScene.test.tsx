@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cameraForStep, hillFrame, pedestalAnchorY, stepRise } from './StaircaseScene';
+import { cameraForStep, hillFrame, pedestalAnchorY, scenicTravelY, stepRise } from './StaircaseScene';
 
 describe('E-01 diagonal scene shared A/B geometry', () => {
   it('derives viewport-sensitive rise without hard-coding a 15 degree slope', () => {
@@ -15,6 +15,14 @@ describe('E-01 diagonal scene shared A/B geometry', () => {
     expect(pedestalAnchorY(0, 10, rise) - pedestalAnchorY(1, 10, rise)).toBe(rise);
     expect(pedestalAnchorY(9, 10, rise)).toBe(356);
     expect(pedestalAnchorY(0, 10, rise)).toBeGreaterThan(pedestalAnchorY(9, 10, rise));
+  });
+  it('clips scenic vertical travel so a large rail camera cannot throw the hills out', () => {
+    expect(scenicTravelY(0.72, 3713, 3713, 665)).toBe(0);
+    const hill = scenicTravelY(0.72, 0, 3713, 665);
+    const cloud = scenicTravelY(0.12, 0, 3713, 665);
+    expect(hill).toBeLessThan(cloud);
+    expect(hill).toBeGreaterThanOrEqual(-665 * 0.22 * 0.72 - 1);
+    expect(cloud).toBeGreaterThanOrEqual(-665 * 0.22 * 0.12 - 1);
   });
   it('fits the whole hill panorama across the opening stage', () => {
     for (const width of [1440, 834, 390]) {
