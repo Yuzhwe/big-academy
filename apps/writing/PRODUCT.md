@@ -124,10 +124,10 @@ Milestone celebration receipts use a different key, `ba_writing_milestone_receip
 | --- | --- | --- |
 | Edit or select | Answer updates. Status stays `open` if it was open. | The same selection or text. |
 | Check, reveal, or Hand in | Status, tries, feedback inputs, and page-done as the template requires. | Finished items stay finished. Open items keep tries and the last check message. |
-| Footer **Previous** inside a lesson | Screen index moves back. Answers are not cleared. | The earlier screen with its saved answer and status. |
+| Footer **Previous** inside a lesson | Navigates only to an earlier Activity Screen within the current Lesson; disabled on Screen 1. Does not exit to E-01. Answers are not cleared. | The earlier screen with its saved answer and status. |
 | P7 **Back** between questions | Question index moves back. Every question’s answer is kept. | The previous question, still answered if it was. |
-| P7 **Back** on question 1 | Leaves the Check for the previous Activity Screen. Check answers stay stored. Coming back resumes the same question index. | The previous Activity Screen. |
-| Top-bar **Back**, or **My path** on the first screen | Flush save. Return to E-01. Screen index stays where the learner was. | **Continue** reopens that screen. |
+| P7 **Back** on question 1 | Returns to the preceding Activity Screen **inside the same Lesson**, not to E-01. Check answers stay stored; coming back resumes the saved question index. | The previous Activity Screen; the only exit-to-parent control remains LessonTopBar Back. |
+| **Top-left LessonTopBar Back** (all Activity Screens, including Screen 1) | Flush save. Return to the parent E-01 Staircase page. Screen index stays where the learner was. | **Continue** reopens that screen. The lesson Footer never duplicates this exit action. |
 | **End of lesson → Back to my path** | Screen index moves to the first screen of the next lesson, then the path opens. The finished lesson’s answers remain. | That lesson shows **Review**. Opening it starts at its first screen with answers and completion intact. |
 | **Stop for today** | Same resume point as Back to my path, plus a stopped timestamp. | Next open shows the stopped lesson-break, then a one-time “Welcome back” on the next lesson. |
 | Re-enter from E-01 | No reset. | Unfinished lesson: **Continue** at the saved screen if it may still open, otherwise the first unfinished screen. Finished lesson: **Review** at screen 1. |
@@ -403,7 +403,7 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 3. **Check action:** only the template's authorized gesture runs the grader. For practice P3/P4 first wrong → `open` plus retry/feedback, next screen locked. Second wrong → `shown` with authored solution and zero credit, next screen available. Correct → `done` plus success feedback and then Next. For ordered Build, **each wrong card tap is not a full-line grading try**; see Screen 05.
 4. **P5 Apply:** two failed completed submissions allow `Move on for now`; no success grade is invented. **P7 Check:** internal question edits and Next question do not grade; only Hand in grades the whole assessment; the second submitted set can finish without mastery.
 5. **Exit/Back/refresh/reentry:** preserve response selections, text, tries, wrong marks, hints, per-question P7 answers/index, completion and reveal state in the canonical state record (chapter 6). No separate UI-only progress store. Keyboard, touch, focus and reduced motion may alter presentation, never these gates.
-6. **Footer:** first Activity Screen Previous is disabled by current PRODUCT contract; the separate TopBar Back returns to E-01. In P7 the internal pager uses question navigation; its Back is not a new Lesson activity step. Never make every screen “correct → Next”.
+6. **Navigation ownership:** the top-left LessonTopBar Back is the **only Lesson-to-parent navigation control** and returns to E-01. The bottom-right Footer button group only navigates and performs required actions *within the current Lesson*: Previous goes to the preceding Activity Screen (disabled on Screen 1), the primary button checks/submits or moves forward when allowed. P7 question Back/Next operate inside the same Check; on its first question, Back may return to the preceding Activity Screen without leaving the Lesson. These Footer controls never duplicate the parent-level Back. Never make every screen “correct → Next”.
 
 ### 12.3 Screen 01 — Learn · `L2-04.learn`
 
@@ -514,7 +514,7 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 
 Progress reads the live lesson screen list. Chips distinguish done, current, available, locked, and skipped in text as well as appearance. A chip navigates only when `canOpen` allows it. The current chip does not rewrite status.
 
-**Footer.** One Previous (previous Activity Screen only; disabled on Screen 1) and one primary. Top-bar Back alone exits to Staircase. Labels follow [page gates](#5-activity-screen-gates) and the template. P7 replaces both while questions are in progress.
+**Footer.** The bottom-right group controls **only current-Lesson navigation and actions**: one Previous (previous Activity Screen only; disabled on Screen 1) and one contextual primary (Check, Hand in, Next, etc.). The top-left LessonTopBar Back is the **only control returning to the parent E-01 Staircase page**. Footer controls must not show `My path` or act as a second Lesson exit. In P7 the question navigator replaces ordinary Previous/primary labels while answering; its first-question Back returns to the previous Activity Screen, not to E-01. Labels otherwise follow [page gates](#5-activity-screen-gates) and the template.
 
 **Coach versus feedback.** On arrival, one orientation line, with “Show me another” only when the screen authored extra beats. That text is teaching. The hint ladder is a separate learner-invoked control. Check feedback, Apply comments, plan comments, and draft comments are the result of a submit. A selection change does not generate a new one. Live writing nudges (one suggestion and one specific praise) can appear during Apply, draft, and revise; they are not a score and they do not complete a page.
 
