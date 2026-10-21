@@ -152,10 +152,11 @@
         "Letter Dosis ExtraBold 800 18/20 nowrap; body Jost Medium 18px line-height 1.1",
         "Min-height stays 50px; one-line composition is about 46px; wrapped rows grow and stay fully visible",
         "Row and text align flex-start so the icon stays with the first line",
-        "selected is pre-check solid #9B4F36 with a white ring; correct is post-check solid #14AE5C; wrong shares the brown fill and uses a white disk plus X; shown is white with a #14AE5C border and green check badge; dim is default chrome at opacity 0.4",
-        "Visible row is the letter, the body, and the leading status icon. No per-state caption on the row. correct and shown use the leading check icon with the specified fill. The accessible name may carry the state and is not visible chrome",
+        "Before Check a row is default or selected only. After Check, the picked correct option is correct (green fill #14AE5C, leading check); a correct unselected option is shown (green outline #14AE5C, leading check); a wrong option is wrong (X). dim is default chrome at opacity 0.4 when needed",
+        "default 默认: white, light border #C9B8B2, empty circle. correct 正确已选: green fill #14AE5C. shown 正确未选: green outline #14AE5C. selected 选中: brown #9B4F36 and a ring. The ring means selected. selected is not a shown/reveal mode. wrong 错误: X. dim 变淡: opacity 0.4",
+        "Visible row is the letter, the body, and the leading status icon. No visible state-copy text on the option. correct and shown use the leading check only. The accessible name may carry the state and is not visible chrome",
         "Border 1px solid",
-        "Hover scale 1.02 and pressed scale 0.95, the shared click scale. Reduced motion updates state immediately and does not scale",
+        "Hover scale 1.02 and pressed scale 0.95, the same scale as the BAButton CTA. Reduced motion updates state immediately and does not scale",
         "Keep the focus ring on solid fills. A non-interactive option uses dim or the existing disabled treatment",
         "Tapword reuses choice state meanings and does not take this option-row anatomy"
       ],
@@ -174,9 +175,9 @@
       ],
       "figma": null,
       "runtimeEvidence": null,
-      "visualStatus": "candidate-pending-designer-approval",
+      "visualStatus": "six-state mapping, 1px border, and 1.02/0.95 click scale locked",
       "visual": {
-        "status": "candidate",
+        "status": "locked",
         "approved": false,
         "authority": "DESIGN.md section Writing Choice option, BA-UI-003 / BAChoice",
         "radiusPx": 24,
@@ -185,7 +186,7 @@
         "hoverScale": 1.02,
         "pressedScale": 0.95,
         "reducedMotion": "immediate state, no scale",
-        "visibleRow": "letter, option body, leading status icon; accessible name is separate from visible chrome",
+        "visibleRow": "letter, option body, leading status icon; no state-copy text; accessible name is separate from visible chrome",
         "overflow": "clip content; keep focus-visible ring",
         "width": "fill parent; do not hardcode 500",
         "minHeightPx": 50,
@@ -202,39 +203,53 @@
         "dimOpacity": 0.4,
         "states": {
           "default": {
+            "name": "默认",
             "background": "#FFFFFF",
             "border": "#C9B8B2",
             "text": "#133547",
             "icon": "empty circle, stroke about #C9B8B2, no fill"
           },
-          "selected": {
-            "background": "#9B4F36",
-            "border": "#FFFFFF",
-            "text": "#FFFFFF",
-            "icon": "thick white ring, hollow"
-          },
-          "wrong": {
-            "background": "#9B4F36",
-            "border": "#FFFFFF",
-            "text": "#FFFFFF",
-            "icon": "white disk with #9B4F36 X"
-          },
           "correct": {
+            "name": "正确已选",
+            "when": "after Check, the option the learner picked that is correct",
             "background": "#14AE5C",
             "border": "#FFFFFF",
             "text": "#FFFFFF",
-            "icon": "white circle with #14AE5C check"
+            "icon": "leading check"
           },
           "shown": {
+            "name": "正确未选",
+            "when": "after Check, a correct option the learner did not pick",
             "background": "#FFFFFF",
             "border": "#14AE5C",
             "text": "#133547",
-            "icon": "solid #14AE5C disk with white check"
+            "icon": "leading check",
+            "treatment": "green outline"
           },
-          "dim": "default chrome at opacity 0.4"
+          "selected": {
+            "name": "选中",
+            "when": "before Check",
+            "background": "#9B4F36",
+            "border": "#FFFFFF",
+            "text": "#FFFFFF",
+            "icon": "ring. The ring means selected. Not a shown/reveal mode"
+          },
+          "wrong": {
+            "name": "错误",
+            "when": "after Check",
+            "background": "brown-red",
+            "border": "#FFFFFF",
+            "text": "#FFFFFF",
+            "icon": "X"
+          },
+          "dim": {
+            "name": "变淡",
+            "opacity": 0.4,
+            "chrome": "default"
+          }
         }
       },
-      "notes": "Visible chrome locked 2026-10-21: letter, body, leading icon; border 1px solid; hover 1.02; pressed 0.95; reduced motion does not scale. correct and shown use the leading check icon. Colors, type, and 24px radius remain a candidate pending designer Approved. Grading and Coach feedback stay in PRODUCT.md."
+      "notes": "Six-state mapping: default 默认; correct 正确已选 is the green fill after Check on the option the learner picked that is correct; shown 正确未选 is the green outline after Check on a correct option the learner did not pick; selected 选中 is brown with a ring before Check. The ring means selected. selected is not a shown/reveal mode. wrong 错误 is an X. dim 变淡 is opacity 0.4. Before Check a row is default or selected only. The row does not paint state-copy text. correct and shown use the leading check only. Border is 1px. Hover 1.02 and pressed 0.95 match the BAButton CTA. Reduced motion does not scale. Grading and Coach feedback stay in PRODUCT.md."
     },
     {
       "id": "BA-UI-004",
@@ -351,9 +366,9 @@
       ],
       "layoutOwner": "TopBar owns global centering, progress owns internal overflow",
       "requirements": [
-        "Same circle/number/check/lock geometry in topbar and All activity screens popover",
-        "No line connecting main numbered circle to lower status circle",
-        "Every Screen number stays visible; Dosis ExtraBold 800 numerals",
+        "Same circle in the TopBar and the All activity screens popover. Every state shows the Activity Screen index inside the circle. Lesson 1 is 1-8. Completed does not replace the digit with only a check. Locked does not replace the digit with only a lock. Status may use color, a ring, or a secondary mark, and the digit stays visible",
+        "Done uses a smaller check-circle at the main circle bottom; locked uses a smaller lock-circle. No line connecting the numbered circle to the lower status circle",
+        "Dosis ExtraBold 800 numerals",
         "Only canOpen-authorized screen navigation; locked never navigates",
         "Popover shows full screen list with responsive grid and bounded internal scroll",
         "Escape/outside/trigger dismiss, focus restoration, keyboard and touch accessibility",
@@ -375,7 +390,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "New interaction/visual contract in review; current implementation may still use legacy chips/scroll rail. BA-UI-006 owns shared marker rendering and overflow presentation, but not product gate or completion decisions. Do not label code visually approved."
+      "notes": "Joe locked 2026-10-21: every Activity Screen circle shows its index digit in every state. Completed is not a check-only circle. Locked is not a lock-only circle. Status may use color, a ring, or a secondary mark. Exact colors and sizes stay in review. BA-UI-006 owns shared marker rendering and overflow presentation, but not product gate or completion decisions. Do not label code visually approved. Runtime was not changed for this docs update."
     },
     {
       "id": "BA-UI-007",
@@ -416,7 +431,7 @@
       "kind": "composite",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "R2-candidate-pending-review",
+      "visualStatus": "index digit in every state, no bottom divider, and the 834 title ellipsis 「第1课 主·」 are locked",
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
       "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
       "props": {
@@ -449,7 +464,9 @@
         "Standalone visible icon-only top Back returns to Staircase; no visible helper words",
         "Footer Previous is distinct, previous Activity Screen only, disabled on first screen",
         "Top Back 50x50 shared accessible button, hover/pressed/focus motion; keeps lesson title/meta and centered activity status indicators",
-        "Circle numbered ActivityScreenIndicator reused identically within TopBar and anchored popover, no line to small check/lock status circle"
+        "Circle numbered ActivityScreenIndicator reused identically within TopBar and anchored popover. The digit stays visible in every state. No line to the small check/lock status circle",
+        "No horizontal divider between the lesson TopBar and the lesson content",
+        "At tablet 834 the lesson-title ellipsis stays 「第1课 主·」"
       ],
       "requiredStories": [
         "Desktop",
@@ -466,7 +483,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Product and design contract updated; rendered implementation needs separate QA. Popover and TopBar reuse exactly one ActivityScreenIndicator implementation."
+      "notes": "Popover and TopBar reuse exactly one ActivityScreenIndicator implementation. Every step circle shows its index. The lesson TopBar has no horizontal divider between the bar and the lesson content. At tablet 834 the lesson-title ellipsis stays 「第1课 主·」. Runtime was not changed for this docs update."
     },
     {
       "id": "BA-WR-002",
@@ -940,7 +957,7 @@
       "kind": "writing-presentation-composite",
       "contractVersion": "0.1.0-r3",
       "status": "implemented",
-      "visualStatus": "v2-terraces artwork checked in; parallax speed is the DESIGN.md normative rule; sky color is an [E] candidate pending Joe Approved",
+      "visualStatus": "v2-terraces artwork checked in; parallax speed and the sky gradient are the DESIGN.md normative rules",
       "implementation": "apps/writing/src/course/StaircaseScene.tsx",
       "props": {
         "cameraShift": "number"
@@ -955,8 +972,8 @@
       "requirements": [
         "E-01 path landscape version v2-terraces",
         "Checked-in art only: path.v2-terraces.hill-1-foreground, path.v2-terraces.hill-2-mid, path.v2-terraces.cloud",
-        "Stack back to front: stage sky color, cloud, hill 2, hill 1, then lesson platforms",
-        "Composite PNG alpha; the stage background color is the sky",
+        "Stack back to front: stage sky gradient, cloud, hill 2, hill 1, then lesson platforms",
+        "Composite PNG alpha; the stage background is the sky gradient linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)",
         "Full viewport, including the area behind navigation; scenery leaves traversable nodes clear",
         "Usable viewport does not clip the header, cards, platforms, or hill/cloud layers at the top or bottom. Footer and dev banners do not eat the stage",
         "aria-hidden, pointer-events:none, and no mutation of learning state",
@@ -964,14 +981,14 @@
         "Parallax horizontal speed is slower than the cards. Farther layers are slower: hill 1 is faster than hill 2, and the clouds and sky are slower still",
         "Speeds are computed from the card/node count and the resulting track length and camera max travel",
         "Reduced motion adds no parallax drift",
-        "Sky color is an [E] candidate pending Joe Approved"
+        "Sky background is linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)"
       ],
       "requiredStories": [
         "V2Terraces1440",
         "V2Terraces390",
         "V2TerracesReducedMotion"
       ],
-      "notes": "Artwork: apps/writing/public/path/v2-terraces/. Behavior: apps/writing/PRODUCT.md. Compositing, placement, and normative parallax: DESIGN.md. Layers render inside StaircaseScene (sky color, cloud, hill 2, hill 1, then nodes). There is no separate LandscapeBackdrop file. Sky #58A8E8 stays an [E] candidate pending Joe Approved."
+      "notes": "Artwork: apps/writing/public/path/v2-terraces/. Behavior: apps/writing/PRODUCT.md. Compositing, placement, normative parallax, and the sky gradient: DESIGN.md. Layers render inside StaircaseScene (sky gradient, cloud, hill 2, hill 1, then nodes). There is no separate LandscapeBackdrop file. The stage background is linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)."
     },
     {
       "id": "BA-WR-010",
