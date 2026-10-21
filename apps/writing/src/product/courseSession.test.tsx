@@ -253,6 +253,14 @@ describe('designer preview seed', () => {
       expect(lessons.some((node) => node.lesson?.detail === 'Opens later')).toBe(false);
       expect(milestones.every((node) => node.milestone?.completed)).toBe(true);
     }
+    const l1Intro = course.pathNodes('L1').find((node) => node.kind === 'intro')?.intro ?? '';
+    const l1 = course.levelPath.levels.find((level) => level.id === 'L1');
+    expect(l1Intro).toBe(`${course.text(l1?.name)}. One step at a time, up to the top.`);
+    expect(l1Intro).not.toMatch(/look around|open later|之后才打开|可以先看看/i);
+    const l2Intro = course.pathNodes('L2').find((node) => node.kind === 'intro')?.intro ?? '';
+    expect(l2Intro).toMatch(/^In Level 2 you learn/);
+    const l0Intro = course.pathNodes('L0').find((node) => node.kind === 'intro')?.intro ?? '';
+    expect(l0Intro).toMatch(/look around/);
     const earlier = course.pathNodes('L0').filter((node) => node.kind === 'lesson');
     expect(earlier.some((node) => node.lesson?.courseState !== 'done')).toBe(true);
     expect(storage.getItem(ALEX_STATE_KEY)).toBe(record);
