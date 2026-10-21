@@ -1,7 +1,7 @@
 # Big Academy — Writing PRODUCT.md
 
-**Version:** v0.3 · Consolidated specification · 2026-10-20  
-**Status:** Designer-approved direction; engineering and live visual QA still required  
+**Version:** v0.4 · R3 canonical Writing behavior · 2026-10-21  
+**Status:** R3 design direction approved; terrace/status visual details pending designer signoff; engineering unchanged  
 **Current delivery:** L2 / G2-O / Lesson 1 — Topic sentences (8 Activity Screens)
 
 ## Product Brief — Why, who, outcome
@@ -389,41 +389,19 @@ Acceptance for this lesson:
 7. Back, leaving to E-01, and re-entering restore selections, text, tries, Check progress, and screen position as in [Save, Back, leave, and return](#4-save-back-leave-and-return).
 8. Keyboard selection, visible focus, and non-color state labels work on the choice and word tasks. Reduced motion does not block a gate.
 
-## Writing Hi-Fi Review R1 — approved UI behavior and information hierarchy
+## 11A. Current R3 Writing presentation behavior (single source, 2026-10-21)
 
-All points below are implementation requirements, not references to unavailable screenshots. Visual structure and numeric candidate parameters are specified independently in DESIGN.md.
-
-**Staircase:** Remove visible page title “写作路径” and nonessential guidance “一步一步，写出你的想法。拖动或用方向键探索路径”. Preserve semantic page heading and accessible keyboard/drag instructions, Level navigation, Level introduction, Unit information, Lesson cards, Milestone and Goal. Unit goals change from bullet-marked list to plain stacked text (retain authored text). Level introduction and Unit description both use 16px Body text. Every Unit continues to use the rounded folded-paper corner visual.
-
-**Lesson Card:** the number and status combine as one upper-left treatment: blue number circle without a visible location phrase for current; outlined number for other available unstarted; green attached Completed/完成 ✓ capsule for completed; grey attached number-and-lock capsule without a visible explanatory phrase for locked. Preserve actual status and permissions. Use contextual Start, Continue, Review for accessible cards; completed always says Review / 复习; locked button is disabled. CTA uses 70px height. Never change navigation eligibility from visual styling.
-
-**Lesson top bar:** Retain Lesson information and full Activity Screen indicator (including adaptive All activity screens Popover). Icon-only top-left Back returns to Staircase; do not show visible “返回路径页” explanatory copy inside or next to it. Footer Previous only goes to previous Activity Screen, and on Screen 1 is disabled. The Footer action pair has 70px controls, 8px gap, width ratio Previous:primary = 1:2, with appropriate narrow-width adaptation. Remove visible “CHECK · 8 OF 8” and similar redundant activity-count badges without removing essential instructions.
-
-**Instruction and P7:** Listen is an icon-only action positioned at a constant top/right inset of its instruction container; it does not grade. P7 shows only a large current question numeral (1–4) at upper-left, not a visible “Question 4 of 4” phrase; preserve four-question navigation, answered status and accessible full count, and existing assessment mechanics.
-
-**Coach:** hints, orientations, feedback, error and reminders each use their own semantic tinted message container. Hint and “Show me another” are secondary actions. Feedback occurs at original defined check/submit moments; mere selection cannot reveal a correct answer. Do not replace useful diagnostic content with empty colors; avoid small redundant explanatory labels when results are clearly represented on choice tokens.
-
-**Third lesson item:** Screen L2-04.t.ts4 keeps the authored sentence “I believe our class should get a pet fish.” and the existing any-of-('believe','should') correctness rule. Render each word as an independent selectable, sentence-ordered token with min-height 50px and Choice-equivalent selected/correct/wrong/revealed styles. One chosen word at a time; Check and original two-attempt/shown rules remain.
-
-**Word Grid:** One authored word group shows pill words without a standalone Tab. Multiple authored groups use sticky-note style tabs connected to the current panel, switching actual word group data. P4 ordered build and frame-fill gates are not altered.
-
-**Hamburger:** all three layers consistently provide the same title and supporting-text typographic roles with the same two-level formatting. Keep the existing source content and educational meaning; do not invent curriculum copy if any layer lacks supporting text. Report the missing copy for review.
-
-## Writing Hi-Fi Review R2 — corrective product decisions (2026-10-20)
-
-**Current and locked Lesson badges:** no visible “You're here”/“你在这里” or “Finish prior unit”/“请完成前置课程” captions. Current uses blue number circle only; locked uses grey number + lock icon only. Preserve accessible current/locked/prerequisite names. Keep state-gated Start/Continue/Review and disabled locked CTA.
-
-**Lesson title and time:** Main Lesson title has exactly two reserved line boxes. One-line titles leave the second line blank; overlong titles truncate at line two with ellipsis, without changing authored data or accessible title. Under the title, show the left-aligned estimated duration as number + localized unit (e.g. 22 mins or 约 22 分钟). CTA is an actual shared BAButton with all existing hover, pressing, focus and reduced-motion behaviors, scoped to height 70px.
-
-**Stage pan bounds:** no Staircase node (including first/last Intro, Level, Unit, Lesson, Milestone and Goal) is clipped at upper-right/lower-left or at terminal pan limits. Compute drag/wheel/keyboard/Home/End clamping from complete node bounding boxes including card height/width, viewport safe padding, sticky overlay and scale. Preserve original platform anchor geometry. Do not hide clipped content or artificially move individual cards.
-
-**Level and Unit card distinction:** informational Level/Intro and Unit cards use subtle decorative stroke/border and light tinted surface, distinct from white actionable Lesson cards. They must not appear as selectable Lessons or inherit their CTA.
-
-**P2 Learn rule pair:** display “Not yet” and “Better” as clearly differentiated example panels; Better is the positive emphasized teaching example, not a graded answer. Preserve original teaching text and no scoring/celebration.
-
-**LessonTopBar content:** left icon-only Back + Lesson title + essential metadata, and screen-number/status strip geometrically centered in the entire bar. Keep one shared ActivityScreenIndicator for top strip and the anchored All activity screens Popover, with done/current/available/locked/skipped/shown mappings, and no connecting line from numeral to small status-circle. Data-driven number of screens, not a fixed eight-screen global limit. Popover numbers and permissions match the strip. Do not remove these indicators or mistake P7 internal Questions for Lesson screens.
-
-**Footer:** independent of Coach scrolling, full-width right-column action group. Previous and contextual primary span the whole available width in 1:2 grid columns with 8px gap and both 70px high. No max-content shrink or right-aligned intrinsic-width pair. Previous on first Activity Screen disabled; top Back exits to Staircase. P7 internal Back/Next question flow remains as authored.
+- **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, P7 assessment, saved answers, resume, Start/Continue/Review/Locked, keyboard/touch and reduced-motion behavior. The Writing demonstration remains eight Activity Screens.
+- **E-01 full-bleed stage:** landscape sky / distant peaks / hills / trees / clouds / subtle plane + parallax is the sole default presentation; no residual beige header/footer bands may occlude the scene. Level navigation and language selector remain usable above scenery without overlapping nodes. Background never captures pointer events or course state.
+- **Camera visibility:** drag, wheel, keyboard, Home and End must reach complete visible first/last nodes, including card bounds, decorative terraces, sticky header and viewport padding; no unreachable clipped upper-right or lower-left cards.
+- **Terrace:** choose the **Layered Landscape Terrace** family (2–3 shallow rounded grass/landform layers). Retire high translucent rectangular vertical pillars. Preserve Lesson card bottom anchors and existing path navigation geometry. Terrace colors/curves are R3 design candidates, not yet approved numeric specifications.
+- **Lesson state:** choose **Number Seal + Attached Symbol**. Lesson number remains dominant; attached small status icon encodes current, completed or locked. Do not restore giant colored status capsules or redundant You're here / Finish prior unit captions. Accessible status descriptions remain; actual state gates do not change. Exact final icon geometry is a designer review candidate.
+- **Unit fold:** folded face must be a continuous rounded corner integrated with the card's outer edge; no detached corner triangle or inner decorative border crossing the folded region. Decorative folded state is not an interactive target.
+- **Lesson card:** title uses exactly two reserved line boxes, 2-line truncation with accessible full title; estimated duration directly below title as number + localized unit, left aligned. CTA uses shared BAButton (height 70px), all approved hover/pressed/focus and reduced motion states. Outer/inner radius follows concentric relation rather than independent unrelated values.
+- **Activity hierarchy:** one primary separation treatment per structural boundary (surface OR stroke OR divider unless independently justified). Right-column action footer no longer draws its own filled panel or redundant divider; it remains pinned below independently scrolling Coach. Primary and Previous fill footer width at 1:2 with 8px gap and 70px heights. Quiet neutral container strokes must not obscure interactive focus/graded borders. Decrease gaps between peer content containers by one existing spacing scale step; do not tighten line-height or hit targets.
+- **TopBar:** keep title/meta and centered ActivityScreenIndicator shared with the anchored full-screen Popover. Icon Back to Staircase remains 50×50. P7's internal question count is distinct from top eight Activity Screen indicators.
+- **P2:** differentiate Not yet vs Better; Better is instructional emphasis, never a checked practice success event.
+- **Visual authority:** backdrop appearance originates from the user-supplied E01-landscape-backdrop-prompt.md visual record, baseline commit 913dbfe on feat/writing-hifi-r1-593dee37. That historical implementation requested R1 as default; **this instruction is superseded**: in R3 landscape is default. The recorded grass terrace is a useful source, but the new R3 terrace family must not be forced to reproduce the old geometry unchanged.
 
 ## 11. Lesson chrome
 
@@ -447,18 +425,6 @@ Progress reads the live lesson screen list. Chips distinguish done, current, ava
 
 **Component contract:** separate `screenNumber`, `progressStatus`, `isSelected`, `canOpen`, and `onNavigate`; popover open/close is its container's state. Use the same React Aria focus/keyboard semantics across both locations. Document compact/regular sizes, hover/focus/pressed/disabled and Done+Selected combinations in Storybook; verify 1440/1024/834/390 widths, long headings, and 200% zoom.
 
-## Writing Staircase Unit folded-corner visual requirement
-
-**Status:** design direction approved for prototype; rendered visuals pending designer signoff. **Scope:** every E-01 Unit card (all supported progress states), and no non-Unit nodes.
-
-- Use a **Folded Corner Card** with top-right paper corner folded inward at approximately 45°. Show a visibly separate turned paper layer, delicate tonal gradient and soft local fold shadow; **not** a simple triangular Cut Corner or exaggerated 3D.
-- Retain Unit dimensions, rounded body corners, original color/content/position, bottom-to-platform anchor and responsive staircase geometry. Use a consistent adaptive fold size, without covering title, icon, progress or metadata.
-- Apply one reusable visual implementation to every Unit. Preserve any existing completed, in-progress or locked state visuals. Do not change Lesson, Milestone, Intro, Goal, platforms, navigation, product logic or eligibility.
-- Prefer maintainable CSS-based layered geometry, not static pictures. Reuse approved color, radius and elevation tokens; propose any new global token instead of silently adding/approving it. Decorative layers must not intercept pointer/focus input, disrupt hover/disabled feedback or clip focus.
-- Required developer evidence: interactive Staircase preview, screenshots of **all** Unit cards and status variants, Desktop/Tablet, long EN/ZH labels, before/after layout and list of changed files/tokens. Treat this as **Writing-only visual candidate**; UI/UX Designer has final visual approval.
-
-Detailed visual anatomy lives in root DESIGN.md and component contract BA-WR-005; this PRODUCT.md defines applicability, behavior boundaries and acceptance.
-
 ## 12. E-01 path
 
 E-01 is a diagonal staircase, lower-left to upper-right, not a vertical list. The path form is separate platforms: one thin platform per node. Card bottom sits on the platform top. Card height grows upward and does not move the anchor, the camera, or the slope.
@@ -477,7 +443,7 @@ Node roles:
 
 Only G2-O lessons call the course session. A locked card never navigates and never looks unlocked. Completed Lesson CTA is Review / 复习, not Start; current/available unfinished lessons show Start or Continue according to saved progress. The top-left number and completion/lock state form a single badge. Level tabs sit in one header row: level title at the left, the tab list centered on the header, language toggle at the right. Changing level changes which path is shown. It does not open a lesson and does not change score or progress. Phone widths may scroll the tab list inside that row.
 
-Staircase stage background is a top-to-bottom gradient #3B2424 → #E8946C. Card surfaces retain Warm Frame + White Canvas. Experimental beams/ornamental art are not current requirements.
+The E-01 default is the layered landscape environment specified by DESIGN.md; the formerly prescribed warm-brown vertical gradient is retired from the active Writing visual contract. Landscape layers are decorative only and cannot affect navigation, scoring or persistence.
 
 ## 13. Celebration
 
@@ -503,7 +469,7 @@ The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribb
 
 ## 15. Open
 
-- Dusk beams and ornamental Staircase art are not approved; the E-01 stage vertical gradient is the current page-specific direction.
+- R3 landscape is the E-01 default; old warm-brown gradient and old pillar-based terrace are historical, not alternative default requirements.
 - R1 Choice treatments including approximately 40% non-answer dimming require accessibility contrast review. Shake and audio cues remain optional candidates and cannot change gates.
 - Exact static artwork for the reduced-motion success state.
 - If a milestone becomes incomplete (for example after a failed Check revokes a skip) and later becomes complete again, whether that return auto-plays is not decided. Do not add a new celebration for that case.
