@@ -493,7 +493,7 @@ Popover is an accessible, nonmodal anchored overlay opened by the ellipsis indic
 
 This section specifies the current Writing visual system and its component-level implementation constraints. [A] means explicitly confirmed value/direction, [E] implementation candidate pending visual approval. The v2-terraces PNGs checked into the repo are the landscape artwork. No separate screenshot is required to implement the textual specification.
 
-### E-01 path landscape · v2-terraces [A direction; sky color and motion E]
+### E-01 path landscape · v2-terraces [A direction; sky color E; parallax speed normative]
 
 The Writing Staircase stage is the **v2-terraces** landscape. Scenic depth is three checked-in PNGs over the stage background. Lesson platforms and cards sit in front of that stack, one platform per node, as `apps/writing/PRODUCT.md` defines them. The PNGs are the artwork. This section states how to composite, place, and move them.
 
@@ -521,23 +521,13 @@ Level navigation and the language selector stay usable and leave the nodes clear
 
 **Registration and placement.** Hill 1 and hill 2 share one 1568×656 frame. At rest they occupy the same rectangle, scaled together, aspect ratio preserved, with the bottom of that frame on the bottom of the stage. The silhouettes already encode depth: hill 2’s ridges sit in the lower half of the shared frame; hill 1 rises higher and carries the nearer trees. The cloud is a separate 1024×1024 element. Its opaque puff sits in the middle band of that square, with transparent padding around it. Place the square so the puff floats in the upper sky, above the hill-1 treetops.
 
-Candidate placement [E], pending Joe Approved: one cloud in the upper sky of the opening view. Any further cloud uses this same file and id. Scale the shared hill frame so its width is at least the viewport, keep the ground on the bottom edge, and give each layer enough extra width that the stage stays covered across that layer’s parallax travel. Each hill file appears once in that shared frame.
+Candidate placement [E], pending Joe Approved: one cloud in the upper sky of the opening view. Any further cloud uses this same file and id. The shared hill frame keeps its aspect ratio, with the ground on the bottom edge of the stage. Each hill file appears once in that shared frame. Coverage across the full path is the parallax rule below.
 
 **Sky color [E], pending Joe Approved.** Candidate stage background `#58A8E8`, sampled from the lit fringe of `cloud.png`. It is not promoted to a token in this change.
 
-**Parallax [E], pending Joe Approved.** Path scroll moves the layers at different speeds. A layer’s offset is `ratio × cameraDisplacement` on the same axis as the staircase camera. Ratio 0 stays pinned to the viewport. Ratio 1 matches the lesson platforms and cards.
+**Parallax, normative for the v2-terraces PNGs.** Hill and mountain layer art width alone does not cover the path by scrolling those layers at the same horizontal speed as the card/camera track. Parallax horizontal speed is slower than the cards. Farther layers are slower: hill 1 (foreground) is faster than hill 2 (mid), and the clouds and sky are slower still. Speeds are computed from the card/node count and the resulting track length and camera max travel, so the layers stay covered across the full path without matching card velocity. Reduced motion adds no parallax drift.
 
-| Layer | Candidate ratio |
-|---|---|
-| Sky background | 0 |
-| Cloud | 0.12 |
-| Hill 2 | 0.40 |
-| Hill 1 | 0.72 |
-| Lesson platforms and cards | 1 |
-
-Nearer ground travels farther than the clouds, so the terraces read as separate depths. These ratios are candidates. Reduced motion uses the same camera-linked positions and adds no extra drift.
-
-**Boundary.** The PNGs, the stack, and the candidate ratios are the E-01 landscape. They are not global color tokens. Per-node platform shape is the next section.
+**Boundary.** The PNGs and the stack are the E-01 landscape. They are not global color tokens. Sky color remains a candidate. Per-node platform shape is the next section.
 
 ### E-01 terrain terraces — Layered Landscape Terrace [A concept, E geometry]
 
@@ -545,7 +535,7 @@ Every Lesson retains its original diagonal node/card anchor. Each node sits on a
 
 ### E-01 camera, cards and badges
 
-Scene visible viewport: background fills entire available stage; controls remain accessible and do not cover traversable nodes. Camera clamp derived from **full bounds** of Intro, Unit, Lesson, Milestone and Goal including their decorative terraces, accounting for safe visual insets and top navigation. Verify far-left/lower and far-right/upper accessible extremes are completely visible under drag, wheel, arrows and Home/End. Do not solve by hiding overflow or changing course unlock gates.
+Scene visible viewport: background fills the entire available stage; controls remain accessible and do not cover traversable nodes. On v2-terraces, the Path stage does not clip the header, cards, platforms, or hill/cloud layers at the top or bottom of the usable viewport. Hiding overflow is not the way to cut cards or terrain. Footer and dev banners do not eat the stage. Camera clamp comes from the **full bounds** of Intro, Unit, Lesson, Milestone, and Goal, including their decorative terraces, with safe visual insets and top navigation. Drag, wheel, arrows, and Home/End show the far-left/lower and far-right/upper extremes completely. Course unlock gates stay as PRODUCT.md defines them.
 
 **Unit paper fold:** preserve a real rounded folded *sheet*, not floating triangle. Card body and flap seam intersect at two exact points across an F×F square at its upper-right: (width-F,0) and (width,F), F candidate 32px bounded 26–40px [E]. Seam is continuous at approximately 45°. Under-fold cream #F8F1EA; flap face softly shaded #FFFDF9 → #E7D6C9; small shadow 0 2px 4px rgba(71,44,34,.12); flap tips smoothed ~3–4px, body radius continuous. Inner decorative border must terminate or mask beneath the folded region, never run through exposed flap. No hard 90-degree tip, alpha hole, detached patch, or clipping of title; same geometry in all states. Level/Intro and Unit informational cards use candidate #FFF9F2 paper and #DCC3AB subtle ornamental stroke distinct from white Lesson action cards; description 16px and plain text goals without bullets.
 
@@ -559,13 +549,30 @@ Scene visible viewport: background fills entire available stage; controls remain
 
 Reduce **peer content-container gaps by one existing spacing-token step**, consistently for horizontal and vertical layout as applicable; leave text line-height, minimum control heights, touch areas and meaningful internal content padding alone. Never invent an arbitrary px offset. Audit each current gap's token and select the immediate next smaller existing spacing step; at smallest valid step keep unchanged and document exception.
 
-Coach is an independently scrolling region with semantic tinted feedback cards. Footer is pinned outside Coach and visually transparent (no standalone background panel or redundant top divider), relying on whitespace and BAButton themselves; retain width:100%, minmax(0,1fr) minmax(0,2fr), gap 8px, both buttons height 70px, full-width children, with disabled Previous on first Screen. Do not remove necessary visible keyboard focus or semantic status. Task writing area stays white paper on warm page frame; nested regions only have one strong perimeter.
+Coach is an independently scrolling region. Each lesson question feedback message sits in its own card, using the candidate treatment below. Footer is pinned outside Coach and visually transparent. Whitespace and the BAButtons are its surface. Previous and Next span the full width of the footer action row: width 100%, minmax(0,1fr) minmax(0,2fr), gap 8px, both buttons height 70px, full-width children, with disabled Previous on the first Screen. Keyboard focus and semantic status stay visible. Task writing area stays white paper on warm page frame; nested regions have one strong perimeter.
 
 ### Activity control geometry and states
 
 Top Back: BAButton icon-only, 50×50 [A], visually white round surface and blue-gray chevron, with the shared click scale (hover 1.02, pressed 0.95), focus, and reduced motion. TopBar retains Lesson title/meta and a geometrically **whole-bar centered** ActivityScreenIndicator strip; the anchored All activity screens Popover renders the identical numbered-circle component. Done adds a small check-circle, locked a small lock-circle, with no connecting line and correct distinct selected vs progress status. Visible counts adapt to width; overall task list is data driven.
 
-P2 Not yet vs Better: two clearly distinguished teaching panels, Better gently elevated via pale green surface/border and positive cue, not graded/correct-check feedback. P3 single/multi choice uses BA-UI-003. Radius, padding, icon and state colors are the Writing Choice option candidate below; the minimum hit height stays 50px, and selection does not reveal correctness. Tapword is an inline token, not this option row. WordGrid has white pill vocabulary, real multi-set connected sticky-note Tabs (no lone tab for one set). Hamburger three levels each have same two-tier title/support typographic roles. Coach Hint/Show me another BAButton Secondary. P7 uses only a prominent current question numeral in its own question area; screen readers receive full question context. Practice first checked correct triggers brief one-time Ribbons+Explosions (including Apply), not for P7 internal taps; full lesson success uses Ribbons 30 + three Explosions; respect reduced motion and never let animations mutate product records.
+P2 Not yet vs Better: two clearly distinguished teaching panels, Better gently elevated via pale green surface/border and positive cue, not graded/correct-check feedback. P3 single/multi choice uses BA-UI-003. Radius, padding, icon and state colors are the Writing Choice option candidate below; the minimum hit height stays 50px, and selection does not reveal correctness. Tapword is an inline token, not this option row. WordGrid has white pill vocabulary, real multi-set connected sticky-note Tabs (no lone tab for one set). On the build-topic-sentence screen, the visible controls are the word cards and the lesson footer. Hamburger three levels each have same two-tier title/support typographic roles. The hint control, including “Show me another,” is a secondary BAButton. P7 uses only a prominent current question numeral in its own question area; screen readers receive full question context. Practice first checked correct triggers brief one-time Ribbons+Explosions (including Apply), not for P7 internal taps; full lesson success uses Ribbons 30 + three Explosions; respect reduced motion and never let animations mutate product records.
+
+### Lesson question feedback [E · candidate · not Approved · 2026-10-21]
+
+Designer Joe (Yubing Liu) locked this candidate for every lesson question feedback UI. It is one shared treatment for the lesson, and it is not Approved.
+
+Each feedback message sits in its own card.
+
+| Message | Background | Border |
+|---|---|---|
+| Wrong | White, `--ba-paper` (`#FFFFFF`) | Light border. Candidate stroke: ordinary weight `--ba-border-weight` (0.5px) and quiet warm border `--ba-choice-border` (`#C9B8B2`) |
+| Correct | White, `--ba-paper` (`#FFFFFF`) | Green border, `--ba-success` (`#14AE5C`) |
+
+Previous and Next span the full width of the footer action row. They share that row at 1:2 (`minmax(0, 1fr)` / `minmax(0, 2fr)`), with an 8px gap and a 70px height.
+
+The hint control is a secondary BAButton.
+
+`PRODUCT.md` owns when a message appears. On the build-topic-sentence screen (`P4.build.word.guided-order`), the visible controls are the WordGrid word cards and the lesson footer, and the hint for a word tile appears after two wrong taps on that same word. These screen controls and this card treatment stay a visual candidate. `visualStatus` stays candidate and is not Approved.
 
 ### Writing Choice option（选项）· BA-UI-003 / BAChoice [E · candidate / 待设计师 Approved · 2026-10-21]
 
@@ -637,7 +644,7 @@ The component paints the state it is given. The session and PRODUCT.md own gradi
 
 ### Visual validation and status
 
-Validate 1440×900, 1024×768, 834×1112, 390px, 100% and 200% zoom, English/Chinese, long titles, keyboard/touch, reduced motion, all lesson states. Confirm the v2-terraces stack: sky through PNG alpha, cloud above the hills, hill 2 behind hill 1 in one shared frame, lesson platforms in front, and camera-linked parallax at the candidate ratios. Confirm the rounded paper fold seam, seal icon anchoring, and edge visibility. Test quiet container separation, smaller tokenized gaps and footer transparency. All [E] visual dimensions, colors and minor motifs remain pending UI/UX Designer approval. This is a **documentation-only change**: no current implementation/test pass or approval is implied.
+Validate 1440×900, 1024×768, 834×1112, 390px, 100% and 200% zoom, English/Chinese, long titles, keyboard/touch, reduced motion, all lesson states. Confirm the v2-terraces stack: sky through PNG alpha, cloud above the hills, hill 2 behind hill 1 in one shared frame, lesson platforms in front. Parallax horizontal speeds are slower than the cards, farther layers are slower, and the speeds are computed from the card/node count and camera max travel. The usable viewport shows the header, cards, platforms, and hill/cloud layers without top or bottom clipping, and footer and dev banners do not eat the stage. Reduced motion adds no parallax drift. Confirm the rounded paper fold seam, seal icon anchoring, and edge visibility. Test quiet container separation, smaller tokenized gaps and footer transparency. Sky color and other [E] visual dimensions, colors, and minor motifs remain pending UI/UX Designer approval. This is a **documentation-only change**: no current implementation/test pass or approval is implied.
 
 ### Writing Activity visual exploration — chat-inspired learning UI
 
@@ -662,7 +669,7 @@ Apply the following **one-name / one-role** vocabulary across all eight Writing 
 | **Choice option** · BA-UI-003 | P3 single/multi list option. One chrome for both modes and both lengths: 24px radius, 1px border, 36×36 leading status icon, letter plus body. Click scale is hover 1.02 and pressed 0.95. Colors and type remain the Writing Choice option candidate, pending designer Approved. | **Word token**, **WordGrid word card** |
 | **Selectable word token** | Inline P3 Tapword token inside the original sentence; clicking chooses an answer for later Check, never inserts a word. | WordGrid word card |
 | **WordGrid** · BA-WR-003 | Writing vocabulary palette with named **WordGrid category tabs**, a connected **WordGrid body**, and selectable **word cards** for inserting into a writing region or executing a P4 ordered build. In 中文 UI, the category tab label is localized (观点 / 名词 / 形容词 / 标点), while task vocabulary remains the original English word/chunk. | Level Tabs (E-01); multiple-choice answers |
-| **Coach / Coach feedback** | The right-hand learning companion, with distinct arrival instruction, hint, checked feedback and writing commentary treatments. | Selection state on an option itself |
+| **Coach / Coach feedback** | The right-hand learning companion. Arrival instruction stays teaching. The hint control is a secondary button. Each checked feedback message sits in its own card: wrong is white with a light border, correct is white with a green border. | Selection state on an option itself |
 | **Writing canvas / Frame blanks / Build bench** | Distinct task-area composites. Reuse shared typography, focus cues and card spacing; input semantics remain different. | One universal text input |
 | **P7 Question pager** | Four internal question positions inside the single P7 Activity Screen. | TopBar's eight Activity Screens |
 
@@ -684,7 +691,7 @@ The **Screen IDs and interaction requirements** are owned by `apps/writing/PRODU
 | `P3.list.option.single` | Prompt → vertical option list → inline feedback zone | Shared BAChoice single-select. The leading status icon shows the state. The letter is text beside that icon. Focus ring stays visible. Checked states render only after Check | Min height 50px; radius 24px; one line and wrapped lines share chrome; icon stays on the first line; padding stays intact when lines wrap. Feedback appears only after Check. State is the icon together with the fill |
 | `P3.passage.word.single` | Prompt → flowing passage with individually focusable word tokens → feedback | One highlighted token at a time, clearly distinguish selected/focus/wrong/revealed; accessible word token label | Passage line breaks naturally; do not force equal-width option cards; minimum usable touch target and keyboard focus for words; status must survive reflow. This token does not use the choice-option row anatomy |
 | `P3.list.option.multi` | Prompt → option list → choose-count line → feedback | Same option chrome as single. Multiple mode toggles per PRODUCT | Same 50px minimum and 24px radius as single. Preserve all selected rows after an incorrect Check |
-| `P4.build.word.guided-order` | Prompt → WordGrid palette → ordered build bench → progress/instructional cue | Clickable word pills with inserted sequence visually separate from palette; wrong token cue outside graded status | White vocabulary pills in a group-colored WordGrid body; connected sticky-style tabs only when multiple groups exist; wrong token nudge with text alternative; no generic Check button |
+| `P4.build.word.guided-order` | Prompt → WordGrid palette → ordered build bench → that word’s hint card | Word-card taps build the line. The hint for a word tile appears after two wrong taps on that same word. Visible controls are the word cards and the lesson footer. | White vocabulary pills in a group-colored WordGrid body; connected sticky-style tabs only when multiple groups exist; wrong-token nudge with a text alternative; the hint uses the lesson question feedback card |
 | `P4.fill.chunks.frame` | Prompt → fixed frame with 2 visibly editable blank zones → optional WordGrid → validation feedback | Clearly distinguish locked starter text, editable field focus and filled words; Check-driven | Line wrapping must preserve “because” and the two blanks; no clipping at 200% zoom; accessible label for each blank, keyboard caret and inserts |
 | `P5.write.constraint-apply` | Prompt/tip → spacious writing canvas → Coach comments → submission control | Writing is primary, Coach notes secondary; busy/Reading state; no fake correct stamp when Move on | White writing area on warm frame plus four-group Opinion/Nouns/Adjectives/Marks WordGrid with connected category tabs; independently scrolling Coach; fixed transparent Footer; focused typing/caret remain visible and screen-reader feedback announced |
 | `P7.assessment.3-auto-1-writing` | One large internal question number → one question body → internal question dots → Hand in footer | No teaching hints or per-question success checks; grading only after Hand in; result summary distinct from in-progress answers | Assessment pager does not add 4 top progress circles; questions reuse P3/P4 input appearances without practice feedback; compact responsive internal nav |
@@ -708,9 +715,9 @@ The **Screen IDs and interaction requirements** are owned by `apps/writing/PRODU
 
 The visible choice row is the letter, the body, and the leading icon. `correct` and `shown` use the check icon with the fill above. Coach feedback stays its own surface, separate from the choice row. Other controls keep their own surfaces and use the same click scale.
 
-**Layout quality gates:** 1440×900, 1024×768, 834×1112 and 390px; 100% and 200% zoom; English and Chinese copy including long wrap, pointer/touch/keyboard, focus and reduced motion. One primary separator per structural boundary; peer container gaps reduce exactly one existing spacing-token step (never arbitrary px); transparent pinned action Footer outside Coach with Previous:Primary width 1:2, gap 8px, height 70px each; Screen 1 Previous disabled. Avoid overlays covering caret, option feedback, Footer or the last line of writing.
+**Layout quality gates:** 1440×900, 1024×768, 834×1112 and 390px; 100% and 200% zoom; English and Chinese copy including long wrap, pointer/touch/keyboard, focus and reduced motion. One primary separator per structural boundary; peer container gaps reduce exactly one existing spacing-token step (never arbitrary px); transparent pinned action Footer outside Coach. On lesson question feedback, Previous and Next span the full width of the footer action row at 1:2, gap 8px, height 70px each; Screen 1 Previous is disabled. Each feedback message is its own card: wrong is white with a light border, correct is white with a green border. The hint control is a secondary button. Overlays leave the caret, option feedback, Footer, and the last line of writing visible.
 
-**Ownership and status:** the selection of variant semantics is [A] per authored source/product rules. Choice visible chrome, the 1px border, and the click scale are locked. The BAChoice color, type, and radius measurements in this file remain a visual candidate [E], pending designer Approved. Other precise colors, local radii, shadow weights, and layouts that have not been designer-reviewed remain [E]. No screenshot, test pass, or visual approval of those candidates is implied by this documentation.
+**Ownership and status:** the selection of variant semantics is [A] per authored source/product rules. Choice visible chrome, the 1px border, and the click scale are locked. The BAChoice color, type, and radius measurements in this file remain a visual candidate [E], pending designer Approved. Lesson question feedback cards, the secondary hint button, and the build-topic-sentence screen controls are a visual candidate [E], not Approved. Other precise colors, local radii, shadow weights, and layouts that have not been designer-reviewed remain [E]. No screenshot, test pass, or visual approval of those candidates is implied by this documentation.
 
 ## 10. Global do / don't
 
