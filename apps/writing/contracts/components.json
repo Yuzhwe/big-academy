@@ -552,7 +552,8 @@
         "Preserve caret",
         "Pill word options min 50px high and wrap in rows",
         "Single group has no tab, multiple groups use sticky-note tabs with panel-connected active appearance",
-        "Tabs switch authored vocabulary data only, no grader mutation"
+        "Tabs switch authored vocabulary data only, no grader mutation",
+        "Ordered topic-sentence bench is the writing-area line, not this word-card panel: each remaining blank is an underline, one horizontal line per word still to place. Ellipsis placeholders and dotted placeholders are not used. Screen controls are the word cards and the lesson footer. A placed word stays in the line"
       ],
       "requiredStories": [
         "MultiGroup",
@@ -566,7 +567,7 @@
       "figma": null,
       "runtimeEvidence": null,
       "visualStatus": "R1-candidate-pending-designer-review",
-      "notes": "Writing WordGrid visual exploration: connected multi-group tabs and white pill vocabulary; single-group sets do not show decorative lone tabs. Visual approval pending. PRODUCT.md chapter 12 owns group availability and grading."
+      "notes": "Writing WordGrid visual exploration: connected multi-group tabs and white pill vocabulary; single-group sets do not show decorative lone tabs. Tab and pill chrome remain pending visual approval. The ordered topic-sentence bench is specified in PRODUCT.md chapter 12.7 and DESIGN.md: each remaining blank is an underline; ellipsis and dotted placeholders are not used; screen controls are the word cards and the lesson footer. PRODUCT.md chapter 12 owns group availability, the per-word hint, and grading."
     },
     {
       "id": "BA-WR-004",
