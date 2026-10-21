@@ -108,46 +108,29 @@
   font-size: 28px;
 }
 
-/* BA-WR-007 folded sheet. Seam runs the F×F upper-right square. Decorative only. */
+/* BA-WR-007 folded sheet. Seam is the F×F diagonal. Decorative only. */
 .course-unit {
   --unit-fold: var(--ba-writing-unit-fold-size, 32px);
+  --unit-radius: 16px;
   position: relative;
   background: var(--ba-writing-unit-paper-surface, #fff9f2);
   border-color: var(--ba-writing-unit-paper-border, #dcc3ab);
-  padding-right: calc(16px + var(--unit-fold) * 0.45);
+  border-radius: var(--unit-radius);
+  padding-right: var(--unit-fold);
 }
 .course-unit__fold {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: var(--unit-fold);
-  height: var(--unit-fold);
-  pointer-events: none;
-  border-top-right-radius: inherit;
-}
-.course-unit__fold::before,
-.course-unit__fold::after {
-  content: '';
-  position: absolute;
-  inset: 0;
+  top: calc(var(--ba-border-weight, 0.5px) * -1);
+  right: calc(var(--ba-border-weight, 0.5px) * -1);
+  width: calc(var(--unit-fold) + var(--ba-border-weight, 0.5px));
+  height: calc(var(--unit-fold) + var(--ba-border-weight, 0.5px));
+  overflow: visible;
   pointer-events: none;
 }
-.course-unit__fold::before {
-  background: linear-gradient(to bottom left, var(--ba-writing-unit-fold-under, #f8f1ea) 50%, transparent 50%);
-  border-top-right-radius: inherit;
+.course-unit__fold-under {
+  fill: var(--ba-writing-unit-fold-under, #f8f1ea);
 }
-.course-unit__fold::after {
-  background: linear-gradient(
-    to bottom left,
-    var(--ba-writing-unit-fold-face-light, #fffdf9),
-    var(--ba-writing-unit-fold-face-dark, #e7d6c9)
-  );
-  clip-path: polygon(
-    0 0,
-    100% 100%,
-    var(--ba-writing-unit-fold-tip-radius, 4px) 100%,
-    0 calc(100% - var(--ba-writing-unit-fold-tip-radius, 4px))
-  );
+.course-unit__fold-flap {
   filter: drop-shadow(var(--ba-writing-unit-fold-shadow, 0 2px 4px rgba(71, 44, 34, 0.12)));
 }
 .course-unit__meta,
