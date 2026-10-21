@@ -97,3 +97,13 @@ Next stage after designer approval: use this matrix to implement missing product
 Compared the selected eight Activity Screen IDs and authored task records in `apps/writing/source/alex-original.html` directly against PRODUCT.md chapter 12. No mismatch was found for the screen order, single-pick answer B/index 1, tapword acceptance of `believe` or `should`, multi-pick answer A/C/E indexes 0/2/4, ordered Word Build target, Frame Fill template and minimum blank lengths, or P7's headline passing rule (3 auto + 1 writing, at least 2/3 auto correct AND writing correct, two sets).
 
 **Not yet verified:** every original Engine branch for retries, shown/reveal, Word Build error hints, precise P5 evaluator criteria, internal P7 question fixtures and persistence. Do not interpret fixture alignment as a fully verified product spec. The traceability matrix contains the exact evidence scope and remaining fixture-verification items. No runtime tests were executed.
+
+## Per-Activity Contract Completion — pass 5 (2026-10-21)
+
+Added eight complete, individually headed contracts to `apps/writing/PRODUCT.md` chapter 12. Each contract now defines immutable Screen ID, authored Task/Template ID, unique Layout Variant ID, component responsibilities, exact prompt/data, accepted answers or criteria, interaction, feedback, retry/terminal state, persistence and behavior acceptance.
+
+Added a normative **Writing Activity layout variants** matrix in root `DESIGN.md` with eight renderings, their anatomy, state appearance, responsive/keyboard requirements and ownership boundaries. Added eight machine-readable `lesson1ActivityMappings` to `apps/writing/contracts/components.json`. The mappings only reference existing registry IDs; internal subcomposites are named descriptively where no stable reusable ID is approved.
+
+**Static cross-document checks:** 8 mapped screens; 8 distinct variant IDs; all 8 variant IDs found in PRODUCT.md and DESIGN.md; mapped component IDs exist in the 21-entry component registry. This is a document/reference-level check only, not schema validation, runtime component availability or visual approval.
+
+**Important limits:** Some component IDs in the registry are still marked planned. The source HTML supports task fixtures; complex retry, ordered-build streak, Apply and P7 dynamic branches retain previously documented runtime-verification gaps. These precise requirements are documented as the current product specification, **not falsely labeled code parity**. No TSX/CSS product code changed, no tests run, no merge.
