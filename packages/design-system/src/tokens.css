@@ -231,9 +231,38 @@
   /* Writing Hi-Fi Review R1. [A] user-confirmed numeric values; [E] image-derived
    * implementation candidates pending rendered designer approval. Scoped to
    * Writing composition; NOT a replacement for global shared component defaults. */
-  --ba-writing-staircase-gradient-top: #3b2424; /* [A] */
-  --ba-writing-staircase-gradient-bottom: #e8946c; /* [A] */
-  --ba-writing-staircase-stage-background: linear-gradient(180deg, var(--ba-writing-staircase-gradient-top) 0%, var(--ba-writing-staircase-gradient-bottom) 100%); /* [A] */
+  /* R3 Writing E-01 landscape; [A] selected concept, [E] source-derived candidate values. */
+  --ba-writing-staircase-default-theme: landscape; /* [A] semantic identifier */
+  --ba-writing-landscape-sky: #b7dff6; /* [E] source 913dbfe */
+  --ba-writing-landscape-sky-34: #d7eef8; /* [E] */
+  --ba-writing-landscape-horizon: #fff3cf; /* [E] */
+  --ba-writing-landscape-sky-bottom: #e7f6c8; /* [E] */
+  --ba-writing-landscape-peaks-back: #d9d6e6; /* [E] */
+  --ba-writing-landscape-peaks-front: #c5cbe0; /* [E] */
+  --ba-writing-landscape-hill-mid: #9dc56e; /* [E] */
+  --ba-writing-landscape-grass-top: #d7eb86; /* [E] */
+  --ba-writing-landscape-grass-mid: #8fbf55; /* [E] */
+  --ba-writing-landscape-grass-side: #4e8a3c; /* [E] */
+  --ba-writing-landscape-grass-shadow: #3c7434; /* [E] */
+  --ba-writing-landscape-cloud-drift-duration: 46s; /* [E] */
+  --ba-writing-landscape-plane-drift-duration: 28s; /* [E] */
+  --ba-writing-landscape-parallax-far: -0.03; /* [E] */
+  --ba-writing-landscape-parallax-mid: -0.06; /* [E] */
+  --ba-writing-landscape-parallax-near: -0.1; /* [E] */
+  --ba-writing-landscape-parallax-cloud: -0.015; /* [E] */
+  --ba-writing-terrace-layer-count-min: 2; /* [A] */
+  --ba-writing-terrace-layer-count-max: 3; /* [A] */
+  --ba-writing-terrace-candidate-width: 352px; /* [E] review proportions */
+  --ba-writing-terrace-candidate-height: 64px; /* [E] review proportions */
+  --ba-writing-status-seal-size: 56px; /* [E] */
+  --ba-writing-status-attached-icon-size: 22px; /* [E] */
+  --ba-writing-status-attached-icon-border: 2px; /* [E] */
+  --ba-writing-status-completed-symbol: var(--ba-color-success-7); /* [E] */
+  --ba-writing-status-locked-symbol: var(--ba-color-neutral-8); /* [E] */
+  --ba-writing-unit-fold-seam-radius: 4px; /* [E] */
+  --ba-writing-activity-footer-background: transparent; /* [A] */
+  --ba-writing-activity-container-gap-step: -1; /* [A] relative spacing scale index; not pixel */
+  --ba-writing-container-boundary-strategy: single; /* [A] semantic identifier */
   --ba-writing-description-font-size: 16px; /* [A] */
   --ba-writing-lesson-cta-height: 70px; /* [A] */
   --ba-writing-lesson-footer-button-height: 70px; /* [A] */
@@ -244,8 +273,6 @@
   --ba-writing-lesson-card-padding: 24px; /* [E] */
   --ba-writing-lesson-card-status-size: 56px; /* [E] */
   --ba-writing-lesson-current-fill: #2f67c8; /* [E] */
-  --ba-writing-lesson-completed-fill: var(--ba-color-success-6); /* [E] mapping */
-  --ba-writing-lesson-locked-fill: #929aa2; /* [E] */
   --ba-writing-lesson-card-title-size: 24px; /* [E] */
   --ba-writing-lesson-cta-label-size: 28px; /* [E] */
   --ba-writing-back-size: 50px; /* [A] */
