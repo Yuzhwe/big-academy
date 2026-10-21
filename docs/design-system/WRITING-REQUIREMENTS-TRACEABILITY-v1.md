@@ -73,18 +73,17 @@ Verification type: **static source/code inspection only**. No frontend code chan
 | `L2-04.t.ts3` | `ts3` type `pick`, `multi:true`, six options, `answers:[0,2,4]`. | Matches A/C/E and multi-select |
 | `L2-04.t.ss.L2-04` | `ss.L2-04` type `build`, `in_order:true`; 11-cell list `our school should have a garden for two big reasons .`, and identical target order. | Matches ordered-build requirement |
 | `L2-04.t.ts8` | `ts8` type `write`; exact frame “In my opinion, recess should ___ because ___.”; blank `min_words:2` and `min_words:3`; `vagueLast:true`. | Matches frame and minimum lengths |
-| `L2-04.apply` | `kind:"apply"`, P5, `purpose:"apply"`, `feedback:"constraint"`, topic-sentence garden assignment; Coach states write three different ways. | Matches assignment intent; precise evaluator path still requires function-by-function inspection |
-| `L2-04.check` | `kind:"check"`, P7, `items:"3 auto + 1 writing"`, `pass_rule:">=2/3 auto AND writing correct"`, `second_set:true`. | Matches top-level assessment contract; internal item set/evaluation still requires further verification |
+| `L2-04.apply` | `kind:"apply"`, P5, `purpose:"apply"`, `feedback:"constraint"`; current pass-6 inspection of `P5.applyCheck` and `Analyzer.checkApply` confirms four offline criteria and counted-try branching. | Matches core criteria after pass 6; CJK/safety counted-attempt details surfaced for owner decision |
+| `L2-04.check` | `kind:"check"`, P7; pass-6 verified authored `tq1–tq5`, writing `L2-04.mw` and original `P7.handIn` / `Engine.masteryItems` / `Engine.masteryPass` branches. | Fixture questions and critical assessment transitions documented in PRODUCT §12.10; runtime E2E still missing |
 
 **Source Engine evidence:** `choiceGrade(t,picked)` compares sorted picked answer indices against sorted source `t.answers`; when `t.any` is set, it accepts precisely one index belonging to `t.answers`. This confirms original single/multi selector semantics and avoids replacing authored scoring with an unrelated generic grader.
 
 **Result:** Eight screen IDs/order and primary source data listed above have **no identified mismatch** in this inspection. This is a narrowed conclusion, not a claim that every prose instruction, feedback branch, attempt transition or P7 internal item was exhaustively verified. The React slice gaps from the earlier section remain open. Tests were not executed.
 
-### Further original-engine evidence still required before signoff
+### Post-pass-6 verification status and remaining owner review (2026-10-21)
 
-- Step through the original `Pages` handlers for every first/second miss, reveal, forced progress and `shown` state.
-- Verify Word Build consecutive wrong-token counting, full-line attempt distinction and third-miss cue against its original handler.
-- Verify Frame Fill vague-reason rule in actual evaluator rather than inferring it solely from `vagueLast:true`.
-- Verify P5 four grading criteria, failure feedback and two-fail `Move on` branches.
-- Verify both complete P7 item sets, blank-warning-once, per-question navigation and mastery propagation.
-- Use an actual test runtime to run fixture assertions and compare saved-state behavior. None were executed in this documentation pass.
+The original Word Build, Frame Fill, Apply and P7 **source handlers and core fixture records have now been inspected**; the earlier list above is superseded, not a list of outstanding source-reading tasks. Full details and corrections appear in `docs/design-system/CANONICAL-SPEC-AUDIT-v1.md` pass 6 and PRODUCT.md chapter 12.
+
+**Verified by reading source:** P4 wrong-card count is cumulative, not consecutive; P5 3+-word CJK-heavy submitted work is counted when checked even though offline grading rejects it; P7 five pool items and writing grader data, blank-warning/second-set/further-Review behavior, and immediate Skip revocation upon any failed Hand in; v4 persisted answer/check/grid state.
+
+**Still to resolve:** Product Owner approval of the original cumulative wrong-card behavior, CJK counting and safety-flagged Move on; clarification of whether exact transient Coach feedback should persist after hard reload; execution of runtime assertions, tests and actual eight-screen interaction QA against both source and current React. These last steps were **not performed** in this documentation-only pass. Preserve approved UI navigation and language-B localization overrides even where legacy HTML differs.
