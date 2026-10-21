@@ -17,3 +17,5 @@
 .ba-task-progress__overflow {min-width:44px;min-height:44px;border:1px solid var(--ba-color-warm-5);border-radius:var(--ba-radius-full);background:var(--ba-color-surface-canvas);color:var(--ba-color-content-primary);font:800 20px/1 var(--ba-type-numeric-family);cursor:pointer;}
 .ba-task-progress__overflow[data-focus-visible] {outline:2px solid var(--ba-control-focus);}
 @media (prefers-reduced-motion:reduce){.ba-activity-indicator,.ba-activity-indicator__circle,.ba-task-progress__overflow{animation:none;transition:none;}}
+
+.ba-activity-indicator__caption {position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);white-space:nowrap;font-size:10px;line-height:1.1;font-weight:700;}
