@@ -28,3 +28,5 @@
 .stair-lesson-card__action.ba-button[data-kind='primary'] {--ba-button-bg:var(--ba-color-surface-canvas);--ba-button-ink:var(--ba-color-action-primary);--ba-button-border:var(--ba-color-action-primary);}
 .stair-lesson-card__action.ba-button[data-disabled] {opacity:.65;}
 .course-app[lang='zh-CN'] .stair-lesson-card__title {font-family:var(--ba-type-heading-family);}
+
+.stair-lesson-card[data-current='true'] .stair-lesson-card__number {background:var(--ba-writing-lesson-current-fill);color:var(--ba-color-surface-canvas);border-color:transparent;}
