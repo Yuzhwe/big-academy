@@ -91,3 +91,9 @@ See `docs/design-system/WRITING-REQUIREMENTS-TRACEABILITY-v1.md` for an evidence
 **Foundations:** Tokens and component contracts express selected R3 direction but do not prove that every component consumes the shared code or any spring runtime. The traceability matrix names each relevant contract and its review status.
 
 Next stage after designer approval: use this matrix to implement missing product interactions on an isolated engineering branch, then collect full learner-journey browser evidence. No product code was edited in this pass.
+
+## Original authored fixture comparison — pass 4 (2026-10-21)
+
+Compared the selected eight Activity Screen IDs and authored task records in `apps/writing/source/alex-original.html` directly against PRODUCT.md chapter 12. No mismatch was found for the screen order, single-pick answer B/index 1, tapword acceptance of `believe` or `should`, multi-pick answer A/C/E indexes 0/2/4, ordered Word Build target, Frame Fill template and minimum blank lengths, or P7's headline passing rule (3 auto + 1 writing, at least 2/3 auto correct AND writing correct, two sets).
+
+**Not yet verified:** every original Engine branch for retries, shown/reveal, Word Build error hints, precise P5 evaluator criteria, internal P7 question fixtures and persistence. Do not interpret fixture alignment as a fully verified product spec. The traceability matrix contains the exact evidence scope and remaining fixture-verification items. No runtime tests were executed.
