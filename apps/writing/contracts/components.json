@@ -134,19 +134,28 @@
       },
       "states": [
         "idle",
+        "default",
         "selected",
         "correct",
         "wrong",
+        "shown",
         "dim",
-        "disabled"
+        "disabled",
+        "focus-visible"
       ],
       "layoutOwner": "Choice owns option internals, content area owns column width",
       "requirements": [
         "Use React Aria radio/checkbox semantics per task",
         "No scoring in component",
-        "Choice option min-height 50px with wrapped text, icon aligned first text line",
-        "Select state distinct from checked correct/wrong; graded filled and outlined success, filled error, accessible dimmed/disabled",
-        "Tapword items reuse Choice-equivalent token state visuals with authored single-select/check gate"
+        "Option row radius 24px for short and long copy",
+        "Leading 36x36 status icon, 4px gap, text block padding 8px, letter-to-body gap 12px, outer padding 4px",
+        "Letter Dosis ExtraBold 800 18/20 nowrap; body Jost Medium 18px line-height 1.1",
+        "Min-height stays 50px; one-line composition is about 46px; wrapped rows grow and are not clipped",
+        "Row and text align flex-start so the icon stays with the first line",
+        "selected is pre-check solid #9B4F36 with a white ring; correct is post-check solid #14AE5C; wrong shares the brown fill and uses a white disk plus X; shown is white with a #14AE5C border and green check badge, not an info color; dim is default chrome at opacity 0.4",
+        "Icon communicates state; the letter is separate text",
+        "Keep the focus ring on solid fills; do not invent a hover color or a third brown for disabled",
+        "Tapword reuses choice state meanings and does not take this option-row anatomy"
       ],
       "requiredStories": [
         "Single",
@@ -163,7 +172,63 @@
       ],
       "figma": null,
       "runtimeEvidence": null,
-      "visualStatus": "R1-candidate-pending-designer-review"
+      "visualStatus": "candidate-pending-designer-approval",
+      "visual": {
+        "status": "candidate",
+        "approved": false,
+        "authority": "DESIGN.md section Writing Choice option, BA-UI-003 / BAChoice",
+        "radiusPx": 24,
+        "sameRadiusForShortAndLong": true,
+        "border": "1px solid",
+        "overflow": "clip content; keep focus-visible ring",
+        "width": "fill parent; do not hardcode 500",
+        "minHeightPx": 50,
+        "shortRowReferencePx": 46,
+        "longRowReferencePx": 106,
+        "outerPaddingPx": 4,
+        "iconPx": 36,
+        "iconToTextGapPx": 4,
+        "textPaddingPx": 8,
+        "letterToBodyGapPx": 12,
+        "alignment": "flex-start; icon top-aligned with the first line",
+        "letter": "Dosis ExtraBold 800, 18px, line-height 20px, nowrap",
+        "body": "Jost Medium 500, 18px, line-height 1.1, wraps",
+        "dimOpacity": 0.4,
+        "states": {
+          "default": {
+            "background": "#FFFFFF",
+            "border": "#C9B8B2",
+            "text": "#133547",
+            "icon": "empty circle, stroke about #C9B8B2, no fill"
+          },
+          "selected": {
+            "background": "#9B4F36",
+            "border": "#FFFFFF",
+            "text": "#FFFFFF",
+            "icon": "thick white ring, hollow"
+          },
+          "wrong": {
+            "background": "#9B4F36",
+            "border": "#FFFFFF",
+            "text": "#FFFFFF",
+            "icon": "white disk with #9B4F36 X"
+          },
+          "correct": {
+            "background": "#14AE5C",
+            "border": "#FFFFFF",
+            "text": "#FFFFFF",
+            "icon": "white circle with #14AE5C check"
+          },
+          "shown": {
+            "background": "#FFFFFF",
+            "border": "#14AE5C",
+            "text": "#133547",
+            "icon": "solid #14AE5C disk with white check"
+          },
+          "dim": "default chrome at opacity 0.4"
+        }
+      },
+      "notes": "Visual candidate 2026-10-21, pending designer Approved. idle and default name the unselected row. shown is the outline reveal, distinct from solid correct, and it does not use an info color. Product labels and grading stay in PRODUCT.md. tokens.css still has older choice radius 14px, gap 10px and padding 12/8; those are not the target and are not edited here. No CSS/TSX change in this contract revision."
     },
     {
       "id": "BA-UI-004",
@@ -1050,7 +1115,7 @@
       "internalComposites": [],
       "authority": {
         "behavior": "apps/writing/PRODUCT.md §12",
-        "visual": "DESIGN.md / Writing Activity layout variants"
+        "visual": "DESIGN.md section Writing Choice option, BA-UI-003 / BAChoice (candidate, pending designer Approved)"
       },
       "verification": "specified-not-runtime-verified"
     },
@@ -1087,7 +1152,7 @@
       "internalComposites": [],
       "authority": {
         "behavior": "apps/writing/PRODUCT.md §12",
-        "visual": "DESIGN.md / Writing Activity layout variants"
+        "visual": "DESIGN.md section Writing Choice option, BA-UI-003 / BAChoice (candidate, pending designer Approved)"
       },
       "verification": "specified-not-runtime-verified"
     },
