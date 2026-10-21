@@ -25,3 +25,9 @@ Only **L2/G2-O Lesson 1: Topic sentences (eight screens)** is in scope for high-
 ## Workflow
 
 Create independent feature branches from `main`, implement against the four authoritative assets, then request designer review before merging. Historical stacked PRs and other agents' prototypes are reference-only and should not be used as new baselines.
+
+## Design System end-to-end V1 · 2026-10-21
+
+Working branch: `feat/design-system-end-to-end-v1-gpt6-20261020`, based on R2 specification descendant of unmerged R1. Draft PR #36 targets main; **do not merge**.
+
+Phase 1 structural audit and maturity matrix delivered at `docs/design-system/audit-v1/`. Phase 2 migrations partially implemented: Lesson Card consumes BAButton, first-screen Previous disabled, Footer 1:2 grid, Staircase defaults to A. Phase 3 scoped checks and CI workflow added; GitHub Actions outcome must be inspected, not assumed. Phase 4 is **not complete**: P4/P5/P7 and the full eight-screen behavior, visual browser QA, and two independent passes remain. Runtime Motion adapter and eight missing registered components remain. Full classification: `docs/design-system/END_TO_END_REPORT.md`. Do not infer completion from PR existence. Designer approval pending.
