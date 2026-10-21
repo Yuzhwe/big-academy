@@ -112,7 +112,7 @@
 @keyframes ba-button-spin { to { transform:rotate(360deg); } }
 @media (prefers-reduced-motion:reduce) {
   .ba-button__assembly { transition:none; }
-  .ba-button[data-hovered] .ba-button__assembly,
-  .ba-button[data-pressed] .ba-button__assembly { transform:none; }
+  .ba-button[data-hovered]:not([data-disabled]):not([data-pending]) .ba-button__assembly,
+  .ba-button[data-pressed]:not([data-disabled]):not([data-pending]) .ba-button__assembly { transform:none; }
   .ba-button__pending { animation:none; border-right-color:currentColor; }
 }

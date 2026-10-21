@@ -173,8 +173,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ba-choice__option,
-  .ba-choice__option[data-hovered],
-  .ba-choice__option[data-pressed] {
+  .ba-choice__option[data-hovered]:not([data-disabled]),
+  .ba-choice__option[data-pressed]:not([data-disabled]) {
     transform: none;
     transition: none;
   }
