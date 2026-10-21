@@ -49,7 +49,7 @@ This document is the product authority for Writing behavior: what the learner se
 
 Shared visual foundations (Warm Frame, White Canvas, type ramp, Iconoir, motion, tokens) live in repository-root `/DESIGN.md`. This file does not repeat that system. Learner-facing English and Chinese strings are authored in the unit configuration. The rules below decide structure, correctness, gates, and persistence. A reader does not need the HTML runtime to apply them.
 
-**Current build scope:** L2 unit G2-O, Lesson 1, Topic sentences, the eight Activity Screens in [Lesson 1](#12-lesson-1-authored-eight-screen-slice). The other eight lessons and their 44 screens are specified here so later lessons use the same gates. They are not part of this build.
+**Current build scope:** L2 unit G2-O, Lesson 1, Topic sentences, the eight Activity Screens in [Lesson 1](#12-lesson-1--eight-authoritative-per-activity-contracts). The other eight lessons and their 44 screens are specified here so later lessons use the same gates. They are not part of this build.
 
 ## 3. Course structure
 
@@ -394,7 +394,7 @@ Lessons are re-counted after a skip. A lesson whose own remaining minutes are 0 
 
 The word bank is an **input aid**, never a multiple-choice answer selector. Switching tabs changes the visible vocabulary set and saves the active category for return; it must not clear the writing draft, affect the insertion caret, call the grader, count attempts, unlock a Screen or trigger celebrations. Pressing a word card, by contrast, inserts content into the active editable area, except on Screen 05 where it performs the dedicated ordered-build action. Groups and word cards come from the original authored configuration, not from hardcoded screenshot text. A single-group build uses the same underlying category semantics without a redundant tab header. Tab label, content and active state must remain accessible to keyboard and touch users.
 
-**Global shell mapping:** all eight use `BA-WR-001` and `BA-WR-002`; activity status/progress maps to `BA-UI-006`; action controls use `BA-UI-001`; contextual semantic feedback maps to `BA-UI-007` (planned foundation). `BA-UI-005` is the popover foundation for the Activity Screen list (planned). Product-specific word selection, build bench, text editor and P7 pager have no separate approved reusable Component ID yet: treat as internal template composites, **not** as new imaginary shared components. Component existence/status is controlled by `components.json`. Screen 8 has four internal questions but contributes only **one** TopBar Activity Screen.
+**Global shell mapping:** all eight use `BA-WR-001` and `BA-WR-002`; activity status/progress maps to `BA-UI-006` (**component registry name `BATaskProgress`**, learner-facing role **ActivityScreenIndicator**); action controls use `BA-UI-001`; contextual semantic feedback maps to `BA-UI-007` (planned foundation). `BA-UI-005` is the popover foundation for the Activity Screen list (planned). Product-specific word selection, build bench, text editor and P7 pager have no separate approved reusable Component ID yet: treat as internal template composites, **not** as new imaginary shared components. Component existence/status is controlled by `components.json`. Screen 8 has four internal questions but contributes only **one** TopBar Activity Screen.
 
 ### 12.2 Shared activity state machine and persistence
 
