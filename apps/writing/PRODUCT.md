@@ -47,7 +47,7 @@ E-01 Staircase
 
 This document is the product authority for Writing behavior: what the learner sees, how an answer is chosen, how it is checked, when feedback appears, and when the next Activity Screen opens.
 
-Shared visual foundations (Warm Frame, White Canvas, type ramp, Iconoir, motion, tokens) live in repository-root `/DESIGN.md`. This file does not repeat that system. Learner-facing English and Chinese strings are authored in the unit configuration. The rules below decide structure, correctness, gates, and persistence. A reader does not need the HTML runtime to apply them.
+Shared visual foundations (Warm Frame, White Canvas, type ramp, Iconoir, motion, tokens) live in repository-root `/DESIGN.md`. This file does not repeat that system. Learner-facing English and Chinese UI strings are authored in the unit configuration and selected by the active locale, **not shown in parallel**. In Chinese mode, essential English-language learning material remains in English (task example sentences, answer choices, vocabulary word cards, fixed writing frames and learner-entered writing); see chapter 8 and chapter 14. The rules below decide structure, correctness, gates, and persistence. A reader does not need the HTML runtime to apply them.
 
 **Current build scope:** L2 unit G2-O, Lesson 1, Topic sentences, the eight Activity Screens in [Lesson 1](#12-lesson-1--eight-authoritative-per-activity-contracts). The other eight lessons and their 44 screens are specified here so later lessons use the same gates. They are not part of this build.
 
@@ -172,7 +172,7 @@ In-writing weight is a different scale, threshold 2, and counts only Apply writi
 
 ## 8. Shared learning shell behavior
 
-Every Activity Screen is one frame: prompt (instruction, read-aloud, Chinese line when 中文 is on), body, and in-page actions. The lesson shell is white task paper on the left and Coach on the right. Coach scrolls on its own. **Previous** and the one contextual primary action sit in a full-width footer under the right column, outside the Coach transcript.
+Every Activity Screen is one frame: prompt (localized instruction, read-aloud), body (original authored English learning material when required), and in-page actions (localized UI). **Chinese mode is a Chinese UI, not an English UI with a secondary Chinese line underneath**. The lesson shell is white task paper on the left and Coach on the right. Coach scrolls on its own. **Previous** and the one contextual primary action sit in a full-width footer under the right column, outside the Coach transcript.
 
 Choice, word, and sentence options are at least 50 CSS px tall, grow with wrapped text, vertically center a single line, and align wrapped text and the letter or number to the first line. This height rule is only for answer options. It does not resize global buttons.
 
@@ -518,7 +518,17 @@ Progress reads the live lesson screen list. Chips distinguish done, current, ava
 
 **Coach versus feedback.** On arrival, one orientation line, with “Show me another” only when the screen authored extra beats. That text is teaching. The hint ladder is a separate learner-invoked control. Check feedback, Apply comments, plan comments, and draft comments are the result of a submit. A selection change does not generate a new one. Live writing nudges (one suggestion and one specific praise) can appear during Apply, draft, and revise; they are not a score and they do not complete a page.
 
-**Language.** 中文 shows the authored Chinese line under the English. It does not change answers or gates.
+**Language — approved display behavior B (Chinese interface, essential English learning content retained).** Language selection changes presentation only: it never changes task IDs, answer indexes, authored graders, attempts, unlocks, mastery, the saved writing draft, or the learner's previous progress.
+
+| Area | 中文 mode (zh) | English mode (en) |
+| --- | --- | --- |
+| Navigation and action buttons (top-left Back, Footer Previous / Next / Check / Hand in / Move on, level tabs, progress announcements) | Show the **authored Chinese UI label** only. English words in this specification denote action identity, not mandatory visible English copy. | Show the authored English UI label only. |
+| Task instruction, teaching explanation, Coach arrival/hint/graded feedback, helper and error text | Render the existing authored `zh` text as the **primary and sole UI/explanation line**; do not repeat its `en` translation above it. | Render authored `en` text. |
+| English Writing learning material (quoted example sentences, option sentences under comparison, tapword passage, ordered-build word cards, fixed frame, P7 assessment English response material) | **Keep the original authored English material** exactly where it is necessary for the English-language learning exercise. Do not translate, paraphrase or add Chinese into the graded input or token set. | Keep the same original English material. |
+| WordGrid group tabs vs word-card content | Localize tab/category labels using their authored Chinese labels, e.g. Opinion → 观点, Nouns → 名词, Adjectives → 形容词, Marks → 标点; **preserve English vocabulary cards** for tapping/insertion. Any existing Chinese vocabulary gloss is optional supporting metadata, not a second duplicate page instruction or a replacement for the English word. | Category tab labels and vocabulary follow the authored English versions. |
+| Learner-entered writing and its validation | Preserve the student's exact text and run the existing **English Writing** validators, including the original CJK-content constraint where applicable. Chinese UI does not make a Chinese essay valid for an English-language Writing task. | Same graders and same persisted text. |
+
+If an existing authored Chinese UI/explanation string is absent, identify it for content localization review; do **not** invent a new translated answer, change assessment text, or switch the entire page to duplicated EN+ZH presentation. A necessary original English learning prompt may remain in English as source material without changing the locale of the surrounding UI. Maintain appropriate `lang` semantics for Chinese interface text and English instructional passages so reading and speech work correctly.
 
 ## 15. Activity screen indicator and overflow navigation
 
