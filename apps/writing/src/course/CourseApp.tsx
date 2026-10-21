@@ -224,8 +224,8 @@ function PathView({ session }: { session: CourseSession }) {
         </StaircaseScene>
         <p className="course-candidate">
           {zh
-            ? 'E-01 使用 v2-terraces 分层与视差。天空色和视差比例仍是候选，等待 Joe Approved。'
-            : 'E-01 uses the v2-terraces layers and parallax. Sky color and parallax ratios stay candidates pending Joe Approved.'}
+            ? 'E-01 使用 v2-terraces。天空色仍是候选，等待 Joe Approved。'
+            : 'E-01 uses v2-terraces. Sky color stays a candidate pending Joe Approved.'}
         </p>
       </main>
         </BATabPanel>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cameraForStep, hillFrame, pedestalAnchorY, scenicTravelY, stepRise } from './StaircaseScene';
+import { cameraForStep, cameraMaxTravel, hillFrame, pedestalAnchorY, scenicSpeeds, stepRise, trackLength } from './StaircaseScene';
 
 describe('E-01 diagonal scene shared A/B geometry', () => {
   it('derives viewport-sensitive rise without hard-coding a 15 degree slope', () => {
@@ -16,21 +16,36 @@ describe('E-01 diagonal scene shared A/B geometry', () => {
     expect(pedestalAnchorY(9, 10, rise)).toBe(356);
     expect(pedestalAnchorY(0, 10, rise)).toBeGreaterThan(pedestalAnchorY(9, 10, rise));
   });
-  it('clips scenic vertical travel so a large rail camera cannot throw the hills out', () => {
-    expect(scenicTravelY(0.72, 3713, 3713, 665)).toBe(0);
-    const hill = scenicTravelY(0.72, 0, 3713, 665);
-    const cloud = scenicTravelY(0.12, 0, 3713, 665);
-    expect(hill).toBeLessThan(cloud);
-    expect(hill).toBeGreaterThanOrEqual(-665 * 0.22 * 0.72 - 1);
-    expect(cloud).toBeGreaterThanOrEqual(-665 * 0.22 * 0.12 - 1);
+  it('sizes the shared hill frame to the stage and keeps the 1568×656 aspect', () => {
+    const frame = hillFrame(760);
+    expect(frame.height).toBe(760);
+    expect(Math.abs(frame.width / frame.height - 1568 / 656)).toBeLessThan(0.01);
   });
-  it('fits the whole hill panorama across the opening stage', () => {
-    for (const width of [1440, 834, 390]) {
-      const frame = hillFrame(width, 700);
-      expect(frame.width).toBeGreaterThanOrEqual(width);
-      expect(frame.width).toBeLessThan(width * 1.2);
-      expect(Math.abs(frame.height / frame.width - 656 / 1568)).toBeLessThan(0.02);
-    }
+  it('computes scenic speeds from the track, slower than the cards, farther layers slower', () => {
+    const count = 48;
+    const viewport = 1440;
+    const frame = hillFrame(760);
+    const speeds = scenicSpeeds(count, viewport, frame.width);
+    const maxTravel = cameraMaxTravel(count, viewport);
+    expect(trackLength(count)).toBe((count - 1) * 290 + 260);
+    expect(maxTravel).toBe(trackLength(count) - viewport);
+    expect(speeds.cards).toBe(1);
+    expect(speeds.sky).toBe(0);
+    expect(speeds.hill1).toBeGreaterThan(speeds.hill2);
+    expect(speeds.hill2).toBeGreaterThan(speeds.cloud);
+    expect(speeds.cloud).toBeGreaterThan(speeds.sky);
+    expect(speeds.hill1).toBeLessThan(speeds.cards);
+    expect(speeds.hill1 * maxTravel).toBeLessThanOrEqual(frame.width - viewport + 0.001);
+    expect(speeds.hill1).not.toBe(0.72);
+    expect(speeds.hill2).not.toBe(0.4);
+    expect(speeds.cloud).not.toBe(0.12);
+  });
+  it('stops scenic travel when the camera has no room to move', () => {
+    const speeds = scenicSpeeds(2, 2000, 2400);
+    expect(cameraMaxTravel(2, 2000)).toBe(0);
+    expect(speeds.hill1).toBe(0);
+    expect(speeds.hill2).toBe(0);
+    expect(speeds.cloud).toBe(0);
   });
   it('positions first and last steps within pan limits', () => {
     expect(cameraForStep(0, 1024, 20)).toBe(0);

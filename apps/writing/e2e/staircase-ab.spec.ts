@@ -13,43 +13,84 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
 
   await expect(scene).toHaveAttribute('data-landscape', 'v2-terraces');
   await expect(scene).toHaveAttribute('data-sky', '#58A8E8');
-  await expect(page.getByTestId('path-sky')).toHaveAttribute('data-parallax', '0');
-  await expect(page.getByTestId('path-cloud')).toHaveAttribute('data-parallax', '0.12');
-  await expect(page.getByTestId('path-hill-2')).toHaveAttribute('data-parallax', '0.4');
-  await expect(page.getByTestId('path-hill-1')).toHaveAttribute('data-parallax', '0.72');
   await expect(page.locator('.staircase-rail')).toHaveAttribute('data-parallax', '1');
   const layers = await page.evaluate(() => {
+    const read = (sel: string) => Number(document.querySelector(sel)?.getAttribute('data-parallax'));
     const stage = document.querySelector('.staircase-viewport')!.getBoundingClientRect();
-    const overlap = (sel: string) => {
-      const img = document.querySelector(sel)?.querySelector('img');
-      if (!img) return { visible: 0, bottomGap: 999 };
-      const rect = img.getBoundingClientRect();
-      const top = Math.max(rect.top, stage.top);
-      const bottom = Math.min(rect.bottom, stage.bottom);
-      return { visible: bottom - top, bottomGap: Math.round(rect.bottom - stage.bottom) };
-    };
+    const header = document.querySelector('.course-path__header')!.getBoundingClientRect();
+    const box = (sel: string) => document.querySelector(sel)!.getBoundingClientRect();
+    const hill1 = box('[data-testid="path-hill-1"]');
+    const hill2 = box('[data-testid="path-hill-2"]');
+    const cloud = box('[data-testid="path-cloud"] img');
     return {
-      hill1: overlap('[data-testid="path-hill-1"]'),
-      hill2: overlap('[data-testid="path-hill-2"]'),
-      cloud: overlap('[data-testid="path-cloud"]'),
+      sky: read('[data-testid="path-sky"]'),
+      cloud: read('[data-testid="path-cloud"]'),
+      hill2: read('[data-testid="path-hill-2"]'),
+      hill1: read('[data-testid="path-hill-1"]'),
+      stageBottom: stage.bottom,
+      viewHeight: window.innerHeight,
+      headerTop: header.top,
+      headerBottom: header.bottom,
+      stageTop: stage.top,
+      hill1Top: hill1.top,
+      hill1Bottom: hill1.bottom,
+      hill1Left: hill1.left,
+      hill1Right: hill1.right,
+      hill2Top: hill2.top,
+      hill2Bottom: hill2.bottom,
+      stageLeft: stage.left,
+      stageRight: stage.right,
+      cloudTop: cloud.top,
+      cloudBottom: cloud.bottom,
     };
   });
-  expect(layers.hill1.visible).toBeGreaterThan(200);
-  expect(layers.hill2.visible).toBeGreaterThan(200);
-  expect(layers.cloud.visible).toBeGreaterThan(40);
-  expect(Math.abs(layers.hill1.bottomGap)).toBeLessThanOrEqual(2);
-  expect(Math.abs(layers.hill2.bottomGap)).toBeLessThanOrEqual(2);
+  expect(layers.sky).toBe(0);
+  expect(layers.hill1).toBeGreaterThan(layers.hill2);
+  expect(layers.hill2).toBeGreaterThan(layers.cloud);
+  expect(layers.cloud).toBeGreaterThan(layers.sky);
+  expect(layers.hill1).toBeLessThan(1);
+  expect(layers.headerTop).toBeGreaterThanOrEqual(-1);
+  expect(layers.headerBottom).toBeLessThanOrEqual(layers.stageTop + 1);
+  expect(layers.stageBottom).toBeGreaterThan(layers.viewHeight - 4);
+  expect(layers.hill1Top).toBeGreaterThanOrEqual(layers.stageTop - 1);
+  expect(layers.hill1Bottom).toBeLessThanOrEqual(layers.stageBottom + 1);
+  expect(layers.hill2Top).toBeGreaterThanOrEqual(layers.stageTop - 1);
+  expect(layers.hill2Bottom).toBeLessThanOrEqual(layers.stageBottom + 1);
+  expect(layers.hill1Left).toBeLessThanOrEqual(layers.stageLeft + 1);
+  expect(layers.hill1Right).toBeGreaterThanOrEqual(layers.stageRight - 1);
+  expect(layers.cloudBottom).toBeGreaterThan(layers.stageTop);
+  expect(layers.cloudTop).toBeLessThan(layers.stageBottom);
   await expect(page.getByRole('button', { name: /Separate platforms|Continuous slope/ })).toHaveCount(0);
   await expect(scene).toHaveAttribute('data-rise-px', /^[0-9]+$/);
   await page.screenshot({ path: resolve(evidenceDir, 'v2-terraces-1440.png'), fullPage: false });
 
   const initial = Number(await scene.getAttribute('data-camera-x'));
-  const cloudBefore = await page.getByTestId('path-cloud').evaluate((el) => getComputedStyle(el).transform);
+  const before = await page.evaluate(() => ({
+    camera: Number(document.querySelector('.staircase-viewport')?.getAttribute('data-camera-x')),
+    hill1: document.querySelector('[data-testid="path-hill-1"]')!.getBoundingClientRect().left,
+    hill2: document.querySelector('[data-testid="path-hill-2"]')!.getBoundingClientRect().left,
+    cloud: document.querySelector('[data-testid="path-cloud"]')!.getBoundingClientRect().left,
+    rail: document.querySelector('.staircase-rail')!.getBoundingClientRect().left,
+  }));
   await scene.focus();
   await page.keyboard.press('ArrowRight');
   await expect.poll(async () => Number(await scene.getAttribute('data-camera-x'))).toBeGreaterThan(initial);
-  const cloudAfter = await page.getByTestId('path-cloud').evaluate((el) => getComputedStyle(el).transform);
-  expect(cloudAfter).not.toBe(cloudBefore);
+  const after = await page.evaluate(() => ({
+    camera: Number(document.querySelector('.staircase-viewport')?.getAttribute('data-camera-x')),
+    hill1: document.querySelector('[data-testid="path-hill-1"]')!.getBoundingClientRect().left,
+    hill2: document.querySelector('[data-testid="path-hill-2"]')!.getBoundingClientRect().left,
+    cloud: document.querySelector('[data-testid="path-cloud"]')!.getBoundingClientRect().left,
+    rail: document.querySelector('.staircase-rail')!.getBoundingClientRect().left,
+  }));
+  const cameraMove = after.camera - before.camera;
+  const hill1Move = before.hill1 - after.hill1;
+  const hill2Move = before.hill2 - after.hill2;
+  const cloudMove = before.cloud - after.cloud;
+  const cardMove = before.rail - after.rail;
+  expect(cardMove).toBeGreaterThan(hill1Move);
+  expect(hill1Move).toBeGreaterThan(hill2Move);
+  expect(hill2Move).toBeGreaterThan(cloudMove);
+  expect(hill1Move).toBeLessThan(cameraMove);
   await page.keyboard.press('Home');
   await expect(scene).toHaveAttribute('data-camera-x', '0');
 

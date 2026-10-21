@@ -1,8 +1,41 @@
-/* E-01 v2-terraces. Sky color, parallax ratios, and platform curves are candidates. */
+/* E-01 v2-terraces. Sky color is still a candidate. Parallax speed comes from the track. */
 .course-path:has(.staircase-viewport) {
   max-width: none;
-  padding: 16px 0 0;
+  margin: 0;
+  padding: 0;
+  height: 100dvh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: #58a8e8;
+}
+.course-path:has(.staircase-viewport) > .course-level-tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.course-path:has(.staircase-viewport) .course-path__header {
+  flex: 0 0 auto;
+}
+.course-path:has(.staircase-viewport) .course-level-panel,
+.course-path__main:has(.staircase-viewport) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.course-path:has(.staircase-viewport) .course-candidate {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 .course-path:has(.staircase-viewport) > .course-path__bar {
   margin-inline: clamp(16px, 3vw, 32px);
@@ -20,8 +53,10 @@
   position: relative;
   isolation: isolate;
   box-sizing: border-box;
+  flex: 1 1 auto;
   width: 100%;
-  height: clamp(460px, calc(100dvh - 235px), 850px);
+  min-height: 0;
+  height: auto;
   overflow: hidden;
   touch-action: none;
   user-select: none;
@@ -117,9 +152,9 @@
   box-shadow:0 6px 20px rgba(19,53,71,.08);
 }
 .staircase-viewport .course-nodes :is(.course-unit,.course-intro,.course-goal,.unit-milestone) {
-  background:#fff9f2;
+  background: var(--ba-writing-unit-paper-surface, #fff9f2);
   color:var(--ba-color-content-primary);
-  border-color:#dcc3ab;
+  border-color: var(--ba-writing-unit-paper-border, #dcc3ab);
 }
 .path-sky,
 .path-layer {
@@ -132,10 +167,7 @@
   background: #58a8e8;
 }
 .path-cloud {
-  /* The puff sits in the middle of the square. Shift it into the open upper sky. */
-  top: -56px;
-  left: 28px;
-  width: min(280px, 34vw);
+  /* Size and position are set from the cloud puff and the hill-1 ridge. */
 }
 .path-cloud img,
 .path-hill img {

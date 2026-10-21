@@ -33,28 +33,75 @@ export function cameraForStep(index: number, viewportWidth: number, count: numbe
   return clamp(index * STEP_GAP + CARD_WIDTH / 2 - viewportWidth / 2, 0, maxX);
 }
 
-const PARALLAX = { cloud: 0.12, hill2: 0.4, hill1: 0.72 } as const;
-const HILL_RATIO = 656 / 1568;
+const HILL_WIDTH = 1568;
+const HILL_HEIGHT = 656;
+const CLOUD_SIZE = 1024;
+/** Opaque puff of cloud.png, and the first solid ridge of hill-1-foreground.png. */
+const CLOUD_PUFF = { top: 310, bottom: 692, left: 120, right: 912 };
+const HILL_RIDGE_TOP = 280;
 const SKY = '#58A8E8';
 
+export function trackLength(count: number): number {
+  return Math.max(0, (count - 1) * STEP_GAP + CARD_WIDTH);
+}
+
+export function cameraMaxTravel(count: number, viewportWidth: number): number {
+  return Math.max(0, trackLength(count) - Math.max(0, viewportWidth));
+}
+
 /**
- * Shared hill frame for the opening view.
- * The ridges sit on the left and right of the PNG, with a transparent valley between.
- * A frame much wider than the stage, left-aligned, hides those ridges. Keep the
- * panorama just wider than the stage and center it. The card cameraY is a rail
- * offset and must not move these layers. Ground stays on the bottom edge.
+ * Shared 1568×656 frame. Height is the stage, so the art is fully visible with
+ * its ground on the stage bottom. Width follows that aspect. No scale multiplier.
  */
-export function hillFrame(viewportWidth: number, viewportHeight: number): { width: number; height: number } {
-  const width = Math.max(320, Math.round(Math.max(viewportWidth, 1) * 1.08));
-  const height = Math.max(120, Math.round(width * HILL_RATIO));
+export function hillFrame(stageHeight: number): { width: number; height: number } {
+  const height = Math.max(1, Math.round(stageHeight));
+  const width = Math.max(1, Math.round(height * (HILL_WIDTH / HILL_HEIGHT)));
   return { width, height };
 }
 
-/** Vertical scenic travel follows the rail, then clips so the ground stays in the stage. */
-export function scenicTravelY(ratio: number, cameraY: number, restY: number, viewportHeight: number): number {
-  const raw = ratio * (cameraY - restY);
-  const limit = Math.max(16, viewportHeight * 0.22) * Math.max(ratio, 0);
-  return clamp(raw, -limit, limit);
+export type ScenicSpeeds = {
+  sky: number;
+  cloud: number;
+  hill2: number;
+  hill1: number;
+  cards: number;
+};
+
+/**
+ * Horizontal speeds from the node count, track length, and camera max travel.
+ * Cards stay on the camera. Sky is the full-bleed stage color, so it does not travel.
+ * A hill can move at most (frame width − viewport) / camera max and still cover the stage.
+ * That cover speed is also capped by camera max / track length, which is below card speed.
+ * Each step farther from the cards keeps that same track share: hill 1, then hill 2, then cloud.
+ */
+export function scenicSpeeds(count: number, viewportWidth: number, frameWidth: number): ScenicSpeeds {
+  const track = trackLength(count);
+  const maxTravel = cameraMaxTravel(count, viewportWidth);
+  const cards = 1;
+  const sky = 0;
+  if (track <= 0 || maxTravel <= 0) return { sky, cloud: 0, hill2: 0, hill1: 0, cards };
+  const slack = Math.max(0, frameWidth - viewportWidth);
+  const cover = slack / maxTravel;
+  const share = maxTravel / track;
+  const hill1 = Math.min(cover, share);
+  const hill2 = hill1 * share;
+  const cloud = hill2 * share;
+  return { sky, cloud, hill2, hill1, cards };
+}
+
+/** Place the cloud square so its opaque puff sits in the sky above the hill-1 ridge. */
+export function cloudPlacement(stageHeight: number, viewportWidth: number): { size: number; top: number; left: number } {
+  const ridgeY = Math.max(0, stageHeight) * (HILL_RIDGE_TOP / HILL_HEIGHT);
+  const puffSpan = (CLOUD_PUFF.bottom - CLOUD_PUFF.top) / CLOUD_SIZE;
+  const size = puffSpan > 0 ? ridgeY / puffSpan : 0;
+  const top = ridgeY - size * (CLOUD_PUFF.bottom / CLOUD_SIZE);
+  const puffCenter = (CLOUD_PUFF.left + CLOUD_PUFF.right) / 2 / CLOUD_SIZE;
+  const left = viewportWidth / 2 - size * puffCenter;
+  return { size, top, left };
+}
+
+function speedAttr(speed: number): string {
+  return String(Math.round(speed * 1e6) / 1e6);
 }
 
 /** v2-terraces stage. The product supplies nodes and every navigation gate. */
@@ -83,13 +130,6 @@ export function StaircaseScene({
   const cameraYRaw = ANCHOR_BASE_Y + (count - 1 - visibleIndex) * rise - view.height * 0.7; // Follow anchor line, not card center.
   const railHeight = Math.max(460, pedestalAnchorY(0, count, rise) + 120);
   const cameraY = clamp(cameraYRaw, 0, Math.max(0, railHeight - view.height));
-  const restX = cameraForStep(focusIndex, view.width, count);
-  const restVisible = (restX + view.width / 2 - CARD_WIDTH / 2) / STEP_GAP;
-  const restY = clamp(
-    ANCHOR_BASE_Y + (count - 1 - restVisible) * rise - view.height * 0.7,
-    0,
-    Math.max(0, railHeight - view.height),
-  );
   const cameraXRef = useRef(boundedX);
   cameraXRef.current = boundedX;
   const metricsRef = useRef({ width: view.width, maxX, slope, count });
@@ -175,23 +215,20 @@ export function StaircaseScene({
     '--rail-height': String(railHeight) + 'px',
     transform: 'translate3d(' + (-boundedX) + 'px, ' + (-cameraY) + 'px, 0)',
   } as CSSProperties;
-  const layer = (ratio: number): CSSProperties => ({
-    transform:
-      'translate3d(' +
-      -ratio * boundedX +
-      'px, ' +
-      scenicTravelY(ratio, cameraY, restY, view.height) +
-      'px, 0)',
+  const frame = hillFrame(view.height);
+  const speeds = scenicSpeeds(count, view.width, frame.width);
+  const cloudBox = cloudPlacement(view.height, view.width);
+  const hillBox = (speed: number): CSSProperties => ({
+    width: frame.width,
+    height: frame.height,
+    left: -speed * boundedX,
+    bottom: 0,
   });
-  const hillBox = (ratio: number): CSSProperties => {
-    const frame = hillFrame(view.width, view.height);
-    const centered = Math.round((view.width - frame.width) / 2 - ratio * boundedX);
-    return {
-      width: frame.width,
-      height: frame.height,
-      left: centered,
-      transform: 'translate3d(0, ' + scenicTravelY(ratio, cameraY, restY, view.height) + 'px, 0)',
-    };
+  const cloudStyle: CSSProperties = {
+    width: cloudBox.size,
+    height: cloudBox.size,
+    top: cloudBox.top,
+    left: cloudBox.left - speeds.cloud * boundedX,
   };
 
   return (
@@ -205,6 +242,8 @@ export function StaircaseScene({
       data-anchor-basis="pedestal-y"
       data-dragging={dragging ? 'true' : 'false'}
       data-sky={SKY}
+      data-track-length={trackLength(count)}
+      data-camera-max={Math.round(maxX)}
       role="region"
       tabIndex={0}
       aria-label={locale === 'zh' ? '斜向课程阶梯：方向键浏览，Home 和 End 前往两端' : 'Diagonal lesson staircase: arrow keys navigate; Home and End reach the ends'}
@@ -214,14 +253,14 @@ export function StaircaseScene({
       onPointerCancel={pointerUp}
       onKeyDown={keyDown}
     >
-      <div className="path-sky" data-testid="path-sky" data-parallax="0" aria-hidden="true" />
-      <div className="path-layer path-cloud" data-testid="path-cloud" data-parallax={PARALLAX.cloud} style={layer(PARALLAX.cloud)} aria-hidden="true">
+      <div className="path-sky" data-testid="path-sky" data-parallax={speedAttr(speeds.sky)} aria-hidden="true" />
+      <div className="path-layer path-cloud" data-testid="path-cloud" data-parallax={speedAttr(speeds.cloud)} style={cloudStyle} aria-hidden="true">
         <img src="/path/v2-terraces/cloud.png" alt="" width={1024} height={1024} />
       </div>
-      <div className="path-layer path-hill path-hill-2" data-testid="path-hill-2" data-parallax={PARALLAX.hill2} style={hillBox(PARALLAX.hill2)} aria-hidden="true">
+      <div className="path-layer path-hill path-hill-2" data-testid="path-hill-2" data-parallax={speedAttr(speeds.hill2)} style={hillBox(speeds.hill2)} aria-hidden="true">
         <img src="/path/v2-terraces/hill-2-mid.png" alt="" width={1568} height={656} />
       </div>
-      <div className="path-layer path-hill path-hill-1" data-testid="path-hill-1" data-parallax={PARALLAX.hill1} style={hillBox(PARALLAX.hill1)} aria-hidden="true">
+      <div className="path-layer path-hill path-hill-1" data-testid="path-hill-1" data-parallax={speedAttr(speeds.hill1)} style={hillBox(speeds.hill1)} aria-hidden="true">
         <img src="/path/v2-terraces/hill-1-foreground.png" alt="" width={1568} height={656} />
       </div>
       <div className="staircase-rail" data-parallax="1" style={style}>

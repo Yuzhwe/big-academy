@@ -232,7 +232,8 @@
    * implementation candidates pending rendered designer approval. Scoped to
    * Writing composition; NOT a replacement for global shared component defaults. */
   /* E-01 path art is v2-terraces under apps/writing/public/path/v2-terraces/.
-   * Sky color and parallax ratios are [E] candidates in DESIGN.md, pending Joe Approved.
+   * Sky color is an [E] candidate in DESIGN.md, pending Joe Approved.
+   * Parallax speed is the normative rule in DESIGN.md.
    * Lesson-platform grass values below are the per-node platform candidate, not the mountain PNGs. */
   --ba-writing-staircase-default-theme: landscape; /* [A] semantic identifier */
   --ba-writing-landscape-grass-top: #d7eb86; /* [E] lesson platform */
