@@ -7,6 +7,8 @@ import { LessonWorkspace } from '../components/writing/LessonWorkspace';
 import { LessonActivityExtras } from '../components/writing/LessonActivityExtras';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
+import { StairUnitCard } from '../components/writing/StairUnitCard';
+import { StairLevelIntroCard } from '../components/writing/StairLevelIntroCard';
 import alexHtml from '../../source/alex-original.html?raw';
 import { CourseSession } from '../product/courseSession';
 import './course.css';
@@ -117,29 +119,14 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             if (node.kind === 'intro') {
               return (
                 <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
-                  <p className="course-intro" data-testid="level-intro">
-                    {node.intro}
-                  </p>
+                  <StairLevelIntroCard text={node.intro ?? ''}/>
                 </li>
               );
             }
             if (node.kind === 'unit' && node.unit) {
               return (
                 <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
-                  <section className="course-unit" data-testid="unit" data-unit={node.unit.id}>
-                    <p className="course-kicker">
-                      {zh ? `第 ${node.unit.index} 单元` : `Unit ${node.unit.index}`} · {node.unit.typeLabel}
-                    </p>
-                    <h2>{node.unit.title}</h2>
-                    <p>{node.unit.meta}</p>
-                    {node.unit.goals.length ? (
-                      <ul>
-                        {node.unit.goals.map((goal) => (
-                          <li key={goal}>{goal}</li>
-                        ))}
-                      </ul>
-                    ) : null}
-                  </section>
+                  <StairUnitCard unit={node.unit} locale={session.locale} status={session.unitDone(node.unit.id)?'done':node.unit.id===session.playUnit().id?'current':'locked'}/>
                 </li>
               );
             }
