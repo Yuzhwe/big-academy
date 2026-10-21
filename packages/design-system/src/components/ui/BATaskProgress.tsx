@@ -31,6 +31,7 @@ export function ActivityScreenIndicator({task,number,selected,compact=false,canE
     onPress={onPress}
   >
     <span className="ba-activity-indicator__circle" aria-hidden="true">{number}</span>
+    {task.status==='skipped'?<span className="ba-activity-indicator__caption">{copy.status.skipped}</span>:null}
     {(task.status==='done'||task.status==='locked')?<span className="ba-activity-indicator__badge" aria-hidden="true">
       <BAIcon name={task.status==='done'?'check':'lock'} size={12}/>
     </span>:null}
