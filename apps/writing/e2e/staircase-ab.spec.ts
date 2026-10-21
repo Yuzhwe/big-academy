@@ -9,7 +9,7 @@ for (const variant of ['A', 'B'] as const) {
     test.setTimeout(60_000);
     mkdirSync(evidenceDir, { recursive: true });
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/?explore=1');
     const scene = page.locator('.staircase-viewport');
 
     await page.getByRole('button', { name: new RegExp('^' + variant + ' ·') }).click();
@@ -34,8 +34,7 @@ for (const variant of ['A', 'B'] as const) {
     await scene.focus();
     await page.keyboard.press('Home');
     // Permission checks belong to the course session, not this A/B visual switch.
-    await page.locator('[data-lesson-focus="G2-O:2"]').click();
-    await expect(page.getByTestId('locked-note')).toContainText(/Lesson 1/);
+    await expect(page.locator('[data-lesson-id="G2-O:2"] .ba-button')).toBeDisabled();
     await expect(page).toHaveURL(/\/$/);
 
     await page.setViewportSize({ width: 834, height: 1112 });
@@ -49,7 +48,7 @@ for (const variant of ['A', 'B'] as const) {
 for (const variant of ['A', 'B'] as const) {
   test('card height never moves anchor / platform Y — ' + variant, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/?explore=1');
     await page.getByRole('button', { name: new RegExp('^' + variant + ' ·') }).click();
     const viewport = page.locator('.staircase-viewport');
     await expect(viewport).toHaveAttribute('data-anchor-basis', 'pedestal-y');
@@ -72,7 +71,7 @@ for (const variant of ['A', 'B'] as const) {
 }
 
 test('desktop and 834: one row header with geometrically centered accessible Level Tablist', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/?explore=1');
   for (const width of [1440, 834]) {
     await page.setViewportSize({ width, height: width === 1440 ? 900 : 1112 });
     const header = page.locator('.course-path__header');
