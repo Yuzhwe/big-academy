@@ -20,7 +20,7 @@ describe('component registry', () => {
     expect(byId['BA-WR-001']?.status).not.toBe('validated');
     for (const id of ['BA-WR-002', 'BA-WR-005', 'BA-WR-006']) {
       expect(byId[id]?.status).toBe('implemented');
-      expect(byId[id]?.visualStatus).toBe('candidate-warm-frame');
+      expect(byId[id]?.visualStatus).toBe('R2-candidate-pending-review');
       expect(byId[id]?.status).not.toBe('validated');
     }
     const implemented = new Set([
