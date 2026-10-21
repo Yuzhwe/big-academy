@@ -1003,6 +1003,91 @@ export class CourseSession {
     this.next();
   }
 
+
+  /** P4 ordered word cards; wrong taps do not use a grading attempt. */
+  chooseBuild(cellIndex:number):void {
+    const screen=this.screens[this.state.screen]?.screen;
+    if(screen?.kind!=='task'||!screen.task)return;
+    const task=this.task(screen.task);
+    if(task.type!=='build')return;
+    const progress=this.taskState(this.taskKey(screen));
+    if(progress.status!=='open')return;
+    const cell=task.cells?.[cellIndex];
+    const chosen=typeof cell==='string'?cell:cell?.t;
+    if(!chosen)return;
+    progress.built=progress.built??[];
+    const target=task.target??[];
+    if(task.in_order && chosen!==target[progress.built.length]){
+      progress.misses=(progress.misses??0)+1;
+      if(progress.misses%3===0)this.feedback=this.text(task.why)||'Look at the next word.';
+      this.save();this.emit();return;
+    }
+    progress.misses=0;
+    progress.built.push(chosen);
+    if(progress.built.length>=target.length) {
+      const composed=progress.built.reduce((text,value)=>this.engine.smartInsert(text,text.length,text.length,value,/^[.!?]/.test(value)?'mark':'phrase').value,'');
+      progress.tries++;
+      if(this.engine.norm(composed).toLowerCase()===this.engine.norm(task.answer_text??'').toLowerCase() || JSON.stringify(progress.built)===JSON.stringify(target)){
+        this.finish(task,this.taskKey(screen),'done');return;
+      }
+      if(progress.tries>=2){this.finish(task,this.taskKey(screen),'shown');return;}
+      progress.built=[];
+      this.feedback=this.text(task.why);
+    }
+    this.save();this.emit();
+  }
+  resetBuild():void {
+    const screen=this.screens[this.state.screen]?.screen;
+    if(!screen?.task)return;
+    const item=this.taskState(this.taskKey(screen));
+    if(item.status==='open'){item.built=[];this.save();this.emit();}
+  }
+  setWriting(value:string):void {
+    const screen=this.screens[this.state.screen]?.screen;
+    if(!screen)return;
+    if(screen.kind==='apply'){
+      const a=this.applyState(screen.page);if(a.passed||a.moveOn)return;
+      a.text=value;
+    }else if(screen.task){
+      const p=this.taskState(this.taskKey(screen));if(p.status!=='open')return;p.text=value;
+    }
+    this.save();this.emit();
+  }
+  private checkPracticeWriting(task:AlexTask,key:string):void {
+    const progress=this.taskState(key);
+    if(progress.status!=='open')return;
+    const result=gradeProduction(task,progress.text??task.start??'',this.engine);
+    progress.tries++;
+    if(result.correct){this.finish(task,key,'done');return;}
+    if(progress.tries>=2){this.finish(task,key,'shown');return;}
+    this.feedback=this.zh?(result.zh??result.explanation):result.explanation;
+    this.save();this.emit();
+  }
+  private applyState(id:string):ApplyState {
+    return this.state.applies[id]??(this.state.applies[id]={text:'',checks:0,passed:false});
+  }
+  private applyPrimary():void {
+    const screen=this.screens[this.state.screen].screen;
+    const a=this.applyState(screen.page);
+    const task=this.task(this.pageOf(screen.page)?.task??screen.page);
+    if(a.checks>=(task.continue_after??2)){
+      a.moveOn=true;this.state.done[screen.page]=true;
+      this.feedback=this.zh?'你可以先继续，之后回来修改。':'You can move on for now and return later.';
+      this.save();this.emit();return;
+    }
+    const words=a.text.match(/[A-Za-z0-9']+/g)??[];
+    const cjk=(a.text.match(/[\u3400-\u9fff]/g)??[]).length;
+    if(words.length<3||cjk/Math.max(1,a.text.length)>.3){
+      this.feedback=this.zh?'先多写一些英文句子。':'Write a little first, in English.';
+      this.emit();return;
+    }
+    a.checks++;
+    a.result=gradeApply(a.text);
+    if(a.result.correct){a.passed=true;this.state.done[screen.page]=true;this.feedback=this.zh?'很好，三个主题句都满足要求。':'Your three topic sentences meet the criteria.';}
+    else this.feedback=a.result.checks.find(x=>!x.passed)?.tip??'Check your sentences.';
+    this.log('apply_checked',{passed:a.passed,checks:a.checks});
+    this.save();this.emit();
+  }
   pick(index: number): void {
     const screen = this.screens[this.state.screen]?.screen;
     if (!screen?.task) return;
