@@ -3,11 +3,11 @@
 **Edition:** Canonical product specification v1 · 2026-10-21
 **Authority:** current Writing product behavior, curriculum content and learning state contracts.
 **Scope:** Writing L2 / G2-O / Lesson 1, eight Activity Screens; other templates are documented for system compatibility.
-**Status:** product behavior retained; R3 visual concepts require designer rendered approval.
+**Status:** current product behavior documented; selected visual concepts require separate rendered approval.
 
 ## How to use this specification
 
-This is the sole active Writing PRODUCT.md. Section headings are topical rather than a historical change log. No R1/R2/R3 review overlay has authority outside this current specification. Design properties and visual tokens are defined in root DESIGN.md and tokens.css; use Component Contracts for component interfaces. Preserve authored tasks, answer validators, retry/shown/skip/assessment logic and saved state. New agents must not substitute generic “correct → next” flow for the template-specific gates below.
+This is the sole active Writing PRODUCT.md. Chapters describe the current system, not historical review overlays. Design properties and visual tokens are defined in root DESIGN.md and tokens.css; use Component Contracts for component interfaces. Preserve authored tasks, answer validators, retry/shown/skip/assessment logic and saved state. New agents must not substitute generic “correct → next” flow for the template-specific gates below.
 
 ## 1. Product context
 
@@ -399,14 +399,14 @@ Acceptance for this lesson:
 - **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, P7 assessment, saved answers, resume, Start/Continue/Review/Locked, keyboard/touch and reduced-motion behavior. The Writing demonstration remains eight Activity Screens.
 - **E-01 full-bleed stage:** landscape sky / distant peaks / hills / trees / clouds / subtle plane + parallax is the sole default presentation; no residual beige header/footer bands may occlude the scene. Level navigation and language selector remain usable above scenery without overlapping nodes. Background never captures pointer events or course state.
 - **Camera visibility:** drag, wheel, keyboard, Home and End must reach complete visible first/last nodes, including card bounds, decorative terraces, sticky header and viewport padding; no unreachable clipped upper-right or lower-left cards.
-- **Terrace:** choose the **Layered Landscape Terrace** family (2–3 shallow rounded grass/landform layers). Retire high translucent rectangular vertical pillars. Preserve Lesson card bottom anchors and existing path navigation geometry. Terrace colors/curves are R3 design candidates, not yet approved numeric specifications.
+- **Terrace:** choose the **Layered Landscape Terrace** family (2–3 shallow rounded grass/landform layers). Retire high translucent rectangular vertical pillars. Preserve Lesson card bottom anchors and existing path navigation geometry. Terrace colors/curves are design candidates, not yet approved numeric specifications.
 - **Lesson state:** choose **Number Seal + Attached Symbol**. Lesson number remains dominant; attached small status icon encodes current, completed or locked. Do not restore giant colored status capsules or redundant You're here / Finish prior unit captions. Accessible status descriptions remain; actual state gates do not change. Exact final icon geometry is a designer review candidate.
 - **Unit fold:** folded face must be a continuous rounded corner integrated with the card's outer edge; no detached corner triangle or inner decorative border crossing the folded region. Decorative folded state is not an interactive target.
 - **Lesson card:** title uses exactly two reserved line boxes, 2-line truncation with accessible full title; estimated duration directly below title as number + localized unit, left aligned. CTA uses shared BAButton (height 70px), all approved hover/pressed/focus and reduced motion states. Outer/inner radius follows concentric relation rather than independent unrelated values.
 - **Activity hierarchy:** one primary separation treatment per structural boundary (surface OR stroke OR divider unless independently justified). Right-column action footer no longer draws its own filled panel or redundant divider; it remains pinned below independently scrolling Coach. Primary and Previous fill footer width at 1:2 with 8px gap and 70px heights. Quiet neutral container strokes must not obscure interactive focus/graded borders. Decrease gaps between peer content containers by one existing spacing scale step; do not tighten line-height or hit targets.
 - **TopBar:** keep title/meta and centered ActivityScreenIndicator shared with the anchored full-screen Popover. Icon Back to Staircase remains 50×50. P7's internal question count is distinct from top eight Activity Screen indicators.
 - **P2:** differentiate Not yet vs Better; Better is instructional emphasis, never a checked practice success event.
-- **Visual authority:** backdrop appearance originates from the user-supplied E01-landscape-backdrop-prompt.md visual record, baseline commit 913dbfe on feat/writing-hifi-r1-593dee37. That historical implementation requested R1 as default; **this instruction is superseded**: in R3 landscape is default. The recorded grass terrace is a useful source, but the new R3 terrace family must not be forced to reproduce the old geometry unchanged.
+- **Visual source:** the landscape appearance is recorded in the E01-landscape-backdrop source at commit 913dbfe; DESIGN.md specifies the current default and controls terrace changes. Historical implementation toggles do not determine current product behavior.
 
 ## 14. Lesson TopBar and footer actions
 
@@ -474,8 +474,8 @@ The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribb
 
 ## 19. Open product decisions
 
-- R3 landscape is the E-01 default; old warm-brown gradient and old pillar-based terrace are historical, not alternative default requirements.
-- R1 Choice treatments including approximately 40% non-answer dimming require accessibility contrast review. Shake and audio cues remain optional candidates and cannot change gates.
+- Landscape is the E-01 default; the former brown gradient and pillar-based terrace are not valid current requirements.
+- Non-answer dimming treatments, including the 40% candidate, require accessibility contrast review. Shake and audio cues remain optional candidates and cannot change gates.
 - Exact static artwork for the reduced-motion success state.
 - If a milestone becomes incomplete (for example after a failed Check revokes a skip) and later becomes complete again, whether that return auto-plays is not decided. Do not add a new celebration for that case.
 - Level Goal stays the next-level label. A scored Level Goal formula is not part of this product.
