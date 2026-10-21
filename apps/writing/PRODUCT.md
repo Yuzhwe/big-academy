@@ -366,33 +366,119 @@ Lessons are re-counted after a skip. A lesson whose own remaining minutes are 0 
 
 **Lesson break.** End of lesson shows how many screens in the lesson are complete, names the next lesson and its minutes, and offers **Stop for today**, **Back to my path**, and **Keep going**. Stop for today and Back to my path both set the resume screen to the start of the next lesson. Keep going opens that screen. The stopped view says the work is saved on this device and offers a return to the path. Starting the next lesson clears the stopped flag and shows Welcome back once.
 
-## 12. Lesson 1 authored eight-screen slice
+## 12. Lesson 1 — eight authoritative per-Activity contracts
 
-Build this lesson in this order. Screen ids are stable.
+**Scope:** L2 / G2-O / Lesson 1, Topic sentences. These eight records are the only required Lesson 1 Activity Screens. The table below is a **routing index**, not a substitute for the item contracts. The screen, task, and authored options are grounded in `apps/writing/source/alex-original.html` at source blob `c06c8db7317092f081febcebc9eb70979d357c11`. Template-specific behavior follows chapters 5, 7, 9–10; each entry below gives exact fixture values, state transitions and acceptance. Design visual treatment is normatively specified in root `DESIGN.md` section **Writing Activity layout variants**. Component IDs refer to the component registry, not necessarily implemented components; “planned” components must not be mistaken for usable current production code.
 
-| # | Screen | Template | Prompt the learner works from | Answer | Check and completion |
-| --- | --- | --- | --- | --- | --- |
-| 1 | `L2-04.learn` | P2 rule pair | Teach sentence, weak/strong pair, hamburger | None | Next is open. Skip offer only if this skill is at practice or writing, per [skill skip](#11-skill-skip-and-lesson-boundary). |
-| 2 | `L2-04.t.ts1` | P3 single list | “Which one is a good topic sentence for a school garden?” | B. A “Gardens have plants.” B “Our school should have a garden for two big reasons.” C “I like flowers.” | Select, then Check. Two-try reveal. |
-| 3 | `L2-04.t.ts4` | P3 passage, one word | “Tap a word that tells you this is an opinion.” Passage: “I believe our class should get a pet fish.” | “believe” or “should” | Select one word, then Check. Two-try reveal. |
-| 4 | `L2-04.t.ts3` | P3 multi list | “Tap every opinion.” | A, C, and E (indexes 0, 2, 4). A Dogs are the best pets for families. B Many families have dogs. C In my opinion, every kid should learn to swim. D The pool opens at 9:00. E School lunch should have more fruit. F Lunch is at noon. | Toggle any set, then Check. “Choose 3.” Two-try reveal. Not a radio group. |
-| 5 | `L2-04.t.ss.L2-04` | P4 ordered build | “Build this topic sentence with the grid, one word at a time: Our school should have a garden for two big reasons.” Cards, in required order: our / school / should / have / a / garden / for / two / big / reasons / . | That same sentence | No Check button. A wrong card shakes and does not insert. The third miss in a row shows the reason and pulses the next card. A full line is one try. The second wrong full line reveals the sentence. |
-| 6 | `L2-04.t.ts8` | P4 frame fill | “Finish my sentence about recess.” Frame: “In my opinion, recess should ___ because ___.” | Keep the frame words. First blank ≥ 2 words. Second blank ≥ 3 words. The reason must not be only a vague “good/nice/fun…”. | Check, or the two-try reveal. A leftover `___` fails before the frame test. |
-| 7 | `L2-04.apply` | P5 apply | “Write 3 different topic sentences for: Should our school have a garden? Put each one on a new line.” | All four criteria in [Apply](#p5-write--check-my-writing-or-hand-in) | **Check my writing.** Pass completes the screen. Two failed checks unlock **Move on for now**, which completes it without a pass. |
-| 8 | `L2-04.check` | P7 | Four questions, attempt sets in [P7](#p7-check--answer-all-questions-then-hand-in). Writing prompt and rules in [Graders](#10-grading-and-correctness). | Pass = at least 2 of 3 auto items and the writing item | **Next question**, then **Hand in my check**. Blanks warn once. Fail → **Try a new set**. The screen completes on a pass or on the hand-in of the second set. Footer then becomes **End of lesson**. |
+### 12.1 Stable identity and template / variant routing
 
-Top-bar chips for this lesson are these eight screens, states `done`, `current`, `available`, `locked`, `skipped`. P7’s four questions are not chips.
+| # | Screen ID | Template ID | Layout Variant ID (canonical) | Required component responsibilities |
+| --- | --- | --- | --- | --- |
+| 01 | `L2-04.learn` | P2 | `P2.rule-pair.hamburger` | BA-WR-001 TopBar, BA-WR-002 Workspace, BA-WR-004 HamburgerLayer |
+| 02 | `L2-04.t.ts1` | P3 | `P3.list.option.single` | BA-UI-003 BAChoice (single) + feedback status + BAButton |
+| 03 | `L2-04.t.ts4` | P3 | `P3.passage.word.single` | Word-token selection adapter + feedback status + BAButton |
+| 04 | `L2-04.t.ts3` | P3 | `P3.list.option.multi` | BA-UI-003 BAChoice (multiple) + feedback status + BAButton |
+| 05 | `L2-04.t.ss.L2-04` | P4 | `P4.build.word.guided-order` | BA-WR-003 WordGrid + read-only build bench + feedback |
+| 06 | `L2-04.t.ts8` | P4 | `P4.fill.chunks.frame` | BA-WR-003 WordGrid + editable frame/field + feedback |
+| 07 | `L2-04.apply` | P5 | `P5.write.constraint-apply` | Writing canvas + Coach semantic feedback + BAButton |
+| 08 | `L2-04.check` | P7 | `P7.assessment.3-auto-1-writing` | Internal question pager + choice/write variants + BAButton |
 
-Acceptance for this lesson:
+**Global shell mapping:** all eight use `BA-WR-001` and `BA-WR-002`; activity status/progress maps to `BA-UI-006`; action controls use `BA-UI-001`; contextual semantic feedback maps to `BA-UI-007` (planned foundation). `BA-UI-005` is the popover foundation for the Activity Screen list (planned). Product-specific word selection, build bench, text editor and P7 pager have no separate approved reusable Component ID yet: treat as internal template composites, **not** as new imaginary shared components. Component existence/status is controlled by `components.json`. Screen 8 has four internal questions but contributes only **one** TopBar Activity Screen.
 
-1. The eight ids appear in the order above, and only these eight are required for the build.
-2. A correct practice item shows its success feedback and only then enables Next.
-3. A first miss on screens 2–6 stays on the screen with retry feedback and does not enable Next. A second miss reveals, credits 0, and enables Next.
-4. Screen 4 accepts a partial set without grading until Check, and does not behave as single-select.
-5. Screen 5 does not grade on a wrong card. Screen 7 does not show a correct stamp when the learner uses Move on.
-6. Screen 8 does not grade until Hand in, warns once on blanks, and uses the 2-of-3-plus-writing rule.
-7. Back, leaving to E-01, and re-entering restore selections, text, tries, Check progress, and screen position as in [Save, Back, leave, and return](#6-navigation-and-persistence).
-8. Keyboard selection, visible focus, and non-color state labels work on the choice and word tasks. Reduced motion does not block a gate.
+### 12.2 Shared activity state machine and persistence
+
+1. **Entry:** an unlocked Activity Screen opens with previously saved response and attempt status, if any; untouched practice is `open`. Screen 1 is read-only and can advance without grading. TopBar `selected` is a navigation state, independent of `done/shown/skipped`.
+2. **Answer editing:** selection/tap/typing changes the working response only; it does not check, add attempts, emit correctness feedback, unlock the next Activity Screen or celebrate. Existing validated result remains until the learner explicitly checks again in templates that support revisions.
+3. **Check action:** only the template's authorized gesture runs the grader. For practice P3/P4 first wrong → `open` plus retry/feedback, next screen locked. Second wrong → `shown` with authored solution and zero credit, next screen available. Correct → `done` plus success feedback and then Next. For ordered Build, **each wrong card tap is not a full-line grading try**; see Screen 05.
+4. **P5 Apply:** two failed completed submissions allow `Move on for now`; no success grade is invented. **P7 Check:** internal question edits and Next question do not grade; only Hand in grades the whole assessment; the second submitted set can finish without mastery.
+5. **Exit/Back/refresh/reentry:** preserve response selections, text, tries, wrong marks, hints, per-question P7 answers/index, completion and reveal state in the canonical state record (chapter 6). No separate UI-only progress store. Keyboard, touch, focus and reduced motion may alter presentation, never these gates.
+6. **Footer:** first Activity Screen Previous is disabled by current PRODUCT contract; the separate TopBar Back returns to E-01. In P7 the internal pager uses question navigation; its Back is not a new Lesson activity step. Never make every screen “correct → Next”.
+
+### 12.3 Screen 01 — Learn · `L2-04.learn`
+
+- **Identity:** skill `L2-04`; `kind=learn`; `template=P2`; `variant=P2.rule-pair.hamburger`; `params.body=rule_pair`, `diagram=hamburger`, `skip_offer=true` from authored source.
+- **Authored teaching:** “A topic sentence tells the topic and what you think.” Weak / Not yet example: “Gardens have plants.” Better example: “Our school should have a garden for two big reasons.” The hamburger/top bun explains topic + opinion; use the source's authored EN/ZH teaching strings.
+- **Interaction:** read-only instruction; no choice, Check, correctness badge or scoring. Next is available once this screen is seen / ready. P2 Better emphasis is pedagogical contrast, **not** a graded correct state.
+- **Skip offer:** only according to skill's eligibility `skipMode`, chapter 11; an offer or skip never runs on mere visual rendering.
+- **Persistence:** `seen` and authorized skip decision; no fabricated answer attempt.
+- **Acceptance:** screen 2 starts locked; learner can read and Next to it, or take a legitimately offered skill-skip route. Both EN/ZH teaching variants preserve the same meaning; no P2 success celebration.
+
+### 12.4 Screen 02 — Single Pick · `L2-04.t.ts1`
+
+- **Identity:** task `ts1`; `type=pick`; `template=P3`; `variant=P3.list.option.single`; params `layout=list,unit=option,pick=single,scored=auto`.
+- **Question:** “Which one is a good topic sentence for a school garden? Tap it.”
+- **Options in exact source order:** A (0) “Gardens have plants.”; B (1) “Our school should have a garden for two big reasons.”; C (2) “I like flowers.”
+- **Answer:** index `[1]`, B only. Use source Engine `choiceGrade`; do not infer correctness from option colors.
+- **Flow:** `open/no-choice` → select one radio-like row (`selected`, no grade) → Check enabled → correct: `done`, authored rationale and Next; first wrong: record try 1, mark selected wrong and clear it for retry, stay here; second wrong: `shown`, label B right answer and enable Next without credit.
+- **Feedback:** option-specific reason from authored `coach.options`; show Check feedback only after Check, not while selecting.
+- **Persistence:** selected index, wrong row marks, tries, status, revealed answer and feedback context.
+- **Acceptance:** selection of A does not unlock screen 3; after a failed Check the option can be changed; B correctly checked unlocks screen 3; second wrong reveals B but never pretends “correct”.
+
+### 12.5 Screen 03 — Tapword · `L2-04.t.ts4`
+
+- **Identity:** task `ts4`; `type=tapword`; `template=P3`; `variant=P3.passage.word.single`; params `layout=passage,unit=word,pick=single,scored=auto`; task `need=one`.
+- **Question and passage:** “Tap a word that tells you this is an opinion.” / “I believe our class should get a pet fish.”
+- **Answer:** precisely one chosen word matching **either** authored target `believe` or `should`; punctuation and word occurrence are interpreted through original `targets[].at` + occurrence rules. Two targets are alternatives, **not** two required selections.
+- **Flow:** no chosen word → tap an eligible token (only one current selection; tap selected word again to deselect) → Check → success: `done` with opinion-word reason; first wrong: `open` + word-specific authored feedback and retry; second wrong: `shown` with acceptable targets and Next, no credit.
+- **Persistence:** exact token index/target occurrence, tries, status and reveal; never save merely the display string when occurrences can be ambiguous.
+- **Acceptance:** both “believe” and “should” pass individually; “class” does not; pressing a word never grades or advances; keyboard token selection has a visible focus and equivalent Check.
+
+### 12.6 Screen 04 — Multi Pick · `L2-04.t.ts3`
+
+- **Identity:** `ts3`; `type=pick`, `multi=true`; `template=P3`; `variant=P3.list.option.multi`; `layout=list,unit=option,pick=multi`.
+- **Question:** “Some of these tell an opinion. Some are just facts. Tap every opinion.”
+- **Source options:** A (0) “Dogs are the best pets for families.”; B (1) “Many families have dogs.”; C (2) “In my opinion, every kid should learn to swim.”; D (3) “The pool opens at 9:00.”; E (4) “School lunch should have more fruit.”; F (5) “Lunch is at noon.”
+- **Answer:** set `{0,2,4}`, regardless of selection order. Exactly these three options. The source `choiceGrade` compares sorted indices; do not grade a correct partial set as fully correct.
+- **Flow:** checkbox-like independent toggles, `Choose 3 · k chosen` indicator, no grading until Check; first wrong retains selections and gives reason for one wrong option or “You found r of 3”; second wrong reveals A/C/E, sets `shown`, enables Next with no credit; correct Check sets `done`.
+- **Persistence:** selected index set, tries, wrong marks and answer-revealed state.
+- **Acceptance:** multi-select allows simultaneous A/C/E; no radio behavior, no auto-grade when the third option is selected, zero credit on forced reveal.
+
+### 12.7 Screen 05 — Guided Word Build · `L2-04.t.ss.L2-04`
+
+- **Identity:** task `ss.L2-04`; `type=build`; `template=P4`; `variant=P4.build.word.guided-order`; params `action=build,input=set,build_unit=word,order=guided,distractors=0`; `in_order=true`.
+- **Question:** “Build this topic sentence with the grid, one word at a time: ‘Our school should have a garden for two big reasons.’”
+- **Exact source `cells` and `target` order:** `our | school | should | have | a | garden | for | two | big | reasons | .`; authored `answer_text` “Our school should have a garden for two big reasons.”
+- **Flow:** WordGrid card press tries to append the next token in the fixed order. Correct next token appends and updates the bench without grading; wrong token is not inserted, triggers a brief nonblocking visual error and increments *consecutive wrong-token count* only. Third consecutive wrong token prompts the authored reason / emphasizes the correct next token. A completed full line evaluates as **one full-line try**, with correct result → `done` and Next. Wrong full line triggers per-template clear/reset feedback; second wrong full line reveals the authored sentence (`shown`, zero credit, Next).
+- **Actions:** no generic Check button; `Start again` empties assembled line without silently marking correct or changing awarded score.
+- **Persistence:** token sequence, wrong-token streak/tries and reveal status; revisit must restore the actual build sequence.
+- **Acceptance:** incorrect token never appears in bench; pressing a wrong token alone cannot consume both graded attempts; full target produces exact normalized answer and completion; reduced motion still gives textual wrong-next-token feedback.
+
+### 12.8 Screen 06 — Frame Fill · `L2-04.t.ts8`
+
+- **Identity:** task `ts8`; `type=write`, `template=P4`; `variant=P4.fill.chunks.frame`; params `action=fill,input=chunks,source=frame,scoring=rule+ai`.
+- **Question:** “Finish my sentence about recess. Fill each ___.”
+- **Printed frame:** `In my opinion, recess should ___ because ___.` Preserve prefilled text; two editable blanks remain distinguishable from fixed words.
+- **Rules from authored `frameFill`:** first blank `min_words=2`, second `min_words=3`, `vagueLast=true`. Sources also offer chunks such as `be longer`, `stay the same`, `kids need`, `time to run`, `and play`, `to rest their brains`. Do not treat source chunks as the only accepted free-writing responses unless the grader explicitly requires them.
+- **Flow:** fill or edit blank text using keyboard and permitted WordGrid insertion, then Check. An unfilled `___` fails early. Valid response must keep the frame, meet both minima, and provide a non-vague reason after because. Correct → `done` with authored feedback and Next; first wrong → feedback/retry; second wrong → `shown` with one model answer or diagnostic reason and Next without credit.
+- **Persistence:** fixed frame identity, both editable blank responses / typed source segments, attempts and result; focus and caret must not be lost when grid inserts.
+- **Acceptance:** a remaining blank never passes; too-short reason fails; accepting multiple meaningful reasons rather than one hardcoded phrase follows the source's rule-driven grader.
+
+### 12.9 Screen 07 — Apply Writing · `L2-04.apply`
+
+- **Identity:** `kind=apply`; `template=P5`; `variant=P5.write.constraint-apply`; params `purpose=apply,phase=draft,input=words,feedback=constraint,evidence=apply`.
+- **Question:** “Write 3 different topic sentences for: Should our school have a garden? Put each one on a new line.” Three distinct sentences, not one long paragraph. Coach repeats the garden topic and three different ways.
+- **Four criteria (all required):** ① at least three nonempty sentence/line chunks; ② at least three lines express an opinion and mention `garden`; ③ at least three lines mention `garden`; ④ three garden-opinion lines have pairwise similarity below 0.8. Use the existing source/PRODUCT chapter 9 offline criteria and fallback order; do not invent AI judgments or additional grading thresholds.
+- **Flow:** editable writing canvas, live nonscoring Coach guidance. Submissions shorter than 3 words or with more than 30% CJK text do **not** consume an attempt. `Check my writing` (subsequent `Check again`) submits only upon learner action, showing Reading… while awaiting response. Passing all criteria → screen completed, Next available; failed submission → diagnostic feedback and remain on screen. After two counted failed submissions, enable **Move on for now**; choosing it completes the screen **without passing**.
+- **Safety:** authored safety match directs learner to show teacher; no pass/completion. Never mistake live writing nudge, quote highlight or optimistic Coach copy for scoring.
+- **Persistence:** full draft, saved check result, attempt count, completed-with-pass versus completed-without-pass distinction, relevant feedback.
+- **Acceptance:** editing does not auto-grade; first failed submission cannot advance; second failure offers Move on but never paints a success badge or triggers correct-answer celebration; a genuine pass completes normally.
+
+### 12.10 Screen 08 — Mastery Check · `L2-04.check`
+
+- **Identity:** `kind=check`; `template=P7`; `variant=P7.assessment.3-auto-1-writing`; authored params `purpose=mastery,preset=assessment,items=3 auto + 1 writing,pass_rule=>=2/3 auto AND writing correct,second_set=true`.
+- **Internal structure:** this is **one** Activity Screen with four internal questions, three automatically graded and one written response. Question pager controls only the P7 internal index. Do not create 4 extra TopBar steps, per-question graded stamps or practice hints.
+- **Source-derived order rule (chapter 9):** pool `tq1,tq2,tq3,tq4,tq5` plus writing `L2-04.mw`; first set `tq1,tq2,tq3,mw`; second set `tq4,tq5,tq1,mw`. Every individual question renders its own authored response type (pick/tapword/label/write) with the same input grammar, but **no** per-question Check or reveal.
+- **Flow:** select/type answer → Next question / question dots change internal index only. Blank answer on any question: first **Hand in my check** warns once and identifies blank question numbers without grading; next **Hand in anyway** grades current responses including blanks as incorrect. Hand in grades the full paper once. Passing requires `autoCorrect >= 2` **AND** writing answer correct. On first failed set show diagnosis/feedback and **Try a new set**. The second set can complete without mastery; only a genuine passing check grants mastery. Afterwards the Lesson Screen is complete and Footer may show **End of lesson**.
+- **Persistence:** attempt set index, current P7 internal question index, four independent responses, once-only blank warning, per-item feedback results, pass/fail outcome and mastery flag. Saved answers restore on leave and return.
+- **Acceptance:** answering all four questions without Hand in never grades; answering 3 auto correctly with bad writing still fails; correctly writing with fewer than 2 auto still fails; first failed set offers new set, second submitted set ends even when unmastered; reduced motion never blocks Hand in.
+
+### 12.11 End-to-end acceptance contract
+
+- Exactly eight TopBar Activity circles in this lesson; no separate P7 question circles at lesson level. Screen IDs do not change when visually restyled.
+- Each Screen's template ID + variant ID and component responsibilities must match the table and detailed contract above; do not flatten P3 single vs multi or P4 Build vs Frame.
+- Exercise no-answer, partial, correct, first incorrect, second incorrect/`shown`, navigation back/forward, exit and reload, both EN/ZH, focus/keyboard/touch, and reduced motion where applicable.
+- Run both P7 submission sets and prove mastery is **not** awarded from an unmastered finish. Save and restore each Screen's answer and attempts. Product grading must not depend on animation or presentation color.
+- Real source implementation gaps are recorded in `docs/design-system/WRITING-REQUIREMENTS-TRACEABILITY-v1.md`. **They are not permission to weaken this specification.**
 
 ## 13. Writing visual and spatial product constraints
 
