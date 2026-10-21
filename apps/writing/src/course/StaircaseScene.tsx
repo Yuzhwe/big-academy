@@ -35,10 +35,22 @@ export function cameraForStep(index: number, viewportWidth: number, count: numbe
 
 const PARALLAX = { cloud: 0.12, hill2: 0.4, hill1: 0.72 } as const;
 const HILL_RATIO = 656 / 1568;
+/** First opaque row of hill-1-foreground.png (1568×656). Hill 2 starts lower in the same frame. */
+const HILL1_SKYLINE = 246 / 656;
 const SKY = '#58A8E8';
 
-function coverWidth(viewport: number, maxTravel: number, ratio: number) {
-  return Math.ceil(Math.max(viewport, 1568) + (1 - ratio) * maxTravel + 160);
+/**
+ * Shared hill frame for the opening view.
+ * The card camera's Y is a rail offset (often thousands of px). Scenic layers are
+ * registered to the stage, so that Y must not move them. Height keeps hill 1's
+ * skyline inside the viewport with sky above it, and the ground on the bottom edge.
+ */
+export function hillFrame(viewportWidth: number, viewportHeight: number): { width: number; height: number } {
+  const content = 1 - HILL1_SKYLINE;
+  const minSky = Math.max(48, viewportHeight * 0.28);
+  const height = Math.max(120, Math.round((Math.max(viewportHeight, 1) - minSky) / content));
+  const width = Math.max(1, Math.round(height / HILL_RATIO));
+  return { width, height };
 }
 
 /** v2-terraces stage. The product supplies nodes and every navigation gate. */
@@ -153,13 +165,15 @@ export function StaircaseScene({
     transform: 'translate3d(' + (-boundedX) + 'px, ' + (-cameraY) + 'px, 0)',
   } as CSSProperties;
   const layer = (ratio: number): CSSProperties => ({
-    transform: 'translate3d(' + -ratio * boundedX + 'px, ' + -ratio * cameraY + 'px, 0)',
+    // X follows path scroll. Y stays 0: these layers are already on the stage,
+    // and cameraY only exists to bring the tall card rail into the viewport.
+    transform: 'translate3d(' + (-ratio * boundedX) + 'px, 0, 0)',
   });
   const hillBox = (ratio: number): CSSProperties => {
-    const width = coverWidth(view.width, maxX, ratio);
+    const frame = hillFrame(view.width, view.height);
     return {
-      width,
-      height: Math.round(width * HILL_RATIO),
+      width: frame.width,
+      height: frame.height,
       ...layer(ratio),
     };
   };

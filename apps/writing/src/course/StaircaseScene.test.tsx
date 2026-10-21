@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cameraForStep, pedestalAnchorY, stepRise } from './StaircaseScene';
+import { cameraForStep, hillFrame, pedestalAnchorY, stepRise } from './StaircaseScene';
 
 describe('E-01 diagonal scene shared A/B geometry', () => {
   it('derives viewport-sensitive rise without hard-coding a 15 degree slope', () => {
@@ -15,6 +15,15 @@ describe('E-01 diagonal scene shared A/B geometry', () => {
     expect(pedestalAnchorY(0, 10, rise) - pedestalAnchorY(1, 10, rise)).toBe(rise);
     expect(pedestalAnchorY(9, 10, rise)).toBe(356);
     expect(pedestalAnchorY(0, 10, rise)).toBeGreaterThan(pedestalAnchorY(9, 10, rise));
+  });
+  it('fits the hill frame so the skyline stays inside a desktop and tablet stage', () => {
+    for (const [width, height] of [[1440, 665], [834, 850], [390, 520]] as const) {
+      const frame = hillFrame(width, height);
+      const skyline = height - frame.height * (1 - 246 / 656);
+      expect(frame.width).toBeGreaterThan(width * 0.9);
+      expect(skyline).toBeGreaterThan(24);
+      expect(skyline).toBeLessThan(height * 0.5);
+    }
   });
   it('positions first and last steps within pan limits', () => {
     expect(cameraForStep(0, 1024, 20)).toBe(0);

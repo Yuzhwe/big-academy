@@ -18,6 +18,27 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
   await expect(page.getByTestId('path-hill-2')).toHaveAttribute('data-parallax', '0.4');
   await expect(page.getByTestId('path-hill-1')).toHaveAttribute('data-parallax', '0.72');
   await expect(page.locator('.staircase-rail')).toHaveAttribute('data-parallax', '1');
+  const layers = await page.evaluate(() => {
+    const stage = document.querySelector('.staircase-viewport')!.getBoundingClientRect();
+    const overlap = (sel: string) => {
+      const img = document.querySelector(sel)?.querySelector('img');
+      if (!img) return { visible: 0, bottomGap: 999 };
+      const rect = img.getBoundingClientRect();
+      const top = Math.max(rect.top, stage.top);
+      const bottom = Math.min(rect.bottom, stage.bottom);
+      return { visible: bottom - top, bottomGap: Math.round(rect.bottom - stage.bottom) };
+    };
+    return {
+      hill1: overlap('[data-testid="path-hill-1"]'),
+      hill2: overlap('[data-testid="path-hill-2"]'),
+      cloud: overlap('[data-testid="path-cloud"]'),
+    };
+  });
+  expect(layers.hill1.visible).toBeGreaterThan(200);
+  expect(layers.hill2.visible).toBeGreaterThan(200);
+  expect(layers.cloud.visible).toBeGreaterThan(40);
+  expect(Math.abs(layers.hill1.bottomGap)).toBeLessThanOrEqual(2);
+  expect(Math.abs(layers.hill2.bottomGap)).toBeLessThanOrEqual(2);
   await expect(page.getByRole('button', { name: /Separate platforms|Continuous slope/ })).toHaveCount(0);
   await expect(scene).toHaveAttribute('data-rise-px', /^[0-9]+$/);
   await page.screenshot({ path: resolve(evidenceDir, 'v2-terraces-1440.png'), fullPage: false });
