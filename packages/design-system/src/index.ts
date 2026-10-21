@@ -23,3 +23,8 @@ export { BAStatus } from './components/ui/BAStatus';
 export type { BAStatusProps, BAStatusTone } from './components/ui/BAStatus';
 export { BAField } from './components/ui/BAField';
 export type { BAFieldProps } from './components/ui/BAField';
+
+export { BAOverlay } from './components/ui/BAOverlay';
+export type { BAOverlayProps } from './components/ui/BAOverlay';
+export { animateSpring, readSpringPreset } from './motion/spring';
+export type { BASpringPreset, SpringPhysics, SpringOptions } from './motion/spring';
