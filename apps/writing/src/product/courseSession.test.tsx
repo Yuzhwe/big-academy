@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { CourseApp } from '../course/CourseApp';
 import {
   ALEX_STATE_KEY,
@@ -248,5 +248,275 @@ describe('course slice UI', () => {
     expect(screen.getByTestId('feedback')).toHaveTextContent(/does not grade this writing yet/);
     expect(course.inspect().done['L2-04.apply']).toBeUndefined();
     expect(course.canOpen(6)).toBe(false);
+  });
+});
+
+function markScreen(course: Session, index: number) {
+  const ref = course.screens[index].screen;
+  const state = course.inspect();
+  if (ref.kind === 'task' || ref.kind === 'model_task') {
+    state.tasks[`${ref.page}:${ref.task}`] = { tries: 1, status: 'done' };
+  } else if (ref.kind === 'apply' || ref.kind === 'check') {
+    state.done[ref.page] = true;
+  } else {
+    state.seen[ref.id] = true;
+  }
+}
+
+function reach(course: Session, local: number) {
+  for (let index = 0; index < local; index += 1) markScreen(course, index);
+  course.inspect().screen = local;
+  expect(course.openLesson('G2-O', 1)).toBe(true);
+  expect(course.inspect().screen).toBe(local);
+}
+
+describe('phase 2 lesson 1 flow', () => {
+  it('debounces an edit and flushes a graded check immediately', () => {
+    vi.useFakeTimers();
+    try {
+      const storage = createMemoryStorage();
+      const course = session('', storage);
+      course.openLesson('G2-O', 1);
+      course.pressPrimary();
+      course.pick(1);
+      const mid = JSON.parse(storage.getItem(ALEX_STATE_KEY) ?? '{}') as { tasks?: Record<string, { picked?: number[] }> };
+      expect(mid.tasks?.['L2-04.skill:ts1']?.picked).toBeUndefined();
+      vi.advanceTimersByTime(250);
+      const later = JSON.parse(storage.getItem(ALEX_STATE_KEY) ?? '{}') as { tasks: Record<string, { picked?: number[] }> };
+      expect(later.tasks['L2-04.skill:ts1'].picked).toEqual([1]);
+      course.pressPrimary();
+      const graded = JSON.parse(storage.getItem(ALEX_STATE_KEY) ?? '{}') as { tasks: Record<string, { status: string }> };
+      expect(graded.tasks['L2-04.skill:ts1'].status).toBe('done');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('refuses a locked forward jump and names the unfinished screen', () => {
+    const course = session();
+    course.openLesson('G2-O', 1);
+    course.navigateLocal(3);
+    expect(course.inspect().screen).toBe(0);
+    expect(course.feedback).toMatch(/That page opens later/);
+    expect(course.feedback).toMatch(/Finish this page first/);
+    course.pressPrimary();
+    course.navigateLocal(3);
+    expect(course.inspect().screen).toBe(1);
+    expect(course.feedback).toMatch(/That page opens later/);
+    expect(course.feedback).toMatch(/Answer this one first/);
+    expect(course.canOpen(3)).toBe(false);
+    expect(course.topBar()?.tasks[3].status).toBe('locked');
+    expect(course.topBar()?.tasks).toHaveLength(8);
+  });
+
+  it('restores the screen, answer, and tries after reload', () => {
+    const storage = createMemoryStorage();
+    const course = session('', storage);
+    course.openLesson('G2-O', 1);
+    course.pressPrimary();
+    course.pick(0);
+    course.pressPrimary();
+    expect(course.inspect().tasks['L2-04.skill:ts1'].tries).toBe(1);
+    course.flush();
+    const screenIndex = course.inspect().screen;
+    const restored = new CourseSession({ html, storage });
+    restored.openLesson('G2-O', 1);
+    expect(restored.inspect().screen).toBe(screenIndex);
+    expect(restored.inspect().tasks['L2-04.skill:ts1']).toMatchObject({ tries: 1, status: 'open' });
+    expect(restored.feedback).not.toMatch(/You chose A/);
+  });
+
+  it('keeps option sentences in English while the instruction is Chinese', () => {
+    const course = session();
+    course.openLesson('G2-O', 1);
+    course.toggleLocale();
+    expect(course.activity()?.learn?.teach).toMatch(/主题句/);
+    expect(course.activity()?.learn?.strong).toMatch(/Our school should have a garden/);
+    course.pressPrimary();
+    const pick = course.activity()?.pick;
+    expect(course.activity()?.ask).toMatch(/主题句/);
+    expect(pick?.options.map((option) => option.text).join(' ')).toMatch(/Gardens have plants/);
+    expect(pick?.options.map((option) => option.text).join(' ')).not.toMatch(/花园/);
+  });
+
+  it('builds the ordered sentence, keeps cumulative misses, and reveals nothing early', () => {
+    const course = session();
+    reach(course, 4);
+    const wrong = () => {
+      course.buildTap('garden');
+    };
+    wrong();
+    expect(course.activity()?.build?.bench ?? '').not.toMatch(/garden/);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04'].miss).toBe(1);
+    course.buildTap('our');
+    course.restartBuild();
+    expect(course.activity()?.build?.bench ?? '').toBe('');
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04'].miss).toBe(1);
+    wrong();
+    wrong();
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04'].miss).toBe(3);
+    expect(course.feedback).toMatch(/Read it out loud/);
+    for (const token of ['our', 'school', 'should', 'have', 'a', 'garden', 'for', 'two', 'big', 'reasons', '.']) {
+      course.buildTap(token);
+    }
+    expect(course.screenDone(4)).toBe(true);
+    expect(course.canOpen(5)).toBe(true);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04'].miss).toBe(3);
+    expect(course.activity()?.build?.groups).toHaveLength(1);
+  });
+
+  it('grades the recess frame without treating a tab change as a check', () => {
+    const course = session();
+    reach(course, 5);
+    expect(course.activity()?.write?.draft).toMatch(/___/);
+    const before = course.activity()?.write?.draft;
+    course.setWordGroup('opinion');
+    expect(course.activity()?.write?.draft).toBe(before);
+    expect(course.inspect().tasks['L2-04.skill:ts8']?.tries ?? 0).toBe(0);
+    course.pressPrimary();
+    expect(course.screenDone(5)).toBe(false);
+    expect(course.inspect().tasks['L2-04.skill:ts8'].tries).toBe(1);
+    course.setWritingText('In my opinion, recess should be longer because kids need time to run.');
+    course.pressPrimary();
+    expect(course.screenDone(5)).toBe(true);
+    expect(course.feedback).toMatch(/what you think/);
+
+    const vague = session();
+    reach(vague, 5);
+    vague.setWritingText('In my opinion, recess should be longer because it is good.');
+    vague.pressPrimary();
+    expect(vague.screenDone(5)).toBe(false);
+    vague.pressPrimary();
+    expect(vague.inspect().tasks['L2-04.skill:ts8'].status).toBe('shown');
+    expect(vague.activity()?.write?.revealed).toMatch(/because/);
+    expect(vague.activity()?.write?.revealed).not.toMatch(/kids need time to run/);
+  });
+
+  it('checks Apply with the offline grader and withholds Move on after a safety flag', () => {
+    const course = session();
+    reach(course, 6);
+    course.setWritingText('Hi');
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/Write a little first/);
+    expect((course.inspect().applies['L2-04'] as { tries?: number } | undefined)?.tries ?? 0).toBe(0);
+    course.setWritingText('I like lunch and books today.');
+    course.pressPrimary();
+    const failing = course.inspect().applies['L2-04'] as { tries: number; passed: boolean };
+    expect(failing.tries).toBe(1);
+    expect(failing.passed).toBe(false);
+    expect(course.screenDone(6)).toBe(false);
+    course.setWritingText('Cats sleep on warm chairs daily.');
+    course.pressPrimary();
+    expect(course.activity()?.apply?.moveOn).toBe(true);
+    course.moveOn();
+    expect(course.screenDone(6)).toBe(true);
+    expect((course.inspect().applies['L2-04'] as { passed: boolean }).passed).toBe(false);
+    expect(course.celebration).toBeNull();
+
+    const passing = session();
+    reach(passing, 6);
+    passing.setWritingText(
+      'I think our school should have a garden.\nI believe a school garden is the best idea.\nOur school should grow a garden for science.',
+    );
+    passing.pressPrimary();
+    expect(passing.screenDone(6)).toBe(true);
+    expect((passing.inspect().applies['L2-04'] as { passed: boolean }).passed).toBe(true);
+
+    const safety = session();
+    reach(safety, 6);
+    safety.setWritingText('I want to die in the garden today because it hurts.');
+    safety.pressPrimary();
+    safety.setWritingText('I want to die in the garden today because it hurts me.');
+    safety.pressPrimary();
+    expect(safety.screenDone(6)).toBe(false);
+    expect(safety.activity()?.apply?.moveOn).toBe(false);
+    expect(safety.activity()?.apply?.safetyHeld).toBe(true);
+    expect(safety.feedback).toMatch(/show your teacher/);
+
+    const cjk = session();
+    reach(cjk, 6);
+    cjk.setWritingText('我认为学校应该有一个花园 I think yes');
+    cjk.pressPrimary();
+    expect((cjk.inspect().applies['L2-04'] as { tries: number }).tries).toBe(1);
+    expect(cjk.screenDone(6)).toBe(false);
+  });
+
+  it('keeps the check question index off the eight top-bar steps and does not celebrate an unmastered finish', () => {
+    const course = session('?skills=L2-04:writing');
+    course.openLesson('G2-O', 1);
+    course.navigateLocal(7);
+    course.pressPrimary();
+    course.pressPrimary();
+    course.pressPrimary();
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/still blank/);
+    expect((course.inspect().checks['L2-04.check'] as { finished?: boolean }).finished).toBe(false);
+    course.pressPrimary();
+    expect(course.activity()?.check?.mastered).toBe(false);
+    expect(course.activity()?.check?.summary).toMatch(/Not yet/);
+    expect(course.screenDone(7)).toBe(false);
+    expect(course.celebration).toBeNull();
+    expect(course.liveState(0)).not.toBe('skipped');
+    expect(course.footer().primaryLabel).toBe('Try a new set');
+    course.pressPrimary();
+    expect(course.activity()?.check?.stage).toBe('answering');
+    expect(course.activity()?.check?.numeral).toBe(1);
+    expect(course.topBar()?.tasks).toHaveLength(8);
+    expect(course.topBar()?.current).toBe(7);
+
+    const fresh = session();
+    reach(fresh, 7);
+    fresh.selectCheckQuestion(2);
+    expect(fresh.activity()?.check?.numeral).toBe(3);
+    expect(fresh.topBar()?.current).toBe(7);
+    expect(fresh.topBar()?.tasks).toHaveLength(8);
+    fresh.selectCheckQuestion(0);
+    const answer = (index: number) => {
+      fresh.pick(index);
+      fresh.pressPrimary();
+    };
+    answer(1);
+    answer(2);
+    const should = fresh.activity()?.check?.tapword?.words.find((word) => word.text === 'should');
+    expect(should).toBeTruthy();
+    fresh.tapWord(should?.index ?? -1);
+    fresh.pressPrimary();
+    fresh.setWritingText('I think kids should have a pet at home.');
+    fresh.pressPrimary();
+    expect(fresh.activity()?.check?.mastered).toBe(true);
+    expect(fresh.activity()?.check?.summary).toMatch(/You passed this check/);
+    expect(fresh.screenDone(7)).toBe(true);
+    expect(fresh.celebration).toBeNull();
+    expect(fresh.topBar()?.tasks).toHaveLength(8);
+    expect(fresh.topBar()?.current).toBe(7);
+
+    const missed = session();
+    reach(missed, 7);
+    missed.pick(1);
+    missed.pressPrimary();
+    missed.pick(2);
+    missed.pressPrimary();
+    const word = missed.activity()?.check?.tapword?.words.find((item) => item.text === 'should');
+    missed.tapWord(word?.index ?? -1);
+    missed.pressPrimary();
+    missed.setWritingText('I think lunch is the best meal.');
+    missed.pressPrimary();
+    expect(missed.activity()?.check?.mastered).toBe(false);
+    expect(missed.screenDone(7)).toBe(false);
+    missed.pressPrimary();
+    missed.pick(0);
+    missed.pressPrimary();
+    missed.pick(0);
+    missed.pressPrimary();
+    missed.pick(0);
+    missed.pressPrimary();
+    missed.setWritingText('No pet here at all.');
+    missed.pressPrimary();
+    expect(missed.screenDone(7)).toBe(true);
+    expect(missed.activity()?.check?.mastered).toBe(false);
+    expect(missed.activity()?.check?.summary).toMatch(/Not yet/);
+    expect(missed.celebration).toBeNull();
+    expect(missed.footer().primaryLabel).toMatch(/End of lesson/);
+    expect(missed.inspect().checks['L2-04.check']).toMatchObject({ q: 3, passed: false, finished: true });
   });
 });

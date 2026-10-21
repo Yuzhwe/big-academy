@@ -57,8 +57,16 @@ describe('WordGrid', () => {
     expect(onGroupChange).toHaveBeenCalledWith('nouns');
     expect(onInsert).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'garden' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'think' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'garden' }));
     expect(onInsert).toHaveBeenCalledWith({ id: 'garden', text: 'garden', groupId: 'nouns' });
+    await user.click(screen.getByRole('tab', { name: 'Adjectives' }));
+    expect(screen.getByRole('button', { name: /fresh/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'garden' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('tabpanel')).toHaveLength(1);
+    await user.click(screen.getByRole('tab', { name: 'Marks' }));
+    expect(screen.getByRole('button', { name: '.' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /fresh/ })).not.toBeInTheDocument();
   });
 
   it('exposes used and disabled word states and keeps overlay inside a host', () => {

@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { StaircaseScene, type StaircaseVariant } from './StaircaseScene';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { LandscapeBackdrop } from './LandscapeBackdrop';
+import { StaircaseScene } from './StaircaseScene';
 import { useSyncExternalStore } from 'react';
 import { BAButton, BAChoice, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
@@ -8,7 +9,7 @@ import { WordGrid } from '../components/writing/WordGrid';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
 import alexHtml from '../../source/alex-original.html?raw';
-import { CourseSession } from '../product/courseSession';
+import { CourseSession, type ActivityModel } from '../product/courseSession';
 import './course.css';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
@@ -22,14 +23,23 @@ function cardState(courseState: string, action: string): StairLessonState {
 export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const [session] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
-  // Visual A/B state is a review-only control, not saved to Alex's learning state.
-  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('B');
   const locale = session.locale;
   const zh = locale === 'zh';
 
   useEffect(() => {
     document.documentElement.lang = localeTag(locale);
   }, [locale]);
+
+  useEffect(() => {
+    const flush = () => session.flush();
+    window.addEventListener('pagehide', flush);
+    window.addEventListener('beforeunload', flush);
+    return () => {
+      flush();
+      window.removeEventListener('pagehide', flush);
+      window.removeEventListener('beforeunload', flush);
+    };
+  }, [session]);
 
   useEffect(() => {
     if (session.view === 'path') session.observePath();
@@ -50,11 +60,11 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   }, [session, revision]);
 
   return (
-    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ab-variant={staircaseVariant} data-ba-product="writing">
+    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ba-product="writing">
       <a className="course-skip" href="#course-main">
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
-      {session.view === 'path' ? <PathView session={session} variant={staircaseVariant} onVariantChange={setStaircaseVariant} /> : null}
+      {session.view === 'path' ? <PathView session={session} /> : null}
       {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
       {session.view === 'preview' ? <PreviewView session={session} /> : null}
       {session.celebration ? <Celebration session={session} /> : null}
@@ -62,15 +72,20 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   );
 }
 
-function PathView({ session, variant, onVariantChange }: { session: CourseSession; variant: StaircaseVariant; onVariantChange: (next: StaircaseVariant) => void }) {
+function PathView({ session }: { session: CourseSession }) {
   const zh = session.zh;
+  const [cameraX, setCameraX] = useState(0);
+  const onCameraX = useCallback((x: number) => {
+    setCameraX((prev) => (prev === x ? prev : x));
+  }, []);
   const level = session.level();
   const nodes = session.pathNodes();
   const freshMilestone = session.celebration && !session.celebration.replay ? session.celebration.unitId : null;
   const focusIndex = Math.max(0, nodes.findIndex((node) => node.kind === 'lesson' && node.lesson && (node.lesson.action === 'start' || node.lesson.action === 'continue')));
 
   return (
-    <div className="course-path">
+    <div className="course-path" data-path="terraces">
+      <LandscapeBackdrop cameraX={cameraX} />
       <BATabs className="course-level-tabs" selectedKey={session.levelId} onSelectionChange={(key) => session.switchLevel(key)}>
         <header className="course-path__bar course-path__header">
           <div className="course-path__header-title">
@@ -102,26 +117,17 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
             {session.openNotice}
           </p>
         ) : null}
-        <div className="course-ab-controls" role="group" aria-label={zh ? '路径形态 A/B' : 'Path shape A/B'}>
-          <button type="button" className="course-ab-button" aria-pressed={variant === 'A'} onClick={() => onVariantChange('A')}>
-            {zh ? 'A · 分立阶梯台面' : 'A · Separate platforms'}
-          </button>
-          <button type="button" className="course-ab-button" aria-pressed={variant === 'B'} onClick={() => onVariantChange('B')}>
-            {zh ? 'B · 连续斜坡 + 锚点' : 'B · Continuous slope + anchors'}
-          </button>
-          <span className="course-ab-hint">{zh ? '探索方案，均未获得视觉批准' : 'Visual exploration only — not approved'}</span>
-        </div>
-        <div className="course-ab-controls" role="group" aria-label={zh ? '第一阶段预览' : 'Phase 1 preview'}>
-          <button type="button" className="course-ab-button" onClick={() => session.openLayoutReview('L2-04.apply')}>
+        <div className="course-path__tools">
+          <BAButton variant="secondary" onPress={() => session.openLayoutReview('L2-04.apply')}>
             {zh ? '第一阶段 · 应用写作词格' : 'Phase 1 · Apply word grid'}
-          </button>
-          <span className="course-ab-hint">
+          </BAButton>
+          <p className="course-path__tools-note">
             {zh
               ? '版式预览，不解锁后面的屏幕，也不评分。'
               : 'Layout review only. It does not unlock later screens or grade the draft.'}
-          </span>
+          </p>
         </div>
-        <StaircaseScene key={level.id} variant={variant} locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
+        <StaircaseScene key={level.id} locale={session.locale} count={nodes.length} focusIndex={focusIndex} onCameraX={onCameraX}>
         <ol className="course-nodes">
           {nodes.map((node, index) => {
             if (node.kind === 'intro') {
@@ -202,11 +208,6 @@ function PathView({ session, variant, onVariantChange }: { session: CourseSessio
           })}
         </ol>
         </StaircaseScene>
-        <p className="course-candidate">
-          {zh
-            ? 'E-01 A/B 使用相同的卡片底边锚点算法、课程数据和权限；A 为分立台面，B 为连续斜坡与锚点。卡片内容增加时只向上生长。页面视觉仍待设计审核。'
-            : 'E-01 A/B share the exact same bottom-anchor algorithm and Alex permissions. A has separated platforms; B has a continuous slope with local anchors. Card height grows upward, not into the anchor. Visual approval pending.'}
-        </p>
       </main>
         </BATabPanel>
       </BATabs>
@@ -271,57 +272,12 @@ function LessonView({ session }: { session: CourseSession }) {
                 {activity.learn.nextUp ? <p>{activity.learn.nextUp}</p> : null}
               </>
             ) : null}
-            {activity.pick ? (
-              <>
-                <h1 className="course-title">{activity.ask}</h1>
-                {activity.pick.hint ? <p>{activity.pick.hint}</p> : null}
-                <BAChoice
-                  choiceMode={activity.pick.multi ? 'multiple' : 'single'}
-                  aria-label={activity.ask}
-                  locale={session.locale}
-                  disabled={activity.pick.closed}
-                  selectedKeys={activity.pick.options.filter((option) => option.selected).map((option) => String(option.index))}
-                  options={activity.pick.options.map((option) => ({
-                    id: String(option.index),
-                    letter: option.letter,
-                    label: option.text,
-                    state: option.state,
-                  }))}
-                  onChange={(keys) => {
-                    const pick = activity.pick;
-                    if (!pick || pick.closed) return;
-                    if (pick.multi) {
-                      const next = new Set(keys);
-                      const current = new Set(pick.options.filter((option) => option.selected).map((option) => String(option.index)));
-                      for (const key of keys) if (!current.has(key)) session.pick(Number(key));
-                      for (const key of current) if (!next.has(key)) session.pick(Number(key));
-                      return;
-                    }
-                    if (keys[0] != null) session.pick(Number(keys[0]));
-                  }}
-                />
-              </>
-            ) : null}
+            {activity.check ? <CheckSurface session={session} check={activity.check} /> : null}
+            {activity.pick ? <ChoiceBlock session={session} ask={activity.ask} pick={activity.pick} hint={activity.pick.hint} /> : null}
             {activity.apply ? <ApplySurface session={session} /> : null}
-            {activity.tapword ? (
-              <>
-                <h1 className="course-title">{activity.ask}</h1>
-                <p className="course-words">
-                  {activity.tapword.words.map((word) => (
-                    <button
-                      key={word.index}
-                      type="button"
-                      className="course-word"
-                      data-selected={word.selected ? 'true' : undefined}
-                      data-wrong={word.wrong ? 'true' : undefined}
-                      onClick={() => session.tapWord(word.index)}
-                    >
-                      {word.text}
-                    </button>
-                  ))}
-                </p>
-              </>
-            ) : null}
+            {activity.build ? <BuildSurface session={session} ask={activity.ask} build={activity.build} /> : null}
+            {activity.write ? <WriteSurface session={session} ask={activity.ask} write={activity.write} /> : null}
+            {activity.tapword ? <TapBlock session={session} ask={activity.ask} tapword={activity.tapword} /> : null}
             {!activity.supported && !activity.learn ? (
               <>
                 <h1 className="course-title">{activity.ask || activity.title}</h1>
@@ -399,6 +355,235 @@ function LessonView({ session }: { session: CourseSession }) {
   );
 }
 
+function ChoiceBlock({
+  session,
+  ask,
+  pick,
+  hint,
+}: {
+  session: CourseSession;
+  ask: string;
+  pick: NonNullable<ActivityModel['pick']>;
+  hint?: string;
+}) {
+  return (
+    <>
+      {ask ? <h1 className="course-title">{ask}</h1> : null}
+      {hint ? <p>{hint}</p> : null}
+      <BAChoice
+        choiceMode={pick.multi ? 'multiple' : 'single'}
+        aria-label={ask}
+        locale={session.locale}
+        disabled={pick.closed}
+        selectedKeys={pick.options.filter((option) => option.selected).map((option) => String(option.index))}
+        options={pick.options.map((option) => ({
+          id: String(option.index),
+          letter: option.letter,
+          label: option.text,
+          state: option.state,
+        }))}
+        onChange={(keys) => {
+          if (pick.closed) return;
+          if (pick.multi) {
+            const next = new Set(keys);
+            const current = new Set(pick.options.filter((option) => option.selected).map((option) => String(option.index)));
+            for (const key of keys) if (!current.has(key)) session.pick(Number(key));
+            for (const key of current) if (!next.has(key)) session.pick(Number(key));
+            return;
+          }
+          if (keys[0] != null) session.pick(Number(keys[0]));
+        }}
+      />
+    </>
+  );
+}
+
+function TapBlock({
+  session,
+  ask,
+  tapword,
+}: {
+  session: CourseSession;
+  ask: string;
+  tapword: NonNullable<ActivityModel['tapword']>;
+}) {
+  return (
+    <>
+      {ask ? <h1 className="course-title">{ask}</h1> : null}
+      <p className="course-words" lang="en">
+        {tapword.words.map((word) => (
+          <button
+            key={word.index}
+            type="button"
+            className="course-word"
+            lang="en"
+            data-selected={word.selected ? 'true' : undefined}
+            data-wrong={word.wrong ? 'true' : undefined}
+            onClick={() => session.tapWord(word.index)}
+          >
+            {word.text}
+          </button>
+        ))}
+      </p>
+    </>
+  );
+}
+
+function CheckSurface({ session, check }: { session: CourseSession; check: NonNullable<ActivityModel['check']> }) {
+  const zh = session.zh;
+  return (
+    <div data-testid="check-shell" data-stage={check.stage} data-mastery={check.mastered ? 'yes' : 'no'}>
+      {check.stage !== 'results' ? (
+        <p className="course-numeral" data-testid="question-numeral">
+          {check.numeral}
+        </p>
+      ) : null}
+      {check.dots.length ? (
+        <div className="course-dots" role="group" aria-label={zh ? '题目' : 'Questions'}>
+          {check.dots.map((dot) => (
+            <button
+              key={dot.index}
+              type="button"
+              className="course-dot"
+              data-current={dot.index === check.index ? 'true' : undefined}
+              data-answered={dot.answered ? 'true' : undefined}
+              aria-current={dot.index === check.index ? 'true' : undefined}
+              aria-label={String(dot.index + 1)}
+              onClick={() => session.selectCheckQuestion(dot.index)}
+            />
+          ))}
+        </div>
+      ) : null}
+      {check.note && check.stage === 'answering' ? <p className="course-tip">{check.note}</p> : null}
+      {check.stage === 'results' ? (
+        <>
+          <p data-testid="check-result" data-mastery={check.mastered ? 'yes' : 'no'}>
+            {check.summary}
+          </p>
+          <ol className="course-results">
+            {check.rows.map((row) => (
+              <li key={row.index}>
+                <button type="button" data-testid="result-row" data-correct={row.correct ? 'true' : 'false'} onClick={() => session.openCheckResult(row.index)}>
+                  <span>{row.index + 1}</span>
+                  <span>{row.ask}</span>
+                  <span data-testid="result-why">{row.detail}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+          {check.retry && check.screenComplete ? (
+            <BAButton variant="secondary" locale={session.locale} onPress={() => session.retryCheck()}>
+              <span data-testid="retry-check-page">{zh ? '再做一组' : 'Try a new set'}</span>
+            </BAButton>
+          ) : null}
+        </>
+      ) : (
+        <>
+          {check.stage === 'graded' ? <p data-testid="graded-status">{check.summary}</p> : null}
+          {check.pick ? <ChoiceBlock session={session} ask={check.prompt} pick={check.pick} /> : null}
+          {check.tapword ? <TapBlock session={session} ask={check.prompt} tapword={check.tapword} /> : null}
+          {check.draft != null ? (
+            <label className="course-writing__label">
+              <span className="visually-hidden">{zh ? '你的答案' : 'Your answer'}</span>
+              <textarea
+                data-testid="check-writing"
+                lang="en"
+                rows={4}
+                readOnly={check.draftClosed}
+                value={check.draft}
+                onChange={(event) => session.setWritingText(event.target.value)}
+              />
+            </label>
+          ) : null}
+        </>
+      )}
+    </div>
+  );
+}
+
+function BuildSurface({
+  session,
+  ask,
+  build,
+}: {
+  session: CourseSession;
+  ask: string;
+  build: NonNullable<ActivityModel['build']>;
+}) {
+  const narrow = useNarrow();
+  const [gridOpen, setGridOpen] = useState(true);
+  const overlay = narrow && gridOpen;
+  return (
+    <>
+      <h1 className="course-title">{ask}</h1>
+      <p className="course-bench" lang="en" data-testid="build-bench">
+        {build.bench}
+      </p>
+      {build.revealed ? (
+        <p className="course-answer" lang="en" data-testid="revealed">
+          {build.revealed}
+        </p>
+      ) : null}
+      {!build.closed ? (
+        <BAButton variant="ghost" locale={session.locale} onPress={() => session.restartBuild()}>
+          {session.zh ? '重新开始' : 'Start again'}
+        </BAButton>
+      ) : null}
+      <div className="course-writing" data-grid-presentation={overlay ? 'overlay' : 'docked'}>
+        {narrow ? (
+          <BAButton variant="secondary" locale={session.locale} onPress={() => setGridOpen((open) => !open)}>
+            {gridOpen ? (session.zh ? '收起词格' : 'Hide word grid') : session.zh ? '词格' : 'Word grid'}
+          </BAButton>
+        ) : null}
+        {!narrow || gridOpen ? (
+          <WordGrid
+            groups={build.groups}
+            activeGroup={build.activeGroup}
+            presentation={overlay ? 'overlay' : 'docked'}
+            locale={session.locale}
+            onGroupChange={(key) => session.setWordGroup(key)}
+            onInsert={(word) => session.buildTap(word.text)}
+          />
+        ) : null}
+      </div>
+    </>
+  );
+}
+
+function WriteSurface({
+  session,
+  ask,
+  write,
+}: {
+  session: CourseSession;
+  ask: string;
+  write: NonNullable<ActivityModel['write']>;
+}) {
+  return (
+    <>
+      <h1 className="course-title">{ask}</h1>
+      <DraftGrid
+        session={session}
+        draft={write.draft}
+        groups={write.groups}
+        activeGroup={write.activeGroup}
+        testId="write-canvas"
+        readOnly={write.closed}
+      />
+      {write.revealed ? (
+        <p className="course-answer" data-testid="revealed">
+          {write.revealed}
+        </p>
+      ) : null}
+      {!write.closed ? (
+        <BAButton variant="ghost" locale={session.locale} onPress={() => session.restartBuild()}>
+          {session.zh ? '重新开始' : 'Start again'}
+        </BAButton>
+      ) : null}
+    </>
+  );
+}
+
 function useNarrow(query = '(max-width: 1024px)') {
   const [narrow, setNarrow] = useState(false);
   useEffect(() => {
@@ -412,15 +597,80 @@ function useNarrow(query = '(max-width: 1024px)') {
   return narrow;
 }
 
-function ApplySurface({ session }: { session: CourseSession }) {
-  const activity = session.activity();
-  const apply = activity?.apply;
+function DraftGrid({
+  session,
+  draft,
+  groups,
+  activeGroup,
+  testId,
+  readOnly = false,
+}: {
+  session: CourseSession;
+  draft: string;
+  groups: NonNullable<ActivityModel['apply']>['groups'];
+  activeGroup: string;
+  testId: string;
+  readOnly?: boolean;
+}) {
   const narrow = useNarrow();
   const [gridOpen, setGridOpen] = useState(true);
   const field = useRef<HTMLTextAreaElement>(null);
   const caret = useRef<{ start: number; end: number } | null>(null);
-  if (!activity || !apply) return null;
   const overlay = narrow && gridOpen;
+  return (
+    <div className="course-writing" data-grid-presentation={overlay ? 'overlay' : 'docked'}>
+      <label className="course-writing__label">
+        <span className="visually-hidden">{session.zh ? '你的写作' : 'Your writing'}</span>
+        <textarea
+          ref={field}
+          data-testid={testId}
+          lang="en"
+          rows={6}
+          readOnly={readOnly}
+          value={draft}
+          onChange={(event) => session.setWritingText(event.target.value)}
+          onSelect={(event) => {
+            const node = event.currentTarget;
+            caret.current = { start: node.selectionStart ?? 0, end: node.selectionEnd ?? 0 };
+          }}
+        />
+      </label>
+      {narrow ? (
+        <BAButton variant="secondary" locale={session.locale} onPress={() => setGridOpen((open) => !open)}>
+          {gridOpen ? (session.zh ? '收起词格' : 'Hide word grid') : session.zh ? '词格' : 'Word grid'}
+        </BAButton>
+      ) : null}
+      {!narrow || gridOpen ? (
+        <WordGrid
+          groups={groups}
+          activeGroup={activeGroup}
+          presentation={overlay ? 'overlay' : 'docked'}
+          locale={session.locale}
+          onGroupChange={(key) => session.setWordGroup(key)}
+          onInsert={(word) => {
+            if (readOnly) return;
+            const element = field.current;
+            const live = element && document.activeElement === element;
+            const start = live ? element.selectionStart ?? draft.length : caret.current?.start ?? draft.length;
+            const end = live ? element.selectionEnd ?? start : caret.current?.end ?? start;
+            const next = session.insertWord(word.text, start, end);
+            caret.current = { start: next, end: next };
+            window.requestAnimationFrame(() => {
+              const node = field.current;
+              node?.focus();
+              node?.setSelectionRange(next, next);
+            });
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function ApplySurface({ session }: { session: CourseSession }) {
+  const activity = session.activity();
+  const apply = activity?.apply;
+  if (!activity || !apply) return null;
   return (
     <>
       {apply.lockedPreview ? (
@@ -433,50 +683,38 @@ function ApplySurface({ session }: { session: CourseSession }) {
       <p className="course-kicker">{activity.title}</p>
       <h1 className="course-title">{apply.ask}</h1>
       {apply.tip ? <p className="course-tip">{apply.tip}</p> : null}
-      <div className="course-writing" data-grid-presentation={overlay ? 'overlay' : 'docked'}>
-        <label className="course-writing__label">
-          <span className="visually-hidden">{session.zh ? '你的写作' : 'Your writing'}</span>
-          <textarea
-            ref={field}
-            data-testid="apply-canvas"
-            lang="en"
-            rows={6}
-            value={apply.draft}
-            onChange={(event) => session.setWritingText(event.target.value)}
-            onSelect={(event) => {
-              const node = event.currentTarget;
-              caret.current = { start: node.selectionStart ?? 0, end: node.selectionEnd ?? 0 };
-            }}
-          />
-        </label>
-        {narrow ? (
-          <BAButton variant="secondary" locale={session.locale} onPress={() => setGridOpen((open) => !open)}>
-            {gridOpen ? (session.zh ? '收起词格' : 'Hide word grid') : session.zh ? '词格' : 'Word grid'}
-          </BAButton>
-        ) : null}
-        {!narrow || gridOpen ? (
-          <WordGrid
-            groups={apply.groups}
-            activeGroup={apply.activeGroup}
-            presentation={overlay ? 'overlay' : 'docked'}
-            locale={session.locale}
-            onGroupChange={(key) => session.setWordGroup(key)}
-            onInsert={(word) => {
-              const element = field.current;
-              const live = element && document.activeElement === element;
-              const start = live ? element.selectionStart ?? apply.draft.length : caret.current?.start ?? apply.draft.length;
-              const end = live ? element.selectionEnd ?? start : caret.current?.end ?? start;
-              const next = session.insertWord(word.text, start, end);
-              caret.current = { start: next, end: next };
-              window.requestAnimationFrame(() => {
-                const node = field.current;
-                node?.focus();
-                node?.setSelectionRange(next, next);
-              });
-            }}
-          />
-        ) : null}
-      </div>
+      {apply.nudge ? (
+        <p className="course-tip" data-testid="live-nudge" data-scoring="false">
+          {apply.nudge}
+        </p>
+      ) : null}
+      {apply.praise ? (
+        <p className="course-tip" data-testid="live-praise" data-scoring="false">
+          {apply.praise}
+        </p>
+      ) : null}
+      <DraftGrid
+        session={session}
+        draft={apply.draft}
+        groups={apply.groups}
+        activeGroup={apply.activeGroup}
+        testId="apply-canvas"
+        readOnly={false}
+      />
+      {apply.checks.length ? (
+        <ul className="course-checks" data-testid="apply-checks">
+          {apply.checks.map((item) => (
+            <li key={item.label} data-met={item.met ? 'true' : 'false'}>
+              {item.label}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {apply.moveOn ? (
+        <BAButton variant="ghost" locale={session.locale} onPress={() => session.moveOn()}>
+          <span data-testid="move-on">{session.zh ? '暂时继续' : 'Move on for now'}</span>
+        </BAButton>
+      ) : null}
     </>
   );
 }

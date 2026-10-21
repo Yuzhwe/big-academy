@@ -23,7 +23,7 @@ test('E-01 to lesson 1 check and back', async ({ page }) => {
   await shot('lesson-learn-1440');
 
   await page.getByRole('button', { name: 'Next' }).click();
-  await page.locator('.course-choice', { hasText: 'Our school should have a garden' }).click();
+  await page.getByRole('radio', { name: /Our school should have a garden/ }).click();
   await expect(page.getByRole('radio', { name: /Our school should have a garden/ })).toBeChecked();
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Check' }).click();
   await expect(page.getByTestId('feedback')).toContainText(/Right\. You chose B/);

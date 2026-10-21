@@ -28,11 +28,28 @@ export interface AlexTask {
     hints?: Bilingual[];
     options?: Bilingual[];
     words?: Record<string, Bilingual>;
+    diagnose?: string[];
   };
   fields?: string[];
   tip?: Bilingual | string;
   grid?: { level?: string; tabs?: string[] };
   cells?: Array<string | { t: string }>;
+  distractors?: string[];
+  in_order?: boolean;
+  target?: string[];
+  answer_text?: string;
+  /** Authored sentence-set id. `sentence` is the Lesson 1 ordered build. */
+  set?: string;
+  start?: string;
+  frameFill?: {
+    frame: string;
+    blanks: { label: string; min_words: number }[];
+    vagueLast?: boolean;
+  };
+  rules?: Record<string, unknown>;
+  continue_after?: number;
+  criteria?: string[];
+  apply?: boolean;
 }
 
 export interface AlexScreen {
@@ -67,6 +84,9 @@ export interface AlexPage {
   teach?: Bilingual | string;
   tasks?: string[];
   task?: string;
+  pool?: string[];
+  writing?: string;
+  auto_per_attempt?: number;
   grid?: { level?: string; tabs?: string[] };
 }
 
@@ -104,6 +124,13 @@ export interface AlexConfig {
   step_tags?: StepTag[];
   unit_goals?: Bilingual[];
   unit?: { skill_skip?: { merge_below_min?: number } };
+  coach?: {
+    diagnostics?: Record<string, Bilingual>;
+    nudges?: Record<string, Bilingual>;
+    praise?: Record<string, Bilingual>;
+    check_note?: Bilingual;
+    check_after?: Bilingual;
+  };
   grids?: {
     tabs: Record<string, { label?: string; zh?: string; words?: { t: string; zh?: string }[]; chunks?: { t: string }[] }>;
   };
@@ -179,12 +206,58 @@ export interface EngineApi {
     text: string,
     kind: string,
   ) => { value: string; start: number; inserted: string; caret: number };
+  sameText: (a: string, b: string) => boolean;
+  frameFill: (
+    text: string,
+    frame: NonNullable<AlexTask['frameFill']>,
+    ok?: Bilingual,
+  ) => { correct: boolean; explanation: string; zh?: string };
+  masteryItems: (page: AlexPage, attempt: number) => string[];
+  masteryPass: (answers: { correct?: boolean; writing?: boolean }[]) => {
+    auto_correct: number;
+    auto_total: number;
+    writing_correct: boolean;
+    score: number;
+    total: number;
+    passed: boolean;
+  };
+  choiceKey: (key: string, count: number) => number;
+}
+
+/** Original Analyzer graders. Not rewritten. */
+export interface AnalyzerApi {
+  checkApply: (
+    skillId: string,
+    text: string,
+  ) => {
+    passed: boolean;
+    checks: { label: string; met: boolean; tip?: string; zh?: string }[];
+    feedback: string;
+    zh?: string;
+    glow?: string;
+    source?: string;
+  };
+  checkProduction: (
+    item: { check?: AlexTask['rules']; success?: string; successZh?: string },
+    answer: string,
+  ) => { correct: boolean; explanation: string; zh?: string };
+  wordCount: (text: string) => number;
+  safetyScreen: (text: string) => boolean;
+  liveNudges: (
+    text: string,
+    opts?: { mode?: string; prompt?: string; wantLinking?: boolean },
+  ) => {
+    nudge: { id: string; q?: string } | null;
+    praise: { id: string; q?: string } | null;
+  };
+  diagnose: (text: string, ids: string[], ctx?: Record<string, unknown>) => string | null;
 }
 
 export interface AlexSource {
   config: AlexConfig;
   levelPath: LevelPath;
   engine: EngineApi;
+  analyzer: AnalyzerApi;
 }
 
 const cache = new Map<string, AlexSource>();
@@ -216,6 +289,18 @@ export function extractAssignedJson(source: string, name: string): unknown {
   throw new Error(`Alex source has an unclosed ${name} object`);
 }
 
+export function loadAnalyzer(source: string): AnalyzerApi {
+  const start = source.indexOf('var Analyzer = (function () {');
+  const endMarker = "if (typeof module !== 'undefined' && module.exports) module.exports = Analyzer;";
+  const end = source.indexOf(endMarker);
+  if (start < 0 || end < 0 || end <= start) {
+    throw new Error('Alex Analyzer script was not found in the source HTML');
+  }
+  const script = source.slice(start, end);
+  const factory = new Function(`${script}\nreturn Analyzer;`) as () => AnalyzerApi;
+  return factory();
+}
+
 export function loadEngine(source: string): EngineApi {
   const start = source.indexOf('var Engine = (function () {');
   const endMarker =
@@ -237,7 +322,7 @@ export function loadAlexSource(html: string): AlexSource {
   for (const level of levelPath.levels) {
     for (const unit of level.units) unit.level = level.id;
   }
-  const loaded = { config, levelPath, engine: loadEngine(html) };
+  const loaded = { config, levelPath, engine: loadEngine(html), analyzer: loadAnalyzer(html) };
   cache.set(html, loaded);
   return loaded;
 }

@@ -111,7 +111,7 @@
         "KeyboardFocus"
       ],
       "figma": "Design decision 2026-10-20: visual style same as Figma Segmented Control 806:3",
-      "runtimeEvidence": "apps/writing/e2e/staircase-ab.spec.ts",
+      "runtimeEvidence": "apps/writing/e2e/staircase.spec.ts",
       "visualStatus": "figma-segmented-parity-candidate",
       "notes": "React Aria Tabs/TabList/Tab/TabPanel semantics; same selection geometry and CSS as segmented, no RadioGroup. Styling parity is user-approved direction; exact browser visual review pending."
     },
