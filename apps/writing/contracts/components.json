@@ -120,17 +120,19 @@
       "name": "BAChoice",
       "kind": "primitive",
       "contractVersion": "0.3.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BAChoice.tsx",
       "story": "packages/design-system/src/components/ui/BAChoice.stories.tsx",
       "props": {
-        "choiceMode": "single | multiple",
-        "options": "ChoiceOption[]",
+        "mode": "single | multiple",
+        "options": "BAChoiceOption[] = {key,label,prefix?,state?,disabled?}",
         "selectedKeys": "string[]",
-        "feedback": "ChoiceFeedback"
+        "label": "string accessible group label",
+        "disabled": "boolean",
+        "className": "string optional"
       },
       "events": {
-        "onChange": "(keys) => void"
+        "onChange": "(keys:string[])=>void; no grading in component"
       },
       "states": [
         "idle",
@@ -162,22 +164,28 @@
         "TapwordTokens"
       ],
       "figma": null,
-      "runtimeEvidence": null,
-      "visualStatus": "R1-candidate-pending-designer-review"
+      "runtimeEvidence": "CI source/typecheck/unit checks; browser review pending",
+      "visualStatus": "R2-candidate-pending-review",
+      "notes": "\nImplemented on independent end-to-end V1 branch; no designer approval; new local Props represent exact code contract, reviewed only after runtime acceptance."
     },
     {
       "id": "BA-UI-004",
       "name": "BAField",
       "kind": "primitive",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BAField.tsx",
       "story": "packages/design-system/src/components/ui/BAField.stories.tsx",
       "props": {
-        "value": "string",
         "label": "string",
+        "value": "string",
+        "onChange": "(value:string)=>void",
         "multiline": "boolean",
-        "readOnly": "boolean"
+        "disabled": "boolean",
+        "readOnly": "boolean",
+        "invalid": "boolean",
+        "description": "string optional",
+        "rows": "number optional"
       },
       "events": {
         "onChange": "(value) => void",
@@ -203,23 +211,27 @@
         "ReadOnly"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "CI source/typecheck/unit checks; browser review pending",
+      "visualStatus": "R2-candidate-pending-review",
+      "notes": "\nImplemented on independent end-to-end V1 branch; no designer approval; new local Props represent exact code contract, reviewed only after runtime acceptance."
     },
     {
       "id": "BA-UI-005",
       "name": "BAOverlay",
       "kind": "primitive",
       "contractVersion": "0.2.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BAOverlay.tsx",
       "story": "packages/design-system/src/components/ui/BAOverlay.stories.tsx",
       "props": {
+        "trigger": "ReactNode (React Aria Button)",
         "open": "boolean",
         "title": "string",
-        "presentation": "popover | dialog"
+        "children": "ReactNode",
+        "className": "string optional"
       },
       "events": {
-        "onOpenChange": "(open) => void"
+        "onOpenChange": "(open:boolean)=>void"
       },
       "states": [
         "closed",
@@ -241,7 +253,9 @@
         "FocusRestore"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "CI source/typecheck/unit checks; browser review pending",
+      "visualStatus": "R2-candidate-pending-review",
+      "notes": "\nImplemented on independent end-to-end V1 branch; no designer approval; new local Props represent exact code contract, reviewed only after runtime acceptance."
     },
     {
       "id": "BA-UI-006",
@@ -311,12 +325,13 @@
       "name": "BAStatus",
       "kind": "primitive",
       "contractVersion": "0.1.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BAStatus.tsx",
       "story": "packages/design-system/src/components/ui/BAStatus.stories.tsx",
       "props": {
-        "status": "string",
-        "label": "string"
+        "tone": "information | hint | warning | correct | incorrect | revealed",
+        "children": "ReactNode",
+        "label": "string optional"
       },
       "events": {},
       "states": [
@@ -337,7 +352,9 @@
         "Locked"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": "CI source/typecheck/unit checks; browser review pending",
+      "visualStatus": "R2-candidate-pending-review",
+      "notes": "\nImplemented on independent end-to-end V1 branch; no designer approval; new local Props represent exact code contract, reviewed only after runtime acceptance."
     },
     {
       "id": "BA-WR-001",
@@ -450,17 +467,19 @@
       "name": "WordGrid",
       "kind": "composite",
       "contractVersion": "0.3.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "apps/writing/src/components/writing/WordGrid.tsx",
       "story": "apps/writing/src/components/writing/WordGrid.stories.tsx",
       "props": {
-        "groups": "WordGroup[]",
+        "groups": "WordGridGroup[] = {id,label,words:{id,text}[]}",
         "activeGroup": "string",
-        "presentation": "docked | overlay"
+        "disabled": "boolean",
+        "collapsed": "boolean",
+        "locale": "en | zh"
       },
       "events": {
-        "onGroupChange": "(key) => void",
-        "onInsert": "(word) => void"
+        "onGroupChange": "(id:string)=>void",
+        "onInsert": "(wordId:string)=>void"
       },
       "states": [
         "hidden",
@@ -488,26 +507,24 @@
         "WordWrapTablet"
       ],
       "figma": null,
-      "runtimeEvidence": null,
-      "visualStatus": "R1-candidate-pending-designer-review"
+      "runtimeEvidence": "CI source/typecheck/unit checks; browser review pending",
+      "visualStatus": "R2-candidate-pending-review",
+      "notes": "\nImplemented on independent end-to-end V1 branch; no designer approval; new local Props represent exact code contract, reviewed only after runtime acceptance."
     },
     {
       "id": "BA-WR-004",
       "name": "HamburgerLayer",
       "kind": "composite",
       "contractVersion": "0.3.0",
-      "status": "planned",
+      "status": "implemented",
       "implementation": "apps/writing/src/components/writing/HamburgerLayer.tsx",
       "story": "apps/writing/src/components/writing/HamburgerLayer.stories.tsx",
       "props": {
-        "layerId": "string",
-        "label": "string",
-        "value": "string",
-        "editable": "boolean"
+        "layers": "{id,title,supporting?}[] authored content only",
+        "focusId": "string optional",
+        "locale": "en | zh"
       },
-      "events": {
-        "onChange": "(value) => void"
-      },
+      "events": {},
       "states": [
         "idle",
         "focused",
@@ -531,8 +548,9 @@
         "AllThreeLayersTwoTextLevels"
       ],
       "figma": null,
-      "runtimeEvidence": null,
-      "visualStatus": "R1-candidate-pending-designer-review"
+      "runtimeEvidence": "CI source/typecheck/unit checks; browser review pending",
+      "visualStatus": "R2-candidate-pending-review",
+      "notes": "\nImplemented on independent end-to-end V1 branch; no designer approval; new local Props represent exact code contract, reviewed only after runtime acceptance."
     },
     {
       "id": "BA-WR-005",
@@ -789,15 +807,15 @@
       "name": "StairUnitCard",
       "kind": "writing-product-composite",
       "contractVersion": "0.1.0-r2",
-      "status": "specified-not-implemented",
+      "status": "implemented",
       "visualStatus": "R2-candidate-pending-review",
-      "implementation": "apps/writing/src/course/CourseApp.tsx (.course-unit; extraction optional)",
+      "implementation": "apps/writing/src/components/writing/StairUnitCard.tsx",
       "props": {
-        "unit": "PathUnit",
-        "status": "CourseUnitStatus",
-        "locale": "Locale"
+        "unit": "PathNode.unit authored E-01 data",
+        "status": "normal | current | done | locked",
+        "locale": "en | zh"
       },
-      "events": [],
+      "events": {},
       "states": [
         "normal",
         "current",
@@ -819,21 +837,22 @@
         "UnitLongChineseCopy",
         "UnitAllStatuses"
       ],
-      "notes": "R2 fixes earlier misassignment of Unit folded-corner requirements to BA-WR-005, which is StairLessonCard, not UnitCard."
+      "notes": "R2 fixes earlier misassignment of Unit folded-corner requirements to BA-WR-005, which is StairLessonCard, not UnitCard.\nImplemented on independent end-to-end V1 branch; no designer approval; new local Props represent exact code contract, reviewed only after runtime acceptance.",
+      "story": "apps/writing/src/components/writing/StairUnitCard.stories.tsx",
+      "runtimeEvidence": "CI source/typecheck/unit checks; browser review pending"
     },
     {
       "id": "BA-WR-008",
       "name": "StairLevelIntroCard",
       "kind": "writing-product-composite",
       "contractVersion": "0.1.0-r2",
-      "status": "specified-not-implemented",
+      "status": "implemented",
       "visualStatus": "R2-candidate-pending-review",
-      "implementation": "apps/writing/src/course/CourseApp.tsx (.course-intro)",
+      "implementation": "apps/writing/src/components/writing/StairLevelIntroCard.tsx",
       "props": {
-        "level": "PathLevel",
-        "locale": "Locale"
+        "text": "authored, already localized Level intro string"
       },
-      "events": [],
+      "events": {},
       "states": [
         "display"
       ],
@@ -847,7 +866,9 @@
         "LevelIntroDecorativeBorder",
         "LongLevelIntroAndGradient"
       ],
-      "notes": "Keep path navigation and lesson state separate."
+      "notes": "Keep path navigation and lesson state separate.\nImplemented on independent end-to-end V1 branch; no designer approval; new local Props represent exact code contract, reviewed only after runtime acceptance.",
+      "story": "apps/writing/src/components/writing/StairLevelIntroCard.stories.tsx",
+      "runtimeEvidence": "CI source/typecheck/unit checks; browser review pending"
     }
   ],
   "reviewOverlay": {
