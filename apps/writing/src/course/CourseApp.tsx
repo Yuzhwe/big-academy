@@ -1,8 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { StaircaseScene, type StaircaseVariant } from './StaircaseScene';
 import { useSyncExternalStore } from 'react';
-import { Checkbox, Radio, RadioGroup } from 'react-aria-components';
-import { BAButton, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
+import { BAButton, BAChoice, BAStatus, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { LessonWorkspace } from '../components/writing/LessonWorkspace';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
@@ -265,41 +264,24 @@ function LessonView({ session }: { session: CourseSession }) {
               <>
                 <h1 className="course-title">{activity.ask}</h1>
                 {activity.pick.hint ? <p>{activity.pick.hint}</p> : null}
-                {activity.pick.multi ? (
-                  <div className="course-choices" role="group" aria-label={activity.ask}>
-                    {activity.pick.options.map((option) => (
-                      <Checkbox
-                        key={option.index}
-                        className="course-choice"
-                        data-wrong={option.wrong ? 'true' : undefined}
-                        isSelected={option.selected}
-                        onChange={() => session.pick(option.index)}
-                      >
-                        <span className="course-choice__letter">{option.letter}</span>
-                        <span>{option.text}</span>
-                      </Checkbox>
-                    ))}
-                  </div>
-                ) : (
-                  <RadioGroup
-                    className="course-choices"
-                    aria-label={activity.ask}
-                    value={activity.pick.options.find((option) => option.selected)?.index.toString() ?? ''}
-                    onChange={(value) => session.pick(Number(value))}
-                  >
-                    {activity.pick.options.map((option) => (
-                      <Radio
-                        key={option.index}
-                        className="course-choice"
-                        data-wrong={option.wrong ? 'true' : undefined}
-                        value={String(option.index)}
-                      >
-                        <span className="course-choice__letter">{option.letter}</span>
-                        <span>{option.text}</span>
-                      </Radio>
-                    ))}
-                  </RadioGroup>
-                )}
+                <BAChoice
+                  mode={activity.pick.multi ? 'multiple' : 'single'}
+                  className="course-choices"
+                  label={activity.ask}
+                  disabled={session.inspect().tasks[`${session.screens[session.inspect().screen].screen.page}:${session.screens[session.inspect().screen].screen.task}`]?.status !== 'open'}
+                  selectedKeys={activity.pick.options.filter(option => option.selected).map(option => String(option.index))}
+                  options={activity.pick.options.map(option => ({
+                    key: String(option.index), prefix: option.letter, label: option.text,
+                    state: option.wrong ? 'incorrect' : option.selected ? 'selected' : 'idle',
+                  }))}
+                  onChange={keys => {
+                    const previous = activity.pick?.options.filter(option => option.selected).map(option => String(option.index)) ?? [];
+                    if (activity.pick?.multi) {
+                      const changed = [...keys.filter(key => !previous.includes(key)), ...previous.filter(key => !keys.includes(key))][0];
+                      if (changed !== undefined) session.pick(Number(changed));
+                    } else if (keys[0] !== undefined) session.pick(Number(keys[0]));
+                  }}
+                />
               </>
             ) : null}
             {activity.tapword ? (
@@ -364,9 +346,7 @@ function LessonView({ session }: { session: CourseSession }) {
               </BAButton>
             ) : null}
             {activity.feedback ? (
-              <p className="course-feedback" role="status" data-testid="feedback">
-                {activity.feedback}
-              </p>
+              <BAStatus tone={activity.feedback.startsWith('Right.') || activity.feedback.startsWith('Yes.') ? 'correct' : 'information'} className="course-feedback"><span data-testid="feedback">{activity.feedback}</span></BAStatus>
             ) : null}
           </div>
         }
