@@ -29,8 +29,9 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
   await expect(scene).toHaveAttribute('data-landscape', 'v2-terraces');
   await expect(scene).toHaveAttribute('data-sky', '#58A8E8');
   await expect(page.locator('.staircase-rail')).toHaveAttribute('data-parallax', '1');
-  await expect(scene).toHaveAttribute('data-parallax-state', 'awaiting-coefficients');
+  await expect(scene).toHaveAttribute('data-parallax-state', 'applied');
   const layers = await page.evaluate(() => {
+    const read = (sel: string) => Number(document.querySelector(sel)?.getAttribute('data-parallax'));
     const stage = document.querySelector('.staircase-viewport')!.getBoundingClientRect();
     const header = document.querySelector('.course-path__header')!.getBoundingClientRect();
     const box = (sel: string) => document.querySelector(sel)!.getBoundingClientRect();
@@ -38,6 +39,10 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
     const hill2 = box('[data-testid="path-hill-2"]');
     const cloud = box('[data-testid="path-cloud"] img');
     return {
+      sky: read('[data-testid="path-sky"]'),
+      cloud: read('[data-testid="path-cloud"]'),
+      hill2: read('[data-testid="path-hill-2"]'),
+      hill1: read('[data-testid="path-hill-1"]'),
       stageBottom: stage.bottom,
       viewHeight: window.innerHeight,
       headerTop: header.top,
@@ -57,6 +62,11 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
       cloudBottom: cloud.bottom,
     };
   });
+  expect(layers.sky).toBe(0);
+  expect(layers.hill1).toBeGreaterThan(layers.hill2);
+  expect(layers.hill2).toBeGreaterThan(layers.cloud);
+  expect(layers.cloud).toBeGreaterThan(layers.sky);
+  expect(layers.hill1).toBeLessThan(1);
   expect(layers.headerTop).toBeGreaterThanOrEqual(-1);
   expect(layers.headerBottom).toBeLessThanOrEqual(layers.stageTop + 1);
   expect(layers.stageBottom).toBeGreaterThan(layers.viewHeight - 4);
@@ -103,11 +113,10 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
   const hill2Move = before.hill2 - after.hill2;
   const cloudMove = before.cloud - after.cloud;
   const cardMove = before.rail - after.rail;
-  expect(cardMove).toBeGreaterThan(10);
-  expect(Math.abs(hill1Move)).toBeLessThan(1);
-  expect(Math.abs(hill2Move)).toBeLessThan(1);
-  expect(Math.abs(cloudMove)).toBeLessThan(1);
-  expect(Math.abs(cardMove - cameraMove)).toBeLessThan(1);
+  expect(cardMove).toBeGreaterThan(hill1Move);
+  expect(hill1Move).toBeGreaterThan(hill2Move);
+  expect(hill2Move).toBeGreaterThan(cloudMove);
+  expect(hill1Move).toBeLessThan(cameraMove);
   expect(await visibleTerraces(page)).toEqual([]);
   await page.keyboard.press('Home');
   await expect(scene).toHaveAttribute('data-camera-x', '0');

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cameraForStep, cameraMaxTravel, cameraYBounds, framedCameraY, hillTile, parallaxInputs, pedestalAnchorY, riseThatFits, scenicSpeeds, stepRise, terracesFit, trackLength } from './StaircaseScene';
+import { cameraForStep, cameraYBounds, framedCameraY, parallaxInputs, pedestalAnchorY, riseThatFits, scenicSpeeds, sharedHillFrame, stepRise, terracesFit } from './StaircaseScene';
 
 describe('E-01 diagonal scene shared A/B geometry', () => {
   it('derives viewport-sensitive rise without hard-coding a 15 degree slope', () => {
@@ -16,26 +16,36 @@ describe('E-01 diagonal scene shared A/B geometry', () => {
     expect(pedestalAnchorY(9, 10, rise)).toBe(356);
     expect(pedestalAnchorY(0, 10, rise)).toBeGreaterThan(pedestalAnchorY(9, 10, rise));
   });
-  it('fits one hill tile inside the stage and keeps the 1568×656 aspect', () => {
-    const tile = hillTile(1440, 800);
-    expect(tile.height).toBeLessThanOrEqual(800);
-    expect(tile.height).toBeLessThan(800);
-    expect(tile.width).toBeLessThanOrEqual(1440 + 1);
-    expect(Math.abs(tile.width / tile.height - 1568 / 656)).toBeLessThan(0.02);
-    const short = hillTile(1440, 400);
-    expect(short.height).toBeLessThanOrEqual(400);
-    expect(short.width).toBeLessThan(1440);
+  it('fits one shared hill frame to the stage and keeps the 1568×656 aspect', () => {
+    const frame = sharedHillFrame(800);
+    expect(frame.height).toBe(800);
+    expect(frame.width).toBeGreaterThan(800);
+    expect(Math.abs(frame.width / frame.height - 1568 / 656)).toBeLessThan(0.02);
   });
-  it('records parallax inputs from the node count and does not invent layer coefficients', () => {
+  it('computes scenic speeds from the track, slower than the cards, farther layers slower', () => {
     const count = 48;
     const viewport = 1440;
     const inputs = parallaxInputs(count, viewport);
-    expect(inputs.nodeCount).toBe(count);
-    expect(inputs.trackLength).toBe(trackLength(count));
+    const frame = sharedHillFrame(818);
+    const speeds = scenicSpeeds(inputs, frame.width);
+    const onScreen = viewport / inputs.trackLength;
+    const cover = (frame.width - viewport) / inputs.cameraMaxTravel;
     expect(inputs.trackLength).toBe((count - 1) * 290 + 260);
-    expect(inputs.cameraMaxTravel).toBe(cameraMaxTravel(count, viewport));
     expect(inputs.cameraMaxTravel).toBe(inputs.trackLength - viewport);
-    expect(scenicSpeeds(inputs)).toBeNull();
+    expect(speeds.cards).toBe(1);
+    expect(speeds.sky).toBe(0);
+    expect(speeds.hill1).toBeCloseTo(Math.min(cover, onScreen));
+    expect(speeds.hill2).toBeCloseTo(speeds.hill1 * onScreen);
+    expect(speeds.cloud).toBeCloseTo(speeds.hill2 * onScreen);
+    expect(speeds.hill1).toBeGreaterThan(speeds.hill2);
+    expect(speeds.hill2).toBeGreaterThan(speeds.cloud);
+    expect(speeds.cloud).toBeGreaterThan(speeds.sky);
+    expect(speeds.hill1).toBeLessThan(1);
+    expect(speeds.hill1).not.toBeCloseTo(0.12);
+    expect(speeds.hill2).not.toBeCloseTo(0.4);
+    expect(speeds.cloud).not.toBeCloseTo(0.72);
+    const revealed = speeds.hill1 * inputs.cameraMaxTravel;
+    expect(frame.width - revealed).toBeGreaterThanOrEqual(viewport - 1);
   });
   it('keeps visible card tops and terrace bottoms inside the stage', () => {
     const count = 8;
