@@ -269,6 +269,7 @@ function LessonView({ session }: { session: CourseSession }) {
         onNavigate={(index) => session.navigateLocal(index)}
       />
       <LessonWorkspace
+        navigationLayout={lessonEnd ? 'end' : 'pair'}
         activity={<ActivityBody session={session} activity={activity} />}
         coach={
           <div>
@@ -281,17 +282,17 @@ function LessonView({ session }: { session: CourseSession }) {
               </p>
             ))}
             {activity.coachMore ? (
-              <BAButton variant="ghost" locale={session.locale} onPress={() => session.showAnother()}>
+              <BAButton variant="secondary" locale={session.locale} onPress={() => session.showAnother()}>
                 {session.zh ? '再看一个' : 'Show me another'}
               </BAButton>
             ) : null}
             {hintLabel ? (
-              <BAButton variant="ghost" locale={session.locale} onPress={() => session.openHint()}>
+              <BAButton variant="secondary" locale={session.locale} onPress={() => session.openHint()}>
                 {hintLabel}
               </BAButton>
             ) : null}
             {activity.feedback ? (
-              <p className="course-feedback" role="status" data-testid="feedback">
+              <p className="course-feedback" role="status" data-testid="feedback" data-outcome={activity.feedbackTone}>
                 {activity.feedback}
               </p>
             ) : null}
@@ -300,22 +301,22 @@ function LessonView({ session }: { session: CourseSession }) {
         navigation={
           lessonEnd ? (
             <>
-              <BAButton variant="secondary" locale={session.locale} onPress={() => session.leaveLesson('stop')}>
+              <BAButton size={70} variant="secondary" locale={session.locale} onPress={() => session.leaveLesson('stop')}>
                 {session.zh ? '今天先停' : 'Stop for today'}
               </BAButton>
-              <BAButton variant="secondary" locale={session.locale} onPress={() => session.leaveLesson('path')}>
+              <BAButton size={70} variant="secondary" locale={session.locale} onPress={() => session.leaveLesson('path')}>
                 {session.zh ? '回到我的学习路径' : 'Back to my path'}
               </BAButton>
-              <BAButton variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+              <BAButton size={70} variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
                 <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
               </BAButton>
             </>
           ) : (
             <>
-              <BAButton variant="secondary" locale={session.locale} disabled={footer.backDisabled} onPress={() => session.pressBack()}>
+              <BAButton size={70} variant="secondary" locale={session.locale} disabled={footer.backDisabled} onPress={() => session.pressBack()}>
                 {footer.backLabel}
               </BAButton>
-              <BAButton variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+              <BAButton size={70} variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
                 <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
               </BAButton>
             </>
@@ -449,14 +450,23 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       {activity.build ? (
         <>
           <h1 className="course-title">{activity.ask}</h1>
-          <p className="course-bench" lang="en" data-testid="build-bench">
-            {activity.build.bench || '…'}
-          </p>
           {activity.build.revealed ? (
             <p className="course-revealed" lang="en">
               {activity.build.revealed}
             </p>
           ) : (
+            <p className="course-bench" lang="en" data-testid="build-bench" data-ordered={activity.build.ordered ? 'true' : undefined}>
+              {activity.build.bench ? <span data-testid="bench-text">{activity.build.bench}</span> : null}
+              {activity.build.ordered
+                ? Array.from({ length: activity.build.remaining ?? 0 }, (_, index) => (
+                    <span key={index} className="course-bench__blank" data-testid="bench-blank" />
+                  ))
+                : activity.build.bench
+                  ? null
+                  : '…'}
+            </p>
+          )}
+          {activity.build.revealed || activity.build.ordered ? null : (
             <BAButton variant="ghost" locale={session.locale} onPress={() => session.startAgain()}>
               {session.zh ? '重新开始' : 'Start again'}
             </BAButton>
@@ -552,7 +562,7 @@ function PreviewView({ session }: { session: CourseSession }) {
 
 function PracticeBurst({ session }: { session: CourseSession }) {
   const reduced = prefersReducedMotion();
-  const lesson = session.practiceBurst?.lesson;
+  const lesson = !!session.practiceBurst?.lesson;
   const label = lesson
     ? session.zh
       ? '这一课完成了。'
@@ -560,15 +570,30 @@ function PracticeBurst({ session }: { session: CourseSession }) {
     : session.zh
       ? '做对了。'
       : 'Correct.';
+  useEffect(() => {
+    if (reduced) return;
+    let handle: { destroy: () => void } | undefined;
+    let cancel = false;
+    void import('../celebration/particleRuntime')
+      .then((runtime) => runtime.startPracticeCelebration(lesson))
+      .then((next) => {
+        if (cancel) next.destroy();
+        else handle = next;
+      })
+      .catch(() => undefined);
+    return () => {
+      cancel = true;
+      handle?.destroy();
+    };
+  }, [lesson, reduced]);
   return (
-    <div className="course-practice" role="status" data-testid="practice-burst" data-lesson={lesson ? 'true' : 'false'}>
-      {reduced ? null : (
-        <span className="course-practice__sparks" aria-hidden="true">
-          {Array.from({ length: lesson ? 12 : 6 }, (_, index) => (
-            <i key={index} />
-          ))}
-        </span>
-      )}
+    <div
+      className="course-practice"
+      role="status"
+      data-testid="practice-burst"
+      data-lesson={lesson ? 'true' : 'false'}
+      data-preset={reduced ? 'off' : 'ribbons-explosions'}
+    >
       <span>{label}</span>
       <button type="button" onClick={() => session.dismissPractice()}>
         {session.zh ? '知道了' : 'OK'}
@@ -580,15 +605,40 @@ function PracticeBurst({ session }: { session: CourseSession }) {
 function Celebration({ session }: { session: CourseSession }) {
   const reduced = prefersReducedMotion();
   const title = session.celebration?.title ?? '';
+  const unitId = session.celebration?.unitId ?? '';
+  useEffect(() => {
+    if (reduced || !unitId) return;
+    const flag = document.querySelector<HTMLElement>(`[data-unit="${unitId}"] [data-testid="milestone"]`);
+    const rect = flag?.getBoundingClientRect();
+    if (!rect || rect.width === 0) return;
+    const x = ((rect.left + rect.width / 2) / window.innerWidth) * 100;
+    const y = ((rect.top + rect.height / 2) / window.innerHeight) * 100;
+    let handle: { destroy: () => void } | undefined;
+    let cancel = false;
+    void import('../celebration/particleRuntime')
+      .then((runtime) => runtime.startMilestoneConfetti(x, y))
+      .then((next) => {
+        if (cancel) next.destroy();
+        else handle = next;
+      })
+      .catch(() => undefined);
+    return () => {
+      cancel = true;
+      handle?.destroy();
+    };
+  }, [reduced, unitId]);
   return (
-    <div className="course-celebration" role="dialog" aria-modal="false" aria-label={title} data-testid="celebration">
-      {reduced ? null : (
-        <div className="course-confetti" aria-hidden="true">
-          {Array.from({ length: 18 }, (_, index) => (
-            <i key={index} />
-          ))}
-        </div>
-      )}
+    <div
+      className="course-celebration"
+      role="dialog"
+      aria-modal="false"
+      aria-label={title}
+      data-testid="celebration"
+      data-preset={reduced ? 'off' : 'confetti'}
+      data-start-count={reduced ? undefined : '50'}
+      data-rate-quantity={reduced ? undefined : '0'}
+      data-life-count={reduced ? undefined : '1'}
+    >
       <div className="course-celebration__card">
         <p>{session.zh ? '里程碑' : 'Milestone'}</p>
         <h2>{title}</h2>

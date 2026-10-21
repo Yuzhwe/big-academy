@@ -192,10 +192,16 @@ describe('course slice UI', () => {
 
     expect(screen.getByRole('heading', { name: /Topic sentences/ })).toBeInTheDocument();
     expect(screen.getAllByText(/top bun/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: 'Show me another' })).toHaveAttribute('data-kind', 'secondary');
+    expect(screen.getByTestId('lesson-footer')).toHaveAttribute('data-layout', 'pair');
+    expect(screen.getByRole('button', { name: 'Next' })).toHaveAttribute('data-size', '70');
     await user.click(screen.getByRole('button', { name: 'Next' }));
     await user.click(screen.getByRole('radio', { name: /Our school should have a garden/ }));
     await user.click(screen.getByRole('button', { name: 'Check' }));
     expect(screen.getByTestId('feedback')).toHaveTextContent(/Right\. You chose B/);
+    expect(screen.getByTestId('feedback')).toHaveAttribute('data-outcome', 'correct');
+    expect(screen.getByTestId('practice-burst')).toHaveAttribute('data-preset', 'ribbons-explosions');
+    expect(screen.getByTestId('practice-burst')).toHaveAttribute('data-lesson', 'false');
 
     await user.click(screen.getByRole('button', { name: 'Back to my path' }));
     const lessonOne = document.querySelector('[data-lesson-id="G2-O:1"]');
@@ -227,18 +233,67 @@ function reach(course: Session, match: (screen: Session['screens'][number]['scre
   expect(course.inspect().screen).toBe(target);
 }
 
+describe('designer preview seed', () => {
+  it('shows Level 1 and Level 2 lessons completed without writing progress or mastery', () => {
+    const storage = createMemoryStorage();
+    const course = session('?demo=preview-seed', storage);
+    const record = storage.getItem(ALEX_STATE_KEY);
+    const saved = JSON.parse(record ?? '{}') as { done: Record<string, boolean>; tasks: Record<string, unknown>; checks: Record<string, unknown>; skills?: Record<string, string> };
+    expect(saved.done).toEqual({});
+    expect(saved.tasks).toEqual({});
+    expect(saved.checks).toEqual({});
+    expect(saved.skills).toBeUndefined();
+    for (const levelId of ['L1', 'L2']) {
+      const nodes = course.pathNodes(levelId);
+      const lessons = nodes.filter((node) => node.kind === 'lesson');
+      const milestones = nodes.filter((node) => node.kind === 'milestone');
+      expect(lessons.length).toBeGreaterThan(0);
+      expect(lessons.every((node) => node.lesson?.courseState === 'done' && node.lesson.action === 'review')).toBe(true);
+      expect(milestones.every((node) => node.milestone?.completed)).toBe(true);
+    }
+    const earlier = course.pathNodes('L0').filter((node) => node.kind === 'lesson');
+    expect(earlier.some((node) => node.lesson?.courseState !== 'done')).toBe(true);
+    expect(storage.getItem(ALEX_STATE_KEY)).toBe(record);
+    expect(course.inspect().tasks).toEqual({});
+    expect(course.inspect().done).toEqual({});
+    expect(course.unitMilestoneDone(course.playUnit(), true)).toBe(false);
+    expect(course.openLesson('G2-O', 2)).toBe(true);
+    expect(course.view).toBe('lesson');
+    expect(course.unitMilestoneDone(course.playUnit(), true)).toBe(false);
+    expect(course.inspect().done).toEqual({});
+    expect(course.inspect().skills).toBeUndefined();
+    course.backToPath();
+    course.replayMilestone('G2-O');
+    expect(course.celebration?.unitId).toBe('G2-O');
+    expect(course.celebration?.replay).toBe(true);
+    expect(course.unitMilestoneDone(course.playUnit(), true)).toBe(false);
+  });
+});
+
 describe('Lesson 1 screens 5–8', () => {
-  it('counts ordered-build misses across a correct tap and Start again', () => {
+  it('shows one word hint after two wrong taps and keeps the placed word', async () => {
+    const user = userEvent.setup();
     const course = session();
     reach(course, (screen) => screen.task === 'ss.L2-04');
-    const before = course.inspect().tasks['L2-04.skill:ss.L2-04']?.miss ?? 0;
-    course.placeCard('garden');
-    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.miss).toBe(before + 1);
-    course.placeCard('our');
-    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.miss).toBe(before + 1);
-    course.startAgain();
-    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual([]);
-    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.miss).toBe(before + 1);
+    render(<CourseApp session={course} />);
+    expect(screen.queryByRole('button', { name: /Start again|重新开始/ })).not.toBeInTheDocument();
+    expect(screen.getByTestId('build-bench').textContent).not.toMatch(/…|\.{3}/);
+    expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
+    expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
+    const garden = screen.getByRole('button', { name: 'garden' });
+    await user.click(garden);
+    expect(screen.getByRole('button', { name: 'garden' })).not.toHaveAttribute('data-hint', 'true');
+    expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
+    await user.click(screen.getByRole('button', { name: 'garden' }));
+    expect(screen.getByRole('button', { name: 'garden' })).toHaveAttribute('data-hint', 'true');
+    expect(screen.getByRole('button', { name: 'school' })).not.toHaveAttribute('data-hint', 'true');
+    expect(screen.getByTestId('feedback')).toHaveAttribute('data-outcome', 'wrong');
+    await user.click(screen.getByRole('button', { name: 'our' }));
+    expect(screen.getByTestId('bench-text')).toHaveTextContent(/our/i);
+    expect(screen.getAllByTestId('bench-blank')).toHaveLength(10);
+    expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.wrongTaps?.garden).toBe(2);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['our']);
     expect(course.screenDone(course.inspect().screen)).toBe(false);
   });
 

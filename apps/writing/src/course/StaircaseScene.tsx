@@ -178,7 +178,8 @@ export function riseThatFits(
   platformExtent = PLATFORM_EXTENT,
 ): number {
   if (cardHeights.length < count || count === 0) return preferredRise;
-  const fits = (rise: number) => terracesFit(count, rise, viewportWidth, viewportHeight, cardHeights, platformExtent);
+  const fits = (rise: number) =>
+    diagonalFraming(count, rise, viewportWidth, viewportHeight, cardHeights, platformExtent) != null;
   if (fits(preferredRise)) return preferredRise;
   let lo = MIN_RISE;
   let hi = Math.max(MIN_RISE, Math.round(preferredRise));
@@ -197,6 +198,58 @@ export function framedCameraY(raw: number, bounds: CameraYBounds, railLimit: num
   if (!Number.isFinite(bounds.max)) return clamp(raw, 0, cap);
   if (bounds.min <= bounds.max) return clamp(raw, Math.max(0, bounds.min), Math.min(cap, bounds.max));
   return clamp((bounds.min + bounds.max) / 2, 0, cap);
+}
+
+/** Camera Y for a continuous lower-left → upper-right slide. One rise per horizontal step. */
+export function diagonalCameraY(cameraX: number, yAtZero: number, rise: number): number {
+  return yAtZero - (rise / STEP_GAP) * cameraX;
+}
+
+/** The resting diagonal at camera X = 0. Same follow line the drag used before the per-card clamp. */
+export function preferredDiagonalY0(count: number, rise: number, viewportWidth: number, viewportHeight: number): number {
+  const visibleAtZero = (viewportWidth / 2 - CARD_WIDTH / 2) / STEP_GAP;
+  return ANCHOR_BASE_Y + (count - 1 - visibleAtZero) * rise - viewportHeight * 0.7;
+}
+
+/**
+ * One intercept whose slope stays -rise/step for the whole pan.
+ * Null when that straight line cannot keep the visible terraces inside the stage.
+ */
+export function diagonalFraming(
+  count: number,
+  rise: number,
+  viewportWidth: number,
+  viewportHeight: number,
+  cardHeights: readonly number[],
+  platformExtent = PLATFORM_EXTENT,
+): number | null {
+  if (count === 0 || cardHeights.length < count) return null;
+  const slope = rise / STEP_GAP;
+  const maxX = cameraMaxTravel(count, viewportWidth);
+  const events = new Set<number>([0, maxX]);
+  for (let index = 0; index < count; index += 1) {
+    const left = index * STEP_GAP;
+    const enter = left - viewportWidth;
+    const exit = left + CARD_WIDTH;
+    if (enter > 0 && enter < maxX) events.add(enter);
+    if (exit > 0 && exit < maxX) events.add(exit);
+  }
+  const points = [...events].sort((a, b) => a - b);
+  const samples: number[] = [];
+  for (let index = 0; index < points.length; index += 1) {
+    samples.push(points[index]);
+    if (index + 1 < points.length) samples.push((points[index] + points[index + 1]) / 2);
+  }
+  let lo = Number.NEGATIVE_INFINITY;
+  let hi = Number.POSITIVE_INFINITY;
+  for (const cameraX of samples) {
+    const bounds = cameraYBounds(count, rise, cameraX, viewportWidth, viewportHeight, cardHeights, platformExtent);
+    if (!(bounds.min <= bounds.max)) return null;
+    lo = Math.max(lo, bounds.min + slope * cameraX);
+    hi = Math.min(hi, bounds.max + slope * cameraX);
+  }
+  if (lo > hi + 0.5) return null;
+  return clamp(preferredDiagonalY0(count, rise, viewportWidth, viewportHeight), Math.min(lo, hi), Math.max(lo, hi));
 }
 
 /**
@@ -240,15 +293,12 @@ export function StaircaseScene({
   const slope = rise / STEP_GAP;
   const maxX = Math.max(0, (count - 1) * STEP_GAP + CARD_WIDTH - view.width);
   const boundedX = clamp(cameraX, 0, maxX);
-  // A single camera relation preserves the left-bottom to right-top diagonal as the user drags.
-  const visibleIndex = (boundedX + view.width / 2 - CARD_WIDTH / 2) / STEP_GAP;
-  const cameraYRaw = ANCHOR_BASE_Y + (count - 1 - visibleIndex) * rise - view.height * 0.7; // Follow anchor line, not card center.
+  // One slope for the whole pan: camera Y tracks camera X. It does not step when a card enters.
   const railHeight = Math.max(460, pedestalAnchorY(0, count, rise) + 120);
-  const cameraY = framedCameraY(
-    cameraYRaw,
-    cameraYBounds(count, rise, boundedX, view.width, view.height, cardHeights),
-    Math.max(0, railHeight - view.height),
-  );
+  const yAtZero =
+    diagonalFraming(count, rise, view.width, view.height, cardHeights) ??
+    preferredDiagonalY0(count, rise, view.width, view.height);
+  const cameraY = diagonalCameraY(boundedX, yAtZero, rise);
   const cameraXRef = useRef(boundedX);
   cameraXRef.current = boundedX;
   const metricsRef = useRef({ width: view.width, maxX, slope, count });
@@ -371,6 +421,7 @@ export function StaircaseScene({
       data-track-length={trackLength(count)}
       data-camera-max={Math.round(maxX)}
       data-parallax-state="applied"
+      data-camera-motion="diagonal"
       role="region"
       tabIndex={0}
       aria-label={locale === 'zh' ? '斜向课程阶梯：方向键浏览，Home 和 End 前往两端' : 'Diagonal lesson staircase: arrow keys navigate; Home and End reach the ends'}

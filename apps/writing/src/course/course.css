@@ -224,9 +224,23 @@
 }
 
 .course-feedback {
+  margin: 12px 0 0;
   padding: 12px;
   border-radius: 12px;
-  background: color-mix(in srgb, var(--ba-brand-dark, #133547) 6%, var(--ba-paper, #ffffff));
+  background: var(--ba-paper, #ffffff);
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-choice-border, #c9b8b2);
+}
+
+.course-feedback[data-outcome='correct'] {
+  border-color: var(--ba-success, #14ae5c);
+}
+
+.course-bench__blank {
+  display: inline-block;
+  width: var(--ba-space-12, 48px);
+  margin-inline: var(--ba-space-1, 4px);
+  border-bottom: var(--ba-border-weight, 0.5px) solid currentColor;
+  vertical-align: baseline;
 }
 
 .course-preview {

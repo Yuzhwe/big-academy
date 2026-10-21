@@ -46,6 +46,8 @@ export interface TaskProgress {
   sel?: number | null;
   bad?: number | null;
   miss?: number;
+  /** Ordered-build wrong taps, one count per word tile. */
+  wrongTaps?: Record<string, number>;
   built?: string[];
   blanks?: string[];
   focusBlank?: number;
@@ -200,6 +202,8 @@ export interface ActivityModel {
   build?: {
     bench: string;
     revealed?: string;
+    ordered?: boolean;
+    remaining?: number;
     cards: { text: string; used: boolean; hint: boolean; shake: boolean }[];
   };
   frame?: {
@@ -231,6 +235,7 @@ export interface ActivityModel {
   coach: string[];
   coachMore: boolean;
   feedback: string;
+  feedbackTone: 'correct' | 'wrong';
 }
 
 export interface FooterModel {
@@ -344,6 +349,7 @@ export class CourseSession {
   levelId: string;
   message = '';
   feedback = '';
+  feedbackTone: 'correct' | 'wrong' = 'wrong';
   celebration: CelebrationEvent | null = null;
   /** Presentation only. Never written into the course record. */
   practiceBurst: { id: string; lesson: boolean } | null = null;
@@ -352,6 +358,8 @@ export class CourseSession {
   /** UI receipt only. Not part of Alex course state. */
   private returnTo: { unitId: string; number: number } | null = null;
   private shakeCard: string | null = null;
+  /** Designer query only. Never copied into the learner record. */
+  private previewSeed = false;
 
   constructor(options: CourseSessionOptions) {
     const source = loadAlexSource(options.html);
@@ -369,6 +377,7 @@ export class CourseSession {
     if (!loaded.fromStorage && new URLSearchParams(options.search ?? '').get('locale') === 'zh') {
       this.state.zh = true;
     }
+    this.previewSeed = new URLSearchParams(options.search ?? '').get('demo') === 'preview-seed';
     this.applySkillQuery(options.search ?? '');
     if (!this.canOpen(this.state.screen)) this.state.screen = this.firstOpen();
     this.state.page = this.pageIndex(this.screens[this.state.screen]?.screen.page ?? '');
@@ -591,8 +600,13 @@ export class CourseSession {
         intro: this.introText(level),
       },
     ];
+    const seeded = this.showsPreviewSeed(level.id);
     level.units.forEach((unit, unitIndex) => {
-      const states = live ? this.lessonStates(unit) : unit.lessons.map(() => 'view' as const);
+      const states = seeded
+        ? unit.lessons.map(() => 'done' as const)
+        : live
+          ? this.lessonStates(unit)
+          : unit.lessons.map(() => 'view' as const);
       const doneCount = states.filter((state) => state === 'done' || state === 'skipped').length;
       nodes.push({
         kind: 'unit',
@@ -636,7 +650,7 @@ export class CourseSession {
         milestone: {
           unitId: unit.id,
           title: this.shortTitle(unit.title),
-          completed: this.unitMilestoneDone(unit, live),
+          completed: seeded || this.unitMilestoneDone(unit, live),
         },
       });
     });
@@ -674,7 +688,7 @@ export class CourseSession {
       const lessonIndex = lessonNumber - 1;
       const indexes = this.liveIdx(lessonIndex);
       const courseState = this.liveState(lessonIndex);
-      if (courseState === 'locked') {
+      if (courseState === 'locked' && !this.showsPreviewSeed(unit.level ?? '')) {
         this.message = this.lockWhy(unit, lessonNumber);
         this.returnFocus = { unitId, number: lessonNumber };
         this.view = 'path';
@@ -689,21 +703,21 @@ export class CourseSession {
       if (!this.canOpen(target)) target = indexes[0];
       this.remember(unitId, lessonNumber);
       this.view = 'lesson';
-      this.feedback = '';
+      this.say('');
       this.message = '';
       const welcome = !!this.state.welcomePending && lessonIndex === this.screens[target]?.li;
       this.go(target);
       if (welcome) {
         this.state.welcomePending = false;
         this.state.stoppedAt = null;
-        this.feedback = this.zh ? '欢迎回来。' : 'Welcome back.';
+        this.say(this.zh ? '欢迎回来。' : 'Welcome back.');
         this.save();
         this.emit();
       }
       return true;
     }
     const courseState = this.lessonStates(unit)[lessonNumber - 1];
-    if (courseState === 'locked' || courseState === 'view') {
+    if (!this.showsPreviewSeed(unit.level ?? '') && (courseState === 'locked' || courseState === 'view')) {
       this.message =
         courseState === 'view'
           ? this.zh
@@ -740,7 +754,7 @@ export class CourseSession {
   backToPath(): void {
     if (this.returnTo) this.returnFocus = { ...this.returnTo };
     this.view = 'path';
-    this.feedback = '';
+    this.say('');
     this.message = '';
     this.save();
     this.emit();
@@ -763,7 +777,7 @@ export class CourseSession {
     this.state.stoppedAt = kind === 'stop' ? Date.now() : null;
     this.state.welcomePending = kind === 'stop';
     this.view = 'path';
-    this.feedback = '';
+    this.say('');
     this.log(kind === 'stop' ? 'stop_today' : 'lesson_path');
     this.save();
     this.emit();
@@ -823,9 +837,15 @@ export class CourseSession {
   replayMilestone(unitId: string): void {
     const unit = this.unit(unitId);
     const level = this.level(this.levelId);
-    if (!unit || !level.current || !this.unitMilestoneDone(unit, true)) return;
+    if (!unit || unit.level !== this.levelId) return;
+    const seeded = this.showsPreviewSeed(level.id);
+    if (!seeded && (!level.current || !this.unitMilestoneDone(unit, true))) return;
     this.celebration = { unitId, title: this.shortTitle(unit.title), replay: true };
     this.emit();
+  }
+
+  private showsPreviewSeed(levelId: string): boolean {
+    return this.previewSeed && (levelId === 'L1' || levelId === 'L2');
   }
 
   topBar(): TopBarModel | null {
@@ -872,7 +892,7 @@ export class CourseSession {
     if (globalIndex < 0) return;
     const backward = globalIndex < this.state.screen;
     if (!backward && !this.canOpen(globalIndex)) {
-      this.feedback = this.lockedMsg(this.firstOpen());
+      this.say(this.lockedMsg(this.firstOpen()));
       this.emit();
       return;
     }
@@ -899,6 +919,7 @@ export class CourseSession {
       coach,
       coachMore: this.coachHasMore(screen),
       feedback: this.feedback,
+      feedbackTone: this.feedback ? this.feedbackTone : 'wrong',
     };
 
     if (screen.kind === 'learn' && screen.template === 'P2') {
@@ -1099,17 +1120,17 @@ export class CourseSession {
         if (task?.type === 'pick') this.pickCheck(task, this.taskKey(screen));
         else if (task?.type === 'tapword' && task.need !== 'all') this.wordCheck(task, this.taskKey(screen));
         else if (task?.type === 'build') {
-          this.feedback = this.zh ? '先用下面的词卡把句子拼出来。' : 'Build it with the word cards below first.';
+          this.say(this.zh ? '先用下面的词卡把句子拼出来。' : 'Build it with the word cards below first.');
           this.log('next_blocked');
           this.emit();
         } else if (task?.type === 'write' || task?.frameFill) this.writeCheck(task, this.taskKey(screen));
         else {
-          this.feedback = `${this.lockedMsg(index)} ${this.activity()?.unsupportedReason ?? ''}`.trim();
+          this.say(`${this.lockedMsg(index)} ${this.activity()?.unsupportedReason ?? ''}`.trim());
           this.emit();
         }
         return;
       }
-      this.feedback = this.lockedMsg(index);
+      this.say(this.lockedMsg(index));
       this.emit();
       return;
     }
@@ -1378,11 +1399,10 @@ export class CourseSession {
   private buildModel(task: AlexTask, taskState: TaskProgress): Pick<ActivityModel, 'build' | 'wordGrid'> {
     const built = taskState.built ?? [];
     const bench = this.benchFrom(built);
-    const next = task.target?.[built.length];
     const cards = this.setCards(task).map((text) => ({
       text,
       used: false,
-      hint: (taskState.miss ?? 0) >= 3 && text === next,
+      hint: !!task.in_order && (taskState.wrongTaps?.[text] ?? 0) >= 2,
       shake: this.shakeCard === text,
     }));
     const used = built.slice();
@@ -1396,6 +1416,8 @@ export class CourseSession {
     return {
       build: {
         bench,
+        ordered: !!task.in_order,
+        remaining: task.in_order ? Math.max(0, (task.target?.length ?? 0) - built.length) : 0,
         revealed: taskState.status === 'shown' ? task.answer_text : undefined,
         cards,
       },
@@ -1429,7 +1451,7 @@ export class CourseSession {
     };
   }
 
-  private applyModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'canvas' | 'wordGrid' | 'applyMoveOn' | 'feedback'> {
+  private applyModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'canvas' | 'wordGrid' | 'applyMoveOn' | 'feedback' | 'feedbackTone'> {
     const page = this.pageOf(screen.page);
     const task = page?.task ? this.task(page.task) : null;
     const record = this.applyRecord(screen);
@@ -1452,6 +1474,7 @@ export class CourseSession {
     return {
       ask: this.text(task?.ask),
       feedback: remembered,
+      feedbackTone: record.result ? (record.passed && !record.safety ? 'correct' : 'wrong') : this.feedbackTone,
       canvas: {
         text: regionText(this.state.regions[screen.page]),
         tip: this.text(task?.tip),
@@ -1625,7 +1648,7 @@ export class CourseSession {
       record.q = 0;
       record.view = null;
       record.blankAsk = false;
-      this.feedback = '';
+      this.say('');
       this.save();
       this.emit();
       return;
@@ -1642,9 +1665,11 @@ export class CourseSession {
     if (blank.length && !record.blankAsk) {
       record.blankAsk = true;
       const list = blank.join(', ');
-      this.feedback = this.zh
-        ? `还有题没做：${list}。可以回去试一试，也可以直接交。`
-        : (blank.length === 1 ? `Question ${list} is` : `Questions ${list} are`) + ' still blank. You can go back and try, or hand it in as it is.';
+      this.say(
+        this.zh
+          ? `还有题没做：${list}。可以回去试一试，也可以直接交。`
+          : (blank.length === 1 ? `Question ${list} is` : `Questions ${list} are`) + ' still blank. You can go back and try, or hand it in as it is.',
+      );
       this.log('check_blank_warn');
       this.save();
       this.emit();
@@ -1669,13 +1694,16 @@ export class CourseSession {
     record.view = null;
     record.history.push({ attempt: record.attempt, passed: pass.passed, score: pass.score, total: pass.total, results });
     if (pass.passed || record.attempt >= 1) this.state.done[page.id] = true;
-    this.feedback = pass.passed
-      ? this.zh
-        ? `你通过了这次检查。${pass.score} / ${pass.total}。`
-        : `You passed this check. ${pass.score} of ${pass.total}.`
-      : this.zh
-        ? `还没有。${pass.score} / ${pass.total}。`
-        : `Not yet. ${pass.score} of ${pass.total}.`;
+    this.say(
+      pass.passed
+        ? this.zh
+          ? `你通过了这次检查。${pass.score} / ${pass.total}。`
+          : `You passed this check. ${pass.score} of ${pass.total}.`
+        : this.zh
+          ? `还没有。${pass.score} / ${pass.total}。`
+          : `Not yet. ${pass.score} of ${pass.total}.`,
+      pass.passed ? 'correct' : 'wrong',
+    );
     this.log('check_done', { score: pass.score, passed: pass.passed });
     if (!pass.passed && page.skill) this.checkFailed(page.skill);
     this.save();
@@ -1716,7 +1744,7 @@ export class CourseSession {
     const task = page?.task ? this.task(page.task) : null;
     const text = this.engine.stripPictures(regionText(this.state.regions[screen.page])).trim();
     if (this.analyzer.wordCount(text) < 3) {
-      this.feedback = this.zh ? '先写一点，我再来读。' : 'Write a little first. Then I’ll read it.';
+      this.say(this.zh ? '先写一点，我再来读。' : 'Write a little first. Then I’ll read it.');
       this.log('next_blocked');
       this.emit();
       return;
@@ -1743,7 +1771,7 @@ export class CourseSession {
     }
     const failed = graded.checks.filter((item) => !item.met);
     const also = failed[1] ? (this.zh ? `另外：${failed[1].zh || failed[1].label}` : `Also: ${failed[1].tip || failed[1].label}`) : '';
-    this.feedback = [this.zh ? graded.zh || graded.feedback : graded.feedback, also].filter(Boolean).join(' ');
+    this.say([this.zh ? graded.zh || graded.feedback : graded.feedback, also].filter(Boolean).join(' '), graded.passed ? 'correct' : 'wrong');
     this.log('apply_check', { passed: graded.passed, task: task?.id });
     this.save();
     this.emit();
@@ -1755,7 +1783,7 @@ export class CourseSession {
     const text = task.frameFill ? this.composedFrame(task, taskState) : regionText(this.state.regions[key]).trim();
     if (text.includes('___')) {
       taskState.tries += 1;
-      this.feedback = this.zh ? '先把每个 ___ 填上。' : 'Fill each ___ first.';
+      this.say(this.zh ? '先把每个 ___ 填上。' : 'Fill each ___ first.');
       if (taskState.tries >= 2) this.finish(task, key, 'shown');
       else {
         this.save();
@@ -1771,7 +1799,7 @@ export class CourseSession {
     taskState.tries += 1;
     if (grade.correct) {
       this.finish(task, key, 'done');
-      if (task.ok) this.feedback = this.affirm(this.text(task.ok));
+      if (task.ok) this.say(this.affirm(this.text(task.ok)), 'correct');
       this.emit();
       return;
     }
@@ -1779,7 +1807,7 @@ export class CourseSession {
       this.finish(task, key, 'shown');
       return;
     }
-    this.feedback = this.zh ? grade.zh || grade.explanation : grade.explanation;
+    this.say(this.zh ? grade.zh || grade.explanation : grade.explanation);
     this.log('task_try');
     this.save();
     this.emit();
@@ -1792,14 +1820,20 @@ export class CourseSession {
     if (task.in_order) {
       const want = task.target?.[taskState.built.length];
       if (cellText !== want) {
+        const taps = { ...(taskState.wrongTaps ?? {}) };
+        taps[cellText] = (taps[cellText] ?? 0) + 1;
+        taskState.wrongTaps = taps;
         taskState.miss = (taskState.miss ?? 0) + 1;
         this.shakeCard = cellText;
-        this.feedback =
-          taskState.miss >= 3
-            ? this.text(task.why)
+        const hinted = taps[cellText] >= 2;
+        const why = this.text(task.why);
+        this.say(
+          hinted && why
+            ? why
             : this.zh
               ? '这个词还不是下一个。'
-              : 'That word does not come next.';
+              : 'That word does not come next.',
+        );
         this.log('set_miss', { task: task.id, cell: cellText });
         this.save();
         this.emit();
@@ -1821,7 +1855,7 @@ export class CourseSession {
         this.finish(task, key, 'shown');
         return;
       }
-      this.feedback = this.text(task.why);
+      this.say(this.text(task.why));
       taskState.built = [];
       delete this.state.regions[key];
       this.log('task_try');
@@ -2011,6 +2045,7 @@ export class CourseSession {
       coach: [],
       coachMore: false,
       feedback: this.feedback,
+      feedbackTone: this.feedback ? this.feedbackTone : 'wrong',
       learn: {
         heading: `${this.lessonWord(current?.n ?? lessonIndex + 1)} · ${this.text(current?.title)}`,
         teach: [
@@ -2059,14 +2094,14 @@ export class CourseSession {
   private go(index: number, back = false): boolean {
     if (index < 0 || index >= this.screens.length) return false;
     if (!back && !this.canOpen(index)) {
-      this.feedback = this.lockedMsg(this.firstOpen());
+      this.say(this.lockedMsg(this.firstOpen()));
       this.emit();
       return false;
     }
     this.state.screen = index;
     this.state.page = this.pageIndex(this.screens[index].screen.page);
     this.view = 'lesson';
-    this.feedback = '';
+    this.say('');
     this.log('screen');
     this.save();
     this.emit();
@@ -2077,13 +2112,15 @@ export class CourseSession {
     const taskState = this.taskState(key);
     const picked = (taskState.picked ?? []).slice();
     if (!picked.length) {
-      this.feedback = task.multi
-        ? this.zh
-          ? '先选出答案，我再和你一起检查。'
-          : 'Choose your answers first. Then I’ll check them with you.'
-        : this.zh
-          ? '先选一个答案，我再和你一起检查。'
-          : 'Choose an answer first. Then I’ll check it with you.';
+      this.say(
+        task.multi
+          ? this.zh
+            ? '先选出答案，我再和你一起检查。'
+            : 'Choose your answers first. Then I’ll check them with you.'
+          : this.zh
+            ? '先选一个答案，我再和你一起检查。'
+            : 'Choose an answer first. Then I’ll check it with you.',
+      );
       this.log('next_blocked');
       this.emit();
       return;
@@ -2129,7 +2166,7 @@ export class CourseSession {
       taskState.wrong = picked.slice();
       taskState.picked = [];
     }
-    this.feedback = message;
+    this.say(message);
     this.log('task_try');
     this.save();
     this.emit();
@@ -2138,7 +2175,7 @@ export class CourseSession {
   private wordCheck(task: AlexTask, key: string): void {
     const taskState = this.taskState(key);
     if (taskState.sel == null) {
-      this.feedback = this.zh ? '先点句子里的一个词，我再检查。' : 'Tap a word in the sentence first. Then I’ll check it.';
+      this.say(this.zh ? '先点句子里的一个词，我再检查。' : 'Tap a word in the sentence first. Then I’ll check it.');
       this.log('next_blocked');
       this.emit();
       return;
@@ -2158,13 +2195,15 @@ export class CourseSession {
     const note = task.coach?.words?.[word.toLowerCase().replace(/[^a-z']/g, '')];
     taskState.bad = taskState.sel;
     taskState.sel = null;
-    this.feedback = note
-      ? this.zh
-        ? `${note.zh ?? note.en ?? ''} 再试一次。`
-        : `${note.en ?? ''} Which word tells what someone thinks? Try again.`
-      : this.zh
-        ? '你点的不是那个词。哪个词说明作者的想法？再试一次。'
-        : 'The word you tapped isn’t the one. Which word tells what someone thinks? Try again.';
+    this.say(
+      note
+        ? this.zh
+          ? `${note.zh ?? note.en ?? ''} 再试一次。`
+          : `${note.en ?? ''} Which word tells what someone thinks? Try again.`
+        : this.zh
+          ? '你点的不是那个词。哪个词说明作者的想法？再试一次。'
+          : 'The word you tapped isn’t the one. Which word tells what someone thinks? Try again.',
+    );
     this.save();
     this.emit();
   }
@@ -2173,16 +2212,19 @@ export class CourseSession {
     const taskState = this.taskState(key);
     taskState.status = status;
     const graded = this.gradedText(task, taskState, status === 'done');
-    this.feedback =
+    const tone = status === 'done' ? 'correct' : 'wrong';
+    this.say(
       task.type === 'pick' || (task.type === 'tapword' && status === 'shown' && (task.targets ?? []).length === 1)
         ? graded
         : status === 'done'
           ? this.affirm(this.text(task.ok) || this.text(task.why))
           : this.zh
             ? `答案在这里。${this.text(task.why)}`
-            : `Here is the answer. ${this.text(task.why)}`;
+            : `Here is the answer. ${this.text(task.why)}`,
+      tone,
+    );
     if (task.type === 'build' && status === 'shown' && task.answer_text) {
-      this.feedback = this.zh ? `答案在这里：${task.answer_text}` : `Here it is: ${task.answer_text}`;
+      this.say(this.zh ? `答案在这里：${task.answer_text}` : `Here it is: ${task.answer_text}`);
     }
     this.markPageIfTasksDone(task);
     this.log('task_done');
@@ -2232,6 +2274,11 @@ export class CourseSession {
     });
     if (finished) this.state.done[page.id] = true;
     void task;
+  }
+
+  private say(text: string, tone: 'correct' | 'wrong' = 'wrong'): void {
+    this.feedback = text;
+    this.feedbackTone = tone;
   }
 
   private affirm(text: string): string {

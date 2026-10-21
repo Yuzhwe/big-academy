@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CelebrationController } from './celebrationController';
+import { milestoneConfettiOptions, practiceExplosionOptions } from './particleRuntime';
 import { PREVIEW_DURATION_MS } from './presets';
 
 afterEach(() => { vi.useRealTimers(); });
@@ -9,6 +10,24 @@ const deferred = <T,>() => {
   const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no; });
   return { promise, resolve, reject };
 };
+
+describe('lesson celebration presets', () => {
+  it('uses the confetti preset from a flag point and keeps practice on explosions', () => {
+    const confetti = milestoneConfettiOptions(12, 34);
+    expect(confetti.preset).toBe('confetti');
+    const emitter = confetti.emitters as { startCount: number; rate: { quantity: number }; life: { count: number }; position: { x: number; y: number } };
+    expect(emitter.startCount).toBe(50);
+    expect(emitter.rate.quantity).toBe(0);
+    expect(emitter.life.count).toBe(1);
+    expect(emitter.position).toEqual({ x: 12, y: 34 });
+    expect(JSON.stringify(confetti)).not.toContain('ribbons');
+    const practice = practiceExplosionOptions(1);
+    expect(practice.preset).toBe('confettiExplosions');
+    expect((practice.emitters as { life: { count: number } }).life.count).toBe(1);
+    expect(practiceExplosionOptions(3).preset).toBe('confettiExplosions');
+    expect((practiceExplosionOptions(3).emitters as { life: { count: number } }).life.count).toBe(3);
+  });
+});
 
 describe('presentation lifecycle', () => {
   it('destroys a late result after Stop without reporting playing', async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cameraForStep, cameraYBounds, framedCameraY, parallaxInputs, pedestalAnchorY, riseThatFits, scenicSpeeds, sharedHillFrame, stepRise, terracesFit } from './StaircaseScene';
+import { cameraForStep, cameraYBounds, diagonalCameraY, diagonalFraming, framedCameraY, parallaxInputs, pedestalAnchorY, riseThatFits, scenicSpeeds, sharedHillFrame, stepRise, terracesFit } from './StaircaseScene';
 
 describe('E-01 diagonal scene shared A/B geometry', () => {
   it('derives viewport-sensitive rise without hard-coding a 15 degree slope', () => {
@@ -66,19 +66,27 @@ describe('E-01 diagonal scene shared A/B geometry', () => {
       expect(pedestal - heights[index] - y).toBeGreaterThanOrEqual(-0.5);
     }
   });
-  it('keeps the viewport rise when terraces fit, and steps down when a short stage cannot', () => {
+  it('slides the camera along one diagonal and steps rise down until that line fits', () => {
     const count = 48;
     const heights = Array(count).fill(100);
     const desktop = stepRise(1440, 818);
-    expect(terracesFit(count, desktop, 1440, 818, heights)).toBe(true);
-    expect(riseThatFits(count, 1440, 818, heights, desktop)).toBe(desktop);
+    const fitted = riseThatFits(count, 1440, 818, heights, desktop);
+    expect(fitted).toBeLessThanOrEqual(desktop);
+    expect(fitted).toBeGreaterThanOrEqual(48);
+    const y0 = diagonalFraming(count, fitted, 1440, 818, heights);
+    expect(y0).not.toBeNull();
+    const step = 290;
+    const at = (x: number) => diagonalCameraY(x, y0 ?? 0, fitted);
+    expect(at(step) - at(0)).toBeCloseTo(-fitted);
+    expect(at(step / 2)).toBeCloseTo((at(0) + at(step)) / 2);
     const short = stepRise(1024, 686);
     const tall = Array(count).fill(304);
     expect(terracesFit(count, short, 1024, 686, tall)).toBe(false);
-    const fitted = riseThatFits(count, 1024, 686, tall, short);
-    expect(fitted).toBeLessThan(short);
-    expect(fitted).toBeGreaterThanOrEqual(48);
-    expect(terracesFit(count, fitted, 1024, 686, tall)).toBe(true);
+    const stepped = riseThatFits(count, 1024, 686, tall, short);
+    expect(stepped).toBeLessThan(short);
+    expect(stepped).toBeGreaterThanOrEqual(48);
+    expect(diagonalFraming(count, stepped, 1024, 686, tall)).not.toBeNull();
+    expect(terracesFit(count, stepped, 1024, 686, tall)).toBe(true);
   });
   it('positions first and last steps within pan limits', () => {
     expect(cameraForStep(0, 1024, 20)).toBe(0);
