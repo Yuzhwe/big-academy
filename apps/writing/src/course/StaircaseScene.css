@@ -132,9 +132,10 @@
   background: #58a8e8;
 }
 .path-cloud {
-  top: 0;
-  left: 8%;
-  width: min(240px, 32vw);
+  /* The puff sits in the middle of the square. Shift it into the open upper sky. */
+  top: -56px;
+  left: 28px;
+  width: min(280px, 34vw);
 }
 .path-cloud img,
 .path-hill img {

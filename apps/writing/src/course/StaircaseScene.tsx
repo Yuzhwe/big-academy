@@ -35,21 +35,18 @@ export function cameraForStep(index: number, viewportWidth: number, count: numbe
 
 const PARALLAX = { cloud: 0.12, hill2: 0.4, hill1: 0.72 } as const;
 const HILL_RATIO = 656 / 1568;
-/** First opaque row of hill-1-foreground.png (1568×656). Hill 2 starts lower in the same frame. */
-const HILL1_SKYLINE = 246 / 656;
 const SKY = '#58A8E8';
 
 /**
  * Shared hill frame for the opening view.
- * The card camera's Y is a rail offset (often thousands of px). Scenic layers are
- * registered to the stage, so that Y must not move them. Height keeps hill 1's
- * skyline inside the viewport with sky above it, and the ground on the bottom edge.
+ * The ridges sit on the left and right of the PNG, with a transparent valley between.
+ * A frame much wider than the stage, left-aligned, hides those ridges. Keep the
+ * panorama just wider than the stage and center it. The card cameraY is a rail
+ * offset and must not move these layers. Ground stays on the bottom edge.
  */
 export function hillFrame(viewportWidth: number, viewportHeight: number): { width: number; height: number } {
-  const content = 1 - HILL1_SKYLINE;
-  const minSky = Math.max(48, viewportHeight * 0.28);
-  const height = Math.max(120, Math.round((Math.max(viewportHeight, 1) - minSky) / content));
-  const width = Math.max(1, Math.round(height / HILL_RATIO));
+  const width = Math.max(320, Math.round(Math.max(viewportWidth, 1) * 1.08));
+  const height = Math.max(120, Math.round(width * HILL_RATIO));
   return { width, height };
 }
 
@@ -171,10 +168,12 @@ export function StaircaseScene({
   });
   const hillBox = (ratio: number): CSSProperties => {
     const frame = hillFrame(view.width, view.height);
+    const centered = Math.round((view.width - frame.width) / 2 - ratio * boundedX);
     return {
       width: frame.width,
       height: frame.height,
-      ...layer(ratio),
+      left: centered,
+      transform: 'translate3d(0, 0, 0)',
     };
   };
 

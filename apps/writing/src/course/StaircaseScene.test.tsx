@@ -16,13 +16,12 @@ describe('E-01 diagonal scene shared A/B geometry', () => {
     expect(pedestalAnchorY(9, 10, rise)).toBe(356);
     expect(pedestalAnchorY(0, 10, rise)).toBeGreaterThan(pedestalAnchorY(9, 10, rise));
   });
-  it('fits the hill frame so the skyline stays inside a desktop and tablet stage', () => {
-    for (const [width, height] of [[1440, 665], [834, 850], [390, 520]] as const) {
-      const frame = hillFrame(width, height);
-      const skyline = height - frame.height * (1 - 246 / 656);
-      expect(frame.width).toBeGreaterThan(width * 0.9);
-      expect(skyline).toBeGreaterThan(24);
-      expect(skyline).toBeLessThan(height * 0.5);
+  it('fits the whole hill panorama across the opening stage', () => {
+    for (const width of [1440, 834, 390]) {
+      const frame = hillFrame(width, 700);
+      expect(frame.width).toBeGreaterThanOrEqual(width);
+      expect(frame.width).toBeLessThan(width * 1.2);
+      expect(Math.abs(frame.height / frame.width - 656 / 1568)).toBeLessThan(0.02);
     }
   });
   it('positions first and last steps within pan limits', () => {
