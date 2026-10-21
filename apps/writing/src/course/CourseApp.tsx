@@ -263,7 +263,7 @@ function LessonView({ session }: { session: CourseSession }) {
                   selectedKeys={activity.pick.options.filter(option => option.selected).map(option => String(option.index))}
                   options={activity.pick.options.map(option => ({
                     key: String(option.index), prefix: option.letter, label: option.text,
-                    state: option.wrong ? 'incorrect' : option.selected ? 'selected' : 'idle',
+                    state: option.state,
                   }))}
                   onChange={keys => {
                     const previous = activity.pick?.options.filter(option => option.selected).map(option => String(option.index)) ?? [];
@@ -286,6 +286,9 @@ function LessonView({ session }: { session: CourseSession }) {
                       className="course-word"
                       data-selected={word.selected ? 'true' : undefined}
                       data-wrong={word.wrong ? 'true' : undefined}
+                      data-feedback={word.state}
+                      aria-pressed={word.selected}
+                      disabled={word.locked}
                       onClick={() => session.tapWord(word.index)}
                     >
                       {word.text}
@@ -320,12 +323,10 @@ function LessonView({ session }: { session: CourseSession }) {
         coach={
           <div>
             {activity.coach.map((line) => (
-              <p key={line}>{line}</p>
+              <BAStatus key={line} tone="information" className="course-coach-orientation">{line}</BAStatus>
             ))}
             {activity.hints.map((hint) => (
-              <p key={hint} data-testid="hint">
-                {hint}
-              </p>
+              <BAStatus key={hint} tone="hint" className="course-coach-hint"><span data-testid="hint">{hint}</span></BAStatus>
             ))}
             {activity.coachMore ? (
               <BAButton variant="ghost" locale={session.locale} onPress={() => session.showAnother()}>
