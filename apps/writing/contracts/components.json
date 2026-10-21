@@ -1,18 +1,18 @@
 {
-  "registryVersion": "0.3.0",
+  "registryVersion": "0.4.0-r3",
   "project": "Big Academy Writing (pilot)",
   "status": "pilot-in-review",
   "sourceOfTruth": {
-    "product": "apps/writing/PRODUCT.md — only current Writing product rules, screen data and state/navigation contracts",
-    "design": "/DESIGN.md — only current design rules, including complete spacing/radius guidance and activity indicator visual system; tokens.css stores executable values",
-    "components": "this registry maps to code and interactive stories when implemented"
+    "product": "apps/writing/PRODUCT.md (v0.4 R3 current behavior)",
+    "design": "/DESIGN.md (v0.6 R3 current visual)",
+    "tokens": "packages/design-system/src/tokens.css (R3 landscape/status candidate namespaces)"
   },
   "components": [
     {
       "id": "BA-UI-001",
       "name": "BAButton",
       "kind": "primitive",
-      "contractVersion": "0.4.0-r2",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "R2-candidate-pending-review",
       "implementation": "packages/design-system/src/components/ui/BAButton.tsx",
@@ -74,7 +74,7 @@
       "id": "BA-UI-002",
       "name": "BATabs",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BATabs.tsx",
       "story": "packages/design-system/src/components/ui/BATabs.stories.tsx",
@@ -119,7 +119,7 @@
       "id": "BA-UI-003",
       "name": "BAChoice",
       "kind": "primitive",
-      "contractVersion": "0.3.0",
+      "contractVersion": "0.4.0-r3",
       "status": "planned",
       "implementation": "packages/design-system/src/components/ui/BAChoice.tsx",
       "story": "packages/design-system/src/components/ui/BAChoice.stories.tsx",
@@ -169,7 +169,7 @@
       "id": "BA-UI-004",
       "name": "BAField",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "planned",
       "implementation": "packages/design-system/src/components/ui/BAField.tsx",
       "story": "packages/design-system/src/components/ui/BAField.stories.tsx",
@@ -209,7 +209,7 @@
       "id": "BA-UI-005",
       "name": "BAOverlay",
       "kind": "primitive",
-      "contractVersion": "0.2.0",
+      "contractVersion": "0.4.0-r3",
       "status": "planned",
       "implementation": "packages/design-system/src/components/ui/BAOverlay.tsx",
       "story": "packages/design-system/src/components/ui/BAOverlay.stories.tsx",
@@ -247,7 +247,7 @@
       "id": "BA-UI-006",
       "name": "BATaskProgress",
       "kind": "primitive",
-      "contractVersion": "0.2.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "in-review",
       "implementation": "packages/design-system/src/components/ui/BATaskProgress.tsx",
@@ -310,7 +310,7 @@
       "id": "BA-UI-007",
       "name": "BAStatus",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "planned",
       "implementation": "packages/design-system/src/components/ui/BAStatus.tsx",
       "story": "packages/design-system/src/components/ui/BAStatus.stories.tsx",
@@ -343,7 +343,7 @@
       "id": "BA-WR-001",
       "name": "LessonTopBar",
       "kind": "composite",
-      "contractVersion": "0.4.0-r2",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "R2-candidate-pending-review",
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
@@ -401,7 +401,7 @@
       "id": "BA-WR-002",
       "name": "LessonWorkspace",
       "kind": "composite",
-      "contractVersion": "0.4.0-r2",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "R2-candidate-pending-review",
       "implementation": "apps/writing/src/components/writing/LessonWorkspace.tsx",
@@ -427,7 +427,10 @@
         "Coach independently scrolls, semantic message containers, footer outside Coach",
         "Listen icon-only floats in instruction container top-right with fixed safe inset",
         "Footer action group fills entire right-column width, 1:2 CSS grid minmax(0,1fr)/minmax(0,2fr), gap 8px and children width 100%, min-width 0, 70px height",
-        "P2 Not yet vs Better teaching example panels contrast in favor of Better, never scored"
+        "P2 Not yet vs Better teaching example panels contrast in favor of Better, never scored",
+        "R3 transparent fixed Footer outside Coach; no redundant top divider; grid fills available width 1:2 and 8px gap",
+        "One primary separator per content boundary; neutral container borders use quieter token, not for graded/focus borders",
+        "Peer container gaps reduce one existing spacing-token step without altering touch targets or typography"
       ],
       "requiredStories": [
         "Desktop",
@@ -439,7 +442,9 @@
         "FloatingListen",
         "FullWidthFooter1440Tablet",
         "FirstScreenDisabledPrevious",
-        "P2BetterEmphasis"
+        "P2BetterEmphasis",
+        "R3TransparentFooter",
+        "R3ContainerSeparationAndGap"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
@@ -449,7 +454,7 @@
       "id": "BA-WR-003",
       "name": "WordGrid",
       "kind": "composite",
-      "contractVersion": "0.3.0",
+      "contractVersion": "0.4.0-r3",
       "status": "planned",
       "implementation": "apps/writing/src/components/writing/WordGrid.tsx",
       "story": "apps/writing/src/components/writing/WordGrid.stories.tsx",
@@ -495,7 +500,7 @@
       "id": "BA-WR-004",
       "name": "HamburgerLayer",
       "kind": "composite",
-      "contractVersion": "0.3.0",
+      "contractVersion": "0.4.0-r3",
       "status": "planned",
       "implementation": "apps/writing/src/components/writing/HamburgerLayer.tsx",
       "story": "apps/writing/src/components/writing/HamburgerLayer.stories.tsx",
@@ -538,7 +543,7 @@
       "id": "BA-WR-005",
       "name": "StairLessonCard",
       "kind": "composite",
-      "contractVersion": "0.4.0-r2",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "R2-candidate-pending-review",
       "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
@@ -570,9 +575,11 @@
         "Paper surface white with rounded corners, warm base shadow and readable long content",
         "Title fixed to exactly 2 line boxes; text clamped at 2, reserve empty second line, accessible complete title",
         "Duration number + localized unit immediately below title on same left content axis",
-        "State badge current blue number only, no You are here; locked grey number+lock only, no Finish prior unit; completed green joined completion capsule",
         "CTA MUST render shared BAButton height 70px with working hover/pressed/focus/reduced-motion states",
-        "All Lesson cards same height for equivalent viewport/tier"
+        "All Lesson cards same height for equivalent viewport/tier",
+        "R3 number seal is primary identity; small attached status symbol current/done/locked; no wide status capsules or visible redundant phrases",
+        "Two-line title, left-aligned time, 70px actual BAButton; card/CTA concentric corner relationships",
+        "Preserve same card bottom/platform anchor under new rounded landscape terrace"
       ],
       "requiredStories": [
         "Start",
@@ -589,7 +596,10 @@
         "TitleDurationAligned",
         "CardCurrentNoBubble",
         "CardLockedNoSlogan",
-        "SharedBAButtonHoverPressed"
+        "SharedBAButtonHoverPressed",
+        "R3NumberSealCurrentCompletedLocked",
+        "R3ConcentricCTA",
+        "R3LandscapeTerraceAnchor"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
@@ -599,7 +609,7 @@
       "id": "BA-WR-006",
       "name": "UnitMilestone",
       "kind": "composite",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "candidate-warm-frame",
       "implementation": "apps/writing/src/components/writing/UnitMilestone.tsx",
@@ -637,7 +647,7 @@
       "id": "BA-UI-008",
       "name": "BAIcon",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "candidate-foundation",
       "implementation": "packages/design-system/src/components/ui/BAIcon.tsx",
@@ -675,7 +685,7 @@
       "id": "BA-UI-009",
       "name": "BAText",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "candidate-foundation",
       "implementation": "packages/design-system/src/components/ui/BATypography.tsx",
@@ -710,7 +720,7 @@
       "id": "BA-UI-010",
       "name": "BANumber",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "candidate-foundation",
       "implementation": "packages/design-system/src/components/ui/BATypography.tsx",
@@ -742,7 +752,7 @@
       "id": "BA-UI-011",
       "name": "BASegmentedControl",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "figma-v1-candidate-implementation",
       "implementation": "packages/design-system/src/components/ui/BASegmentedControl.tsx",
@@ -788,7 +798,7 @@
       "id": "BA-WR-007",
       "name": "StairUnitCard",
       "kind": "writing-product-composite",
-      "contractVersion": "0.1.0-r2",
+      "contractVersion": "0.4.0-r3",
       "status": "specified-not-implemented",
       "visualStatus": "R2-candidate-pending-review",
       "implementation": "apps/writing/src/course/CourseApp.tsx (.course-unit; extraction optional)",
@@ -811,7 +821,9 @@
         "Fold must not cover text and preserve outer body round corners",
         "Unit goals rendered as plain paragraphs, 16px supporting type; all statuses maintain same folded structure",
         "No Lesson CTA or lesson status-number assembly",
-        "Ensure complete card visible at pan terminal bounds"
+        "Ensure complete card visible at pan terminal bounds",
+        "Inner ornamental border masked at 45-degree fold; upper right seam joins rounded body silhouette without detached triangle",
+        "R3 tinted informational surface remains distinct from white actionable lessons"
       ],
       "requiredStories": [
         "UnitFoldCornerAt200Zoom",
@@ -825,7 +837,7 @@
       "id": "BA-WR-008",
       "name": "StairLevelIntroCard",
       "kind": "writing-product-composite",
-      "contractVersion": "0.1.0-r2",
+      "contractVersion": "0.4.0-r3",
       "status": "specified-not-implemented",
       "visualStatus": "R2-candidate-pending-review",
       "implementation": "apps/writing/src/course/CourseApp.tsx (.course-intro)",
@@ -848,6 +860,69 @@
         "LongLevelIntroAndGradient"
       ],
       "notes": "Keep path navigation and lesson state separate."
+    },
+    {
+      "id": "BA-WR-009",
+      "name": "LandscapeBackdrop",
+      "kind": "writing-presentation-composite",
+      "contractVersion": "0.1.0-r3",
+      "status": "specified-source-existing-in-separate-feature-branch",
+      "visualStatus": "Landscape direction approved, numeric source candidates pending rendered R3 review",
+      "implementation": "apps/writing/src/course/LandscapeBackdrop.tsx",
+      "props": {
+        "cameraShift": "number"
+      },
+      "events": [],
+      "states": [
+        "static",
+        "parallax",
+        "reduced-motion"
+      ],
+      "layoutOwner": "Staircase stage owns full bleed; backdrop owns visual layers only",
+      "requirements": [
+        "Default E-01 backdrop, not an optional production comparison with R1 gradient",
+        "Source visual composition from 913dbfe sky/peaks/hills/clouds/trees/plane/grain; preserve exact recorded candidate values from DESIGN.md",
+        "Full viewport including navigation and stage, no beige header/footer blockers",
+        "aria-hidden, pointer-events:none and no mutation of learning state",
+        "Controlled parallax and reduced-motion no animations"
+      ],
+      "requiredStories": [
+        "R3Landscape1440",
+        "R3Landscape390",
+        "R3LandscapeReducedMotion"
+      ],
+      "notes": "Documentation source: user-provided E01-landscape-backdrop-prompt.md; existing source on feat/writing-hifi-r1-593dee37 @913dbfe. This branch changes no React/CSS implementation."
+    },
+    {
+      "id": "BA-WR-010",
+      "name": "LandscapeTerrace",
+      "kind": "writing-presentation-composite",
+      "contractVersion": "0.1.0-r3",
+      "status": "specified-not-implemented",
+      "visualStatus": "Selected A concept, numeric geometry pending designer approval",
+      "implementation": "apps/writing/src/course/StaircaseScene.tsx (future component extraction possible)",
+      "props": {
+        "nodeId": "string",
+        "cameraPosition": "number"
+      },
+      "events": [],
+      "states": [
+        "default",
+        "reduced-motion"
+      ],
+      "layoutOwner": "Staircase scene owns anchor; terrace decorative only",
+      "requirements": [
+        "Layered Landscape Terrace 2–3 low rounded grass/paper-cut contour layers",
+        "No tall semitransparent rectangular pillar",
+        "Maintain card anchor and complete terminal visibility",
+        "Decorations don't intercept interactions or block main card"
+      ],
+      "requiredStories": [
+        "R3TerraceLandscapeDesktop",
+        "R3TerraceMobile",
+        "R3NoPillar"
+      ],
+      "notes": "R3 selected concept A; CSS source terrace numeric values are [E] candidates only."
     }
   ],
   "reviewOverlay": {
@@ -930,26 +1005,18 @@
       }
     ]
   },
-  "reviewR1": {
-    "version": "2026-10-20",
-    "designAuthority": "/DESIGN.md Writing Hi-Fi Review R1",
-    "productAuthority": "apps/writing/PRODUCT.md Writing Hi-Fi Review R1",
-    "acceptance": [
-      "Staircase gradient vertical #3B2424 to #E8946C",
-      "No redundant visible path/instruction/step-count prose",
-      "P7 numeral only in visible top-left; accessible full count",
-      "Practice once-only micro ribbon/explosion; mastery Lesson full 30 ribbon + 3 explosion",
-      "Coach semantic message surfaces and secondary actions",
-      "All major reference visuals expressed numerically/textually; not image dependent"
-    ],
-    "status": "spec-only; implementation and visual QA pending"
-  },
-  "reviewR2": {
-    "date": "2026-10-20",
-    "source": "User review: fold, shared BAButton, no slogans, two-line title, time label, terminal pan bounds, Level/Unit distinctions, Back50, TopBar parity, P2 strong contrast, Footer full-width",
-    "designAuthority": "DESIGN.md Writing Hi-Fi Review R2",
-    "status": "documented only, not visually implemented/tested",
-    "sourceBranch": "docs/writing-hifi-review-r2-20261020",
-    "r1Parent": "docs/writing-hifi-review-r1-20261020"
+  "reviewR3": {
+    "date": "2026-10-21",
+    "status": "documents-only; visual pending designer final approval; implementation unchanged",
+    "sourceBackdropCommit": "913dbfe",
+    "defaultTheme": "landscape",
+    "terrace": "Layered Landscape Terrace",
+    "lessonStatus": "Number Seal + Attached Symbol",
+    "retired": [
+      "R1 gradient default",
+      "tall rectangular columns",
+      "giant horizontal status capsules",
+      "R1/R2 appended review overlays"
+    ]
   }
 }
