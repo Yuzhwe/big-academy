@@ -49,7 +49,7 @@ This document is the product authority for Writing behavior: what the learner se
 
 Shared visual foundations (Warm Frame, White Canvas, type ramp, Iconoir, motion, tokens) live in repository-root `/DESIGN.md`. This file does not repeat that system. Learner-facing English and Chinese strings are authored in the unit configuration. The rules below decide structure, correctness, gates, and persistence. A reader does not need the HTML runtime to apply them.
 
-**Current build scope:** L2 unit G2-O, Lesson 1, Topic sentences, the eight Activity Screens in [Lesson 1](#lesson-1--topic-sentences). The other eight lessons and their 44 screens are specified here so later lessons use the same gates. They are not part of this build.
+**Current build scope:** L2 unit G2-O, Lesson 1, Topic sentences, the eight Activity Screens in [Lesson 1](#12-lesson-1-authored-eight-screen-slice). The other eight lessons and their 44 screens are specified here so later lessons use the same gates. They are not part of this build.
 
 ## 3. Course structure
 
@@ -199,7 +199,7 @@ Variants: `rule_pair` (skill teach), `annotated_text` (model paragraph).
 No grader. Next is available immediately and marks the screen seen.
 
 - **Rule pair.** Step title, the teach sentence, a “Not yet” example beside a “Better” example, the hamburger diagram for that skill (topic, reasons, linking, or run-on), without the redundant “Next: N short practices, then you try it in your own writing, then a check.” preview line. Lesson 1 teach sentence: “A topic sentence tells the topic and what you think.” Weak example: “Gardens have plants.” Strong example: “Our school should have a garden for two big reasons.”
-- **Skip offer.** Only on a rule-pair screen whose params set `skip_offer`, and only when skill-skip rules say so. See [Skill skip](#9-skill-skip-and-the-lesson-break).
+- **Skip offer.** Only on a rule-pair screen whose params set `skip_offer`, and only when skill-skip rules say so. See [Skill skip](#11-skill-skip-and-lesson-boundary).
 - **Annotated model.** Prompt is the page teach line. The model question and Paragraph A are sentence spans. Choosing a sentence opens that sentence’s note in the margin. Notes are teaching, not a score. Next does not require a note to be opened.
 
 ### P3 Select — choose, then Check (with two exceptions)
@@ -236,7 +236,7 @@ The prompt is the item’s ask line. The body is one bench: optional “From the
 
 **Build.** Cards come from the item’s cells plus distractors. The learner inserts them from the word-card grid into a read-only line. There is no Check button. Start again clears the line. The ask line may already quote the target sentence; the grader still compares the built line with that target.
 
-- Ordered (Lesson 1): the next card must be the next target token. A wrong card shakes and does not insert. See the miss rule in [tries](#5-item-status-tries-and-reveal).
+- Ordered (Lesson 1): the next card must be the next target token. A wrong card shakes and does not insert. See the miss rule in [tries](#7-answer-states-attempts-and-reveal).
 - When the line reaches the target length, it is correct if the built text matches `answer_text` after whitespace and quote normalization, or the card list equals the target list. A wrong full line adds a try, shows the reason, and clears after 1.2 s. The second wrong full line reveals `answer_text` under “Here it is:”.
 
 **Edit (given sentence).** The bench opens on the given text. Correct if the normalized text equals one authored `accept` string, unless the item has `rules` or `frameFill` instead.
@@ -244,7 +244,7 @@ The prompt is the item’s ask line. The body is one bench: optional “From the
 - Unchanged text: incorrect, “Nothing has changed yet. What needs fixing?” This miss counts as a try.
 - Changed but not accepted, and no rule list: “Not quite yet…” (cloze: “Read the whole sentence with that word. Does it fit?”).
 - Cloze: no Check button; filling the last blank grades immediately, as above.
-- With `rules`: graded by the production order in [Write and edit rules](#8-graders).
+- With `rules`: graded by the production order in [Write and edit rules](#10-grading-and-correctness).
 
 **Write / fill / expand.** Empty or framed text. Frame fills use the frame grader. Rule lists use the production grader. A `___` still in the text is incorrect: “Fill each ___ first.” and does not run the rest of the rules. Two-try reveal shows “One way:” plus the first `accept` string, or the reason if there is no accept list.
 
@@ -372,14 +372,14 @@ Build this lesson in this order. Screen ids are stable.
 
 | # | Screen | Template | Prompt the learner works from | Answer | Check and completion |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `L2-04.learn` | P2 rule pair | Teach sentence, weak/strong pair, hamburger | None | Next is open. Skip offer only if this skill is at practice or writing, per [skill skip](#9-skill-skip-and-the-lesson-break). |
+| 1 | `L2-04.learn` | P2 rule pair | Teach sentence, weak/strong pair, hamburger | None | Next is open. Skip offer only if this skill is at practice or writing, per [skill skip](#11-skill-skip-and-lesson-boundary). |
 | 2 | `L2-04.t.ts1` | P3 single list | “Which one is a good topic sentence for a school garden?” | B. A “Gardens have plants.” B “Our school should have a garden for two big reasons.” C “I like flowers.” | Select, then Check. Two-try reveal. |
 | 3 | `L2-04.t.ts4` | P3 passage, one word | “Tap a word that tells you this is an opinion.” Passage: “I believe our class should get a pet fish.” | “believe” or “should” | Select one word, then Check. Two-try reveal. |
 | 4 | `L2-04.t.ts3` | P3 multi list | “Tap every opinion.” | A, C, and E (indexes 0, 2, 4). A Dogs are the best pets for families. B Many families have dogs. C In my opinion, every kid should learn to swim. D The pool opens at 9:00. E School lunch should have more fruit. F Lunch is at noon. | Toggle any set, then Check. “Choose 3.” Two-try reveal. Not a radio group. |
 | 5 | `L2-04.t.ss.L2-04` | P4 ordered build | “Build this topic sentence with the grid, one word at a time: Our school should have a garden for two big reasons.” Cards, in required order: our / school / should / have / a / garden / for / two / big / reasons / . | That same sentence | No Check button. A wrong card shakes and does not insert. The third miss in a row shows the reason and pulses the next card. A full line is one try. The second wrong full line reveals the sentence. |
 | 6 | `L2-04.t.ts8` | P4 frame fill | “Finish my sentence about recess.” Frame: “In my opinion, recess should ___ because ___.” | Keep the frame words. First blank ≥ 2 words. Second blank ≥ 3 words. The reason must not be only a vague “good/nice/fun…”. | Check, or the two-try reveal. A leftover `___` fails before the frame test. |
 | 7 | `L2-04.apply` | P5 apply | “Write 3 different topic sentences for: Should our school have a garden? Put each one on a new line.” | All four criteria in [Apply](#p5-write--check-my-writing-or-hand-in) | **Check my writing.** Pass completes the screen. Two failed checks unlock **Move on for now**, which completes it without a pass. |
-| 8 | `L2-04.check` | P7 | Four questions, attempt sets in [P7](#p7-check--answer-all-questions-then-hand-in). Writing prompt and rules in [Graders](#8-graders). | Pass = at least 2 of 3 auto items and the writing item | **Next question**, then **Hand in my check**. Blanks warn once. Fail → **Try a new set**. The screen completes on a pass or on the hand-in of the second set. Footer then becomes **End of lesson**. |
+| 8 | `L2-04.check` | P7 | Four questions, attempt sets in [P7](#p7-check--answer-all-questions-then-hand-in). Writing prompt and rules in [Graders](#10-grading-and-correctness). | Pass = at least 2 of 3 auto items and the writing item | **Next question**, then **Hand in my check**. Blanks warn once. Fail → **Try a new set**. The screen completes on a pass or on the hand-in of the second set. Footer then becomes **End of lesson**. |
 
 Top-bar chips for this lesson are these eight screens, states `done`, `current`, `available`, `locked`, `skipped`. P7’s four questions are not chips.
 
@@ -391,8 +391,34 @@ Acceptance for this lesson:
 4. Screen 4 accepts a partial set without grading until Check, and does not behave as single-select.
 5. Screen 5 does not grade on a wrong card. Screen 7 does not show a correct stamp when the learner uses Move on.
 6. Screen 8 does not grade until Hand in, warns once on blanks, and uses the 2-of-3-plus-writing rule.
-7. Back, leaving to E-01, and re-entering restore selections, text, tries, Check progress, and screen position as in [Save, Back, leave, and return](#4-save-back-leave-and-return).
+7. Back, leaving to E-01, and re-entering restore selections, text, tries, Check progress, and screen position as in [Save, Back, leave, and return](#6-navigation-and-persistence).
 8. Keyboard selection, visible focus, and non-color state labels work on the choice and word tasks. Reduced motion does not block a gate.
+
+## 13. Writing visual and spatial product constraints
+
+- **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, P7 assessment, saved answers, resume, Start/Continue/Review/Locked, keyboard/touch and reduced-motion behavior. The Writing demonstration remains eight Activity Screens.
+- **E-01 full-bleed stage:** landscape sky / distant peaks / hills / trees / clouds / subtle plane + parallax is the sole default presentation; no residual beige header/footer bands may occlude the scene. Level navigation and language selector remain usable above scenery without overlapping nodes. Background never captures pointer events or course state.
+- **Camera visibility:** drag, wheel, keyboard, Home and End must reach complete visible first/last nodes, including card bounds, decorative terraces, sticky header and viewport padding; no unreachable clipped upper-right or lower-left cards.
+- **Terrace:** choose the **Layered Landscape Terrace** family (2–3 shallow rounded grass/landform layers). Retire high translucent rectangular vertical pillars. Preserve Lesson card bottom anchors and existing path navigation geometry. Terrace colors/curves are R3 design candidates, not yet approved numeric specifications.
+- **Lesson state:** choose **Number Seal + Attached Symbol**. Lesson number remains dominant; attached small status icon encodes current, completed or locked. Do not restore giant colored status capsules or redundant You're here / Finish prior unit captions. Accessible status descriptions remain; actual state gates do not change. Exact final icon geometry is a designer review candidate.
+- **Unit fold:** folded face must be a continuous rounded corner integrated with the card's outer edge; no detached corner triangle or inner decorative border crossing the folded region. Decorative folded state is not an interactive target.
+- **Lesson card:** title uses exactly two reserved line boxes, 2-line truncation with accessible full title; estimated duration directly below title as number + localized unit, left aligned. CTA uses shared BAButton (height 70px), all approved hover/pressed/focus and reduced motion states. Outer/inner radius follows concentric relation rather than independent unrelated values.
+- **Activity hierarchy:** one primary separation treatment per structural boundary (surface OR stroke OR divider unless independently justified). Right-column action footer no longer draws its own filled panel or redundant divider; it remains pinned below independently scrolling Coach. Primary and Previous fill footer width at 1:2 with 8px gap and 70px heights. Quiet neutral container strokes must not obscure interactive focus/graded borders. Decrease gaps between peer content containers by one existing spacing scale step; do not tighten line-height or hit targets.
+- **TopBar:** keep title/meta and centered ActivityScreenIndicator shared with the anchored full-screen Popover. Icon Back to Staircase remains 50×50. P7's internal question count is distinct from top eight Activity Screen indicators.
+- **P2:** differentiate Not yet vs Better; Better is instructional emphasis, never a checked practice success event.
+- **Visual authority:** backdrop appearance originates from the user-supplied E01-landscape-backdrop-prompt.md visual record, baseline commit 913dbfe on feat/writing-hifi-r1-593dee37. That historical implementation requested R1 as default; **this instruction is superseded**: in R3 landscape is default. The recorded grass terrace is a useful source, but the new R3 terrace family must not be forced to reproduce the old geometry unchanged.
+
+## 14. Lesson TopBar and footer actions
+
+**BA-WR-001 top bar.** No hamburger and no collapsible menu. Left: icon-only Back (returns to E-01, does not clear answers; no visible helper text), lesson name, and necessary metadata. Center: the lesson’s Activity Screen progress, centered on the full bar, not in the leftover space between the title and the right edge. Right: no learner action. Long English or Chinese titles truncate inside the left area and do not push the progress off center.
+
+Progress reads the live lesson screen list. Chips distinguish done, current, available, locked, and skipped in text as well as appearance. A chip navigates only when `canOpen` allows it. The current chip does not rewrite status.
+
+**Footer.** One Previous (previous Activity Screen only; disabled on Screen 1) and one primary. Top-bar Back alone exits to Staircase. Labels follow [page gates](#5-activity-screen-gates) and the template. P7 replaces both while questions are in progress.
+
+**Coach versus feedback.** On arrival, one orientation line, with “Show me another” only when the screen authored extra beats. That text is teaching. The hint ladder is a separate learner-invoked control. Check feedback, Apply comments, plan comments, and draft comments are the result of a submit. A selection change does not generate a new one. Live writing nudges (one suggestion and one specific praise) can appear during Apply, draft, and revise; they are not a score and they do not complete a page.
+
+**Language.** 中文 shows the authored Chinese line under the English. It does not change answers or gates.
 
 ## 15. Activity screen indicator and overflow navigation
 
@@ -403,18 +429,6 @@ Acceptance for this lesson:
 **Overflow:** do not impose an eight-screen data limit. Visible node count responds to available container width; 8 desktop / 6 tablet / 4 mobile are review targets, not enforced product limits or exact breakpoints. Keep current screen visible and collapse other numbers behind a clearly labeled ellipsis trigger. A nonmodal **anchored Popover**, not a blocking dialog, opens near that trigger and lists **all** Screen numbers (including those visible outside) in a responsive grid. Overflow scrolls within the popover and the current indicator is initially in view. On allowed screen selection: validate access, navigate, close. Locked indicators do not navigate. Outside click, trigger toggle, close affordance, and Escape dismiss; Escape returns focus to the trigger. Opening/closing never alters progress or attempts. Use accessible button names and keyboard navigation. A shown-but-unanswered assessment item does not count as an additional Lesson Screen.
 
 **Component contract:** separate `screenNumber`, `progressStatus`, `isSelected`, `canOpen`, and `onNavigate`; popover open/close is its container's state. Use the same React Aria focus/keyboard semantics across both locations. Document compact/regular sizes, hover/focus/pressed/disabled and Done+Selected combinations in Storybook; verify 1440/1024/834/390 widths, long headings, and 200% zoom.
-
-## 14. Lesson TopBar and footer actions
-
-**BA-WR-001 top bar.** No hamburger and no collapsible menu. Left: icon-only Back (returns to E-01, does not clear answers; no visible helper text), lesson name, and necessary metadata. Center: the lesson’s Activity Screen progress, centered on the full bar, not in the leftover space between the title and the right edge. Right: no learner action. Long English or Chinese titles truncate inside the left area and do not push the progress off center.
-
-Progress reads the live lesson screen list. Chips distinguish done, current, available, locked, and skipped in text as well as appearance. A chip navigates only when `canOpen` allows it. The current chip does not rewrite status.
-
-**Footer.** One Previous (previous Activity Screen only; disabled on Screen 1) and one primary. Top-bar Back alone exits to Staircase. Labels follow [page gates](#3-page-gates) and the template. P7 replaces both while questions are in progress.
-
-**Coach versus feedback.** On arrival, one orientation line, with “Show me another” only when the screen authored extra beats. That text is teaching. The hint ladder is a separate learner-invoked control. Check feedback, Apply comments, plan comments, and draft comments are the result of a submit. A selection change does not generate a new one. Live writing nudges (one suggestion and one specific praise) can appear during Apply, draft, and revise; they are not a score and they do not complete a page.
-
-**Language.** 中文 shows the authored Chinese line under the English. It does not change answers or gates.
 
 ## 16. E-01 Staircase behavior
 
@@ -451,20 +465,6 @@ Celebration is presentation. It never grades, never completes a screen, and neve
 - A failed or interrupted presentation does not consume the receipt.
 
 The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribbons, Confetti, Cannon, Explosions, Falling, Parade, Party, Fire, Firefly, Fireworks). Nothing auto-plays on entry. Previews stop on Escape, on leaving the page, or after 15 seconds, and they do not block page controls. The gallery is not the milestone rule above.
-
-## 13. Writing visual behavior requirements
-
-- **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, P7 assessment, saved answers, resume, Start/Continue/Review/Locked, keyboard/touch and reduced-motion behavior. The Writing demonstration remains eight Activity Screens.
-- **E-01 full-bleed stage:** landscape sky / distant peaks / hills / trees / clouds / subtle plane + parallax is the sole default presentation; no residual beige header/footer bands may occlude the scene. Level navigation and language selector remain usable above scenery without overlapping nodes. Background never captures pointer events or course state.
-- **Camera visibility:** drag, wheel, keyboard, Home and End must reach complete visible first/last nodes, including card bounds, decorative terraces, sticky header and viewport padding; no unreachable clipped upper-right or lower-left cards.
-- **Terrace:** choose the **Layered Landscape Terrace** family (2–3 shallow rounded grass/landform layers). Retire high translucent rectangular vertical pillars. Preserve Lesson card bottom anchors and existing path navigation geometry. Terrace colors/curves are R3 design candidates, not yet approved numeric specifications.
-- **Lesson state:** choose **Number Seal + Attached Symbol**. Lesson number remains dominant; attached small status icon encodes current, completed or locked. Do not restore giant colored status capsules or redundant You're here / Finish prior unit captions. Accessible status descriptions remain; actual state gates do not change. Exact final icon geometry is a designer review candidate.
-- **Unit fold:** folded face must be a continuous rounded corner integrated with the card's outer edge; no detached corner triangle or inner decorative border crossing the folded region. Decorative folded state is not an interactive target.
-- **Lesson card:** title uses exactly two reserved line boxes, 2-line truncation with accessible full title; estimated duration directly below title as number + localized unit, left aligned. CTA uses shared BAButton (height 70px), all approved hover/pressed/focus and reduced motion states. Outer/inner radius follows concentric relation rather than independent unrelated values.
-- **Activity hierarchy:** one primary separation treatment per structural boundary (surface OR stroke OR divider unless independently justified). Right-column action footer no longer draws its own filled panel or redundant divider; it remains pinned below independently scrolling Coach. Primary and Previous fill footer width at 1:2 with 8px gap and 70px heights. Quiet neutral container strokes must not obscure interactive focus/graded borders. Decrease gaps between peer content containers by one existing spacing scale step; do not tighten line-height or hit targets.
-- **TopBar:** keep title/meta and centered ActivityScreenIndicator shared with the anchored full-screen Popover. Icon Back to Staircase remains 50×50. P7's internal question count is distinct from top eight Activity Screen indicators.
-- **P2:** differentiate Not yet vs Better; Better is instructional emphasis, never a checked practice success event.
-- **Visual authority:** backdrop appearance originates from the user-supplied E01-landscape-backdrop-prompt.md visual record, baseline commit 913dbfe on feat/writing-hifi-r1-593dee37. That historical implementation requested R1 as default; **this instruction is superseded**: in R3 landscape is default. The recorded grass terrace is a useful source, but the new R3 terrace family must not be forced to reproduce the old geometry unchanged.
 
 ## 18. Excluded chrome and non-goals
 
