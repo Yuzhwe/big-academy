@@ -1015,5 +1015,154 @@
     "design": "DESIGN.md",
     "tokens": "packages/design-system/src/tokens.css",
     "implementation": "not-proven-by-documentation"
-  }
+  },
+  "lesson1ActivityMappings": [
+    {
+      "screenId": "L2-04.learn",
+      "templateId": "P2",
+      "layoutVariantId": "P2.rule-pair.hamburger",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-004",
+        "BA-UI-006",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts1",
+      "templateId": "P3",
+      "layoutVariantId": "P3.list.option.single",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts4",
+      "templateId": "P3",
+      "layoutVariantId": "P3.passage.word.single",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [
+        "selectable passage word tokens"
+      ],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts3",
+      "templateId": "P3",
+      "layoutVariantId": "P3.list.option.multi",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ss.L2-04",
+      "templateId": "P4",
+      "layoutVariantId": "P4.build.word.guided-order",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-003",
+        "BA-UI-007"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts8",
+      "templateId": "P4",
+      "layoutVariantId": "P4.fill.chunks.frame",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.apply",
+      "templateId": "P5",
+      "layoutVariantId": "P5.write.constraint-apply",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [
+        "writing canvas"
+      ],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.check",
+      "templateId": "P7",
+      "layoutVariantId": "P7.assessment.3-auto-1-writing",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-001",
+        "BA-UI-006"
+      ],
+      "internalComposites": [
+        "P7 internal question pager"
+      ],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    }
+  ],
+  "lesson1ActivityMappingVersion": "1.0.0-review"
 }
