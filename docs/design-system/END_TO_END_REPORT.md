@@ -41,3 +41,7 @@
 | Approval / Merge | Not approved; `main` must remain unchanged |
 
 **Governance:** Maintain changes only in independent branch and PR. No direct merge, auto-merge or undocumented approval.
+
+## CI evidence · GitHub Actions
+
+Workflow `Design System Review Gates` run [39525571619](https://github.com/Yuzhwe/big-academy/actions/runs/39525571619) completed **success** on commit `5d2d38907b57cb336ad84b891680b70a61ff93e1` (2026-10-21). `npm ci`, `check:docs`, `check:reuse`, `check:tokens`, `typecheck`, `npm test`, and `npm run build` passed. The workflow deliberately does not include browser E2E or visual approval; those remain unverified. Subsequent documentation-only commits still require fresh status observation.
