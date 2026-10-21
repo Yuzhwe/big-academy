@@ -494,7 +494,8 @@
       ],
       "figma": null,
       "runtimeEvidence": null,
-      "visualStatus": "R1-candidate-pending-designer-review"
+      "visualStatus": "R1-candidate-pending-designer-review",
+      "notes": "Writing WordGrid visual exploration: connected multi-group tabs and white pill vocabulary; single-group sets do not show decorative lone tabs. Visual approval pending. PRODUCT.md chapter 12 owns group availability and grading."
     },
     {
       "id": "BA-WR-004",
@@ -922,7 +923,7 @@
         "R3TerraceMobile",
         "R3NoPillar"
       ],
-      "notes": "R3 selected concept A; CSS source terrace numeric values are [E] candidates only."
+      "notes": "Selected visual concept: Layered Landscape Terrace; CSS source terrace numeric values are [E] candidates only."
     }
   ],
   "reviewOverlay": {
@@ -1005,18 +1006,176 @@
       }
     ]
   },
-  "reviewR3": {
-    "date": "2026-10-21",
-    "status": "documents-only; visual pending designer final approval; implementation unchanged",
-    "sourceBackdropCommit": "913dbfe",
-    "defaultTheme": "landscape",
+  "currentDirection": {
+    "product": "Writing L2 G2-O Lesson 1",
+    "defaultStaircaseTheme": "landscape",
     "terrace": "Layered Landscape Terrace",
     "lessonStatus": "Number Seal + Attached Symbol",
-    "retired": [
-      "R1 gradient default",
-      "tall rectangular columns",
-      "giant horizontal status capsules",
-      "R1/R2 appended review overlays"
-    ]
-  }
+    "visualApproval": "pending-designer-rendered-review",
+    "productBehavior": "apps/writing/PRODUCT.md",
+    "design": "DESIGN.md",
+    "tokens": "packages/design-system/src/tokens.css",
+    "implementation": "not-proven-by-documentation"
+  },
+  "lesson1ActivityMappings": [
+    {
+      "screenId": "L2-04.learn",
+      "templateId": "P2",
+      "layoutVariantId": "P2.rule-pair.hamburger",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-004",
+        "BA-UI-006",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts1",
+      "templateId": "P3",
+      "layoutVariantId": "P3.list.option.single",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts4",
+      "templateId": "P3",
+      "layoutVariantId": "P3.passage.word.single",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [
+        "selectable passage word tokens"
+      ],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts3",
+      "templateId": "P3",
+      "layoutVariantId": "P3.list.option.multi",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ss.L2-04",
+      "templateId": "P4",
+      "layoutVariantId": "P4.build.word.guided-order",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-003",
+        "BA-UI-007"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts8",
+      "templateId": "P4",
+      "layoutVariantId": "P4.fill.chunks.frame",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.apply",
+      "templateId": "P5",
+      "layoutVariantId": "P5.write.constraint-apply",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [
+        "writing canvas"
+      ],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified",
+      "wordGrid": {
+        "required": true,
+        "level": "words",
+        "groups": [
+          "opinion",
+          "nouns",
+          "adjectives",
+          "marks"
+        ],
+        "interaction": "tab switches available words; word card inserts at active writing caret, without grading"
+      }
+    },
+    {
+      "screenId": "L2-04.check",
+      "templateId": "P7",
+      "layoutVariantId": "P7.assessment.3-auto-1-writing",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-001",
+        "BA-UI-006"
+      ],
+      "internalComposites": [
+        "P7 internal question pager"
+      ],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    }
+  ],
+  "lesson1ActivityMappingVersion": "1.0.0-review"
 }

@@ -1,24 +1,15 @@
 # Big Academy — DESIGN.md
 
-**Version:** v0.6 R3 canonical design · 2026-10-21
-**Owner:** UI/UX Designer (final visual authority)  
-**Scope:** all Big Academy products. **This is the only DESIGN.md in the repository.** Writing feature-specific requirements and page specifications are combined inside `apps/writing/PRODUCT.md`.  
-**Authority:** approved designer decisions override external design prompts; actual checked component code and Storybook demonstrate implementations but never grant design approval. Product-specific business rules belong in each `apps/<product>/PRODUCT.md`.
+**Edition:** Canonical Design System & Writing visual specification v1 · 2026-10-21
+**Authority:** global visual and interaction design language; Writing-specific current visual directions.
+**Status:** selected visual concepts are approved; numeric [E] candidates require designer review in rendered UI.
+**Scope:** shared foundations plus Writing E-01 and Activity experience.
 
-## R6 decision overlay — 2026-10-20
+## Reading and authority rules
 
-This section supersedes **conflicting earlier descriptions** without deleting their provenance. Root `DESIGN.md` is the single shared design authority; Writing-specific page/interaction specifications belong to `apps/writing/PRODUCT.md`, not a parallel `apps/writing/DESIGN.md`.
+This is the only active root DESIGN.md. Do not treat old review rounds, deprecated theme alternatives, copied research briefs or historical experiments as competing instructions. PRODUCT.md owns scoring/navigation/learning behavior; this file owns presentation and visual states; tokens.css owns executable values; Component Contracts define component API. [A] is an approved decision, [E] is an implementation candidate that must not be represented as designer-validated. React Aria is the accessibility foundation; use actual Big Academy reusable components rather than replacing them with independently styled controls.
 
-- **Staircase:** the approved forward path form is **A · separate platforms**, ascending lower-left → upper-right with a viewport-height-derived rise and bottom-anchored cards. Earlier A/B continuous slope tests and contrasting A/B color themes are historical explorations only. Writing Warm Frame + White Canvas remains the approved product foundation. Writing E-01 uses the R3 landscape composition below; R1 brown/orange vertical gradient is retired as a production directive.
-- **Staircase hierarchy:** Intro = readable introduction; Unit = chapter banner and non-interactive Stub; Lesson = strongest available action and real access gate; completed Mile = optional replayable reward; Goal = distinct achievement with original eligibility.
-- **Celebration:** reuse original ten tsParticles effects from Writing Celebration PR #22; **Ribbons count 30** for Writing lesson composition, with three explosions when applicable; Milestone confetti is distinct and originates at the completed flag center. A shared renderer is permissible, shared learning/achievement receipts are not.
-- **Answer options:** minimum 50px height is a Writing **option** rule, not a global BAButton rule. Allow content height growth; single-line center alignment, wrapped multiline first-line alignment and number alignment. Selection/feedback states must convey meaning without color alone; dimming options to 40%, shake and audio remain subject to design/accessibility validation.
-- **Coach:** instruction and user-invoked hints are separate from checked answer feedback; selection edits do not generate fresh grading feedback.
-- **Typography v0.1 temporary designer-accepted ramp** (font-size/line-height CSS px; ordered desktop → mobile): Display 40/48 → 32/40; Heading XL 32/40 → 28/36; Heading L 26/34 → 24/32; Heading M 22/30 → 20/28; Body L 18/28 → 18/28; Body M 16/24 → 16/24; Body S 14/20 → 14/20; Caption 12/18 → 12/18. Preserve Dosis ExtraBold 800 EN heading/numerals, Jost EN body, Douyin ZH headings, Noto Sans SC ZH body. This is **Big Academy's own interim scale informed by general Apple HIG readability/dynamic text principles**, not claimed Apple tokens or exact Figma values. Font asset identification/license, text zoom, long-form Chinese legibility and EN/ZH parity still require tests.
-- **Governance:** approved principles and visual review candidates must retain separate status. Neither completion of code nor passing automated tests amounts to visual approval.
-
-
-## 1. Overview — one design language, multiple product themes
+## 1. Design principles and product themes
 
 Big Academy is a K–12 learning ecosystem. Maintain coherent typography, spacing, form controls, navigation, accessible state affordances, layouts and component quality across Writing, Reading and future experiences. Differentiate product identity **primarily through theme color**, without forcing different learning experiences into identical screen structures.
 
@@ -30,7 +21,7 @@ Big Academy is a K–12 learning ecosystem. Maintain coherent typography, spacin
 
 Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candidate; **[R]** reference-only; **[T]** working temporary implementation; **[Q]** open decision.
 
-## 2. Colors & Product Themes
+## 2. Color foundations and theme roles
 
 ### 2.1 Known colors (do not invent other product themes)
 
@@ -79,7 +70,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 - Reading primary/tint remain undecided; do **not** invent them. Dark mode, alpha scales and component spacing/radius approvals remain separate.
 - No component, browser, Storybook, or accessibility tests were run **as explicitly requested**. Color-system **design approval [A]** must not be confused with engineering `verified` or visual approval of unreviewed rendered components.
 
-## 3. Typography — Foundation A [A, 2026-10-19]
+## 3. Typography and internationalization
 
 **Approved direction:** One coherent typography system across **all** Big Academy products, with **expressive display/heading typography plus highly readable body/learning text**. UI labels use the shared text-role system rather than a separate product-specific font identity. The display and body roles **may** use different typefaces; two separate families are not mandatory.
 
@@ -93,7 +84,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 
 ### English and Chinese
 
-Both languages share the **same semantic text roles and hierarchy**, but can select different font families or fallbacks for correct CJK coverage, balance and rendering. A localized screen should be monolingual rather than duplicating EN/ZH side-by-side. Verify line breaks, CJK punctuation, long lesson names, zoom/text scaling and mixed-language input.
+Both locales share the **same semantic text roles and hierarchy**, but can select different font families or fallbacks for correct CJK coverage, balance and rendering. **Approved Writing localization behavior B:** when `zh` is selected, use a Chinese-language **interface** (navigation, buttons, instructional copy, Coach, status, accessibility labels and WordGrid category tabs), rather than presenting English interface text and its Chinese translation together. The exceptions are **original English learning material required for an English Writing activity**: quoted example sentences, options, tappable passage words, WordGrid English word/phrase cards, fixed English sentence frames, assessment material and learner-entered writing. These retain their original English spelling/order and are visually integrated into the otherwise Chinese interface. When `en` is selected, use English UI labels. Neither mode changes the curriculum data or grader. Verify English materials within Chinese UI, line breaks, CJK punctuation, long lesson names, zoom/text scaling and mixed-language input.
 
 ### Approved font assignments [A, 2026-10-19]
 
@@ -111,7 +102,7 @@ The UI/UX Designer has explicitly selected the following **font roles**. These a
 
 **Explicitly deferred [Q]:** numeric font-size scale, line heights, letter spacing, chosen weights for Jost/Douyin/Noto Sans SC, UI control typography details, font asset source/version, license/distribution verification, performance strategy and fallback behavior. A temporary system-font stack [T] may remain in existing implementation until these font assets have been legally and technically verified; an installed fallback is **not** a change to the approved font choices. Do not bundle any font file before confirming its license. Verify actual font loading and EN/ZH/digit specimens in Storybook before visual sign-off.
 
-## 4. Layout & Spacing
+## 4. Spacing, grid and layout
 
 ### Spatial, Grid & Layout System v0.2 [A principles, E values · 2026-10-19]
 
@@ -134,11 +125,11 @@ The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, sup
 
 **E-01 Staircase:** the **diagonal lower-left → upper-right learning-path interaction is the agreed target**; its complete page-specific requirements and A/B verification protocol are in `apps/writing/PRODUCT.md` (one combined PRODUCT + page specification). Lesson number top-left on every card. Start / Continue / Review / Locked actions; preserve distinct skipped indicator. Insert one Unit Milestone after each Unit and Level Goal after final Unit. Their progress and confetti eligibility are product logic, not CSS. **Current Writing Staircase:** separate platforms and anchored diagonal geometry remain. The R3 landscape fills the stage; cards keep readable paper surfaces. Historical continuous-slope A/B and dusk-gradient visual experiments do not compete with the current specification. Browser visual review is still required for implementation fidelity.
 
-**Lesson Shell:** A · **Warm Frame + White Canvas**. White task/paper on left, Coach on right. Coach content scrolls independently; Back plus one contextual Check / Next / Hand in control live in a bottom footer **outside Coach**, pinned to the right column bottom. Ordinary visual borders/dividers default **0.5 CSS px [A]**; thicker functional focus rings remain [T/Q] and must visibly distinguish focus.
+**Lesson Shell:** A · **Warm Frame + White Canvas**. White task/paper on left, Coach on right. Coach content scrolls independently; Previous plus one contextual Check / Next / Hand in control live in a bottom footer **outside Coach**, pinned to the right column bottom. Ordinary visual borders/dividers default **0.5 CSS px [A]**; thicker functional focus rings remain [T/Q] and must visibly distinguish focus.
 
-**BA-WR-001 LessonTopBar [A structure, E dimensions]:** remove collapsible menu. Left: Back + current Lesson name + only necessary tags; centered: real current-Lesson task numbers and completion statuses; right: no visible action. Task group must be geometrically centered in the **whole bar**, regardless of left-side title length. Do not hard-code task count. Keep skipped distinguishable, and never determine access by visuals. Long titles must not push progress or cause hidden task navigation. 80px desktop / 76px tablet, warm `#FEF9EF`, task marker 36px and scroll rail are **pilot candidates [T]**, not approved measurements. In R1 retain Activity Screen indicators; the Back itself is icon-only and does not show helper text. Removed menu capabilities remain a product-placement question.
+**BA-WR-001 LessonTopBar [A structure, E dimensions]:** remove collapsible menu. Left: Back + current Lesson name + only necessary tags; centered: real current-Lesson task numbers and completion statuses; right: no visible action. Task group must be geometrically centered in the **whole bar**, regardless of left-side title length. Do not hard-code task count. Keep skipped distinguishable, and never determine access by visuals. Long titles must not push progress or cause hidden task navigation. 80px desktop / 76px tablet, warm `#FEF9EF`, task marker 36px and scroll rail are **pilot candidates [T]**, not approved measurements. Retain Activity Screen indicators; the Back itself is icon-only and does not show helper text. Removed menu capabilities remain a product-placement question.
 
-**Word Grid:** task-gated inside left writing area. Multiple groups switch real vocabulary using tabs; active tab is visually connected to its panel. Tablet uses **on-demand overlay** in left area, preserving active caret and final writing line, and must not cover Coach/Footer.
+**WordGrid:** task-gated inside left writing area. Multiple groups switch real vocabulary using tabs; active tab is visually connected to its panel. Tablet uses **on-demand overlay** in left area, preserving active caret and final writing line, and must not cover Coach/Footer.
 
 **P6 Hamburger:** each row is **one shared visual layer**, label and editable content on same background. Focus changes whole-layer treatment and gives editable line a clear underline, no nested white input card. Distinguish P5 paragraph scaffold colors from P6 plan-layer palette; do not mix them.
 
@@ -153,22 +144,18 @@ The following is incorporated in full to make this DESIGN.md sufficient for choo
 **Approval [A]:** combined design principles (Geist-style regularized spacing, 4px base / 8px primary rhythm; Element First / Content First; contextual grid choice; Responsive / Adaptive / Strict).
 **Candidate [E]:** initial CSS numeric scale, semantic usage mappings, actual column count/gutters, container boundaries, and breakpoints; they are not signed-off component dimensions.
 **Engineering:** not integrated into components or tested in browser. Existing approved Writing layout rules override generic examples.
-
-## 1. Research background and attribution
-
+#### 1. Research background and attribution
 - [Vercel: Teaching agents product design at Vercel](https://vercel.com/blog/teaching-agents-product-design-at-vercel): linting warns about arbitrary spacing that falls off a 4px grid and suggests a standard utility.
 - [Elliot Dahl / Figma publication: Space, grids, and layouts](https://www.designsystems.com/space-grids-and-layouts/): uses an 8pt main scale and 4pt half-step, distinguishes Element First and Content First, describes column/modular/baseline grids and Adaptive/Responsive/Strict layouts.
 - These are **reference principles**, not Vercel/Figma brand assets or a requirement to duplicate another company's CSS naming.
 
-## 2. Spatial fundamentals [A]
-
+#### 2. Spatial fundamentals [A]
 - Base unit = **4 CSS px** for standard spacing; default design rhythm = **8 CSS px**. A 4px half-step supports icons, micro-gaps and dense control internals.
 - Prefer a short supported scale over arbitrary local measurements. When an exceptional value is required, explain what constraint makes it necessary.
 - Spacing tokens represent **relationships between elements**, not component geometry, border widths, font sizes, tap targets or arbitrary visual world coordinates.
 - Maintain P0 Primitive → Semantic → optional Component hierarchy, with **CSS variables as the single executable value source**. UI components should consume semantic roles when stable; an unreviewed candidate number must never be labeled [A].
 
-## 3. Initial numeric spacing candidates [E]
-
+#### 3. Initial numeric spacing candidates [E]
 The following is a **candidate CSS scale** in `packages/design-system/src/tokens.css`; no component is migrated yet.
 
 | Token | Value | Intended first-use examples |
@@ -185,7 +172,7 @@ The following is a **candidate CSS scale** in `packages/design-system/src/tokens
 
 Never interpret this table as an instruction to apply 64px to every page section or 16px to every component. Map a semantic relationship before choosing a value. Exact role-to-value assignments and responsive variants remain [E].
 
-### Proposed semantic relationships [E]
+#### Proposed semantic relationships [E]
 
 - `inline-gap-compact`: icon + label or closely bound controls
 - `control-content-gap`: button/field internals, **not** tap-target minimum
@@ -197,25 +184,23 @@ Never interpret this table as an instruction to apply 64px to every page section
 
 Do not add all these semantic variables until real components need them; write the agreed value in CSS when implementing.
 
-## 4. Sizing policies [A principles, E exact dimensions]
-
-### Element First
+#### 4. Sizing policies [A principles, E exact dimensions]
+#### Element First
 
 For predictably sized controls (buttons, inputs, icon actions, progress targets), prioritize coherent touch/keyboard target size and layout alignment. The current pilot's `--ba-hit-min: 44px` is a **temporary implemented value**; it is not a spacing scale entry and this policy does not reapprove every control size.
 
-### Content First
+#### Content First
 
 For variable content (lesson instructions, writing paper, Coach text, multilingual paragraphs, cards with dynamic descriptions), preserve content, line-wrap and adequate padding. Let height grow rather than clipping teaching content to a decorative step.
 
-### Box model and exceptions
+#### Box model and exceptions
 
 - Use `box-sizing: border-box` for measured UI geometry; distinguish outer measured box from content box in design-to-code review.
 - Writing's approved **ordinary 0.5px border** remains a border token, not a violation of the 4px spacing grid. Focus rings may be thicker for accessibility.
 - Typography line-height, optical alignment, hairlines, icons and animation/world coordinates are **not automatically rounded** to the 4px grid. Typography metrics remain separately governed and need EN/ZH review.
 - `min-height`, `min-width` and content constraints take priority over cosmetic grid purity where accessibility or student learning content would suffer.
 
-## 5. Grid rules
-
+#### 5. Grid rules
 | Grid | When to use | Big Academy guidance |
 |---|---|---|
 | Column | broad page composition / major panels | Use meaningful tracks and gutters; do not force every page to 12 columns |
@@ -224,8 +209,7 @@ For variable content (lesson instructions, writing paper, Coach text, multilingu
 
 **Approved ownership:** app/page controls overall grid and panel placement, reusable components control internal layout. Product-specific geometry such as E-01 staircase positions stays with Writing and must not be replaced with a generic equal-size grid.
 
-## 6. Layout behavior policies [A]
-
+#### 6. Layout behavior policies [A]
 | Behavior | Meaning | Candidate application |
 |---|---|---|
 | Responsive | fluidly reflow within available space | ordinary shared controls, card content and page padding |
@@ -234,16 +218,14 @@ For variable content (lesson instructions, writing paper, Coach text, multilingu
 
 Multiple modes may coexist on one screen. The responsive strategy uses available **container width and content needs**, not a blanket device-name heuristic. **Breakpoint numbers, columns and percentages are [E].**
 
-## 7. Product rules that outrank generic spatial samples
-
+#### 7. Product rules that outrank generic spatial samples
 - `BA-WR-001 LessonTopBar`: task progress stays geometrically centered against the whole header; long titles may truncate instead of displacing progress; lesson statuses and gating remain product-controlled.
 - `BA-WR-002 LessonWorkspace`: Warm Frame + White Canvas; Coach content scrolls separately; bottom navigation remains outside Coach and anchored to the right column footer.
 - `BA-WR-003 WordGrid`: tablet overlay only within left writing region and preserves caret/last writing line; never covers Coach/Footer.
 - `BA-WR-005 StairLessonCard`: diagonal staircase position is scene/product geometry, not a general 4px spacing-grid obligation.
 - Target checks when implementation begins: desktop 1440, tablet 1024/834, small-width 390; test English/Chinese long text, zoom, keyboard focus, pointer and touch behavior.
 
-## 8. AI Agent constraints
-
+#### 8. AI Agent constraints
 1. Read root `DESIGN.md`, relevant `PRODUCT.md`, registry/contract and this document before any spacing/layout migration.
 2. Use approved layout ownership, then a semantic spacing role, then an existing candidate spacing primitive in CSS.
 3. Avoid magic-number proliferation; **do not blindly rewrite** every existing 10px/18px/44px/80px measurement. A measurement can represent component geometry rather than spacing.
@@ -252,20 +234,17 @@ Multiple modes may coexist on one screen. The responsive strategy uses available
 6. This proposal **does not grant blanket approval** of new component rendering, QA, merge, or Alex's product logic.
 7. If automation/linting is added in P2, classify actual spacing declarations vs icons/borders/font geometry first; initially warn, then consider blocking only after audited exceptions.
 
-## 9. Status and handoff
-
+#### 9. Status and handoff
 - **[A] Approved by user:** combined Vercel spacing regularity + Figma spatial/grid/layout concepts; 4px base and 8px dominant design rhythm; sizing and layout strategy.
 - **[E] Proposed:** initial 0/4/8/12/16/24/32/48/64px numeric tokens; specific semantic alias mapping; breakpoints, gutters, columns, card/page paddings.
 - **[T] Existing pilot:** `--ba-hit-min: 44px`, 80/76px TopBar, local spacing values remain unchanged.
 - **Engineering:** CSS candidate variables are present but unused by current components. No component/browser/a11y/visual test run for this doc/token-scaffold change; do not claim production readiness.
 - **Integration:** coordinate with Agent A, fold into canonical docs/implementation with reviewed PR ancestry. Do not modify other agents' working branches.
 
-## 10. Future review criteria
-
+#### 10. Future review criteria
 When implementation proceeds, compare at least one Element First control and one Content First lesson card against approved UX; confirm responsive, adaptive and strict behavior using actual content and target widths. Confirm exception rationale and no regression to Coach/Footer/TopBar geometry. Record evidence and designer approval separately.
 
-
-## 5. Elevation & Depth · Figma Effect Styles v1 [source-derived, visual review pending]
+## 5. Elevation and materials
 
 **Source:** [Big Academy Design System · Figma node 15:5](https://www.figma.com/design/06PPYhEQn3CqVYGlfopJWx/Big-Academy-Design-System?node-id=15-5); `25:2` documentation, `25:8` / `25:11` / `25:14` / `25:17` / `25:20` effects.
 
@@ -287,7 +266,7 @@ Use **depth to communicate hierarchy, not decoration**. Consume the existing Fig
 
 `BATabs` / `BATabList` / `BATabPanel` reuse the **same segmented geometry and selected-surface CSS**, not two separately tuned appearances: sizes 36 / 50 / 70 / 90; Strong / Subtle; Full / Standard; Equal / Hug; 200ms selected surface, reduced-motion handling. They have different semantics: `BATabs` uses React Aria Tabs/TabList/Tab/TabPanel (one selected Tab controls the content panel), while `BASegmentedControl` uses React Aria RadioGroup for **local choice without panels**. Do not replace one with the other. Writing's Level Tab remains geometrically centered in the same-row header, and changing it only switches Level/path (never auto-enters Lesson).
 
-## 6. Shapes
+## 6. Shape and radius
 
 ### BA-DS-RADIUS-001 · Shape & Radius System v0.1 [A principles, E values · 2026-10-19]
 
@@ -313,9 +292,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 **Candidate [E]:** All initial numeric radius values, aliases and mappings below. No global numeric Radius Scale has yet received final designer approval.
 **Implementation:** Candidate CSS variables added to `packages/design-system/src/tokens.css`, not yet applied to rendered components.
 **Benchmark:** [Vercel Geist Materials](https://vercel.com/geist/materials), used for its **surface role and radius association**, not as a copy of its full material/stroke/shadow definitions.
-
-## 1. Shape design principles [A]
-
+#### 1. Shape design principles [A]
 1. **Purpose first:** choose the UI role and content hierarchy before selecting the radius number. Never generate random roundness just to make a component look friendly.
 2. **Size aware:** in the same component family, smaller controls tend to use smaller corners, and spacious controls/panels can use wider corners, unless the component is an explicitly pill/circle geometry.
 3. **Elevation aware:** ordinary surfaces should look restrained; more prominent/floating surfaces may use a more spacious contour. Elevation still requires a separate shadow/border decision; radius is not a substitute for elevation.
@@ -325,8 +302,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 7. **Product intent:** shared controls are a cross-product foundation. Writing cards, Staircase milestones and decorative stage geometry may differ for approved product-specific reasons.
 8. **Status separation:** values below are implementation candidates [E] and do not authorize replacing existing temporary radius values throughout Writing.
 
-## 2. Candidate primitive radius scale [E]
-
+#### 2. Candidate primitive radius scale [E]
 | CSS token | Candidate value | Intended meaning |
 |---|---:|---|
 | `--ba-radius-0` | 0px | square, e.g. canvas edge or justified full-bleed geometry |
@@ -341,8 +317,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 
 **Why 6px?** Geist Materials uses 6px for its base/small/tooltip types. Its medium/large/menu/modal types use 12px; fullscreen uses 16px. Those are **reference anchors**, not approved Big Academy geometry. Do not force every BA surface to mirror Vercel. See [Geist Materials](https://vercel.com/geist/materials).
 
-## 3. Material/surface hierarchy and default candidates [E]
-
+#### 3. Material/surface hierarchy and default candidates [E]
 | BA surface role | Geist inspiration | Radius token | Border/shadow guidance |
 |---|---|---|---|
 | `surface-base` | base, on page | 6px | calm, no unnecessary shadow; use light boundary where needed |
@@ -356,8 +331,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 
 **Material guidance approved [A]:** choose the lowest necessary surface/elevation treatment, avoid stacking multiple "material" treatments on the **same element**, align perceived elevation with actual stacking order, and do not rely on shadow alone to convey interaction state. **Exact shadow/stroke tokens remain [Q]** under the existing Elevation section.
 
-## 4. Component-specific selection rules [A method / E numbers]
-
+#### 4. Component-specific selection rules [A method / E numbers]
 | Component | Default candidate | Alternatives / caveats |
 |---|---|---|
 | BAButton | regular control 8px | compact 6px, large 12px; **pill variant** uses full radius |
@@ -376,8 +350,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 
 **Important:** these candidate values do not change existing BAButton pill `999px`, BATaskProgress 10px target, or TopBar geometry. Apply changes through the component's own reviewed styling/contracts in later implementation.
 
-## 5. Concentric corners (nested radius) rule [A method]
-
+#### 5. Concentric corners (nested radius) rule [A method]
 If an inner rounded surface sits inside a visible rounded parent, use the starting geometry:
 
 `outerRadius ≈ innerRadius + visibleInset`
@@ -390,8 +363,7 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 - Inner surfaces should not visually cut through the outer curve; avoid unwanted clipping at small widths and large text scales.
 - If multiple layers of cards yield excessive softness, flatten a layer rather than increasing all radii.
 
-## 6. State, responsive and touch rules
-
+#### 6. State, responsive and touch rules
 - Hover/pressed/disabled/focus/error should change *colors, outlines, or content* while retaining the same radius unless the interaction intentionally changes the surface role.
 - Focus-visible rings must remain visible even when a container uses `overflow: hidden`; do not clip essential focus or error affordances.
 - Do not scale radius directly with viewport width. Choose size/variant and only adjust for meaningful layout change.
@@ -399,8 +371,7 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 - Radius never overrides minimum hit area or control alignment; `9999px` does not magically produce a true circle on non-square boxes.
 - The Writing Warm Frame + White Canvas hierarchy stays intact. New radius values cannot silently change lesson navigation or Alex progress gating.
 
-## 7. Designer / Agent decision tree
-
+#### 7. Designer / Agent decision tree
 1. **Is it a full-bleed canvas?** Use square edge/0px unless a designed floating region exists.
 2. **Is it a floating overlay?** Choose tooltip/menu/modal/fullscreen category, then corresponding radius and accessibility semantics.
 3. **Is it an on-page material?** Choose base/small/medium/large elevation role; pick lowest elevation that clearly separates content.
@@ -410,8 +381,7 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 7. **Does the chosen radius conflict with readability/focus/clipping?** The functional/accessible behavior wins.
 8. **Record exception:** if a component needs an off-scale or dynamic radius, explain why in its Contract/Story before reusing it globally.
 
-## 8. Examples (not rendered approval)
-
+#### 8. Examples (not rendered approval)
 ```css
 /* Proposal only. Not applied to existing components by this PR. */
 .ba-card { border-radius: var(--ba-radius-surface-medium); }
@@ -421,8 +391,7 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 .ba-avatar { aspect-ratio: 1; border-radius: var(--ba-radius-circle); }
 ```
 
-## 9. QA / change boundaries
-
+#### 9. QA / change boundaries
 - **[A]** Role-based, size-aware, elevation-aware and nesting-aware radius selection method.
 - **[E]** Numeric radius scale and first mappings.
 - **[T]** Existing implementations remain unchanged.
@@ -431,8 +400,7 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 
 **Design reference:** Vercel Geist Materials, https://vercel.com/geist/materials
 
-
-## 6.1 Motion & Interaction Physics
+## 7. Motion and interaction feedback
 
 ### BA-DS-MOTION-001 · Interim Motion System v0.1 [A temporary adoption · 2026-10-19]
 
@@ -451,8 +419,7 @@ The UI/UX Designer explicitly chose to **temporarily reuse all Spring parameter 
 
 **Motion rules:** use springs only for purposeful state changes; avoid distracting movement during reading/writing/IME composition and do not gate business logic on animation completion. Respect `prefers-reduced-motion: reduce` with an equivalent immediate state change. Preserve accessible focus, dismissal, navigation, scroll and status feedback. Temporary spring adoption does **not** approve any specific rendered animation, component choreography, additional animation dependency or production release.
 
-
-## 7. Components
+## 8. Component architecture, iconography and reusable patterns
 
 Foundation: **React Aria Components** for accessible headless button, tabs, field and overlay behavior. Use native semantics where React Aria does not supply an exact business-level component.
 
@@ -518,17 +485,17 @@ Popover is an accessible, nonmodal anchored overlay opened by the ellipsis indic
 
 **Status and scope:** all Unit instances/states share the same folded anatomy; preserve done/current/locked distinctions. No changes to Lesson, Intro, Milestone, Goal, staircase geometry, behavior or gates. Validate Desktop/Tablet, responsive titles, EN/ZH, state styles, focus/hover/disabled and visual comparison. Designer reviews render before approval. New global Tokens need explicit proposal, not an automatic style migration.
 
-## 7A. Writing R3 — current production design intent (2026-10-21)
+## 9. Writing: current Staircase and Activity visual specification
 
-This section is the **sole active Writing page-specific visual contract**, incorporating the previously agreed component details. Prior R1/R2 review overlays have been removed, not treated as parallel authority. [A] means explicitly confirmed value/direction, [E] implementation candidate pending visual approval. No screenshot is required to implement the textual specification.
+This section specifies the current Writing visual system and its component-level implementation constraints. [A] means explicitly confirmed value/direction, [E] implementation candidate pending visual approval. No screenshot is required to implement the textual specification.
 
 ### E-01 full-bleed landscape background [A direction; source geometry]
 
-The default Writing Staircase stage uses the *landscape*, not the old gradient. Behind the entire scene, including header and traversable staircase, use this ordered stack (back-to-front): full-bleed sky, sun glow, far peaks, warm haze, drifting white clouds, middle hills and trees, near rolling grassy foreground and trees, small biplane, subdued grain. No cream rectangular top/footer overlay may cut the scene. Decorative layers aria-hidden, pointer-events:none and never mutate lesson state.
+The default Writing Staircase stage uses the layered landscape. Behind the entire scene, including header and traversable staircase, use this ordered stack (back-to-front): full-bleed sky, sun glow, far peaks, warm haze, drifting white clouds, middle hills and trees, near rolling grassy foreground and trees, small biplane, subdued grain. No cream rectangular top/footer overlay may cut the scene. Decorative layers aria-hidden, pointer-events:none and never mutate lesson state.
 
 **Exact source-backed recorded backdrop values**, retained as initial candidate geometry and colors [E] from the supplied landscape specification and commit 913dbfe: base sky #B7DFF6; vertical sky gradient #B7DFF6 0%, #D7EEF8 34%, #FFF3CF 62%, #E7F6C8 100%. Glow centered at 62% x / 34% y, min(42vw,340px) × min(22vw,180px), radial rgba(255,236,186,.95) → rgba(255,244,214,.4) at 46% → transparent 72%. Far peak SVG viewBox 1600×460 at width 128%, left -14%, bottom 24%; back mountain #D9D6E6, front #C5CBE0, snow caps #F7F4EF. Haze bottom 22%, height 24%, fading to rgba(255,247,224,.55). Cloud SVG viewBox 1440×280 width 112%, top 92px, four soft elliptical clouds, slow drift 46 seconds translate (36px,6px). Middle hills 1600×420 width 136%, left -18%, bottom 6%, greens #C5D98A/#9DC56E/#B7D36A/#8FB86A/#A9C97A and five trees. Near hills 1600×280 width 144%, left -22%, bottom -36px, greens #7EAF4E/#D7E86E/#5F9844/#8FBF58/#4F863C and four trees. Tree trunks #8A6244 with round leafy clusters. Small biplane 168×78 at 58% x / top 108px, wings #E39A4E and #E7A45A, cream body #F6E7C2, soft white smoke. Grain opacity .18 mixed multiply with 140px fractalNoise tile. Parallax multipliers for peaks -.03, hills -.06, foreground -.10, clouds -.015 of staircase camera displacement. Plane drifts 28 seconds from (0,6px) to (64px,-16px). At <=834px plane 132×62 at left 62%, cloud top 84px; <=500px plane 112×52 at left 8% and top 96px, sun left 82% top 18%; trees scale .8. With reduced motion, no drifting/flight animations.
 
-**Source inheritance boundary:** these values describe the landscape backdrop, not permanent global tokens. The source's former instruction that the landscape required a query string and the R1 warm gradient was default is superseded. The detailed grass terrace in the source is a reference starting point, but R3's new terrace constraints below control its replacement. Source branch files: apps/writing/src/course/LandscapeBackdrop.tsx, landscape-staircase.css and staircaseTheme.ts at commit 913dbfe. This document defines the required visuals without needing access to images.
+**Source inheritance boundary:** these values describe the landscape backdrop, not permanent global tokens. The source's former instruction that the landscape required a query string and the historical default theme was a flat stage, which is not the current design. The detailed grass terrace in the source is a reference starting point, but R3's new terrace constraints below control its replacement. Source branch files: apps/writing/src/course/LandscapeBackdrop.tsx, landscape-staircase.css and staircaseTheme.ts at commit 913dbfe. This document defines the required visuals without needing access to images.
 
 ### E-01 terrain terraces — Layered Landscape Terrace [A concept, E geometry]
 
@@ -552,30 +519,88 @@ Reduce **peer content-container gaps by one existing spacing-token step**, consi
 
 Coach is an independently scrolling region with semantic tinted feedback cards. Footer is pinned outside Coach and visually transparent (no standalone background panel or redundant top divider), relying on whitespace and BAButton themselves; retain width:100%, minmax(0,1fr) minmax(0,2fr), gap 8px, both buttons height 70px, full-width children, with disabled Previous on first Screen. Do not remove necessary visible keyboard focus or semantic status. Task writing area stays white paper on warm page frame; nested regions only have one strong perimeter.
 
-### Previously approved Activity controls retained
+### Activity control geometry and states
 
 Top Back: BAButton icon-only, 50×50 [A], visually white round surface and blue-gray chevron, with hover/pressed/focus/reduced motion. TopBar retains Lesson title/meta and a geometrically **whole-bar centered** ActivityScreenIndicator strip; the anchored All activity screens Popover renders the identical numbered-circle component. Done adds a small check-circle, locked a small lock-circle, with no connecting line and correct distinct selected vs progress status. Visible counts adapt to width; overall task list is data driven.
 
-P2 Not yet vs Better: two clearly distinguished teaching panels, Better gently elevated via pale green surface/border and positive cue, not graded/correct-check feedback. P3 single/multi choice and Tapword use minimum 50px wrapped options, checked correct/wrong/revealed/disabled state matrix, selection does not reveal correctness. Word Grid has white pill vocabulary, real multi-set connected sticky-note Tabs (no lone tab for one set). Hamburger three levels each have same two-tier title/support typographic roles. Coach Hint/Show me another BAButton Secondary. P7 uses only a prominent current question numeral in its own question area; screen readers receive full question context. Practice first checked correct triggers brief one-time Ribbons+Explosions (including Apply), not for P7 internal taps; full lesson success uses Ribbons 30 + three Explosions; respect reduced motion and never let animations mutate product records.
+P2 Not yet vs Better: two clearly distinguished teaching panels, Better gently elevated via pale green surface/border and positive cue, not graded/correct-check feedback. P3 single/multi choice and Tapword use minimum 50px wrapped options, checked correct/wrong/revealed/disabled state matrix, selection does not reveal correctness. WordGrid has white pill vocabulary, real multi-set connected sticky-note Tabs (no lone tab for one set). Hamburger three levels each have same two-tier title/support typographic roles. Coach Hint/Show me another BAButton Secondary. P7 uses only a prominent current question numeral in its own question area; screen readers receive full question context. Practice first checked correct triggers brief one-time Ribbons+Explosions (including Apply), not for P7 internal taps; full lesson success uses Ribbons 30 + three Explosions; respect reduced motion and never let animations mutate product records.
 
-### R3 validation and status
+### Visual validation and status
 
 Validate 1440×900, 1024×768, 834×1112, 390px, 100% and 200% zoom, English/Chinese, long titles, keyboard/touch, reduced motion, all lesson states. Compare two terrace layers vs heavy pillar absence, terrain/background hierarchy, rounded paper fold seam, seal icon anchoring, scenic continuity and edge visibility. Test quiet container separation, smaller tokenized gaps and footer transparency. All [E] visual dimensions, colors and minor motifs remain pending UI/UX Designer approval. This is a **documentation-only change**: no current implementation/test pass or approval is implied.
 
-## 8. Do's and Don'ts
+### Writing Activity visual exploration — chat-inspired learning UI
+
+**Designer-selected exploration direction; rendered visual approval pending.** Use the clear visual hierarchy demonstrated in the recent eight-screen chat review: generous organized whitespace, readable prompt and supportive text, restrained white cards, soft rounded corners, unobtrusive separators, clearly identifiable clickable choices and writing surfaces, and accessible feedback states. Reconstruct this visual language independently using **Big Academy's approved font roles, theme tokens, 50px minimum answer touch targets and shared BAButton**; do not copy a chat interface's product navigation or replace the established Warm Frame + White Canvas shell, Coach split, fixed Footer, Staircase or grading behavior. Specific colors, font sizes, card radii, shadows, alignment and motion remain designer-review candidates until a rendered Activity demo is approved.
+
+**Bilingual content is not a dual-language interface:** In Chinese mode the learner should see a Chinese prompt and Chinese action buttons alongside the original English sentence or vocabulary **only when that English is the material being learned**. Do not stack English and Chinese translations of the same UI prompt/Coach explanation. Keep the English answer/word card unaltered and use Chinese supporting interface labels. Set appropriate per-run or per-region language for pronunciation and screen-reader announcements: Chinese for UI chrome and Chinese instructional copy, English for the English passage, options, original word cards and editable Writing material. Long Chinese labels can wrap without shrinking the established 50px option minimum, touching focus outlines or moving the whole-bar-centered lesson progress.
+
+**WordGrid — screenshot-aligned dedicated visual treatment:** multi-group vocabulary grids use softly colored *connected, raised paper/sticky-note-style tabs* positioned against the top edge of a rounded color-filled word-bank body. The **selected tab surface visually joins the word-bank body without a visible seam**; inactive groups remain distinct, legible and selectable. The body color corresponds to the active group; words/chunks appear as individual white pill cards with subtle separation and wrapped labels, sized for touch and keyboard access. The intended example has `Opinion / Nouns / Adjectives / Marks` tabs for Apply, with a warm peach Opinion surface; it is a **visual reference, not permission to replace source vocabulary or force the same color on every category**. Use group-specific semantic/candidate styling rather than permanently setting every WordGrid body to the old single soft-cyan token. With one group (e.g. Sentence set), show the cards but **do not render an isolated, meaningless one-item tab**.
+
+**Isolation:** this connected-tab styling belongs to `BA-WR-003 WordGrid` only. Do not change global `BATabs` / `BASegmentedControl` default skin or their established React Aria keyboard and panel semantics. Switching a tab updates the visible word category, not the learner's checked-answer status; a word pill inserts content or invokes Word Build's dedicated action. Preserve focus/caret on insertion, keyboard traversal and accessible selected-tab state. Refer to PRODUCT.md chapter 12 for exactly which group IDs each activity receives.
+
+### Consistent cross-Activity visual vocabulary and naming
+
+Apply the following **one-name / one-role** vocabulary across all eight Writing Activity Screens, Storybook examples and component-facing specifications. A shared element changes its content or selection mode by variant, **not its canonical name, baseline anatomy or basic states**.
+
+| Canonical name | Definition and cross-screen rule | Not the same as |
+| --- | --- | --- |
+| **LessonTopBar / Back** · BA-WR-001 | The top-left, icon-only Back returns one hierarchy level to the parent E-01 Staircase. This is the **only** Lesson exit control. | Footer Previous; P7 internal Back |
+| **ActivityScreenIndicator** · BA-UI-006 (`BATaskProgress` in the registry/runtime) | Shared numbered navigation for the eight Lesson screens, including the identical circle in its anchored popover. | P7 internal Question pager |
+| **LessonWorkspace** · BA-WR-002 | Warm Frame + White Canvas composition: left Activity area; right independently scrolling Coach and fixed Footer. | A self-contained single-column chat transcript |
+| **Footer / Previous / primary action** | Bottom-right controls used only for questions and actions **inside the current Lesson**. First Screen Previous is disabled; never label it My path or make it return to E-01. | LessonTopBar Back |
+| **Choice option** · BA-UI-003 | P3 single/multi list option with consistent minimum hit area, padding, label/letter alignment, focus and post-grade states. `single` and `multi` are modes, not separate unrelated visual components. | **Word token**, **WordGrid word card** |
+| **Selectable word token** | Inline P3 Tapword token inside the original sentence; clicking chooses an answer for later Check, never inserts a word. | WordGrid word card |
+| **WordGrid** · BA-WR-003 | Writing vocabulary palette with named **WordGrid category tabs**, a connected **WordGrid body**, and selectable **word cards** for inserting into a writing region or executing a P4 ordered build. In 中文 UI, the category tab label is localized (观点 / 名词 / 形容词 / 标点), while task vocabulary remains the original English word/chunk. | Level Tabs (E-01); multiple-choice answers |
+| **Coach / Coach feedback** | The right-hand learning companion, with distinct arrival instruction, hint, checked feedback and writing commentary treatments. | Selection state on an option itself |
+| **Writing canvas / Frame blanks / Build bench** | Distinct task-area composites. Reuse shared typography, focus cues and card spacing; input semantics remain different. | One universal text input |
+| **P7 Question pager** | Four internal question positions inside the single P7 Activity Screen. | TopBar's eight Activity Screens |
+
+**Shared visual syntax [selected direction; exact sizes [E]]:** use a legible prompt heading followed by supporting instruction and the principal interactive region, in that consistent order. Keep the white reading/answer surface prominent, with restrained card edges, soft surfaces, visually nested radius relationships and deliberate whitespace. Each option, tappable token, word card and input has a visibly consistent baseline alignment and focus treatment. Single-line options center vertically; multiline text expands naturally and aligns letter + text to the first line. The same `selected`, `correct`, `wrong`, `shown`, `disabled`, `focus-visible` words designate the same state distinctions wherever applicable. Before grading, color communicates choice, **not** correctness. `shown` is a revealed solution, not a successful answer. Semantic Coach feedback stays a distinct surface from the selection.
+
+**Activity variants use one shared language, not one identical layout:** P2 contrasts Not yet / Better teaching panels; P3 single and multi reuse the same list/card geometry with different choice semantics, while Tapword keeps text flowing as a sentence; P4 uses the same WordGrid anatomy for single Sentence set or multiple Frame Fill categories, but word-card insertion and grading gestures differ; P5 uses a spacious writing canvas plus a connected four-group WordGrid; P7 uses input appearances without practice hints or instant correctness markings. Do not insert a WordGrid on the P7 mastery screen to obtain visual uniformity.
+
+**WordGrid anatomy and visual states:** place connected raised category tabs directly over the rounded word-bank body; the active tab and body share a coordinated softly colored surface. Inactive category colors are softer but still differentiated and readable. Place discrete white rounded pill word cards within the body; preserve generous card padding and flexible line breaks. Maintain clear `tab active`, `tab inactive`, `word available`, `word used` (when a guided set consumes one), `word disabled`, `focused` and `empty group` appearances. When the source offers a single Sentence set, omit only the useless one-tab strip; do not remove or replace the word bank. Do not change global BATabs defaults.
+
+**Designer sign-off remains separate:** this is a descriptive, implementation-guiding visual direction, not a precise pixel-for-pixel reproduction or approval of specific colors, shadow blur, corner radius, line-height, elevations or page mockups. These [E] dimensions need rendered examples and explicit UI/UX Designer confirmation.
+
+### Writing Activity layout variants — canonical presentation matrix
+
+The **Screen IDs and interaction requirements** are owned by `apps/writing/PRODUCT.md` chapter 12. Template IDs are product structures; Layout Variant IDs identify distinct renderings under a template; Component IDs identify reusable implementation contracts. Do not give a template a single universal layout or treat a component name as a template. Variants below describe **appearance and accessibility**, not grading.
+
+| Layout Variant ID | Hierarchy / anatomy | Interaction presentation | Styling and responsive behavior |
+| --- | --- | --- | --- |
+| `P2.rule-pair.hamburger` | Readable teaching heading, weak/not-yet panel, prominent Better panel, three-layer hamburger/support hierarchy | Informational teaching only; no correct badge, checked border or success animation | White Canvas with quiet separation; Better has semantic soft-green support, not a graded-success treatment; all 3 hamburger tiers have heading/support; natural stacking on narrow widths |
+| `P3.list.option.single` | Prompt → vertical option list → inline feedback zone | Shared BAChoice single-select semantics, visible radio-like choice and focus, checked wrong/right states | Min option height 50px; multiline text wraps with no clipped padding; feedback appears only after Check; avoid color-only status |
+| `P3.passage.word.single` | Prompt → flowing passage with individually focusable word tokens → feedback | One highlighted token at a time, clearly distinguish selected/focus/wrong/revealed; accessible word token label | Passage line breaks naturally; do not force equal-width option cards; minimum usable touch target and keyboard focus for words; status must survive reflow |
+| `P3.list.option.multi` | Prompt → option list → choose-count line → feedback | Independent checkbox-like selections, selected count and checked correct/wrong/revealed | Same 50px minimum as single; not radio visuals; preserve all selected rows after an incorrect Check |
+| `P4.build.word.guided-order` | Prompt → WordGrid palette → ordered build bench → progress/instructional cue | Clickable word pills with inserted sequence visually separate from palette; wrong token cue outside graded status | White vocabulary pills in a group-colored WordGrid body; connected sticky-style tabs only when multiple groups exist; wrong token nudge with text alternative; no generic Check button |
+| `P4.fill.chunks.frame` | Prompt → fixed frame with 2 visibly editable blank zones → optional WordGrid → validation feedback | Clearly distinguish locked starter text, editable field focus and filled words; Check-driven | Line wrapping must preserve “because” and the two blanks; no clipping at 200% zoom; accessible label for each blank, keyboard caret and inserts |
+| `P5.write.constraint-apply` | Prompt/tip → spacious writing canvas → Coach comments → submission control | Writing is primary, Coach notes secondary; busy/Reading state; no fake correct stamp when Move on | White writing area on warm frame plus four-group Opinion/Nouns/Adjectives/Marks WordGrid with connected category tabs; independently scrolling Coach; fixed transparent Footer; focused typing/caret remain visible and screen-reader feedback announced |
+| `P7.assessment.3-auto-1-writing` | One large internal question number → one question body → internal question dots → Hand in footer | No teaching hints or per-question success checks; grading only after Hand in; result summary distinct from in-progress answers | Assessment pager does not add 4 top progress circles; questions reuse P3/P4 input appearances without practice feedback; compact responsive internal nav |
+
+**Shared wrapper, all variants:** BA-WR-001 LessonTopBar, BA-WR-002 LessonWorkspace, BA-UI-006 ActivityScreenIndicator and BA-UI-001 BAButton are shared composition roots. Feedback presentation may consume BA-UI-007 BAStatus, but a planned component must not be falsely reported as implemented. Use BA-UI-003 BAChoice for option-based lists when implemented; word-token control and writing bench are template internal composites until separately assigned IDs. BA-WR-003 WordGrid owns palette/groups/tabs, **not the grader**.
+
+**State-appearance mapping:** `idle` neutral, `selected` active highlight and strong accessible control state, `focus-visible` unmistakable focus ring, `wrong` and `correct` semantic marked states only *after* grading, `shown` display a right-answer explanation without success styling, `disabled` lower emphasis but legible, `busy` indicates async submit without changing learning status, `reduced-motion` removes nonessential movement without hiding the information. Do not apply the general “quieter container border” rule to graded/selected/focus states.
+
+**Layout quality gates:** 1440×900, 1024×768, 834×1112 and 390px; 100% and 200% zoom; English and Chinese copy including long wrap, pointer/touch/keyboard, focus and reduced motion. One primary separator per structural boundary; peer container gaps reduce exactly one existing spacing-token step (never arbitrary px); transparent pinned action Footer outside Coach with Previous:Primary width 1:2, gap 8px, height 70px each; Screen 1 Previous disabled. Avoid overlays covering caret, option feedback, Footer or the last line of writing.
+
+**Ownership and status:** the selection of variant semantics is [A] per authored source/product rules; precise visual colors, local radii, shadow/border weights and layouts not previously designer-reviewed remain [E] candidates. No screenshot/test success or visual approval is implied by this documentation contract.
+
+## 10. Global do / don't
 
 **Do:** reuse semantic Tokens; keep one approved visual language; make product accents thematic; preserve CJK and accessibility; show states using labels/icons/geometry as well as colors; make business logic independent of UI styling; update Contract and Storybook alongside component API changes.
 
 **Don't:** create a separate `apps/writing/DESIGN.md` or duplicate the E-01 page specification outside `apps/writing/PRODUCT.md`; hard-code Writing accent in shared BAButton; invent Reading colors; treat source visual Demo measurements as approved; visually merge skipped with done; add menu or duplicate title; use confetti to mutate progression; freeze v1.0 without designer screenshot/interaction review.
 
-## 9. Evidence & Open Work
+## 11. Evidence, approval and open visual questions
 
 - **Benchmark:** `docs/design-system/BENCHMARK_AND_TOKEN_GAP_AUDIT_v0.1.md`.
-- **Actual temporary token source:** `packages/design-system/src/tokens.css` on Grokbot's **separate** `feat/grokbot-writing-topbar` branch. This docs branch does **not** yet include that code and must not pretend it does.
+- **Actual executable token source:** `packages/design-system/src/tokens.css` is present in this review branch, inherited from the R3 specification. Its values are recorded, but this does not prove that frontend components consume every token or that candidate styles have passed browser visual QA.
 - **Approved theme scope:** B · product accent + light tinted surfaces; exact tint values pending.
 - **Approved Token Architecture:** Primitive → Semantic → optional Component; shared CSS Variables as the single current executable source; themes set by the app/shell and consumed semantically by shared components.
 - **Approved Typography Foundation and font roles:** EN headings Dosis ExtraBold 800; EN long text Jost; ZH headings Douyin (asset/family naming to verify); ZH long text Noto Sans SC; **all UI numerals Dosis ExtraBold 800**. Font size/line-height/other weights, licensing and runtime font loading remain unverified.
 - **Approved Component Architecture:** A · progressively build shared UI primitives and product components; extract Shared Patterns after real cross-product reuse, never by speculative mass abstraction.
 - **Approved Design Governance:** A · lightweight; significant changes reviewed, ordinary agent implementation autonomous; separate engineering and visual acceptance, GitHub PR/HANDOFF records.
-- **Current token gaps:** semantic palette aliases/theme contract, spacing/typography/radii/elevation/motion scale, responsive sizes, accessible feedback color pairs, and status token conventions.
-- **Gate:** root DESIGN.md draft requires UI/UX Designer approval; proof requires a running component, Storybook states and browser QA. Component contract and product docs remain authoritative for UI interfaces and learning rules.
+- **Current verification gaps:** confirm component consumption of token aliases, responsive sizing and status colors; validate contrast and rendered elevation; implement and test the Motion Runtime (numerical spring parameters already exist, but do not execute animations on their own). Do not infer absence of an entire token family merely because integration evidence is missing.
+- **Gate:** this rewritten canonical specification is under UI/UX Designer review; implementation approval separately requires a running component, Storybook states and browser QA. Component contract and product docs remain authoritative for UI interfaces and learning rules.
