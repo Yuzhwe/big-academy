@@ -73,4 +73,16 @@ describe('L2/G2-O Lesson 1 authored P4–P7 integration',()=>{
     expect(course.inspect().checks['L2-04.check'].result?.passed).toBe(false);
     expect(course.screenDone(7)).toBe(true);
   });
+  it('reveals authored Apply hints without grading, changing attempts or unlocking',()=>{
+    const course=at(6);
+    const initial=course.activity();
+    expect(initial?.hintAction).toBe('hint');
+    course.openHint();
+    expect(course.activity()?.hints).toHaveLength(1);
+    expect(course.inspect().applies['L2-04.apply'].checks).toBe(0);
+    expect(course.canNext(6)).toBe(false);
+    course.openHint();
+    expect(course.activity()?.hints).toHaveLength(2);
+    expect(course.activity()?.hintAction).toBeNull();
+  });
 });
