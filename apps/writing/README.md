@@ -9,4 +9,4 @@
 
 Launch Writing: `npm run dev` from repository root. Run `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run test:layout`, and relevant Storybook/browser checks for review.
 
-E-01 uses the selected A independent-platform diagonal geometry. High-fidelity browser visual sign-off remains pending.
+E-01 uses separate platforms on the layered landscape. High-fidelity browser visual sign-off remains pending.

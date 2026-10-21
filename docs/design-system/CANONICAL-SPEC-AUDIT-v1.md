@@ -8,8 +8,8 @@ Status: documentation review, not product implementation or rendered design appr
 
 - Main plus stacked review branch inheritance: R1 PR #32 → R2 PR #35 → R3 PR #37.
 - Canonical rewrite branch: docs/canonical-spec-rewrite-v1-20261021.
-- User-approved Writing direction: default E-01 landscape, A Layered Landscape Terrace, B Number Seal + Attached Symbol.
-- Landscape source: E01-landscape-backdrop-prompt.md with implementation record commit 913dbfe (source recorded visual values; old default/query requirement is not normative).
+- User-approved Writing direction: default E-01 layered landscape, Layered Landscape Terrace, and Number Seal + Attached Symbol.
+- Landscape source: DESIGN.md recorded backdrop values, with geometry recorded at commit 913dbfe.
 
 ## Structural audit
 
@@ -19,9 +19,9 @@ Status: documentation review, not product implementation or rendered design appr
 | DESIGN.md contained top-level duplicate numbered sections from embedded spacing/radius notes | P1 | Nested those specific notes under current Spacing and Radius chapters |
 | PRODUCT.md had 11A inserted before 11, and unrelated chapters out of sequence | P1 | Reorganized into chapters 1–19; corrected internal anchor links |
 | Footer action was sometimes called Back rather than Previous | P0 | Standardized explicit top-bar Back (Staircase) versus footer Previous (prior Activity Screen) |
-| Background attachment stated gradient default and landscape via query | P0 | Current normative default is landscape; historic toggle no longer production authority |
+| E-01 stage | P0 | The E-01 stage is the layered landscape with separate platforms |
 | R1/R2 card badge/capsule geometry conflicted with designer's R3 Number Seal choice | P0 | R3 small attached symbols are current; large joined capsules retired |
-| Rectangle pillars conflicted with designer's chosen R3 terrain platforms | P0 | R3 2–3 shallow terrain layers are current; tall translucent pillars retired |
+| E-01 terrain under each node | P0 | Each node uses the Layered Landscape Terrace: 2–3 shallow rounded layers |
 | Some design values were candidate-only and source branch was not yet merged | P1 | Keep [E] and cite source commit; do not misrepresent source code as implemented in main |
 | Component reuse and Motion token runtime not automatically enforced | P1 | Explicit component reuse rules retained; engineering enforcement remains a separate implementation task, not falsely marked complete |
 
@@ -70,7 +70,7 @@ Completed additional checks on the rewrite branch:
 
 1. Full product-rule parity against all original prototype files and test fixtures was **not independently executed**. Existing authored eight-screen curriculum and template rules were preserved, but their equivalence to runtime graders still needs fixture-level verification.
 2. The DESIGN.md retains extensive foundation candidate material from early research. It has been topically reorganized, not given visual approval; before adoption as a final production contract, use rendered examples to approve concrete [E] values.
-3. The original landscape backdrop exists on a separate implementation branch (source record `913dbfe`), not as production code committed by this docs PR.
+3. E-01's stage is the layered landscape recorded in DESIGN.md. Numeric backdrop values remain designer-review candidates.
 4. The sidebar Coach and Footer presentation remains a documentation requirement until browser evidence demonstrates conformance.
 5. Component Contracts are still carrying legacy `status` categories; changing schema shape requires a backwards-compatible engineering migration rather than a documentation-only rename.
 

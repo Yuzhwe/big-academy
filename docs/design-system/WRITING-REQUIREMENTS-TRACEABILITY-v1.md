@@ -33,8 +33,8 @@ Verification type: **static source/code inspection only**. No frontend code chan
 
 | Requirement | DESIGN.md authority | Token / contract interface | Actual implementation status |
 |---|---|---|---|
-| Default E-01 landscape | Writing section 9 landscape stack, source commit `913dbfe` | `--ba-writing-landscape-*`; BA-WR-009 LandscapeBackdrop | Source captured from separate feature branch; cannot claim integrated in main |
-| Layered Landscape Terrace | Section 9 terrain; 2–3 shallow rounded layers, no rectangular pillar | `--ba-writing-terrace-*`; BA-WR-010 | Specified, numerical [E] awaiting designer review |
+| Default E-01 landscape | Writing section 9 landscape stack, source commit `913dbfe` | `--ba-writing-landscape-*`; BA-WR-009 LandscapeBackdrop | Backdrop values are recorded in DESIGN.md. Numeric values remain [E] |
+| Layered Landscape Terrace | Section 9 terrain; 2–3 shallow rounded layers | `--ba-writing-terrace-*`; BA-WR-010 | Specified, numerical [E] awaiting designer review |
 | Number Seal + Attached Symbol | Section 9 card/status | `--ba-writing-status-*`; BA-WR-005 | Contract present, visual implementation still requires render review |
 | Unit folded corner | Section 9 Unit fold | `--ba-writing-unit-fold-*`; BA-WR-007 | Specified, not proof of rendered fold quality |
 | BAButton reuse | Component section 8 and R3 Writing section | BA-UI-001; size 50 Back / 70 CTA+Footer | Existing StairLessonCard imports React Aria Button directly, so shared reuse gate fails until engineering repair |
