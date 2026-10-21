@@ -17,6 +17,8 @@ export interface TaskProgressItem {
   status: TaskProgressStatus;
   /** 1-based number drawn in the chip. Defaults to index + 1. */
   number?: number;
+  /** Original practice ended by revealing an answer rather than a correct response. */
+  shown?: boolean;
 }
 
 export type BALocale = 'en' | 'zh';
