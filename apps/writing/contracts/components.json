@@ -152,7 +152,7 @@
         "Letter Dosis ExtraBold 800 18/20 nowrap; body Jost Medium 18px line-height 1.1",
         "Min-height stays 50px; one-line composition is about 46px; wrapped rows grow and stay fully visible",
         "Row and text align flex-start so the icon stays with the first line",
-        "selected is pre-check solid #9B4F36 with a white ring; correct is post-check solid #14AE5C; wrong shares the brown fill and uses a white disk plus X; shown is white with a #14AE5C border and green check badge; dim is default chrome at opacity 0.4",
+        "Board order: default 默认 is white with light border #C9B8B2 and an empty circle; correct 正确已选 is post-check solid #14AE5C, white text, white circle, green check; shown 正确未选 is post-check light green fill with #14AE5C border, #133547 text, and a green circle with a white check (light green fill has no hex in this lock); selected 选中 is pre-check solid brown #9B4F36, white text, hollow white ring, and is not wrong and not shown / 揭晓; wrong 错误 is post-check solid brown-red, white text, circle with an X (brown-red fill has no hex in this lock); dim 变淡 is default chrome at opacity 0.4",
         "Visible row is the letter, the body, and the leading status icon. No per-state caption on the row. correct and shown use the leading check icon with the specified fill. The accessible name may carry the state and is not visible chrome",
         "Border 1px solid",
         "Hover scale 1.02 and pressed scale 0.95, the shared click scale. Reduced motion updates state immediately and does not scale",
@@ -202,39 +202,52 @@
         "dimOpacity": 0.4,
         "states": {
           "default": {
+            "name": "默认",
             "background": "#FFFFFF",
             "border": "#C9B8B2",
             "text": "#133547",
             "icon": "empty circle, stroke about #C9B8B2, no fill"
           },
-          "selected": {
-            "background": "#9B4F36",
-            "border": "#FFFFFF",
-            "text": "#FFFFFF",
-            "icon": "thick white ring, hollow"
-          },
-          "wrong": {
-            "background": "#9B4F36",
-            "border": "#FFFFFF",
-            "text": "#FFFFFF",
-            "icon": "white disk with #9B4F36 X"
-          },
           "correct": {
+            "name": "正确已选",
+            "when": "after Check, correct selected row",
             "background": "#14AE5C",
             "border": "#FFFFFF",
             "text": "#FFFFFF",
             "icon": "white circle with #14AE5C check"
           },
           "shown": {
-            "background": "#FFFFFF",
+            "name": "正确未选",
+            "when": "after Check, correct unselected row",
+            "background": "light green fill; no hex in this lock",
             "border": "#14AE5C",
             "text": "#133547",
-            "icon": "solid #14AE5C disk with white check"
+            "icon": "green circle #14AE5C with a white check"
           },
-          "dim": "default chrome at opacity 0.4"
+          "selected": {
+            "name": "选中",
+            "when": "before Check",
+            "background": "#9B4F36",
+            "border": "#FFFFFF",
+            "text": "#FFFFFF",
+            "icon": "hollow white ring; not an X and not a check; not wrong; not shown / 揭晓"
+          },
+          "wrong": {
+            "name": "错误",
+            "when": "after Check",
+            "background": "solid brown-red; no hex in this lock",
+            "border": "#FFFFFF",
+            "text": "#FFFFFF",
+            "icon": "circle with an X"
+          },
+          "dim": {
+            "name": "变淡",
+            "opacity": 0.4,
+            "chrome": "default"
+          }
         }
       },
-      "notes": "Visible chrome locked 2026-10-21: letter, body, leading icon; border 1px solid; hover 1.02; pressed 0.95; reduced motion does not scale. correct and shown use the leading check icon. Colors, type, and 24px radius remain a candidate pending designer Approved. Grading and Coach feedback stay in PRODUCT.md."
+      "notes": "Visible chrome locked 2026-10-21: letter, body, leading icon; border 1px solid; hover 1.02; pressed 0.95; reduced motion does not scale. Six-state mapping locked 2026-10-21 in board order: default 默认, correct 正确已选, shown 正确未选 after Check, selected 选中 before Check, wrong 错误, dim 变淡 at opacity 0.4. selected is the pre-check solid brown row and is not shown / 揭晓. shown is the post-check correct unselected row: light green fill, green border, green circle, white check. wrong is solid brown-red and is a different fill from selected. The light green fill and the brown-red fill have no hex in this lock. ChoiceCorrectOutlined remains the existing story id for shown / 正确未选. correct and shown use the leading check icon. Type, 24px radius, and the two unspecified fills remain a candidate pending designer Approved. Grading and Coach feedback stay in PRODUCT.md."
     },
     {
       "id": "BA-UI-004",

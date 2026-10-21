@@ -32,7 +32,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 | `--ba-paper` | `#FFFFFF` | [A] | White content / writing canvas |
 | `--ba-surface-warm` | `#FEF9EF` | [A] | Writing warm frame, warm-1 |
 | `--ba-choice-border` | `#C9B8B2` | [A] | Warm-4 border value; component usage remains contract-specific |
-| `--ba-success` | `#14AE5C` | [A] anchor | Success-6 border-active anchor. The global color role is not a white-text strong fill. The Writing Choice option candidate also uses this hex for the solid `correct` fill and the `shown` border/badge; that component use stays [E] until designer Approved |
+| `--ba-success` | `#14AE5C` | [A] anchor | Success-6 border-active anchor. The global color role is not a white-text strong fill. The Writing Choice option candidate uses this hex for the solid `correct`（正确已选）fill and for the `shown`（正确未选）green border and green check circle. The `shown` light green fill has no hex in this lock. That component use stays [E] until designer Approved |
 | `--ba-error` | `#9B4F36` | [A] | Danger-7 strong error fill, never global brand primary |
 | Reading primary/accent | TBD | [Q] | **Do not assign a fabricated Reading palette** |
 
@@ -545,7 +545,7 @@ Scene visible viewport: background fills the entire available stage; controls re
 
 ### Writing Activity layout — restrained separation and rhythm
 
-**One boundary, one primary separator** [A]. For adjacent functional regions use either a distinct surface fill, a border, or a divider as the primary separation method; do not stack all three on the same structural seam. Multiple treatments require a documented different functional purpose (e.g. active focus ring). General container border is one semantic step quieter than current warm-stroke candidate; keep strong **selected/correct/wrong/focus** borders unchanged on controls that use a border to show those states. Writing Choice options are specified separately: `selected`, `wrong` and `correct` use solid fills, and `shown` uses a green border. Do not indiscriminately reduce contrast on controls or change accessibility semantics.
+**One boundary, one primary separator** [A]. For adjacent functional regions use either a distinct surface fill, a border, or a divider as the primary separation method; do not stack all three on the same structural seam. Multiple treatments require a documented different functional purpose (e.g. active focus ring). General container border is one semantic step quieter than current warm-stroke candidate; keep strong **selected/correct/wrong/focus** borders unchanged on controls that use a border to show those states. Writing Choice options are specified separately. `default` is white with a light border. `correct`（正确已选）, `selected`（选中，Check 之前）and `wrong`（错误）use solid fills. `shown`（正确未选，Check 之后）uses a light green fill and a green border. `selected` is not `shown` and not 揭晓. Do not indiscriminately reduce contrast on controls or change accessibility semantics.
 
 Reduce **peer content-container gaps by one existing spacing-token step**, consistently for horizontal and vertical layout as applicable; leave text line-height, minimum control heights, touch areas and meaningful internal content padding alone. Never invent an arbitrary px offset. Audit each current gap's token and select the immediate next smaller existing spacing step; at smallest valid step keep unchanged and document exception.
 
@@ -578,7 +578,7 @@ The hint control is a secondary BAButton.
 
 ### Writing Choice option（选项）· BA-UI-003 / BAChoice [E · candidate / 待设计师 Approved · 2026-10-21]
 
-**状态：** 可见选项行、1px 边框、悬停 1.02 / 按下 0.95 已锁定（2026-10-21）。颜色、字号和 24px 圆角仍是候选，待设计师 Approved。评分、揭示时机和 Coach 反馈文案以 `apps/writing/PRODUCT.md` 为准。
+**状态：** 可见选项行、1px 边框、悬停 1.02 / 按下 0.95 已锁定（2026-10-21）。六态从左到右已锁定：默认、正确已选、正确未选、选中（Check 之前）、错误、变淡 40%。选中是 Check 之前的实心棕色行，白字，空心圆环。它不是 `wrong`，也不是 `shown` / 揭晓。字号、24px 圆角，以及浅绿底和棕红底的具体色值仍是候选，待设计师 Approved。评分、揭示时机和 Coach 反馈文案以 `apps/writing/PRODUCT.md` 为准。
 
 This is the Writing single/multi choice option row. `single` and `multiple` share one chrome. Short (one line) and long (wrapped) copy share that same chrome. The visible row is the option letter, the option body, and the leading status icon. A selectable word token and a WordGrid word card are different controls.
 
@@ -602,20 +602,22 @@ This is the Writing single/multi choice option row. `single` and `multiple` shar
 
 #### Colors and states
 
-| State | Background | Border | Text (letter + body) | Leading icon |
-|---|---|---|---|---|
-| `default` / `idle` / unselected | `#FFFFFF` (`--ba-paper`) | `#C9B8B2` (`--ba-choice-border`) | `#133547` (`--ba-brand-dark`) | Empty circle, stroke about `#C9B8B2`, no fill |
-| `selected` (before Check) | `#9B4F36` (`--ba-error`) | `#FFFFFF` (or the same as the fill edge) | `#FFFFFF` | Thick white ring, hollow, no X and no check |
-| `wrong` (after Check; this option is the learner's wrong pick) | `#9B4F36` | `#FFFFFF` | `#FFFFFF` | White filled circle with an X in `#9B4F36` |
-| `correct` (after Check; solid success on the right answer) | `#14AE5C` (`--ba-success`) | `#FFFFFF` | `#FFFFFF` | White circle with a check in `#14AE5C` |
-| `shown` (outline reveal of the right answer) | `#FFFFFF` | `#14AE5C` | `#133547` | Solid `#14AE5C` circle with a white check |
-| `dim` | Same as `default` | Same as `default` | Same as `default` | Same as `default` |
+Board order is left to right. English ids are the BA-UI-003 contract ids.
+
+| Board | State | Background | Border | Text (letter + body) | Leading icon |
+|---|---|---|---|---|---|
+| 1 默认 | `default` / `idle` | `#FFFFFF` (`--ba-paper`) | `#C9B8B2` (`--ba-choice-border`) | `#133547` (`--ba-brand-dark`) | Empty circle, stroke about `#C9B8B2`, no fill |
+| 2 正确已选 | `correct` | Solid green `#14AE5C` (`--ba-success`) | `#FFFFFF` | `#FFFFFF` | White circle with a check in `#14AE5C` |
+| 3 正确未选（Check 之后） | `shown` | Light green fill. No hex in this lock | `#14AE5C` (`--ba-success`) | `#133547` (`--ba-brand-dark`) | Green circle (`#14AE5C`) with a white check |
+| 4 选中（Check 之前） | `selected` | Solid brown `#9B4F36` (`--ba-error`) | `#FFFFFF` | `#FFFFFF` | Hollow white ring. No X and no check |
+| 5 错误 | `wrong` | Solid brown-red. No hex in this lock | `#FFFFFF` | `#FFFFFF` | Circle with an X |
+| 6 变淡 40% | `dim` | Same as `default` | Same as `default` | Same as `default` | Same as `default` |
 
 `dim` sets the whole option to **`opacity: 0.4`**. It keeps default chrome.
 
-`selected` and `wrong` share the solid `#9B4F36` fill. The icon distinguishes them: white ring, or white disk plus X. `selected` is the pre-check choice. `correct` is the post-check solid success. `shown` is the green outline plus green badge.
+The learner’s choice before Check is `selected`（选中）: solid brown, white text, hollow white ring. It is not `wrong` and not `shown` / 揭晓. After Check, a correct selected row is `correct`（正确已选）: solid green, white text, white circle, green check. A correct unselected row is `shown`（正确未选）: light green fill, green border, green circle, white check. A wrong row is `wrong`（错误）: solid brown-red, white text, circle with an X. The brown `selected` fill and the brown-red `wrong` fill are different fills.
 
-`#14AE5C` remains the §2.1 success-6 border-active anchor for the global palette. This candidate also uses that hex for the `correct` fill and the `shown` border and badge.
+`#14AE5C` remains the §2.1 success-6 border-active anchor for the global palette. This candidate uses that hex for the `correct` fill and for the `shown` border and check circle. The `shown` light green fill and the `wrong` brown-red fill have no hex in this lock.
 
 The visible row is the letter, the body, and the leading icon. After Check, `correct` and `shown` show that leading check icon with the fill in the table. The accessible name may include the state. That name is not painted on the row. Coach feedback stays in the feedback region.
 
@@ -637,9 +639,9 @@ A one-line row uses this same alignment. Its content already fills the band, so 
 
 The component paints the state it is given. The session and PRODUCT.md own grading, tries and when a row becomes `correct`, `wrong`, `shown` or `dim`.
 
-- Before Check, single-choice puts one option in `selected` and returns the others to `default`. Multiple-choice toggles per PRODUCT. Chosen rows use `selected`. Unchosen rows stay `default`. The color means choice, not correctness.
+- Before Check, single-choice puts one option in `selected`（选中）and returns the others to `default`. Multiple-choice toggles per PRODUCT. Chosen rows use `selected`. Unchosen rows stay `default`. The color means choice, not correctness. `selected` is not `shown` and not 揭晓.
 - A non-interactive option uses `dim` (opacity 0.4) or a disabled treatment PRODUCT already distinguishes from `dim`.
-- After Check, render the session's state: the learner's wrong pick is `wrong`; a right answer shown as solid success is `correct`; a right answer shown as an outline reveal is `shown`; peers the session marks are `dim`.
+- After Check, a correct selected row is `correct`（正确已选）. A correct unselected row is `shown`（正确未选）. A wrong row is `wrong`（错误）. Peers the session marks are `dim`.
 - `focus-visible` keeps the Writing focus ring (`--ba-focus-ring`). A solid fill does not remove it.
 - Hover scales the row to 1.02. Press / pressed scales it to 0.95. This is the shared click scale in §7. Border stays **1 px solid**. Under reduced motion the row updates its state immediately and does not scale.
 - Keys 1–9 and A–I stay a PRODUCT / session concern. The option chrome follows the state table.
@@ -675,7 +677,7 @@ Apply the following **one-name / one-role** vocabulary across all eight Writing 
 | **Writing canvas / Frame blanks / Build bench** | Distinct task-area composites. Reuse shared typography, focus cues and card spacing; input semantics remain different. | One universal text input |
 | **P7 Question pager** | Four internal question positions inside the single P7 Activity Screen. | TopBar's eight Activity Screens |
 
-**Shared visual syntax [selected direction; exact sizes [E], with BAChoice measurements recorded as a candidate]:** use a legible prompt heading followed by supporting instruction and the principal interactive region, in that consistent order. Keep the white reading/answer surface prominent, with restrained card edges, soft surfaces and deliberate whitespace. Short and long choice rows are both 24px. The choice row uses `align-items: flex-start` for one line and for wrapped lines, so the 36px status icon and the letter stay with the first line. Word tokens, word cards and inputs keep their own alignment and focus treatment. The same `selected`, `correct`, `wrong`, `shown`, `dim`, `disabled` and `focus-visible` names mark the same distinctions. On a choice option, `selected` is pre-check and `correct` is the post-check solid success fill; `shown` is the green outline reveal. Before grading, color communicates choice, not correctness. Semantic Coach feedback stays a distinct surface from the selection.
+**Shared visual syntax [selected direction; exact sizes [E], with BAChoice measurements recorded as a candidate]:** use a legible prompt heading followed by supporting instruction and the principal interactive region, in that consistent order. Keep the white reading/answer surface prominent, with restrained card edges, soft surfaces and deliberate whitespace. Short and long choice rows are both 24px. The choice row uses `align-items: flex-start` for one line and for wrapped lines, so the 36px status icon and the letter stay with the first line. Word tokens, word cards and inputs keep their own alignment and focus treatment. The same `selected`, `correct`, `wrong`, `shown`, `dim`, `disabled` and `focus-visible` names mark the same distinctions. On a choice option, `selected` is 选中 before Check: solid brown, white text, hollow ring. It is not `wrong` and not `shown` / 揭晓. `correct` is 正确已选 after Check: solid green, white text, white circle, green check. `shown` is 正确未选 after Check: light green fill, green border, green circle, white check. `wrong` is 错误 after Check: solid brown-red, white text, circle with an X. `dim` is the default row at opacity 0.4. Before Check, color communicates choice, not correctness. Semantic Coach feedback stays a distinct surface from the selection.
 
 **Activity variants use one shared language, not one identical layout:** P2 contrasts Not yet / Better teaching panels; P3 single and multi reuse the same list/card geometry with different choice semantics, while Tapword keeps text flowing as a sentence; P4 uses the same WordGrid anatomy for single Sentence set or multiple Frame Fill categories, but word-card insertion and grading gestures differ; P5 uses a spacious writing canvas plus a connected four-group WordGrid; P7 uses input appearances without practice hints or instant correctness markings. Do not insert a WordGrid on the P7 mastery screen to obtain visual uniformity.
 
@@ -683,7 +685,7 @@ Apply the following **one-name / one-role** vocabulary across all eight Writing 
 
 **Ordered build bench:** on `P4.build.word.guided-order`, each remaining blank is an underline, one horizontal line for each word still to place. Ellipsis placeholders and dotted placeholders are not used. The screen’s controls are the word cards and the lesson footer. A placed word stays in the line. The per-word hint stays in PRODUCT.md. WordGrid tab and pill chrome stays a candidate pending designer review.
 
-**Designer sign-off remains separate:** the cross-activity direction above is descriptive. It is not approval of every shadow, elevation or page mockup. The Writing Choice option section records the locked visible row, 1px border, and click scale, plus candidate colors, radius, type, icon, and state fills for BA-UI-003. Those candidate values stay [E] until a rendered review marks them Approved.
+**Designer sign-off remains separate:** the cross-activity direction above is descriptive. It is not approval of every shadow, elevation or page mockup. The Writing Choice option section records the locked visible row, 1px border, click scale, and six-state mapping for BA-UI-003. Type, radius, the light green `shown` fill, and the brown-red `wrong` fill stay [E] until a rendered review marks them Approved.
 
 ### Writing Activity layout variants — canonical presentation matrix
 
@@ -706,12 +708,12 @@ The **Screen IDs and interaction requirements** are owned by `apps/writing/PRODU
 
 | State | Choice-option appearance |
 |---|---|
-| `idle` / `default` | White `#FFFFFF`, border `#C9B8B2`, text `#133547`, empty circle |
-| `selected` | Pre-check choice. Solid `#9B4F36`, white text, white ring |
-| `wrong` | After grading. Same brown fill and white text as `selected`, white disk and `#9B4F36` X |
-| `correct` | After grading. Solid `#14AE5C`, white text, white disk and `#14AE5C` check |
-| `shown` | Outline reveal. White fill, `#14AE5C` border, text `#133547`, solid `#14AE5C` disk and white check |
-| `dim` | Default chrome at `opacity: 0.4` |
+| `idle` / `default` / 默认 | White `#FFFFFF`, border `#C9B8B2`, text `#133547`, empty circle |
+| `correct` / 正确已选 | After Check, the correct selected row. Solid `#14AE5C`, white text, white circle, green check |
+| `shown` / 正确未选 | After Check, the correct unselected row. Light green fill, `#14AE5C` border, text `#133547`, green circle, white check. No fill hex in this lock |
+| `selected` / 选中 | Before Check. Solid brown `#9B4F36`, white text, hollow white ring. Not `wrong`. Not `shown` / 揭晓 |
+| `wrong` / 错误 | After Check. Solid brown-red, white text, circle with an X. No fill hex in this lock |
+| `dim` / 变淡 | Default chrome at `opacity: 0.4` |
 | `disabled` | Separate product state. `dim`, or an existing disabled treatment |
 | `focus-visible` | Writing focus ring stays visible on solid fills |
 | `busy` | Async submit. Does not change learning status |
@@ -721,7 +723,7 @@ The visible choice row is the letter, the body, and the leading icon. `correct` 
 
 **Layout quality gates:** 1440×900, 1024×768, 834×1112 and 390px; 100% and 200% zoom; English and Chinese copy including long wrap, pointer/touch/keyboard, focus and reduced motion. One primary separator per structural boundary; peer container gaps reduce exactly one existing spacing-token step (never arbitrary px); transparent pinned action Footer outside Coach. On lesson question feedback, Previous and Next span the full width of the footer action row at 1:2, gap 8px, height 70px each; Screen 1 Previous is disabled. Each feedback message is its own card: wrong is white with a light border, correct is white with a green border. The hint control is a secondary button. Overlays leave the caret, option feedback, Footer, and the last line of writing visible.
 
-**Ownership and status:** the selection of variant semantics is [A] per authored source/product rules. Choice visible chrome, the 1px border, and the click scale are locked. The BAChoice color, type, and radius measurements in this file remain a visual candidate [E], pending designer Approved. Lesson question feedback cards, the secondary hint button, and the build-topic-sentence screen controls are a visual candidate [E], not Approved. Other precise colors, local radii, shadow weights, and layouts that have not been designer-reviewed remain [E]. No screenshot, test pass, or visual approval of those candidates is implied by this documentation.
+**Ownership and status:** the selection of variant semantics is [A] per authored source/product rules. Choice visible chrome, the 1px border, the click scale, and the six-state mapping are locked. BAChoice type, radius, the light green `shown` fill, and the brown-red `wrong` fill remain a visual candidate [E], pending designer Approved. Lesson question feedback cards, the secondary hint button, and the build-topic-sentence screen controls are a visual candidate [E], not Approved. Other precise colors, local radii, shadow weights, and layouts that have not been designer-reviewed remain [E]. No screenshot, test pass, or visual approval of those candidates is implied by this documentation.
 
 ## 10. Global do / don't
 
