@@ -180,7 +180,7 @@ export interface TopBarModel {
   lessonNumber: string;
   lessonTitle: string;
   tags: string[];
-  tasks: { id: string; label: string; status: TaskChipStatus; number: number }[];
+  tasks: { id: string; label: string; status: TaskChipStatus; number: number; shown?: boolean }[];
   current: number;
 }
 
@@ -742,6 +742,7 @@ export class CourseSession {
           label: this.text(ref.screen.title) || ref.screen.id,
           status,
           number: localIndex + 1,
+          shown: (ref.screen.kind === 'task' || ref.screen.kind === 'model_task') && !!ref.screen.task && this.state.tasks[this.taskKey(ref.screen)]?.status === 'shown',
         };
       }),
     };
