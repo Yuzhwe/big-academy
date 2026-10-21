@@ -313,3 +313,11 @@
   font-family: var(--ba-font-zh-title);
   font-weight: 700;
 }
+
+/* R2 teaching example hierarchy; Better is instructional emphasis, never an answer grade. */
+.course-examples {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ba-space-4,16px);margin-block:var(--ba-space-4);}
+.course-examples p {min-width:0;border:1px solid var(--ba-writing-p2-weak-border);border-radius:var(--ba-radius-16);background:var(--ba-color-surface-canvas);padding:var(--ba-space-4);}
+.course-examples p:last-child {border:2px solid var(--ba-writing-p2-better-border);background:var(--ba-writing-p2-better-surface);}
+.course-examples p:last-child span {color:var(--ba-color-success-10);font-weight:800;font-size:16px;}
+.course-examples p:last-child span::before {content:'✓';margin-inline-end:var(--ba-space-2);}
+@media (max-width:720px){.course-examples{grid-template-columns:minmax(0,1fr);}}
