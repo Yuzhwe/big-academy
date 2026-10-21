@@ -1,0 +1,2 @@
+.stair-level-card {box-sizing:border-box;padding:var(--ba-space-4);border:1.5px solid var(--ba-writing-unit-paper-border);border-radius:var(--ba-radius-card-regular);background:var(--ba-writing-unit-paper-surface);box-shadow:inset 0 0 0 5px var(--ba-writing-unit-paper-surface),inset 0 0 0 6px var(--ba-writing-unit-paper-border);}
+.stair-level-card p {margin:0;font-size:var(--ba-writing-description-font-size,16px);line-height:24px;color:var(--ba-color-content-primary);}
