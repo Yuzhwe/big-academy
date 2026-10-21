@@ -5,7 +5,7 @@
   "sourceOfTruth": {
     "product": "apps/writing/PRODUCT.md (v0.4 R3 current behavior)",
     "design": "/DESIGN.md (v0.6 R3 current visual)",
-    "tokens": "packages/design-system/src/tokens.css (R3 landscape/status candidate namespaces)"
+    "tokens": "packages/design-system/src/tokens.css (status and lesson-platform candidates; path art is v2-terraces)"
   },
   "components": [
     {
@@ -52,7 +52,7 @@
         "70px height for Writing Lesson Card CTA and Lesson Footer action pair, scoped variants; don't migrate all shared buttons",
         "Secondary tone required for Coach Hint and Show me another",
         "Reuse actual shared BAButton for all Writing Lesson CTAs, top Back and Footer actions; never replace with plain custom button",
-        "Preserve existing BAButton hover/pressed transitions and reduced-motion adaptation"
+        "Shared click scale: hover 1.02, pressed 0.95, 200ms cubic-bezier(.2,0,0,1). Reduced motion does not scale. Same scale as other clickable controls in DESIGN.md section 7"
       ],
       "requiredStories": [
         "Default",
@@ -153,8 +153,10 @@
         "Min-height stays 50px; one-line composition is about 46px; wrapped rows grow and stay fully visible",
         "Row and text align flex-start so the icon stays with the first line",
         "selected is pre-check solid #9B4F36 with a white ring; correct is post-check solid #14AE5C; wrong shares the brown fill and uses a white disk plus X; shown is white with a #14AE5C border and green check badge; dim is default chrome at opacity 0.4",
-        "Icon communicates state; the letter is separate text",
-        "Keep the focus ring on solid fills. This candidate has no separate hover color. A non-interactive option uses dim or the existing disabled treatment",
+        "Visible row is the letter, the body, and the leading status icon. No per-state caption on the row. correct and shown use the leading check icon with the specified fill. The accessible name may carry the state and is not visible chrome",
+        "Border 1px solid",
+        "Hover scale 1.02 and pressed scale 0.95, the shared click scale. Reduced motion updates state immediately and does not scale",
+        "Keep the focus ring on solid fills. A non-interactive option uses dim or the existing disabled treatment",
         "Tapword reuses choice state meanings and does not take this option-row anatomy"
       ],
       "requiredStories": [
@@ -180,6 +182,10 @@
         "radiusPx": 24,
         "sameRadiusForShortAndLong": true,
         "border": "1px solid",
+        "hoverScale": 1.02,
+        "pressedScale": 0.95,
+        "reducedMotion": "immediate state, no scale",
+        "visibleRow": "letter, option body, leading status icon; accessible name is separate from visible chrome",
         "overflow": "clip content; keep focus-visible ring",
         "width": "fill parent; do not hardcode 500",
         "minHeightPx": 50,
@@ -228,7 +234,7 @@
           "dim": "default chrome at opacity 0.4"
         }
       },
-      "notes": "Visual candidate 2026-10-21, pending designer Approved. idle and default name the unselected row. shown is the outline reveal; correct is the solid success fill. Product labels and grading stay in PRODUCT.md."
+      "notes": "Visible chrome locked 2026-10-21: letter, body, leading icon; border 1px solid; hover 1.02; pressed 0.95; reduced motion does not scale. correct and shown use the leading check icon. Colors, type, and 24px radius remain a candidate pending designer Approved. Grading and Coach feedback stay in PRODUCT.md."
     },
     {
       "id": "BA-UI-004",
@@ -932,8 +938,8 @@
       "name": "LandscapeBackdrop",
       "kind": "writing-presentation-composite",
       "contractVersion": "0.1.0-r3",
-      "status": "specified-source-existing-in-separate-feature-branch",
-      "visualStatus": "Landscape direction approved, numeric source candidates pending rendered R3 review",
+      "status": "specified-not-implemented",
+      "visualStatus": "v2-terraces artwork checked in; sky color and parallax ratios are candidates pending Joe Approved",
       "implementation": "apps/writing/src/course/LandscapeBackdrop.tsx",
       "props": {
         "cameraShift": "number"
@@ -946,18 +952,21 @@
       ],
       "layoutOwner": "Staircase stage owns full bleed; backdrop owns visual layers only",
       "requirements": [
-        "Default E-01 backdrop, not an optional production comparison with R1 gradient",
-        "Source visual composition from 913dbfe sky/peaks/hills/clouds/trees/plane/grain; preserve exact recorded candidate values from DESIGN.md",
-        "Full viewport including navigation and stage, no beige header/footer blockers",
-        "aria-hidden, pointer-events:none and no mutation of learning state",
-        "Controlled parallax and reduced-motion no animations"
+        "E-01 path landscape version v2-terraces",
+        "Checked-in art only: path.v2-terraces.hill-1-foreground, path.v2-terraces.hill-2-mid, path.v2-terraces.cloud",
+        "Stack back to front: stage sky color, cloud, hill 2, hill 1, then lesson platforms",
+        "Composite PNG alpha; the stage background color is the sky",
+        "Full viewport, including the area behind navigation; scenery leaves traversable nodes clear",
+        "aria-hidden, pointer-events:none, and no mutation of learning state",
+        "Parallax on path scroll; ratios are DESIGN.md candidates pending Joe Approved",
+        "Reduced motion keeps camera-linked positions and adds no extra drift"
       ],
       "requiredStories": [
-        "R3Landscape1440",
-        "R3Landscape390",
-        "R3LandscapeReducedMotion"
+        "V2Terraces1440",
+        "V2Terraces390",
+        "V2TerracesReducedMotion"
       ],
-      "notes": "Documentation source: user-provided E01-landscape-backdrop-prompt.md; existing source on feat/writing-hifi-r1-593dee37 @913dbfe. This branch changes no React/CSS implementation."
+      "notes": "Artwork: apps/writing/public/path/v2-terraces/. Behavior: apps/writing/PRODUCT.md. Compositing and candidate motion: DESIGN.md. The art and the spec are checked in; the page is not implemented in this change."
     },
     {
       "id": "BA-WR-010",
@@ -978,17 +987,17 @@
       ],
       "layoutOwner": "Staircase scene owns anchor; terrace decorative only",
       "requirements": [
-        "Layered Landscape Terrace 2–3 low rounded grass/paper-cut contour layers",
-        "No tall semitransparent rectangular pillar",
-        "Maintain card anchor and complete terminal visibility",
-        "Decorations don't intercept interactions or block main card"
+        "Layered Landscape Terrace: 2–3 shallow rounded grass layers under each node, in front of hill 1",
+        "One platform per node; card bottom sits on the platform top",
+        "Card anchor and terminal visibility stay complete",
+        "Platform decoration leaves hit areas and the card clear"
       ],
       "requiredStories": [
-        "R3TerraceLandscapeDesktop",
-        "R3TerraceMobile",
-        "R3NoPillar"
+        "V2TerracePlatformDesktop",
+        "V2TerracePlatformMobile",
+        "V2TerracePlatformLocked"
       ],
-      "notes": "Selected visual concept: Layered Landscape Terrace; CSS source terrace numeric values are [E] candidates only."
+      "notes": "Per-node lesson platform in front of the v2-terraces mountains. Numeric geometry remains [E]."
     }
   ],
   "reviewOverlay": {
@@ -1074,6 +1083,7 @@
   "currentDirection": {
     "product": "Writing L2 G2-O Lesson 1",
     "defaultStaircaseTheme": "landscape",
+    "pathLandscape": "v2-terraces",
     "terrace": "Layered Landscape Terrace",
     "lessonStatus": "Number Seal + Attached Symbol",
     "visualApproval": "pending-designer-rendered-review",

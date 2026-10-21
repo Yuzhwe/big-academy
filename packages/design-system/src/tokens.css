@@ -231,25 +231,14 @@
   /* Writing canonical current values. [A] designer-confirmed numeric values; [E] proposed
    * implementation candidates pending rendered designer approval. Scoped to
    * Writing composition; NOT a replacement for global shared component defaults. */
-  /* R3 Writing E-01 landscape; [A] selected concept, [E] source-derived candidate values. */
+  /* E-01 path art is v2-terraces under apps/writing/public/path/v2-terraces/.
+   * Sky color and parallax ratios are [E] candidates in DESIGN.md, pending Joe Approved.
+   * Lesson-platform grass values below are the per-node platform candidate, not the mountain PNGs. */
   --ba-writing-staircase-default-theme: landscape; /* [A] semantic identifier */
-  --ba-writing-landscape-sky: #b7dff6; /* [E] source 913dbfe */
-  --ba-writing-landscape-sky-34: #d7eef8; /* [E] */
-  --ba-writing-landscape-horizon: #fff3cf; /* [E] */
-  --ba-writing-landscape-sky-bottom: #e7f6c8; /* [E] */
-  --ba-writing-landscape-peaks-back: #d9d6e6; /* [E] */
-  --ba-writing-landscape-peaks-front: #c5cbe0; /* [E] */
-  --ba-writing-landscape-hill-mid: #9dc56e; /* [E] */
-  --ba-writing-landscape-grass-top: #d7eb86; /* [E] */
-  --ba-writing-landscape-grass-mid: #8fbf55; /* [E] */
-  --ba-writing-landscape-grass-side: #4e8a3c; /* [E] */
-  --ba-writing-landscape-grass-shadow: #3c7434; /* [E] */
-  --ba-writing-landscape-cloud-drift-duration: 46s; /* [E] */
-  --ba-writing-landscape-plane-drift-duration: 28s; /* [E] */
-  --ba-writing-landscape-parallax-far: -0.03; /* [E] */
-  --ba-writing-landscape-parallax-mid: -0.06; /* [E] */
-  --ba-writing-landscape-parallax-near: -0.1; /* [E] */
-  --ba-writing-landscape-parallax-cloud: -0.015; /* [E] */
+  --ba-writing-landscape-grass-top: #d7eb86; /* [E] lesson platform */
+  --ba-writing-landscape-grass-mid: #8fbf55; /* [E] lesson platform */
+  --ba-writing-landscape-grass-side: #4e8a3c; /* [E] lesson platform */
+  --ba-writing-landscape-grass-shadow: #3c7434; /* [E] lesson platform */
   --ba-writing-terrace-layer-count-min: 2; /* [A] */
   --ba-writing-terrace-layer-count-max: 3; /* [A] */
   --ba-writing-terrace-candidate-width: 352px; /* [E] review proportions */
