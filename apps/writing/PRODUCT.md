@@ -55,7 +55,7 @@ Shared visual foundations (Warm Frame, White Canvas, type ramp, Iconoir, motion,
 
 Hierarchy is Level → Unit → Lesson → Activity Screen. A step tag (Skill, Model, Plan, Draft, Revise, Report) is a label on screens, not a separate level the learner navigates.
 
-G2-O, “The Hamburger Paragraph,” is the only playable unit. It has 9 lessons and 52 Activity Screens. Other levels and units appear on the path as locked or view-only. Nothing in the interface unlocks them for demonstration.
+G2-O, “The Hamburger Paragraph,” is the only playable unit on the learner path. It has 9 lessons and 52 Activity Screens. Other levels and units appear on the learner path as locked or view-only. The learner path does not unlock them for demonstration. The designer preview query in chapter 16 is separate and does not change this learner rule.
 
 | Lesson | Title | Screens | Templates used |
 | --- | --- | --- | --- |
@@ -568,18 +568,20 @@ Node roles:
 
 Only G2-O lessons call the course session. A locked card never navigates and never looks unlocked. Completed Lesson CTA is Review / 复习, not Start; current/available unfinished lessons show Start or Continue according to saved progress. The top-left number and completion/lock state form a single badge. Level tabs sit in one header row: level title at the left, the tab list centered on the header, language toggle at the right. Changing level changes which path is shown. It does not open a lesson and does not change score or progress. Phone widths may scroll the tab list inside that row.
 
+**Preview seed (designer/demo only).** `?demo=preview-seed` is a designer preview. While that query is on, every Level 1 lesson card and every Level 2 lesson card renders as completed, so the designer can walk the path, open the completed milestones, and continue to the next lesson. The query does not write the learner course record, does not change learner progress rules, and does not grant Mastery. With the query off, cards, unlocks, and mastery follow the rules in this chapter.
+
 The E-01 stage is the `v2-terraces` landscape specified by DESIGN.md. Layer order from back to front is sky, clouds, hill 2, hill 1, then the lesson platforms and cards. While the learner scrolls the path, scenic layers move horizontally slower than the cards, farther layers slower, and the platforms stay on the steps. The usable viewport shows the header, cards, platforms, and hill/cloud layers without clipping them at the top or bottom. Footer and dev banners do not eat the stage. The scenic layers are decorative. They leave navigation, scoring, and persistence unchanged.
 
 ## 17. Celebration triggers
 
 Celebration is presentation. It never grades, never completes a screen, and never writes the course record.
 
-- **Practice micro-celebration:** briefly combine Ribbons + Explosions for each graded practice item when it first receives a correct Check result (single/multi, tapword, ordered build, frame fill, P5 Apply). Record a stable per-item once-only receipt across Back/reentry/refresh. Never trigger on selection, wrong check, shown/reveal, or Move on; P7 internal assessment is graded only on Hand in, not on each internal question.
+- **Practice micro-celebration:** briefly combine Ribbons + Explosions for each graded practice item when it first receives a correct Check result (single/multi, tapword, ordered build, frame fill, P5 Apply). Record a stable per-item once-only receipt across Back/reentry/refresh. This set is Ribbons + Explosions. It is not the milestone Confetti preset. Never trigger on selection, wrong check, shown/reveal, or Move on; P7 internal assessment is graded only on Hand in, not on each internal question.
 - **Full Lesson celebration:** Ribbons count 30 + three Explosions when the lesson reaches a legitimate completed mastery-success outcome; an unmastered Check finish must not be presented as a mastery celebration. Playback does not grade or unlock. Short composition intensity/duration await visual review.
-- **Milestone:** a one-shot confetti burst whose origin is the center of the completed flag. Parameters: `startCount` 50, `rate.quantity` 0, `life.count` 1. That is a single burst, not a continuous emitter.
+- **Milestone:** a click on a completed flag plays the Confetti preset from the center of that flag. Parameters: `startCount` 50, `rate.quantity` 0, `life.count` 1. That is a single burst, not a continuous emitter. This set is the Confetti preset alone. It does not play Ribbons or Explosions.
 - The first time E-01 is shown, milestones that are already complete are recorded and do not play.
-- On a later return, if one or more milestones have newly become complete, auto-play only the one furthest along the path. Mark the automatic play of the others as already handled so they do not auto-play on the next return. Scroll a completed flag into view if it is off screen, then play once.
-- Later visits do not auto-play. Pressing a completed flag replays its confetti.
+- On a later return, if one or more milestones have newly become complete, auto-play only the one furthest along the path, using that same Confetti preset. Mark the automatic play of the others as already handled so they do not auto-play on the next return. Scroll a completed flag into view if it is off screen, then play once.
+- Later visits do not auto-play. Pressing a completed flag replays the Confetti preset from that flag’s center, with the same parameters. It does not play Ribbons or Explosions.
 - Reduced motion shows a static success state and no particles.
 - Do not change the selected level in order to celebrate a flag on another level.
 - A failed or interrupted presentation does not consume the receipt.
@@ -590,7 +592,7 @@ The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribb
 
 - No hamburger, Index, or Analytics in the learner chrome. Session, screen, and score data stay in the course record for the path, the top bar, and the Coach.
 - No Save or Print button on the book page. Saving remains automatic.
-- No demo unlock on the student path.
+- No demo unlock on the student path. `?demo=preview-seed` is the designer preview in chapter 16. It does not write learner progress and it does not grant Mastery.
 
 ## 19. Open product decisions
 
