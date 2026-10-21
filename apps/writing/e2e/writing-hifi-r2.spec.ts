@@ -35,7 +35,8 @@ test('R2 staircase and lesson shell responsive evidence',async({page})=>{
   }
 });
 test('R2 full authored 8-screen lesson actually passes by answering',async({page})=>{
-  test.setTimeout(180000);
+  test.setTimeout(100000);
+  page.setDefaultTimeout(8000);
   await page.setViewportSize({width:1440,height:900});
   await page.goto('/');
   await page.locator('[data-lesson-focus="G2-O:1"]').click();
