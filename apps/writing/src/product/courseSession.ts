@@ -1088,6 +1088,86 @@ export class CourseSession {
     this.log('apply_checked',{passed:a.passed,checks:a.checks});
     this.save();this.emit();
   }
+
+  private assessmentState(id:string):AssessmentState {
+    return this.state.checks[id]??(this.state.checks[id]={attempt:0,question:0,responses:{}});
+  }
+  private assessmentIds():string[] {
+    const page=this.pageOf(this.screens[this.state.screen].screen.page);
+    return page?this.engine.masteryItems(page,this.assessmentState(page.id).attempt??0):[];
+  }
+  private assessmentResponse(id:string):AssessmentAnswer {
+    const page=this.screens[this.state.screen].screen.page;
+    const state=this.assessmentState(page);
+    const attempt=String(state.attempt??0);
+    state.responses=state.responses??{};
+    state.responses[attempt]=state.responses[attempt]??{};
+    return state.responses[attempt][id]??(state.responses[attempt][id]={});
+  }
+  private assessmentAnswered(task:AlexTask,a:AssessmentAnswer):boolean {
+    if(task.type==='pick')return !!a.picked?.length;
+    if(task.type==='tapword')return a.sel!=null;
+    return !!(a.text?.trim()) && a.text?.trim()!==task.start?.trim();
+  }
+  assessmentPick(index:number):void {
+    const screen=this.screens[this.state.screen].screen;if(screen.kind!=='check')return;
+    if(this.assessmentState(screen.page).result)return;
+    const task=this.task(this.assessmentIds()[this.assessmentState(screen.page).question??0]);
+    const a=this.assessmentResponse(task.id);
+    if(task.multi) {a.picked=a.picked??[];a.picked=a.picked.includes(index)?a.picked.filter(i=>i!==index):[...a.picked,index];}
+    else a.picked=[index];
+    this.save();this.emit();
+  }
+  assessmentTap(index:number):void {
+    const screen=this.screens[this.state.screen].screen;if(screen.kind!=='check')return;
+    if(this.assessmentState(screen.page).result)return;
+    const task=this.task(this.assessmentIds()[this.assessmentState(screen.page).question??0]);
+    const a=this.assessmentResponse(task.id);a.sel=a.sel===index?null:index;this.save();this.emit();
+  }
+  assessmentText(value:string):void {
+    const screen=this.screens[this.state.screen].screen;if(screen.kind!=='check'||this.assessmentState(screen.page).result)return;
+    const id=this.assessmentIds()[this.assessmentState(screen.page).question??0];
+    this.assessmentResponse(id).text=value;this.save();this.emit();
+  }
+  assessmentNavigate(index:number):void {
+    const screen=this.screens[this.state.screen].screen;if(screen.kind!=='check')return;
+    this.assessmentState(screen.page).question=Math.max(0,Math.min(3,index));this.save();this.emit();
+  }
+  assessmentNewSet():void {
+    const screen=this.screens[this.state.screen].screen;if(screen.kind!=='check')return;
+    const state=this.assessmentState(screen.page);
+    if(state.result?.passed)return;
+    state.attempt=(state.attempt??0)+1;state.question=0;state.blankConfirmed=false;state.result=undefined;
+    this.feedback='';this.save();this.emit();
+  }
+  private assessmentPrimary():void {
+    const screen=this.screens[this.state.screen].screen;
+    const state=this.assessmentState(screen.page);
+    const ids=this.assessmentIds();
+    if((state.question??0)<ids.length-1){state.question=(state.question??0)+1;this.save();this.emit();return;}
+    const blank=ids.map((id,index)=>!this.assessmentAnswered(this.task(id),this.assessmentResponse(id))?index+1:0).filter(Boolean);
+    if(blank.length&&!state.blankConfirmed){
+      state.blankConfirmed=true;
+      this.feedback=(this.zh?'未完成：':'Unanswered questions: ')+blank.join(', ')+(this.zh?'。再次交卷可以跳过。':'. Hand in again to continue.');
+      this.save();this.emit();return;
+    }
+    const results=ids.map((id,index)=>{
+      const task=this.task(id),a=this.assessmentResponse(id);
+      const correct=task.type==='pick'?this.engine.choiceGrade(task,a.picked??[]).correct:
+        task.type==='tapword'?(task.targets??[]).some(t=>this.engine.locate(task.text??'',t)===a.sel):
+        gradeProduction(task,a.text??'',this.engine).correct;
+      return {id,correct,writing:index===ids.length-1};
+    });
+    const grade=this.engine.masteryPass(results);
+    state.result={score:grade.score,total:grade.total,passed:grade.passed,answers:results};
+    state.passed=!!state.passed||grade.passed;
+    state.finished=grade.passed||(state.attempt??0)>=1;
+    if(state.finished)this.state.done[screen.page]=true;
+    this.feedback=grade.passed?(this.zh?'通过了这次小测。':'You passed this check.'):(this.zh?'还需要再练习。':'Not yet.')+' '+grade.score+' of '+grade.total+'.';
+    this.log('assessment_submitted',{attempt:state.attempt,passed:grade.passed,score:grade.score});
+    this.save();this.emit();
+  }
+
   pick(index: number): void {
     const screen = this.screens[this.state.screen]?.screen;
     if (!screen?.task) return;
