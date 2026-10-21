@@ -53,3 +53,27 @@ Status: documentation review, not product implementation or rendered design appr
 3. Check authoritative token names against final component implementation on later engineering PR.
 4. Confirm no new page CSS, TSX, tests, or deployment are modified in this rewrite.
 5. UI/UX Designer approves visuals after render evidence, not as a side effect of documentation acceptance.
+
+## Deep semantic and cross-file review — pass 2 (2026-10-21)
+
+Completed additional checks on the rewrite branch:
+
+- Corrected an obsolete statement falsely claiming that this branch lacked executable `tokens.css`; the file is present through the R3 ancestor. Component consumption and visual quality remain unverified.
+- Replaced a blanket assertion that entire token families were missing with narrower, evidence-based **integration and validation gaps**.
+- Standardized Footer terminology: **Previous** navigates to prior Activity Screen, TopBar **Back** exits to Staircase. P7 question-level navigation remains a template exception.
+- Removed residual R1/R2/R3 ordering language from the PRODUCT.md body that could cause agents to consult obsolete review rounds.
+- Updated the component registry to use `currentDirection` instead of a historical `reviewR3` override section. Preserved the existing component registry entries (21).
+- Removed the obsolete R1 token comment; **executable token values were not changed** in this pass.
+- Confirmed that CSS var() names referenced in `tokens.css` have matching declarations in that file. This is a limited internal reference check, not a full build, theming, or component-usage audit.
+
+### Remaining semantic-level review risks
+
+1. Full product-rule parity against all original prototype files and test fixtures was **not independently executed**. Existing authored eight-screen curriculum and template rules were preserved, but their equivalence to runtime graders still needs fixture-level verification.
+2. The DESIGN.md retains extensive foundation candidate material from early research. It has been topically reorganized, not given visual approval; before adoption as a final production contract, use rendered examples to approve concrete [E] values.
+3. The original landscape backdrop exists on a separate implementation branch (source record `913dbfe`), not as production code committed by this docs PR.
+4. The sidebar Coach and Footer presentation remains a documentation requirement until browser evidence demonstrates conformance.
+5. Component Contracts are still carrying legacy `status` categories; changing schema shape requires a backwards-compatible engineering migration rather than a documentation-only rename.
+
+### Documentation review gate
+
+This work can be reviewed for **specification coherence**. It must not be represented as implemented UI, verified graders, CI passes, accessibility certification or designer visual approval.
