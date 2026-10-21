@@ -1,24 +1,15 @@
 # Big Academy — DESIGN.md
 
-**Version:** v0.6 R3 canonical design · 2026-10-21
-**Owner:** UI/UX Designer (final visual authority)  
-**Scope:** all Big Academy products. **This is the only DESIGN.md in the repository.** Writing feature-specific requirements and page specifications are combined inside `apps/writing/PRODUCT.md`.  
-**Authority:** approved designer decisions override external design prompts; actual checked component code and Storybook demonstrate implementations but never grant design approval. Product-specific business rules belong in each `apps/<product>/PRODUCT.md`.
+**Edition:** Canonical Design System & Writing visual specification v1 · 2026-10-21
+**Authority:** global visual and interaction design language; Writing-specific current visual directions.
+**Status:** selected visual concepts are approved; numeric [E] candidates require designer review in rendered UI.
+**Scope:** shared foundations plus Writing E-01 and Activity experience.
 
-## R6 decision overlay — 2026-10-20
+## Reading and authority rules
 
-This section supersedes **conflicting earlier descriptions** without deleting their provenance. Root `DESIGN.md` is the single shared design authority; Writing-specific page/interaction specifications belong to `apps/writing/PRODUCT.md`, not a parallel `apps/writing/DESIGN.md`.
+This is the only active root DESIGN.md. Do not treat old review rounds, deprecated theme alternatives, copied research briefs or historical experiments as competing instructions. PRODUCT.md owns scoring/navigation/learning behavior; this file owns presentation and visual states; tokens.css owns executable values; Component Contracts define component API. [A] is an approved decision, [E] is an implementation candidate that must not be represented as designer-validated. React Aria is the accessibility foundation; use actual Big Academy reusable components rather than replacing them with independently styled controls.
 
-- **Staircase:** the approved forward path form is **A · separate platforms**, ascending lower-left → upper-right with a viewport-height-derived rise and bottom-anchored cards. Earlier A/B continuous slope tests and contrasting A/B color themes are historical explorations only. Writing Warm Frame + White Canvas remains the approved product foundation. Writing E-01 uses the R3 landscape composition below; R1 brown/orange vertical gradient is retired as a production directive.
-- **Staircase hierarchy:** Intro = readable introduction; Unit = chapter banner and non-interactive Stub; Lesson = strongest available action and real access gate; completed Mile = optional replayable reward; Goal = distinct achievement with original eligibility.
-- **Celebration:** reuse original ten tsParticles effects from Writing Celebration PR #22; **Ribbons count 30** for Writing lesson composition, with three explosions when applicable; Milestone confetti is distinct and originates at the completed flag center. A shared renderer is permissible, shared learning/achievement receipts are not.
-- **Answer options:** minimum 50px height is a Writing **option** rule, not a global BAButton rule. Allow content height growth; single-line center alignment, wrapped multiline first-line alignment and number alignment. Selection/feedback states must convey meaning without color alone; dimming options to 40%, shake and audio remain subject to design/accessibility validation.
-- **Coach:** instruction and user-invoked hints are separate from checked answer feedback; selection edits do not generate fresh grading feedback.
-- **Typography v0.1 temporary designer-accepted ramp** (font-size/line-height CSS px; ordered desktop → mobile): Display 40/48 → 32/40; Heading XL 32/40 → 28/36; Heading L 26/34 → 24/32; Heading M 22/30 → 20/28; Body L 18/28 → 18/28; Body M 16/24 → 16/24; Body S 14/20 → 14/20; Caption 12/18 → 12/18. Preserve Dosis ExtraBold 800 EN heading/numerals, Jost EN body, Douyin ZH headings, Noto Sans SC ZH body. This is **Big Academy's own interim scale informed by general Apple HIG readability/dynamic text principles**, not claimed Apple tokens or exact Figma values. Font asset identification/license, text zoom, long-form Chinese legibility and EN/ZH parity still require tests.
-- **Governance:** approved principles and visual review candidates must retain separate status. Neither completion of code nor passing automated tests amounts to visual approval.
-
-
-## 1. Overview — one design language, multiple product themes
+## 1. Design principles and product themes
 
 Big Academy is a K–12 learning ecosystem. Maintain coherent typography, spacing, form controls, navigation, accessible state affordances, layouts and component quality across Writing, Reading and future experiences. Differentiate product identity **primarily through theme color**, without forcing different learning experiences into identical screen structures.
 
@@ -30,7 +21,7 @@ Big Academy is a K–12 learning ecosystem. Maintain coherent typography, spacin
 
 Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candidate; **[R]** reference-only; **[T]** working temporary implementation; **[Q]** open decision.
 
-## 2. Colors & Product Themes
+## 2. Color foundations and theme roles
 
 ### 2.1 Known colors (do not invent other product themes)
 
@@ -79,7 +70,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 - Reading primary/tint remain undecided; do **not** invent them. Dark mode, alpha scales and component spacing/radius approvals remain separate.
 - No component, browser, Storybook, or accessibility tests were run **as explicitly requested**. Color-system **design approval [A]** must not be confused with engineering `verified` or visual approval of unreviewed rendered components.
 
-## 3. Typography — Foundation A [A, 2026-10-19]
+## 3. Typography and internationalization
 
 **Approved direction:** One coherent typography system across **all** Big Academy products, with **expressive display/heading typography plus highly readable body/learning text**. UI labels use the shared text-role system rather than a separate product-specific font identity. The display and body roles **may** use different typefaces; two separate families are not mandatory.
 
@@ -111,7 +102,7 @@ The UI/UX Designer has explicitly selected the following **font roles**. These a
 
 **Explicitly deferred [Q]:** numeric font-size scale, line heights, letter spacing, chosen weights for Jost/Douyin/Noto Sans SC, UI control typography details, font asset source/version, license/distribution verification, performance strategy and fallback behavior. A temporary system-font stack [T] may remain in existing implementation until these font assets have been legally and technically verified; an installed fallback is **not** a change to the approved font choices. Do not bundle any font file before confirming its license. Verify actual font loading and EN/ZH/digit specimens in Storybook before visual sign-off.
 
-## 4. Layout & Spacing
+## 4. Spacing, grid and layout
 
 ### Spatial, Grid & Layout System v0.2 [A principles, E values · 2026-10-19]
 
@@ -153,22 +144,18 @@ The following is incorporated in full to make this DESIGN.md sufficient for choo
 **Approval [A]:** combined design principles (Geist-style regularized spacing, 4px base / 8px primary rhythm; Element First / Content First; contextual grid choice; Responsive / Adaptive / Strict).
 **Candidate [E]:** initial CSS numeric scale, semantic usage mappings, actual column count/gutters, container boundaries, and breakpoints; they are not signed-off component dimensions.
 **Engineering:** not integrated into components or tested in browser. Existing approved Writing layout rules override generic examples.
-
-## 1. Research background and attribution
-
+#### 1. Research background and attribution
 - [Vercel: Teaching agents product design at Vercel](https://vercel.com/blog/teaching-agents-product-design-at-vercel): linting warns about arbitrary spacing that falls off a 4px grid and suggests a standard utility.
 - [Elliot Dahl / Figma publication: Space, grids, and layouts](https://www.designsystems.com/space-grids-and-layouts/): uses an 8pt main scale and 4pt half-step, distinguishes Element First and Content First, describes column/modular/baseline grids and Adaptive/Responsive/Strict layouts.
 - These are **reference principles**, not Vercel/Figma brand assets or a requirement to duplicate another company's CSS naming.
 
-## 2. Spatial fundamentals [A]
-
+#### 2. Spatial fundamentals [A]
 - Base unit = **4 CSS px** for standard spacing; default design rhythm = **8 CSS px**. A 4px half-step supports icons, micro-gaps and dense control internals.
 - Prefer a short supported scale over arbitrary local measurements. When an exceptional value is required, explain what constraint makes it necessary.
 - Spacing tokens represent **relationships between elements**, not component geometry, border widths, font sizes, tap targets or arbitrary visual world coordinates.
 - Maintain P0 Primitive → Semantic → optional Component hierarchy, with **CSS variables as the single executable value source**. UI components should consume semantic roles when stable; an unreviewed candidate number must never be labeled [A].
 
-## 3. Initial numeric spacing candidates [E]
-
+#### 3. Initial numeric spacing candidates [E]
 The following is a **candidate CSS scale** in `packages/design-system/src/tokens.css`; no component is migrated yet.
 
 | Token | Value | Intended first-use examples |
@@ -185,7 +172,7 @@ The following is a **candidate CSS scale** in `packages/design-system/src/tokens
 
 Never interpret this table as an instruction to apply 64px to every page section or 16px to every component. Map a semantic relationship before choosing a value. Exact role-to-value assignments and responsive variants remain [E].
 
-### Proposed semantic relationships [E]
+#### Proposed semantic relationships [E]
 
 - `inline-gap-compact`: icon + label or closely bound controls
 - `control-content-gap`: button/field internals, **not** tap-target minimum
@@ -197,25 +184,23 @@ Never interpret this table as an instruction to apply 64px to every page section
 
 Do not add all these semantic variables until real components need them; write the agreed value in CSS when implementing.
 
-## 4. Sizing policies [A principles, E exact dimensions]
-
-### Element First
+#### 4. Sizing policies [A principles, E exact dimensions]
+#### Element First
 
 For predictably sized controls (buttons, inputs, icon actions, progress targets), prioritize coherent touch/keyboard target size and layout alignment. The current pilot's `--ba-hit-min: 44px` is a **temporary implemented value**; it is not a spacing scale entry and this policy does not reapprove every control size.
 
-### Content First
+#### Content First
 
 For variable content (lesson instructions, writing paper, Coach text, multilingual paragraphs, cards with dynamic descriptions), preserve content, line-wrap and adequate padding. Let height grow rather than clipping teaching content to a decorative step.
 
-### Box model and exceptions
+#### Box model and exceptions
 
 - Use `box-sizing: border-box` for measured UI geometry; distinguish outer measured box from content box in design-to-code review.
 - Writing's approved **ordinary 0.5px border** remains a border token, not a violation of the 4px spacing grid. Focus rings may be thicker for accessibility.
 - Typography line-height, optical alignment, hairlines, icons and animation/world coordinates are **not automatically rounded** to the 4px grid. Typography metrics remain separately governed and need EN/ZH review.
 - `min-height`, `min-width` and content constraints take priority over cosmetic grid purity where accessibility or student learning content would suffer.
 
-## 5. Grid rules
-
+#### 5. Grid rules
 | Grid | When to use | Big Academy guidance |
 |---|---|---|
 | Column | broad page composition / major panels | Use meaningful tracks and gutters; do not force every page to 12 columns |
@@ -224,8 +209,7 @@ For variable content (lesson instructions, writing paper, Coach text, multilingu
 
 **Approved ownership:** app/page controls overall grid and panel placement, reusable components control internal layout. Product-specific geometry such as E-01 staircase positions stays with Writing and must not be replaced with a generic equal-size grid.
 
-## 6. Layout behavior policies [A]
-
+#### 6. Layout behavior policies [A]
 | Behavior | Meaning | Candidate application |
 |---|---|---|
 | Responsive | fluidly reflow within available space | ordinary shared controls, card content and page padding |
@@ -234,16 +218,14 @@ For variable content (lesson instructions, writing paper, Coach text, multilingu
 
 Multiple modes may coexist on one screen. The responsive strategy uses available **container width and content needs**, not a blanket device-name heuristic. **Breakpoint numbers, columns and percentages are [E].**
 
-## 7. Product rules that outrank generic spatial samples
-
+#### 7. Product rules that outrank generic spatial samples
 - `BA-WR-001 LessonTopBar`: task progress stays geometrically centered against the whole header; long titles may truncate instead of displacing progress; lesson statuses and gating remain product-controlled.
 - `BA-WR-002 LessonWorkspace`: Warm Frame + White Canvas; Coach content scrolls separately; bottom navigation remains outside Coach and anchored to the right column footer.
 - `BA-WR-003 WordGrid`: tablet overlay only within left writing region and preserves caret/last writing line; never covers Coach/Footer.
 - `BA-WR-005 StairLessonCard`: diagonal staircase position is scene/product geometry, not a general 4px spacing-grid obligation.
 - Target checks when implementation begins: desktop 1440, tablet 1024/834, small-width 390; test English/Chinese long text, zoom, keyboard focus, pointer and touch behavior.
 
-## 8. AI Agent constraints
-
+#### 8. AI Agent constraints
 1. Read root `DESIGN.md`, relevant `PRODUCT.md`, registry/contract and this document before any spacing/layout migration.
 2. Use approved layout ownership, then a semantic spacing role, then an existing candidate spacing primitive in CSS.
 3. Avoid magic-number proliferation; **do not blindly rewrite** every existing 10px/18px/44px/80px measurement. A measurement can represent component geometry rather than spacing.
@@ -252,20 +234,17 @@ Multiple modes may coexist on one screen. The responsive strategy uses available
 6. This proposal **does not grant blanket approval** of new component rendering, QA, merge, or Alex's product logic.
 7. If automation/linting is added in P2, classify actual spacing declarations vs icons/borders/font geometry first; initially warn, then consider blocking only after audited exceptions.
 
-## 9. Status and handoff
-
+#### 9. Status and handoff
 - **[A] Approved by user:** combined Vercel spacing regularity + Figma spatial/grid/layout concepts; 4px base and 8px dominant design rhythm; sizing and layout strategy.
 - **[E] Proposed:** initial 0/4/8/12/16/24/32/48/64px numeric tokens; specific semantic alias mapping; breakpoints, gutters, columns, card/page paddings.
 - **[T] Existing pilot:** `--ba-hit-min: 44px`, 80/76px TopBar, local spacing values remain unchanged.
 - **Engineering:** CSS candidate variables are present but unused by current components. No component/browser/a11y/visual test run for this doc/token-scaffold change; do not claim production readiness.
 - **Integration:** coordinate with Agent A, fold into canonical docs/implementation with reviewed PR ancestry. Do not modify other agents' working branches.
 
-## 10. Future review criteria
-
+#### 10. Future review criteria
 When implementation proceeds, compare at least one Element First control and one Content First lesson card against approved UX; confirm responsive, adaptive and strict behavior using actual content and target widths. Confirm exception rationale and no regression to Coach/Footer/TopBar geometry. Record evidence and designer approval separately.
 
-
-## 5. Elevation & Depth · Figma Effect Styles v1 [source-derived, visual review pending]
+## 5. Elevation and materials
 
 **Source:** [Big Academy Design System · Figma node 15:5](https://www.figma.com/design/06PPYhEQn3CqVYGlfopJWx/Big-Academy-Design-System?node-id=15-5); `25:2` documentation, `25:8` / `25:11` / `25:14` / `25:17` / `25:20` effects.
 
@@ -287,7 +266,7 @@ Use **depth to communicate hierarchy, not decoration**. Consume the existing Fig
 
 `BATabs` / `BATabList` / `BATabPanel` reuse the **same segmented geometry and selected-surface CSS**, not two separately tuned appearances: sizes 36 / 50 / 70 / 90; Strong / Subtle; Full / Standard; Equal / Hug; 200ms selected surface, reduced-motion handling. They have different semantics: `BATabs` uses React Aria Tabs/TabList/Tab/TabPanel (one selected Tab controls the content panel), while `BASegmentedControl` uses React Aria RadioGroup for **local choice without panels**. Do not replace one with the other. Writing's Level Tab remains geometrically centered in the same-row header, and changing it only switches Level/path (never auto-enters Lesson).
 
-## 6. Shapes
+## 6. Shape and radius
 
 ### BA-DS-RADIUS-001 · Shape & Radius System v0.1 [A principles, E values · 2026-10-19]
 
@@ -313,9 +292,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 **Candidate [E]:** All initial numeric radius values, aliases and mappings below. No global numeric Radius Scale has yet received final designer approval.
 **Implementation:** Candidate CSS variables added to `packages/design-system/src/tokens.css`, not yet applied to rendered components.
 **Benchmark:** [Vercel Geist Materials](https://vercel.com/geist/materials), used for its **surface role and radius association**, not as a copy of its full material/stroke/shadow definitions.
-
-## 1. Shape design principles [A]
-
+#### 1. Shape design principles [A]
 1. **Purpose first:** choose the UI role and content hierarchy before selecting the radius number. Never generate random roundness just to make a component look friendly.
 2. **Size aware:** in the same component family, smaller controls tend to use smaller corners, and spacious controls/panels can use wider corners, unless the component is an explicitly pill/circle geometry.
 3. **Elevation aware:** ordinary surfaces should look restrained; more prominent/floating surfaces may use a more spacious contour. Elevation still requires a separate shadow/border decision; radius is not a substitute for elevation.
@@ -325,8 +302,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 7. **Product intent:** shared controls are a cross-product foundation. Writing cards, Staircase milestones and decorative stage geometry may differ for approved product-specific reasons.
 8. **Status separation:** values below are implementation candidates [E] and do not authorize replacing existing temporary radius values throughout Writing.
 
-## 2. Candidate primitive radius scale [E]
-
+#### 2. Candidate primitive radius scale [E]
 | CSS token | Candidate value | Intended meaning |
 |---|---:|---|
 | `--ba-radius-0` | 0px | square, e.g. canvas edge or justified full-bleed geometry |
@@ -341,8 +317,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 
 **Why 6px?** Geist Materials uses 6px for its base/small/tooltip types. Its medium/large/menu/modal types use 12px; fullscreen uses 16px. Those are **reference anchors**, not approved Big Academy geometry. Do not force every BA surface to mirror Vercel. See [Geist Materials](https://vercel.com/geist/materials).
 
-## 3. Material/surface hierarchy and default candidates [E]
-
+#### 3. Material/surface hierarchy and default candidates [E]
 | BA surface role | Geist inspiration | Radius token | Border/shadow guidance |
 |---|---|---|---|
 | `surface-base` | base, on page | 6px | calm, no unnecessary shadow; use light boundary where needed |
@@ -356,8 +331,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 
 **Material guidance approved [A]:** choose the lowest necessary surface/elevation treatment, avoid stacking multiple "material" treatments on the **same element**, align perceived elevation with actual stacking order, and do not rely on shadow alone to convey interaction state. **Exact shadow/stroke tokens remain [Q]** under the existing Elevation section.
 
-## 4. Component-specific selection rules [A method / E numbers]
-
+#### 4. Component-specific selection rules [A method / E numbers]
 | Component | Default candidate | Alternatives / caveats |
 |---|---|---|
 | BAButton | regular control 8px | compact 6px, large 12px; **pill variant** uses full radius |
@@ -376,8 +350,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 
 **Important:** these candidate values do not change existing BAButton pill `999px`, BATaskProgress 10px target, or TopBar geometry. Apply changes through the component's own reviewed styling/contracts in later implementation.
 
-## 5. Concentric corners (nested radius) rule [A method]
-
+#### 5. Concentric corners (nested radius) rule [A method]
 If an inner rounded surface sits inside a visible rounded parent, use the starting geometry:
 
 `outerRadius ≈ innerRadius + visibleInset`
@@ -390,8 +363,7 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 - Inner surfaces should not visually cut through the outer curve; avoid unwanted clipping at small widths and large text scales.
 - If multiple layers of cards yield excessive softness, flatten a layer rather than increasing all radii.
 
-## 6. State, responsive and touch rules
-
+#### 6. State, responsive and touch rules
 - Hover/pressed/disabled/focus/error should change *colors, outlines, or content* while retaining the same radius unless the interaction intentionally changes the surface role.
 - Focus-visible rings must remain visible even when a container uses `overflow: hidden`; do not clip essential focus or error affordances.
 - Do not scale radius directly with viewport width. Choose size/variant and only adjust for meaningful layout change.
@@ -399,8 +371,7 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 - Radius never overrides minimum hit area or control alignment; `9999px` does not magically produce a true circle on non-square boxes.
 - The Writing Warm Frame + White Canvas hierarchy stays intact. New radius values cannot silently change lesson navigation or Alex progress gating.
 
-## 7. Designer / Agent decision tree
-
+#### 7. Designer / Agent decision tree
 1. **Is it a full-bleed canvas?** Use square edge/0px unless a designed floating region exists.
 2. **Is it a floating overlay?** Choose tooltip/menu/modal/fullscreen category, then corresponding radius and accessibility semantics.
 3. **Is it an on-page material?** Choose base/small/medium/large elevation role; pick lowest elevation that clearly separates content.
@@ -410,8 +381,7 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 7. **Does the chosen radius conflict with readability/focus/clipping?** The functional/accessible behavior wins.
 8. **Record exception:** if a component needs an off-scale or dynamic radius, explain why in its Contract/Story before reusing it globally.
 
-## 8. Examples (not rendered approval)
-
+#### 8. Examples (not rendered approval)
 ```css
 /* Proposal only. Not applied to existing components by this PR. */
 .ba-card { border-radius: var(--ba-radius-surface-medium); }
@@ -421,8 +391,7 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 .ba-avatar { aspect-ratio: 1; border-radius: var(--ba-radius-circle); }
 ```
 
-## 9. QA / change boundaries
-
+#### 9. QA / change boundaries
 - **[A]** Role-based, size-aware, elevation-aware and nesting-aware radius selection method.
 - **[E]** Numeric radius scale and first mappings.
 - **[T]** Existing implementations remain unchanged.
@@ -431,8 +400,7 @@ If an inner rounded surface sits inside a visible rounded parent, use the starti
 
 **Design reference:** Vercel Geist Materials, https://vercel.com/geist/materials
 
-
-## 6.1 Motion & Interaction Physics
+## 7. Motion and interaction feedback
 
 ### BA-DS-MOTION-001 · Interim Motion System v0.1 [A temporary adoption · 2026-10-19]
 
@@ -451,8 +419,7 @@ The UI/UX Designer explicitly chose to **temporarily reuse all Spring parameter 
 
 **Motion rules:** use springs only for purposeful state changes; avoid distracting movement during reading/writing/IME composition and do not gate business logic on animation completion. Respect `prefers-reduced-motion: reduce` with an equivalent immediate state change. Preserve accessible focus, dismissal, navigation, scroll and status feedback. Temporary spring adoption does **not** approve any specific rendered animation, component choreography, additional animation dependency or production release.
 
-
-## 7. Components
+## 8. Component architecture, iconography and reusable patterns
 
 Foundation: **React Aria Components** for accessible headless button, tabs, field and overlay behavior. Use native semantics where React Aria does not supply an exact business-level component.
 
@@ -518,7 +485,7 @@ Popover is an accessible, nonmodal anchored overlay opened by the ellipsis indic
 
 **Status and scope:** all Unit instances/states share the same folded anatomy; preserve done/current/locked distinctions. No changes to Lesson, Intro, Milestone, Goal, staircase geometry, behavior or gates. Validate Desktop/Tablet, responsive titles, EN/ZH, state styles, focus/hover/disabled and visual comparison. Designer reviews render before approval. New global Tokens need explicit proposal, not an automatic style migration.
 
-## 7A. Writing R3 — current production design intent (2026-10-21)
+## 9. Writing: current Staircase and Activity visual specification
 
 This section is the **sole active Writing page-specific visual contract**, incorporating the previously agreed component details. Prior R1/R2 review overlays have been removed, not treated as parallel authority. [A] means explicitly confirmed value/direction, [E] implementation candidate pending visual approval. No screenshot is required to implement the textual specification.
 
@@ -562,13 +529,13 @@ P2 Not yet vs Better: two clearly distinguished teaching panels, Better gently e
 
 Validate 1440×900, 1024×768, 834×1112, 390px, 100% and 200% zoom, English/Chinese, long titles, keyboard/touch, reduced motion, all lesson states. Compare two terrace layers vs heavy pillar absence, terrain/background hierarchy, rounded paper fold seam, seal icon anchoring, scenic continuity and edge visibility. Test quiet container separation, smaller tokenized gaps and footer transparency. All [E] visual dimensions, colors and minor motifs remain pending UI/UX Designer approval. This is a **documentation-only change**: no current implementation/test pass or approval is implied.
 
-## 8. Do's and Don'ts
+## 10. Global do / don't
 
 **Do:** reuse semantic Tokens; keep one approved visual language; make product accents thematic; preserve CJK and accessibility; show states using labels/icons/geometry as well as colors; make business logic independent of UI styling; update Contract and Storybook alongside component API changes.
 
 **Don't:** create a separate `apps/writing/DESIGN.md` or duplicate the E-01 page specification outside `apps/writing/PRODUCT.md`; hard-code Writing accent in shared BAButton; invent Reading colors; treat source visual Demo measurements as approved; visually merge skipped with done; add menu or duplicate title; use confetti to mutate progression; freeze v1.0 without designer screenshot/interaction review.
 
-## 9. Evidence & Open Work
+## 11. Evidence, approval and open visual questions
 
 - **Benchmark:** `docs/design-system/BENCHMARK_AND_TOKEN_GAP_AUDIT_v0.1.md`.
 - **Actual temporary token source:** `packages/design-system/src/tokens.css` on Grokbot's **separate** `feat/grokbot-writing-topbar` branch. This docs branch does **not** yet include that code and must not pretend it does.
