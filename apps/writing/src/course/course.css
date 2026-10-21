@@ -321,3 +321,7 @@
 .course-examples p:last-child span {color:var(--ba-color-success-10);font-weight:800;font-size:16px;}
 .course-examples p:last-child span::before {content:'✓';margin-inline-end:var(--ba-space-2);}
 @media (max-width:720px){.course-examples{grid-template-columns:minmax(0,1fr);}}
+
+@media (max-width:640px) {
+  .course-lesson .lesson-workspace {height:auto;min-height:calc(100dvh - 120px);}
+}
