@@ -922,7 +922,7 @@
         "R3TerraceMobile",
         "R3NoPillar"
       ],
-      "notes": "R3 selected concept A; CSS source terrace numeric values are [E] candidates only."
+      "notes": "Selected visual concept: Layered Landscape Terrace; CSS source terrace numeric values are [E] candidates only."
     }
   ],
   "reviewOverlay": {
@@ -1005,18 +1005,15 @@
       }
     ]
   },
-  "reviewR3": {
-    "date": "2026-10-21",
-    "status": "documents-only; visual pending designer final approval; implementation unchanged",
-    "sourceBackdropCommit": "913dbfe",
-    "defaultTheme": "landscape",
+  "currentDirection": {
+    "product": "Writing L2 G2-O Lesson 1",
+    "defaultStaircaseTheme": "landscape",
     "terrace": "Layered Landscape Terrace",
     "lessonStatus": "Number Seal + Attached Symbol",
-    "retired": [
-      "R1 gradient default",
-      "tall rectangular columns",
-      "giant horizontal status capsules",
-      "R1/R2 appended review overlays"
-    ]
+    "visualApproval": "pending-designer-rendered-review",
+    "productBehavior": "apps/writing/PRODUCT.md",
+    "design": "DESIGN.md",
+    "tokens": "packages/design-system/src/tokens.css",
+    "implementation": "not-proven-by-documentation"
   }
 }
