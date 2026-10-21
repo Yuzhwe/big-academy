@@ -212,7 +212,7 @@ The prompt is the item’s ask line. Options are the item’s lines, passage wor
 
 **Check.** Adds a try. Correct → `done`, feedback, screen completes. First wrong → stay `open`. Single choice clears the selection and marks the chosen row wrong; the retry sentence names the letter and the authored reason for that option, then “Try again.” Multi choice keeps the selection; the retry sentence names one wrong letter and its reason, or “You found r of n.” Second wrong → `shown`, wrong rows stay marked, correct rows show the leading check icon, and the feedback region uses the graded sentence in the next paragraph.
 
-**Graded sentence for a pick** (also used when a single-target tap-word is revealed):
+**Coach presentation for a pick** (also used when a single-target tap-word is revealed). These template strings are Coach / demo feedback in the feedback region:
 
 - Right: “Right. You chose {letters}. {why the right option is right}.”
 - Wrong, with a choice: “You chose {letters}. {why that option is wrong}. The right answer is {letters}. {why the right option is right}.”
