@@ -108,5 +108,16 @@ test('real Apply check and P7 numeral stay off the eight lesson steps', async ({
   await page.getByTestId('check-writing').fill('I think kids should have a pet at home.');
   await page.getByRole('button', { name: 'Hand in my check' }).click();
   await expect(page.getByTestId('check-result')).toContainText(/You passed this check/);
+  const celebration = page.getByTestId('lesson-celebration');
+  await expect(celebration).toBeVisible();
+  await expect(celebration).toHaveAttribute('data-effects', 'ribbons:30 explosions:3');
+  await expect(celebration).toHaveAttribute('data-played', 'true');
+  await shot(page, 'lesson-ribbons');
+  const progress = await page.evaluate(() => localStorage.getItem('g2o_unit_state_v4'));
+  await celebration.getByRole('button', { name: 'OK' }).click();
+  await expect(celebration).toHaveCount(0);
+  await expect(page.getByTestId('check-result')).toContainText(/You passed this check/);
+  expect(await page.evaluate(() => localStorage.getItem('g2o_unit_state_v4'))).toBe(progress);
+  await expect(page.locator('.course-app')).toHaveAttribute('data-view', 'lesson');
   await shot(page, 'p7-passed');
 });

@@ -34,6 +34,7 @@ Playable in `CourseApp` for G2-O Lesson 1, screens 1–8, under the existing `ca
 - `g2o_unit_state_v4` debounces edits by 250ms and flushes on navigation, graded Check, Hand in, locale change, and page hide. Reload restores the screen, answers, tries, build miss, drafts, and the P7 index. The in-memory Coach sentence is not part of the saved record (§19).
 - Chinese mode uses authored zh for instructions and chrome already translated in the course shell. Option lines, passages, frames, and word cards stay English. WordGrid still mounts only the active tab panel.
 - E-01 is the terraced landscape path: each node has its own shallow grass terrace, and the stage is the layered scenery. Visual approval is still pending.
+- A passed Lesson 1 mastery check offers the full-lesson celebration: 30 ribbons and three explosion bursts. An unmastered check finish, Move on, and a practice Check do not. The celebration receipt is `ba_writing_lesson_celebration_receipts_v1`. It is written only after the presentation plays, and it does not change course progress. Reduced motion keeps a still success card. Practice micro-celebrations for each first correct item are still not wired.
 
 ## Not in this phase
 
@@ -48,7 +49,7 @@ Playable in `CourseApp` for G2-O Lesson 1, screens 1–8, under the existing `ca
 - BATaskProgress / ActivityScreenIndicator and the anchored All activity screens popover still need rendered comparison.
 - Unit Folded Corner visual approval is still pending.
 - Open product questions are unchanged: Word Build cumulative wrongs, Apply Chinese-ratio failure counting, safety Move-on, and whether Coach’s last sentence must survive reload.
-- Checks on 2026-10-21 for this phase 2 branch: `npm test` passed (13 files, 57 tests). `npm run typecheck` passed. `npm run build -w @big-academy/design-system` and `npm run build -w @big-academy/writing` passed. The writing bundle still warns that the main chunk is over 500 kB. Root `npm run build` (Storybook) was not run. Playwright `e2e/staircase.spec.ts`, `e2e/course-slice.spec.ts`, and `e2e/phase2-smoke.spec.ts` passed.
+- Checks on 2026-10-21 for this phase 2 branch: `npm test` passed (13 files, 58 tests). `npm run typecheck` passed. `npm run build -w @big-academy/design-system` and `npm run build -w @big-academy/writing` passed earlier in this phase; the writing bundle still warns that the main chunk is over 500 kB. `npm run build-storybook -w @big-academy/writing` passed. Playwright `e2e/staircase.spec.ts`, `e2e/course-slice.spec.ts`, and `e2e/phase2-smoke.spec.ts` passed, including the mastery celebration.
 - `npm run check:docs` still fails on the docs baseline: `scripts/check-document-sources.mjs` requires the literal `E-01 · Staircase`, and canonical `PRODUCT.md` says `E-01 Staircase`. PRODUCT.md was not edited to satisfy the checker.
 - Browser smoke on the writing dev server: the path is the terraced landscape stage, with no path-shape switch. Screen 1 Previous stays disabled. A wrong pick stays on the screen; reload returns to the path and Continue restores that screen with the missed option still marked. Chinese mode on the choice screen keeps Chinese chrome and the English option sentences. The real Apply check accepts a passing draft. P7 shows its own question numeral while the top bar stays on eight lesson steps.
 

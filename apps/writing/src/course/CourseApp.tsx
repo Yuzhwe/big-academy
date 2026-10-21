@@ -68,6 +68,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
       {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
       {session.view === 'preview' ? <PreviewView session={session} /> : null}
       {session.celebration ? <Celebration session={session} /> : null}
+      {session.lessonCelebration ? <LessonCelebration session={session} /> : null}
     </div>
   );
 }
@@ -729,6 +730,61 @@ function PreviewView({ session }: { session: CourseSession }) {
         {session.zh ? '我的路径' : 'My path'}
       </BAButton>
     </main>
+  );
+}
+
+function LessonCelebration({ session }: { session: CourseSession }) {
+  const event = session.lessonCelebration;
+  const reduced = window.matchMedia(REDUCED_MOTION).matches;
+  const [played, setPlayed] = useState(reduced);
+
+  useEffect(() => {
+    if (!event || reduced) return;
+    const live = { cancelled: false, handle: undefined as { destroy: () => void } | undefined };
+    void import('../celebration/particleRuntime')
+      .then((runtime) => runtime.startLessonSuccess('writing-lesson-success'))
+      .then((handle) => {
+        live.handle = handle;
+        if (live.cancelled) handle.destroy();
+        else setPlayed(true);
+      })
+      .catch((error) => {
+        console.warn('Lesson celebration did not start:', error);
+      });
+    return () => {
+      live.cancelled = true;
+      live.handle?.destroy();
+    };
+  }, [event, reduced]);
+
+  if (!event) return null;
+  return (
+    <div
+      className="course-celebration"
+      role="dialog"
+      aria-modal="false"
+      aria-label={event.title}
+      data-testid="lesson-celebration"
+      data-effects={reduced ? 'static' : 'ribbons:30 explosions:3'}
+      data-played={played ? 'true' : 'false'}
+    >
+      <div className="course-celebration__card">
+        <p>{session.zh ? '这一课' : 'This lesson'}</p>
+        <h2>{event.title}</h2>
+        <p>
+          {reduced
+            ? session.zh
+              ? '你通过了这一课。已减少动效，庆祝保持静止。进度没有改变。'
+              : 'You passed this lesson. Motion is reduced, so the celebration stays still. Progress is unchanged.'
+            : session.zh
+              ? '你通过了这一课。彩带和三次绽放只是庆祝，不改变进度。'
+              : 'You passed this lesson. Ribbons and three bursts are only a celebration. Progress is unchanged.'}
+        </p>
+        <BAButton variant="primary" locale={session.locale} onPress={() => session.settleLessonCelebration(played)}>
+          {session.zh ? '好' : 'OK'}
+        </BAButton>
+      </div>
+    </div>
   );
 }
 

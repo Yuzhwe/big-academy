@@ -51,12 +51,59 @@ export async function startEffect(preset: PresetId, id: string): Promise<Contain
     container = await tsParticles.load({ id, options });
   }
   if (!container) throw new Error('The particle runtime did not create a preview.');
-  // Decoration must never block Stop, keyboard focus or page navigation.
-  const canvas = container.canvas.domElement;
-  if (canvas) {
-    canvas.setAttribute('aria-hidden', 'true');
-    canvas.setAttribute('data-celebration-canvas', '');
-    canvas.style.pointerEvents = 'none';
-  }
+  decorateCanvas(container);
   return container;
+}
+
+/**
+ * PRODUCT §17 full-lesson success: Ribbons count 30 and three explosion bursts.
+ * Burst length and particle quantity stay on the existing explosions preset.
+ * Composition intensity and duration are still waiting on visual review.
+ */
+export async function startLessonSuccess(id: string): Promise<{ destroy: () => void }> {
+  await prepareEngine();
+  const ribbon = await ribbons(`${id}-ribbons`, {
+    count: 30,
+    colors: RIBBON_COLORS,
+    disableForReducedMotion: true,
+    zIndex: 15,
+  });
+  const explosions = await tsParticles.load({
+    id: `${id}-explosions`,
+    options: {
+      preset: 'confettiExplosions',
+      fullScreen: { enable: true, zIndex: 15 },
+      fpsLimit: 60,
+      background: { color: { value: 'transparent' } },
+      interactivity: { detectsOn: 'window' },
+      motion: { disable: true },
+      emitters: {
+        name: 'confetti',
+        size: { width: 0, height: 0 },
+        rate: { delay: 0, quantity: 50 },
+        life: { count: 3, duration: 0.1, delay: 0.4 },
+      },
+    },
+  });
+  if (!ribbon || !explosions) {
+    ribbon?.destroy();
+    explosions?.destroy();
+    throw new Error('The lesson celebration did not start.');
+  }
+  decorateCanvas(ribbon);
+  decorateCanvas(explosions);
+  return {
+    destroy() {
+      ribbon.destroy();
+      explosions.destroy();
+    },
+  };
+}
+
+function decorateCanvas(container: Container) {
+  const canvas = container.canvas?.domElement;
+  if (!canvas) return;
+  canvas.setAttribute('aria-hidden', 'true');
+  canvas.setAttribute('data-celebration-canvas', '');
+  canvas.style.pointerEvents = 'none';
 }

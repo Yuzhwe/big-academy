@@ -6,7 +6,8 @@
  * This module does not keep a second progress store.
  *
  * UI-only milestone celebration receipts live in a different storage key and
- * never grant or revoke a lesson.
+ * never grant or revoke a lesson. Full-lesson celebration receipts are separate
+ * again and also never grant or revoke a lesson.
  */
 
 import {
@@ -28,6 +29,7 @@ import type { ChoiceVisualState } from '@big-academy/design-system';
 
 export const ALEX_STATE_KEY = 'g2o_unit_state_v4';
 export const CELEBRATION_KEY = 'ba_writing_milestone_receipts_v1';
+export const LESSON_CELEBRATION_KEY = 'ba_writing_lesson_celebration_receipts_v1';
 
 export type LessonAction = 'start' | 'continue' | 'review' | 'locked';
 export type LessonCourseState = 'locked' | 'current' | 'available' | 'done' | 'skipped' | 'view';
@@ -123,6 +125,10 @@ interface CelebrationReceipt {
   initialized: boolean;
   seenDone: Record<string, boolean>;
   celebrated: Record<string, boolean>;
+}
+
+interface LessonCelebrationReceipt {
+  played: Record<string, boolean>;
 }
 
 export interface PathLessonCard {
@@ -288,6 +294,12 @@ export interface CelebrationEvent {
   replay: boolean;
 }
 
+/** Presentation for a passed mastery check. Playback does not grade or unlock. */
+export interface LessonCelebrationEvent {
+  lessonId: string;
+  title: string;
+}
+
 const SEEN_KINDS = [
   'learn',
   'model_read',
@@ -335,6 +347,10 @@ function freshReceipt(): CelebrationReceipt {
   return { initialized: false, seenDone: {}, celebrated: {} };
 }
 
+function freshLessonReceipt(): LessonCelebrationReceipt {
+  return { played: {} };
+}
+
 function regionText(segs: { t: string }[] | undefined): string {
   return (segs ?? []).map((segment) => segment.t).join('');
 }
@@ -377,6 +393,7 @@ export class CourseSession {
   private yesCount = 0;
   private coachBeat: Record<string, number> = {};
   private receipt: CelebrationReceipt;
+  private lessonReceipts: LessonCelebrationReceipt;
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
   /** In-memory only. A wrong full build line clears after 1.2s. Not the saved record. */
   private buildClearTimer: ReturnType<typeof setTimeout> | null = null;
@@ -393,6 +410,8 @@ export class CourseSession {
    */
   layoutReviewId: string | null = null;
   celebration: CelebrationEvent | null = null;
+  /** In-memory until a successful presentation writes LESSON_CELEBRATION_KEY. */
+  lessonCelebration: LessonCelebrationEvent | null = null;
   openNotice = '';
   returnFocus: { unitId: string; number: number } | null = null;
   /** UI receipt only. Not part of Alex course state. */
@@ -411,6 +430,7 @@ export class CourseSession {
     this.state = loaded.state;
     this.state.unlockAll = false;
     this.receipt = this.readReceipt();
+    this.lessonReceipts = this.readLessonReceipt();
     if (!loaded.fromStorage && new URLSearchParams(options.search ?? '').get('locale') === 'zh') {
       this.state.zh = true;
     }
@@ -466,6 +486,22 @@ export class CourseSession {
 
   dismissCelebration(): void {
     this.celebration = null;
+    this.emit();
+  }
+
+  /**
+   * Closes the full-lesson celebration. A finished presentation records the
+   * receipt. A failed or interrupted one does not, and neither writes course state.
+   * Practice micro-celebrations (first correct Check on one item) are a separate
+   * §17 receipt and are not offered here.
+   */
+  settleLessonCelebration(played: boolean): void {
+    const event = this.lessonCelebration;
+    this.lessonCelebration = null;
+    if (played && event) {
+      this.lessonReceipts.played[event.lessonId] = true;
+      this.writeLessonReceipt();
+    }
     this.emit();
   }
 
@@ -750,6 +786,8 @@ export class CourseSession {
       this.feedback = '';
       this.message = '';
       this.go(target);
+      this.offerLessonCelebration();
+      if (this.lessonCelebration) this.emit();
       return true;
     }
     const courseState = this.lessonStates(unit)[lessonNumber - 1];
@@ -2010,6 +2048,7 @@ export class CourseSession {
     this.log('check_done', { page: page.id, score: mastery.score, passed: mastery.passed });
     if (mastery.passed || record.attempt >= 1) this.state.done[page.id] = true;
     if (!mastery.passed && page.skill) this.checkFailed(page.skill);
+    if (mastery.passed) this.offerLessonCelebration();
     this.feedback = '';
     this.feedbackTone = 'neutral';
     this.save(true);
@@ -2836,6 +2875,49 @@ export class CourseSession {
 
   private writeReceipt(): void {
     this.storage.setItem(CELEBRATION_KEY, JSON.stringify(this.receipt));
+  }
+
+  private readLessonReceipt(): LessonCelebrationReceipt {
+    try {
+      const raw = this.storage.getItem(LESSON_CELEBRATION_KEY);
+      if (!raw) return freshLessonReceipt();
+      const parsed = JSON.parse(raw) as Partial<LessonCelebrationReceipt>;
+      return { played: parsed.played ?? {} };
+    } catch {
+      return freshLessonReceipt();
+    }
+  }
+
+  private writeLessonReceipt(): void {
+    this.storage.setItem(LESSON_CELEBRATION_KEY, JSON.stringify(this.lessonReceipts));
+  }
+
+  /**
+   * Offers Ribbons 30 + three Explosions after this lesson's mastery check passes.
+   * An unmastered finish does not qualify. The offer is presentation only.
+   */
+  private offerLessonCelebration(): void {
+    const ref = this.screens[this.state.screen];
+    if (!ref) return;
+    const unit = this.playUnit();
+    const lesson = unit.lessons[ref.li];
+    const lessonId = `${unit.id}:${lesson?.n ?? ref.li + 1}`;
+    if (this.lessonReceipts.played[lessonId] || this.lessonCelebration?.lessonId === lessonId) return;
+    if (!this.lessonMastered(ref.li)) return;
+    this.lessonCelebration = {
+      lessonId,
+      title: this.text(lesson?.title ?? ref.lesson.title),
+    };
+  }
+
+  private lessonMastered(lessonIndex: number): boolean {
+    for (const index of this.liveIdx(lessonIndex)) {
+      const screen = this.screens[index]?.screen;
+      if (screen?.kind !== 'check') continue;
+      const raw = this.state.checks[screen.page];
+      if (raw && typeof raw === 'object' && 'passed' in raw && !!(raw as CheckRecord).passed) return true;
+    }
+    return false;
   }
 
   private save(immediate = false): void {

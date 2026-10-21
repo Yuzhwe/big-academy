@@ -7,6 +7,7 @@ import { CourseApp } from '../course/CourseApp';
 import {
   ALEX_STATE_KEY,
   CELEBRATION_KEY,
+  LESSON_CELEBRATION_KEY,
   CourseSession,
   createMemoryStorage,
   type CourseSession as Session,
@@ -412,6 +413,7 @@ describe('phase 2 lesson 1 flow', () => {
     expect(course.screenDone(6)).toBe(true);
     expect((course.inspect().applies['L2-04'] as { passed: boolean }).passed).toBe(false);
     expect(course.celebration).toBeNull();
+    expect(course.lessonCelebration).toBeNull();
 
     const passing = session();
     reach(passing, 6);
@@ -421,6 +423,7 @@ describe('phase 2 lesson 1 flow', () => {
     passing.pressPrimary();
     expect(passing.screenDone(6)).toBe(true);
     expect((passing.inspect().applies['L2-04'] as { passed: boolean }).passed).toBe(true);
+    expect(passing.lessonCelebration).toBeNull();
 
     const safety = session();
     reach(safety, 6);
@@ -487,6 +490,12 @@ describe('phase 2 lesson 1 flow', () => {
     expect(fresh.activity()?.check?.summary).toMatch(/You passed this check/);
     expect(fresh.screenDone(7)).toBe(true);
     expect(fresh.celebration).toBeNull();
+    expect(fresh.lessonCelebration?.lessonId).toBe('G2-O:1');
+    const progress = fresh.inspect();
+    fresh.settleLessonCelebration(true);
+    expect(fresh.lessonCelebration).toBeNull();
+    expect(fresh.inspect().checks['L2-04.check']).toEqual(progress.checks['L2-04.check']);
+    expect(fresh.screenDone(7)).toBe(true);
     expect(fresh.topBar()?.tasks).toHaveLength(8);
     expect(fresh.topBar()?.current).toBe(7);
 
@@ -516,7 +525,42 @@ describe('phase 2 lesson 1 flow', () => {
     expect(missed.activity()?.check?.mastered).toBe(false);
     expect(missed.activity()?.check?.summary).toMatch(/Not yet/);
     expect(missed.celebration).toBeNull();
+    expect(missed.lessonCelebration).toBeNull();
     expect(missed.footer().primaryLabel).toMatch(/End of lesson/);
     expect(missed.inspect().checks['L2-04.check']).toMatchObject({ q: 3, passed: false, finished: true });
+  });
+
+  it('keeps the full-lesson celebration receipt out of course progress', () => {
+    const storage = createMemoryStorage();
+    const course = session('', storage);
+    reach(course, 7);
+    course.pick(1);
+    course.pressPrimary();
+    course.pick(2);
+    course.pressPrimary();
+    const should = course.activity()?.check?.tapword?.words.find((word) => word.text === 'should');
+    course.tapWord(should?.index ?? -1);
+    course.pressPrimary();
+    course.setWritingText('I think kids should have a pet at home.');
+    course.pressPrimary();
+    expect(course.lessonCelebration?.lessonId).toBe('G2-O:1');
+    const progress = storage.getItem(ALEX_STATE_KEY);
+    course.settleLessonCelebration(false);
+    expect(storage.getItem(LESSON_CELEBRATION_KEY)).toBeNull();
+    expect(storage.getItem(ALEX_STATE_KEY)).toBe(progress);
+    const retry = new CourseSession({ html, storage });
+    retry.openLesson('G2-O', 1);
+    expect(retry.lessonCelebration?.lessonId).toBe('G2-O:1');
+    expect(retry.celebration).toBeNull();
+    const afterOpen = storage.getItem(ALEX_STATE_KEY);
+    retry.settleLessonCelebration(true);
+    expect(storage.getItem(ALEX_STATE_KEY)).toBe(afterOpen);
+    expect(storage.getItem(LESSON_CELEBRATION_KEY)).toContain('G2-O:1');
+    expect(storage.getItem(CELEBRATION_KEY)).toBeNull();
+    const done = new CourseSession({ html, storage });
+    done.openLesson('G2-O', 1);
+    expect(done.lessonCelebration).toBeNull();
+    expect(done.screenDone(7)).toBe(true);
+    expect(done.activity()?.check?.mastered).toBe(true);
   });
 });
