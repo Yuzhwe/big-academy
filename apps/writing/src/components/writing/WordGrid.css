@@ -1,0 +1,7 @@
+.writing-word-grid {border:1px solid var(--ba-writing-grid-border);border-radius:var(--ba-writing-grid-radius);padding:var(--ba-writing-grid-inset);background:var(--ba-writing-grid-surface);min-width:0;}
+.writing-word-grid__tabs {display:flex;flex-wrap:wrap;gap:var(--ba-space-2);margin-bottom:var(--ba-space-3);}
+.writing-word-grid__tab {border:1px solid var(--ba-writing-grid-border);border-radius:var(--ba-radius-12) var(--ba-radius-12) 0 0;min-height:var(--ba-writing-grid-tab-height);padding:var(--ba-space-3) var(--ba-space-4);background:var(--ba-writing-grid-tab-inactive);font:700 16px/1.4 var(--ba-type-control-family);cursor:pointer;}
+.writing-word-grid__tab[aria-selected='true'] {background:var(--ba-writing-grid-surface);border-bottom-color:transparent;}
+.writing-word-grid__tab:focus-visible {outline:2px solid var(--ba-control-focus);outline-offset:2px;}
+.writing-word-grid__words {display:flex;flex-wrap:wrap;gap:var(--ba-writing-grid-word-gap);}
+.writing-word-grid__words .ba-button {min-height:50px;}
