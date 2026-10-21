@@ -23,7 +23,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const [session] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
   // Visual A/B state is a review-only control, not saved to Alex's learning state.
-  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('B');
+  const [staircaseVariant, setStaircaseVariant] = useState<StaircaseVariant>('A');
   const locale = session.locale;
   const zh = locale === 'zh';
 
@@ -372,10 +372,10 @@ function LessonView({ session }: { session: CourseSession }) {
         }
         navigation={
           <>
-            <BAButton variant="secondary" locale={session.locale} onPress={() => session.pressBack()}>
+            <BAButton variant="secondary" size={70} disabled={bar.current === 0} locale={session.locale} onPress={() => session.pressBack()}>
               {footer.backLabel}
             </BAButton>
-            <BAButton variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+            <BAButton variant="primary" size={70} locale={session.locale} onPress={() => session.pressPrimary()}>
               <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
             </BAButton>
           </>
