@@ -224,8 +224,8 @@ function PathView({ session }: { session: CourseSession }) {
         </StaircaseScene>
         <p className="course-candidate">
           {zh
-            ? 'E-01 使用 v2-terraces。天空色仍是候选，等待 Joe Approved。'
-            : 'E-01 uses v2-terraces. Sky color stays a candidate pending Joe Approved.'}
+            ? 'E-01 使用 v2-terraces。天空是 135° 渐变。'
+            : 'E-01 uses v2-terraces. The sky is the 135° gradient.'}
         </p>
       </main>
         </BATabPanel>
@@ -330,7 +330,7 @@ function LessonView({ session }: { session: CourseSession }) {
 function ActivityBody({ session, activity }: { session: CourseSession; activity: ActivityModel }) {
   const pickLocked =
     !!activity.pick?.locked ||
-    !!activity.pick?.options.some((option) => option.state === 'correct' || option.state === 'shown' || option.state === 'dim');
+    !!activity.pick?.options.some((option) => option.state === 'correct' || option.state === 'correctUnselected' || option.state === 'dim');
   return (
     <article className="course-activity" data-template={activity.template} data-kind={activity.kind}>
       {activity.check && activity.check.phase !== 'results' ? (
@@ -666,7 +666,7 @@ function ChoiceGallery({ zh }: { zh: boolean }) {
     { id: '1', letter: 'B', text: 'Our school should have a garden for two big reasons.', state: 'selected' as const },
     { id: '2', letter: 'C', text: 'I like flowers.', state: 'wrong' as const },
     { id: '3', letter: 'D', text: 'Our school should have a garden for two big reasons.', state: 'correct' as const },
-    { id: '4', letter: 'E', text: 'Our school should have a garden for two big reasons.', state: 'shown' as const },
+    { id: '4', letter: 'E', text: 'Our school should have a garden for two big reasons.', state: 'correctUnselected' as const },
     { id: '5', letter: 'F', text: 'A garden is nice.', state: 'dim' as const },
   ];
   return (

@@ -1,4 +1,4 @@
-/* E-01 v2-terraces. Sky color is still a candidate. Parallax speed comes from the track. */
+/* E-01 v2-terraces. Sky is the locked gradient. Parallax speed comes from the track. */
 .course-path:has(.staircase-viewport) {
   max-width: none;
   margin: 0;
@@ -7,7 +7,7 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: #58a8e8;
+  background: linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%);
 }
 .course-path:has(.staircase-viewport) > .course-level-tabs {
   display: flex;
@@ -62,7 +62,7 @@
   touch-action: none;
   user-select: none;
   cursor: grab;
-  background: #58a8e8;
+  background: linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%);
 }
 .staircase-viewport[data-dragging='true'] { cursor: grabbing; }
 .staircase-rail {
@@ -165,7 +165,7 @@
 }
 .path-sky {
   inset: 0;
-  background: #58a8e8;
+  background: linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%);
 }
 .path-cloud {
   /* Size and position are set from the cloud puff and the hill-1 ridge. */

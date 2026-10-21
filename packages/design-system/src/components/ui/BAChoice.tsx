@@ -2,8 +2,18 @@ import { Checkbox, CheckboxGroup, Radio, RadioGroup } from 'react-aria-component
 import { BAIcon } from './BAIcon';
 import './BAChoice.css';
 
-/** Visible row state. The session decides when a row becomes correct, wrong, shown, or dim. */
-export type ChoiceVisualState = 'default' | 'selected' | 'wrong' | 'correct' | 'shown' | 'dim' | 'disabled';
+/** Visible row state. The session decides when a row becomes correct, correctUnselected, wrong, or dim. */
+export type ChoiceVisualState = 'default' | 'selected' | 'correct' | 'correctUnselected' | 'wrong' | 'dim' | 'disabled';
+
+/** `shown` is the docs alias for `correctUnselected`. `idle` is the alias for `default`. `shown` is never selected. */
+export type ChoiceStateInput = ChoiceVisualState | 'shown' | 'idle';
+
+export function canonicalChoiceState(state: ChoiceStateInput | undefined): ChoiceVisualState | undefined {
+  if (state == null) return undefined;
+  if (state === 'shown') return 'correctUnselected';
+  if (state === 'idle') return 'default';
+  return state;
+}
 
 export interface ChoiceOption {
   id: string;
@@ -13,7 +23,7 @@ export interface ChoiceOption {
    * Explicit chrome from the session after Check.
    * Omitted rows use selectedKeys: chosen = selected, otherwise default.
    */
-  state?: ChoiceVisualState;
+  state?: ChoiceStateInput;
 }
 
 /** Accepted for the contract. The row does not paint this copy. */
@@ -31,13 +41,14 @@ export interface BAChoiceProps {
   'aria-label': string;
 }
 
-const GRADED: ChoiceVisualState[] = ['wrong', 'correct', 'shown', 'dim', 'disabled'];
+const GRADED: ChoiceVisualState[] = ['wrong', 'correct', 'correctUnselected', 'dim', 'disabled'];
 
 export function choiceVisual(option: ChoiceOption, selected: boolean, groupDisabled: boolean): ChoiceVisualState {
-  if (option.state && GRADED.includes(option.state)) return option.state;
+  const explicit = canonicalChoiceState(option.state);
+  if (explicit && GRADED.includes(explicit)) return explicit;
   if (selected) return 'selected';
-  if (groupDisabled && !option.state) return 'disabled';
-  return option.state ?? 'default';
+  if (groupDisabled && !explicit) return 'disabled';
+  return explicit ?? 'default';
 }
 
 const STATE_NAME: Record<ChoiceVisualState, string> = {
@@ -45,7 +56,7 @@ const STATE_NAME: Record<ChoiceVisualState, string> = {
   selected: 'selected',
   wrong: 'wrong',
   correct: 'correct',
-  shown: 'shown',
+  correctUnselected: 'correct unselected',
   dim: 'dimmed',
   disabled: 'unavailable',
 };
@@ -66,7 +77,7 @@ function StatusIcon({ state }: { state: ChoiceVisualState }) {
       </span>
     );
   }
-  if (state === 'correct' || state === 'shown') {
+  if (state === 'correct' || state === 'correctUnselected') {
     return (
       <span className={`ba-choice__glyph ba-choice__glyph--${state}`} aria-hidden="true">
         <BAIcon name="check" size={22} strokeWidth={2.4} />
@@ -96,7 +107,7 @@ function OptionBody({ option, state }: { option: ChoiceOption; state: ChoiceVisu
 
 /**
  * BA-UI-003 Writing choice row.
- * Colors, type, and 24px radius are a candidate pending designer approval.
+ * Six-state mapping, 1px border, and the 1.02 / 0.95 click scale are locked.
  * This component does not grade.
  */
 export function BAChoice({
@@ -117,7 +128,7 @@ export function BAChoice({
         className="ba-choice"
         data-component="BA-UI-003"
         data-choice-mode="multiple"
-        data-visual="candidate"
+        data-visual="locked"
         aria-label={ariaLabel}
         value={selectedKeys}
         isDisabled={disabled}
@@ -146,7 +157,7 @@ export function BAChoice({
       className="ba-choice"
       data-component="BA-UI-003"
       data-choice-mode="single"
-      data-visual="candidate"
+      data-visual="locked"
       aria-label={ariaLabel}
       value={selectedKeys[0] ?? ''}
       isDisabled={disabled}

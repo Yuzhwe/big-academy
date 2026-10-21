@@ -1371,7 +1371,7 @@ export class CourseSession {
     const isAnswer = answers.includes(index);
     if (taskState.status === 'done') return isAnswer ? 'correct' : 'dim';
     if (taskState.status === 'shown') {
-      if (isAnswer) return 'shown';
+      if (isAnswer) return 'correctUnselected';
       if (wrong.includes(index) || picked.includes(index)) return 'wrong';
       return 'dim';
     }
@@ -1583,7 +1583,7 @@ export class CourseSession {
   private gradedChoiceState(task: AlexTask, taskState: TaskProgress, index: number, correct: boolean): ChoiceVisualState {
     const answers = task.answers ?? [];
     const picked = taskState.picked ?? [];
-    if (answers.includes(index)) return correct && picked.includes(index) ? 'correct' : 'shown';
+    if (answers.includes(index)) return correct && picked.includes(index) ? 'correct' : 'correctUnselected';
     if (picked.includes(index)) return 'wrong';
     return 'dim';
   }

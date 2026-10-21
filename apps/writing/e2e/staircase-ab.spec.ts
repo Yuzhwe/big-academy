@@ -27,7 +27,7 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
   const scene = page.locator('.staircase-viewport');
 
   await expect(scene).toHaveAttribute('data-landscape', 'v2-terraces');
-  await expect(scene).toHaveAttribute('data-sky', '#58A8E8');
+  await expect(scene).toHaveAttribute('data-sky', 'linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)');
   await expect(page.locator('.staircase-rail')).toHaveAttribute('data-parallax', '1');
   await expect(scene).toHaveAttribute('data-parallax-state', 'applied');
   const layers = await page.evaluate(() => {

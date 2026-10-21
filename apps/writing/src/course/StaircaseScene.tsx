@@ -44,7 +44,7 @@ const CLOUD_SIZE = 1024;
 const CLOUD_PUFF = { top: 310, bottom: 692, left: 120, right: 912 };
 /** First mostly-opaque row of hill-1-foreground.png. The puff sits above this ridge. */
 const HILL1_RIDGE_Y = 379;
-const SKY = '#58A8E8';
+const SKY = 'linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)';
 
 export function trackLength(count: number): number {
   return Math.max(0, (count - 1) * STEP_GAP + CARD_WIDTH);

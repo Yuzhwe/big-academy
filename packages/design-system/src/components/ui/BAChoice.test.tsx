@@ -52,7 +52,10 @@ describe('BAChoice candidate chrome', () => {
 
     rerender(<BAChoice choiceMode="single" options={graded} selectedKeys={['0']} disabled aria-label="Topic sentence" />);
     expect(rowFor('radio', /Gardens have plants/)).toHaveAttribute('data-state', 'wrong');
-    expect(rowFor('radio', /Our school should have a garden/)).toHaveAttribute('data-state', 'shown');
+    expect(rowFor('radio', /Our school should have a garden/)).toHaveAttribute('data-state', 'correctUnselected');
+    const outline = rowFor('radio', /Our school should have a garden/);
+    expect(outline.querySelector('.ba-choice__glyph--correctUnselected')).not.toBeNull();
+    expect(getComputedStyle(outline.querySelector('.ba-choice__glyph--correctUnselected') as Element).backgroundColor).toBe('rgba(0, 0, 0, 0)');
     expect(rowFor('radio', /I like flowers/)).toHaveAttribute('data-state', 'dim');
 
     rerender(

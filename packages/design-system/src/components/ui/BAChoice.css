@@ -1,5 +1,5 @@
-/* BA-UI-003 Writing Choice option. Candidate colors, type, and 24px radius.
-   Border 1px and hover 1.02 / press 0.95 are locked. Not designer Approved. */
+/* BA-UI-003 Writing Choice option.
+   Six states, 1px border, hover 1.02 / press 0.95. Radius 24 stays [E]. */
 .ba-choice {
   display: grid;
   gap: 10px;
@@ -42,6 +42,7 @@
   color: #ffffff;
 }
 
+.ba-choice__option[data-state='correctUnselected'],
 .ba-choice__option[data-state='shown'] {
   background: var(--ba-paper, #ffffff);
   border-color: var(--ba-success, #14ae5c);
@@ -104,27 +105,27 @@
   background: transparent;
 }
 
-.ba-choice__glyph--disk,
-.ba-choice__glyph--correct,
-.ba-choice__glyph--shown {
+.ba-choice__glyph--disk {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-}
-
-.ba-choice__glyph--disk,
-.ba-choice__glyph--correct {
   background: #ffffff;
   color: var(--ba-error, #9b4f36);
 }
 
-.ba-choice__glyph--correct {
-  color: var(--ba-success, #14ae5c);
+.ba-choice__glyph--correct,
+.ba-choice__glyph--correctUnselected {
+  width: 28px;
+  height: 28px;
+  background: transparent;
 }
 
-.ba-choice__glyph--shown {
-  background: var(--ba-success, #14ae5c);
+.ba-choice__glyph--correct {
   color: #ffffff;
+}
+
+.ba-choice__glyph--correctUnselected {
+  color: var(--ba-success, #14ae5c);
 }
 
 .ba-choice__text {

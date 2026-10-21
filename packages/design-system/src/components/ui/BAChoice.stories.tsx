@@ -67,7 +67,7 @@ export const ChoiceCorrectOutlined: Story = {
     selectedKeys: ['0'],
     options: [
       { ...short[0], state: 'wrong' },
-      { ...short[1], state: 'shown' },
+      { ...short[1], state: 'correctUnselected' },
       { ...short[2], state: 'dim' },
     ],
   },
