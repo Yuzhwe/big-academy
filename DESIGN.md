@@ -337,7 +337,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 | BAButton | regular control 8px | compact 6px, large 12px; **pill variant** uses full radius |
 | BAField / Textarea | 8px | large/multiline wrapper 12px; preserve text area and caret |
 | BATabs / Segmented Control | track 12px or full depending approved layout | active indicator radius must match track/inset; do not randomly mix |
-| BAChoice / options | Writing option row **24px** [E, pending designer Approved] | Same 24px for short and long rows. The earlier 8px option candidate is retired for this component. No group-container radius is specified. Full rules: §9 Writing Choice option |
+| BAChoice / options | Writing option row **24px** [E, pending designer Approved] | Same 24px for short and long rows. Full rules: §9 Writing Choice option |
 | BAStatus / chip | full for pill label | radius 6px for a squarish status tile when context calls for it |
 | LessonCard / learning card | 12px | compact 6px, larger featured 16px [E]; product artwork may use a distinct approved shape |
 | Coach panel | 12px | right-side full-height workspace can have 0px at full-bleed edge |
@@ -348,7 +348,7 @@ This guide is included in full so agents can select radius by surface, size, ele
 | Circular task marker / Avatar | 50% | square width/height required for true circle |
 | Long capsule button / progress rail | full | use only if intended pill geometry |
 
-**Important:** these candidate values do not change existing BAButton pill `999px`, BATaskProgress 10px target, or TopBar geometry. The 24px BAChoice row replaces only the previous 8px option-row candidate. It does not approve the rest of this radius scale, and the documentation revision that records it does not edit `tokens.css` or component CSS. Apply changes through the component's own reviewed styling/contracts when implementation is ordered.
+**Important:** these candidate values do not change existing BAButton pill `999px`, BATaskProgress 10px target, or TopBar geometry. Apply changes through the component's own reviewed styling/contracts in later implementation.
 
 #### 5. Concentric corners (nested radius) rule [A method]
 If an inner rounded surface sits inside a visible rounded parent, use the starting geometry:
@@ -527,7 +527,7 @@ P2 Not yet vs Better: two clearly distinguished teaching panels, Better gently e
 
 ### Writing Choice option（选项）· BA-UI-003 / BAChoice [E · candidate / 待设计师 Approved · 2026-10-21]
 
-**状态：** 候选。Joe 尚未把本规格标为 Approved。视觉以本节为准；评分、揭示时机、选项对错和 “Right answer” / “Your answer · right.” 等产品文案仍以 `apps/writing/PRODUCT.md`（Alex）为准。本节不改 BAChoice CSS/TSX，也不改 `tokens.css`。
+**状态：** 候选。Joe 尚未把本规格标为 Approved。视觉以本节为准；评分、揭示时机、选项对错和 “Right answer” / “Your answer · right.” 等产品文案仍以 `apps/writing/PRODUCT.md`（Alex）为准。
 
 This is the Writing single/multi choice option row. `single` and `multiple` share one chrome. Short (one line) and long (wrapped) copy share that same chrome. A selectable word token and a WordGrid word card are different controls.
 
@@ -540,14 +540,14 @@ This is the Writing single/multi choice option row. `single` and `multiple` shar
    - Gap from letter to body: **12 px**.
    - Body: Jost Medium, `font-weight: 500` (or the project equivalent), **18 px**, `line-height: 1.1`, may wrap. The global Jost weight question stays open; Medium is this component's candidate only.
 4. Outer row padding: **4 px**.
-5. Row width: fill the parent. A 500 px frame is only a measurement reference. Do not hardcode 500 px in the product.
-6. A one-line row measures about **46 px** (4 px padding + 36 px icon + 1 px borders). A wrapped row grows with the body. A roughly 3–4 line paragraph is about **106 px** as a reference, not a max-height. Keep `--ba-writing-choice-min-height` at **50 px** (the PRODUCT hit-area floor). Do not shrink the hit area under 50 px, and do not clip wrapped lines.
+5. Row width: fill the parent. A 500 px frame is a measurement reference only.
+6. A one-line row measures about **46 px** (4 px padding + 36 px icon + 1 px borders). A wrapped row grows with the body. A roughly 3–4 line paragraph is about **106 px** as a reference height. `--ba-writing-choice-min-height` stays **50 px** (the PRODUCT hit-area floor). The hit area stays at least 50 px, and wrapped lines stay fully visible.
 
 #### Shape
 
-- Corner radius: **24 px** (`--ba-radius-24`) for both short and long rows. Wrapped text does not switch to a smaller radius.
-- Overflow: clip row content to that radius. The `focus-visible` ring stays visible (outline or ring that the clip does not remove).
-- Border: **1 px solid**. Color comes from the state table. This component uses 1 px. The general 0.5 px ordinary-border note does not replace this weight.
+- Corner radius: **24 px** (`--ba-radius-24`) for both short and long rows.
+- Overflow: clip row content to that radius. The `focus-visible` ring stays visible.
+- Border: **1 px solid**. Color comes from the state table.
 
 #### Colors and states
 
@@ -560,22 +560,21 @@ This is the Writing single/multi choice option row. `single` and `multiple` shar
 | `shown` (outline reveal of the right answer) | `#FFFFFF` | `#14AE5C` | `#133547` | Solid `#14AE5C` circle with a white check |
 | `dim` | Same as `default` | Same as `default` | Same as `default` | Same as `default` |
 
-`dim` sets the whole option to **`opacity: 0.4`**. It keeps default chrome. It is not a brown or error look.
+`dim` sets the whole option to **`opacity: 0.4`**. It keeps default chrome.
 
-`selected` and `wrong` share the solid `#9B4F36` fill. The icon distinguishes them: white ring, or white disk plus X. `selected` is the pre-check choice. `correct` is the post-check solid success. `shown` is the green outline plus green badge. `shown` is not the solid `correct` fill, and it is not an info-colored surface (`--ba-color-info-*`, `--ba-writing-coach-surface-revealed`). Do not recolor `selected` to the Writing accent `#B25415`.
+`selected` and `wrong` share the solid `#9B4F36` fill. The icon distinguishes them: white ring, or white disk plus X. `selected` is the pre-check choice. `correct` is the post-check solid success. `shown` is the green outline plus green badge.
 
-`#14AE5C` remains the §2.1 success-6 border-active anchor for the global palette. This candidate also uses that hex for the `correct` fill and the `shown` border and badge. That does not re-approve Color System v0.2, and it does not substitute success-7 `#147C44`.
+`#14AE5C` remains the §2.1 success-6 border-active anchor for the global palette. This candidate also uses that hex for the `correct` fill and the `shown` border and badge.
 
-The icon communicates state. The letter is text to the right of the icon. The letter is not the radio glyph.
+The icon communicates state. The letter is text to the right of the icon.
 
-PRODUCT.md chapter 8 still requires a revealed row to carry “Right answer” and a correct selected row to carry “Your answer · right.” This chrome does not add a second trailing “Your answer” / “right” badge, and it does not delete those product strings. When product copy is present, the leading icon is still required.
+PRODUCT.md chapter 8 still requires a revealed row to carry “Right answer” and a correct selected row to carry “Your answer · right.” When that product copy is present, the leading icon remains.
 
 #### Icon
 
 - Hit box: 36×36 px.
 - Draw the glyph inside that box. Inner glyph about 24–32 px.
 - Iconoir check / x may be used when the weight fits the disk. The circle, ring and colors in the table are the rule.
-- Do not use a letter inside a circle as the only status indicator.
 
 #### One line and wrapped lines
 
@@ -583,32 +582,18 @@ Same padding, gap, radius, icon size and type size.
 
 The row and the text block use `align-items: flex-start`. The icon stays top-aligned with the first line. The body wraps (`min-width: 0`). The letter stays on one line.
 
-A wrapped row does not move the icon to the vertical center of the paragraph. A one-line row uses this same alignment. Its content already fills the band, so it reads as one option strip. PRODUCT.md chapter 8 still says a one-line option is vertically centered and a wrapped line keeps the letter with the first line. Meet the 50 px minimum without recentering the icon against wrapped lines, and without a second radius or type size for the long row.
+A one-line row uses this same alignment. Its content already fills the band, so it reads as one option strip. PRODUCT.md chapter 8 still says a one-line option is vertically centered and a wrapped line keeps the letter with the first line. This candidate keeps the 50 px minimum, one radius and one type size, with the icon on the first line for both lengths.
 
 #### Interaction
 
 The component paints the state it is given. The session and PRODUCT.md own grading, tries and when a row becomes `correct`, `wrong`, `shown` or `dim`.
 
 - Before Check, single-choice puts one option in `selected` and returns the others to `default`. Multiple-choice toggles per PRODUCT. Chosen rows use `selected`. Unchosen rows stay `default`. The color means choice, not correctness.
-- A non-interactive option uses `dim` (opacity 0.4) or a disabled treatment PRODUCT already distinguishes from `dim`. Do not invent a third brown.
+- A non-interactive option uses `dim` (opacity 0.4) or a disabled treatment PRODUCT already distinguishes from `dim`.
 - After Check, render the session's state: the learner's wrong pick is `wrong`; a right answer shown as solid success is `correct`; a right answer shown as an outline reveal is `shown`; peers the session marks are `dim`.
 - `focus-visible` keeps the Writing focus ring (`--ba-focus-ring`). A solid fill does not remove it.
-- This candidate has no separate hover color. Do not invent one. Keep a subtle existing hover, or leave hover unchanged, until a later visual decision.
+- This candidate has no separate hover color. Keep a subtle existing hover, or leave hover unchanged, until a later visual decision.
 - Keys 1–9 and A–I stay a PRODUCT / session concern. The option chrome follows the state table.
-
-#### Earlier candidates this section replaces
-
-These file values are older [E] candidates. This section is the option-row target. It does not edit the token file:
-
-| Existing record | Value in file | This candidate |
-|---|---|---|
-| `--ba-writing-choice-radius` | 14 px | Option row 24 px |
-| §6 BAChoice row (previous) | 8 px | 24 px for short and long |
-| `--ba-writing-choice-gap` | 10 px | Not the icon gap. Icon to text is 4 px. Letter to body is 12 px |
-| `--ba-writing-choice-padding-inline` | 12 px | Outer row padding 4 px |
-| `--ba-writing-choice-padding-block` | 8 px | Text-block padding 8 px. Outer row padding stays 4 px |
-
-Border-only `selected` / `wrong` / `correct`, and an info-blue `shown`, are not the Writing choice option. Use the solid fills and the green outline reveal in the table.
 
 ### Visual validation and status
 
@@ -641,7 +626,7 @@ Apply the following **one-name / one-role** vocabulary across all eight Writing 
 | **Writing canvas / Frame blanks / Build bench** | Distinct task-area composites. Reuse shared typography, focus cues and card spacing; input semantics remain different. | One universal text input |
 | **P7 Question pager** | Four internal question positions inside the single P7 Activity Screen. | TopBar's eight Activity Screens |
 
-**Shared visual syntax [selected direction; exact sizes [E], with BAChoice measurements recorded as a candidate]:** use a legible prompt heading followed by supporting instruction and the principal interactive region, in that consistent order. Keep the white reading/answer surface prominent, with restrained card edges, soft surfaces and deliberate whitespace. A choice option does not nest a smaller inner radius: short and long rows are both 24px. The choice row uses `align-items: flex-start` for one line and for wrapped lines, so the 36px status icon and the letter stay with the first line. Word tokens, word cards and inputs keep their own alignment and focus treatment. The same `selected`, `correct`, `wrong`, `shown`, `dim`, `disabled` and `focus-visible` names mark the same distinctions. On a choice option, `selected` is pre-check and `correct` is post-check; `shown` is the green outline reveal, not the solid success fill. Before grading, color communicates choice, not correctness. Semantic Coach feedback stays a distinct surface from the selection.
+**Shared visual syntax [selected direction; exact sizes [E], with BAChoice measurements recorded as a candidate]:** use a legible prompt heading followed by supporting instruction and the principal interactive region, in that consistent order. Keep the white reading/answer surface prominent, with restrained card edges, soft surfaces and deliberate whitespace. Short and long choice rows are both 24px. The choice row uses `align-items: flex-start` for one line and for wrapped lines, so the 36px status icon and the letter stay with the first line. Word tokens, word cards and inputs keep their own alignment and focus treatment. The same `selected`, `correct`, `wrong`, `shown`, `dim`, `disabled` and `focus-visible` names mark the same distinctions. On a choice option, `selected` is pre-check and `correct` is the post-check solid success fill; `shown` is the green outline reveal. Before grading, color communicates choice, not correctness. Semantic Coach feedback stays a distinct surface from the selection.
 
 **Activity variants use one shared language, not one identical layout:** P2 contrasts Not yet / Better teaching panels; P3 single and multi reuse the same list/card geometry with different choice semantics, while Tapword keeps text flowing as a sentence; P4 uses the same WordGrid anatomy for single Sentence set or multiple Frame Fill categories, but word-card insertion and grading gestures differ; P5 uses a spacious writing canvas plus a connected four-group WordGrid; P7 uses input appearances without practice hints or instant correctness markings. Do not insert a WordGrid on the P7 mastery screen to obtain visual uniformity.
 
@@ -656,9 +641,9 @@ The **Screen IDs and interaction requirements** are owned by `apps/writing/PRODU
 | Layout Variant ID | Hierarchy / anatomy | Interaction presentation | Styling and responsive behavior |
 | --- | --- | --- | --- |
 | `P2.rule-pair.hamburger` | Readable teaching heading, weak/not-yet panel, prominent Better panel, three-layer hamburger/support hierarchy | Informational teaching only; no correct badge, checked border or success animation | White Canvas with quiet separation; Better has semantic soft-green support, not a graded-success treatment; all 3 hamburger tiers have heading/support; natural stacking on narrow widths |
-| `P3.list.option.single` | Prompt → vertical option list → inline feedback zone | Shared BAChoice single-select. The leading status icon shows the state. The letter is text beside that icon. Focus ring stays visible. Checked states render only after Check | Min height 50px; radius 24px; one line and wrapped lines share chrome; icon stays on the first line; no clipped padding. Feedback appears only after Check. State is icon plus fill, not color alone |
+| `P3.list.option.single` | Prompt → vertical option list → inline feedback zone | Shared BAChoice single-select. The leading status icon shows the state. The letter is text beside that icon. Focus ring stays visible. Checked states render only after Check | Min height 50px; radius 24px; one line and wrapped lines share chrome; icon stays on the first line; padding stays intact when lines wrap. Feedback appears only after Check. State is the icon together with the fill |
 | `P3.passage.word.single` | Prompt → flowing passage with individually focusable word tokens → feedback | One highlighted token at a time, clearly distinguish selected/focus/wrong/revealed; accessible word token label | Passage line breaks naturally; do not force equal-width option cards; minimum usable touch target and keyboard focus for words; status must survive reflow. This token does not use the choice-option row anatomy |
-| `P3.list.option.multi` | Prompt → option list → choose-count line → feedback | Same option chrome as single. Multiple mode toggles per PRODUCT. It does not switch to a square checkbox drawing or a second radius | Same 50px minimum and 24px radius as single. Preserve all selected rows after an incorrect Check |
+| `P3.list.option.multi` | Prompt → option list → choose-count line → feedback | Same option chrome as single. Multiple mode toggles per PRODUCT | Same 50px minimum and 24px radius as single. Preserve all selected rows after an incorrect Check |
 | `P4.build.word.guided-order` | Prompt → WordGrid palette → ordered build bench → progress/instructional cue | Clickable word pills with inserted sequence visually separate from palette; wrong token cue outside graded status | White vocabulary pills in a group-colored WordGrid body; connected sticky-style tabs only when multiple groups exist; wrong token nudge with text alternative; no generic Check button |
 | `P4.fill.chunks.frame` | Prompt → fixed frame with 2 visibly editable blank zones → optional WordGrid → validation feedback | Clearly distinguish locked starter text, editable field focus and filled words; Check-driven | Line wrapping must preserve “because” and the two blanks; no clipping at 200% zoom; accessible label for each blank, keyboard caret and inserts |
 | `P5.write.constraint-apply` | Prompt/tip → spacious writing canvas → Coach comments → submission control | Writing is primary, Coach notes secondary; busy/Reading state; no fake correct stamp when Move on | White writing area on warm frame plus four-group Opinion/Nouns/Adjectives/Marks WordGrid with connected category tabs; independently scrolling Coach; fixed transparent Footer; focused typing/caret remain visible and screen-reader feedback announced |
@@ -671,17 +656,17 @@ The **Screen IDs and interaction requirements** are owned by `apps/writing/PRODU
 | State | Choice-option appearance |
 |---|---|
 | `idle` / `default` | White `#FFFFFF`, border `#C9B8B2`, text `#133547`, empty circle |
-| `selected` | Pre-check choice. Solid `#9B4F36`, white text, white ring. This is not a correct mark |
+| `selected` | Pre-check choice. Solid `#9B4F36`, white text, white ring |
 | `wrong` | After grading. Same brown fill and white text as `selected`, white disk and `#9B4F36` X |
 | `correct` | After grading. Solid `#14AE5C`, white text, white disk and `#14AE5C` check |
-| `shown` | Outline reveal. White fill, `#14AE5C` border, text `#133547`, solid `#14AE5C` disk and white check. Not the solid `correct` fill, and not an info-colored row |
-| `dim` | Default chrome at `opacity: 0.4`. Not a brown error state |
-| `disabled` | Separate product state. Use `dim` or an existing disabled treatment. Do not invent a third brown |
+| `shown` | Outline reveal. White fill, `#14AE5C` border, text `#133547`, solid `#14AE5C` disk and white check |
+| `dim` | Default chrome at `opacity: 0.4` |
+| `disabled` | Separate product state. `dim`, or an existing disabled treatment |
 | `focus-visible` | Writing focus ring stays visible on solid fills |
 | `busy` | Async submit. Does not change learning status |
 | `reduced-motion` | Removes nonessential movement without hiding the state |
 
-Do not apply the general quieter-container-border rule to these choice states. Other controls keep their own surfaces. Coach revealed feedback is not the choice `shown` chrome.
+Choice states follow the candidate table above. Other controls keep their own surfaces. Coach revealed feedback stays its own surface, separate from the choice `shown` row.
 
 **Layout quality gates:** 1440×900, 1024×768, 834×1112 and 390px; 100% and 200% zoom; English and Chinese copy including long wrap, pointer/touch/keyboard, focus and reduced motion. One primary separator per structural boundary; peer container gaps reduce exactly one existing spacing-token step (never arbitrary px); transparent pinned action Footer outside Coach with Previous:Primary width 1:2, gap 8px, height 70px each; Screen 1 Previous disabled. Avoid overlays covering caret, option feedback, Footer or the last line of writing.
 

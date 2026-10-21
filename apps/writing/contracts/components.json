@@ -150,11 +150,11 @@
         "Option row radius 24px for short and long copy",
         "Leading 36x36 status icon, 4px gap, text block padding 8px, letter-to-body gap 12px, outer padding 4px",
         "Letter Dosis ExtraBold 800 18/20 nowrap; body Jost Medium 18px line-height 1.1",
-        "Min-height stays 50px; one-line composition is about 46px; wrapped rows grow and are not clipped",
+        "Min-height stays 50px; one-line composition is about 46px; wrapped rows grow and stay fully visible",
         "Row and text align flex-start so the icon stays with the first line",
-        "selected is pre-check solid #9B4F36 with a white ring; correct is post-check solid #14AE5C; wrong shares the brown fill and uses a white disk plus X; shown is white with a #14AE5C border and green check badge, not an info color; dim is default chrome at opacity 0.4",
+        "selected is pre-check solid #9B4F36 with a white ring; correct is post-check solid #14AE5C; wrong shares the brown fill and uses a white disk plus X; shown is white with a #14AE5C border and green check badge; dim is default chrome at opacity 0.4",
         "Icon communicates state; the letter is separate text",
-        "Keep the focus ring on solid fills; do not invent a hover color or a third brown for disabled",
+        "Keep the focus ring on solid fills. This candidate has no separate hover color. A non-interactive option uses dim or the existing disabled treatment",
         "Tapword reuses choice state meanings and does not take this option-row anatomy"
       ],
       "requiredStories": [
@@ -228,7 +228,7 @@
           "dim": "default chrome at opacity 0.4"
         }
       },
-      "notes": "Visual candidate 2026-10-21, pending designer Approved. idle and default name the unselected row. shown is the outline reveal, distinct from solid correct, and it does not use an info color. Product labels and grading stay in PRODUCT.md. tokens.css still has older choice radius 14px, gap 10px and padding 12/8; those are not the target and are not edited here. No CSS/TSX change in this contract revision."
+      "notes": "Visual candidate 2026-10-21, pending designer Approved. idle and default name the unselected row. shown is the outline reveal; correct is the solid success fill. Product labels and grading stay in PRODUCT.md."
     },
     {
       "id": "BA-UI-004",
