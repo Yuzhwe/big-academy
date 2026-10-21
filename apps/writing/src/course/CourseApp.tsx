@@ -141,6 +141,8 @@ function PathView({ session, variant, onVariantChange, isExploration }: { sessio
                     title={lesson.title}
                     state={cardState(lesson.courseState, lesson.action)}
                     detail={lesson.detail}
+                    minutes={lesson.minutes}
+                    progressState={lesson.courseState}
                     locale={session.locale}
                     onEnter={() => session.openLesson(lesson.unitId, lesson.number)}
                   />
