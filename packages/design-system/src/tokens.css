@@ -228,7 +228,7 @@
   --ba-activity-indicator-popover-inset: var(--ba-space-4);
   /* No connector line token: number circle and badge overlap/contact by geometry. */
 
-  /* Writing Hi-Fi Review R1. [A] user-confirmed numeric values; [E] image-derived
+  /* Writing canonical current values. [A] designer-confirmed numeric values; [E] proposed
    * implementation candidates pending rendered designer approval. Scoped to
    * Writing composition; NOT a replacement for global shared component defaults. */
   /* R3 Writing E-01 landscape; [A] selected concept, [E] source-derived candidate values. */
