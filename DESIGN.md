@@ -538,11 +538,11 @@ Validate 1440×900, 1024×768, 834×1112, 390px, 100% and 200% zoom, English/Chi
 ## 11. Evidence, approval and open visual questions
 
 - **Benchmark:** `docs/design-system/BENCHMARK_AND_TOKEN_GAP_AUDIT_v0.1.md`.
-- **Actual temporary token source:** `packages/design-system/src/tokens.css` on Grokbot's **separate** `feat/grokbot-writing-topbar` branch. This docs branch does **not** yet include that code and must not pretend it does.
+- **Actual executable token source:** `packages/design-system/src/tokens.css` is present in this review branch, inherited from the R3 specification. Its values are recorded, but this does not prove that frontend components consume every token or that candidate styles have passed browser visual QA.
 - **Approved theme scope:** B · product accent + light tinted surfaces; exact tint values pending.
 - **Approved Token Architecture:** Primitive → Semantic → optional Component; shared CSS Variables as the single current executable source; themes set by the app/shell and consumed semantically by shared components.
 - **Approved Typography Foundation and font roles:** EN headings Dosis ExtraBold 800; EN long text Jost; ZH headings Douyin (asset/family naming to verify); ZH long text Noto Sans SC; **all UI numerals Dosis ExtraBold 800**. Font size/line-height/other weights, licensing and runtime font loading remain unverified.
 - **Approved Component Architecture:** A · progressively build shared UI primitives and product components; extract Shared Patterns after real cross-product reuse, never by speculative mass abstraction.
 - **Approved Design Governance:** A · lightweight; significant changes reviewed, ordinary agent implementation autonomous; separate engineering and visual acceptance, GitHub PR/HANDOFF records.
-- **Current token gaps:** semantic palette aliases/theme contract, spacing/typography/radii/elevation/motion scale, responsive sizes, accessible feedback color pairs, and status token conventions.
-- **Gate:** root DESIGN.md draft requires UI/UX Designer approval; proof requires a running component, Storybook states and browser QA. Component contract and product docs remain authoritative for UI interfaces and learning rules.
+- **Current verification gaps:** confirm component consumption of token aliases, responsive sizing and status colors; validate contrast and rendered elevation; implement and test the Motion Runtime (numerical spring parameters already exist, but do not execute animations on their own). Do not infer absence of an entire token family merely because integration evidence is missing.
+- **Gate:** this rewritten canonical specification is under UI/UX Designer review; implementation approval separately requires a running component, Storybook states and browser QA. Component contract and product docs remain authoritative for UI interfaces and learning rules.
