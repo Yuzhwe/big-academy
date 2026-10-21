@@ -176,7 +176,7 @@ Every Activity Screen is one frame: prompt (localized instruction, read-aloud), 
 
 Choice, word, and sentence options are at least 50 CSS px tall, grow with wrapped text, vertically center a single line, and align wrapped text and the letter or number to the first line. This height rule is only for answer options. It does not resize global buttons.
 
-Option states, each with a text label so color is not the only signal: idle, selected, correct (learner’s right answer), wrong, revealed answer, dimmed non-answer, disabled, keyboard focus. A revealed row uses the “Right answer” label. A correct selected row uses “Your answer · right.”
+Option states: idle, selected, correct, wrong, revealed (`shown`), dimmed non-answer, disabled, keyboard focus. The visible option row is the letter, the option body, and the leading status icon. After Check, a correct row and a revealed row show the leading check icon with the solid or outline fill in DESIGN.md. The accessible name carries the state for screen readers and is not painted on the row. Coach feedback sentences stay in the feedback region.
 
 Keys 1–9 and A–I select a choice when a choice group is on screen. Enter activates Check when that button is enabled and the learner is not typing in a field. Read-aloud on the prompt is available on every template. It does not grade.
 
@@ -210,9 +210,9 @@ The prompt is the item’s ask line. Options are the item’s lines, passage wor
 
 **Select.** Single choice replaces the selection. Multi choice toggles and shows “Choose N · k chosen.” Selection writes the answer and clears the wrong-mark list. It does not add a try and does not write a new grade. Check stays disabled until at least one option is selected.
 
-**Check.** Adds a try. Correct → `done`, feedback, screen completes. First wrong → stay `open`. Single choice clears the selection and marks the chosen row wrong; the retry sentence names the letter and the authored reason for that option, then “Try again.” Multi choice keeps the selection; the retry sentence names one wrong letter and its reason, or “You found r of n.” Second wrong → `shown`, wrong rows stay marked, correct rows are labeled “Right answer,” feedback uses the graded sentence in the next paragraph.
+**Check.** Adds a try. Correct → `done`, feedback, screen completes. First wrong → stay `open`. Single choice clears the selection and marks the chosen row wrong; the retry sentence names the letter and the authored reason for that option, then “Try again.” Multi choice keeps the selection; the retry sentence names one wrong letter and its reason, or “You found r of n.” Second wrong → `shown`, wrong rows stay marked, correct rows show the leading check icon, and the feedback region uses the graded sentence in the next paragraph.
 
-**Graded sentence for a pick** (also used when a single-target tap-word is revealed):
+**Coach presentation for a pick** (also used when a single-target tap-word is revealed). These template strings are Coach / demo feedback in the feedback region:
 
 - Right: “Right. You chose {letters}. {why the right option is right}.”
 - Wrong, with a choice: “You chose {letters}. {why that option is wrong}. The right answer is {letters}. {why the right option is right}.”
@@ -420,7 +420,7 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Question:** “Which one is a good topic sentence for a school garden? Tap it.”
 - **Options in exact source order:** A (0) “Gardens have plants.”; B (1) “Our school should have a garden for two big reasons.”; C (2) “I like flowers.”
 - **Answer:** index `[1]`, B only. Use source Engine `choiceGrade`; do not infer correctness from option colors.
-- **Flow:** `open/no-choice` → select one radio-like row (`selected`, no grade) → Check enabled → correct: `done`, authored rationale and Next; first wrong: record try 1, mark selected wrong and clear it for retry, stay here; second wrong: `shown`, label B right answer and enable Next without credit.
+- **Flow:** `open/no-choice` → select one radio-like row (`selected`, no grade) → Check enabled → correct: `done`, authored rationale and Next; first wrong: record try 1, mark selected wrong and clear it for retry, stay here; second wrong: `shown`, B shows the revealed check icon, and Next is available without credit.
 - **Feedback:** option-specific reason from authored `coach.options`; show Check feedback only after Check, not while selecting.
 - **Persistence:** selected index, wrong row marks, tries, status, revealed answer and feedback context.
 - **Acceptance:** selection of A does not unlock screen 3; after a failed Check the option can be changed; B correctly checked unlocks screen 3; second wrong reveals B but never pretends “correct”.
@@ -498,16 +498,22 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 ## 13. Writing visual and spatial product constraints
 
 - **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, P7 assessment, saved answers, resume, Start/Continue/Review/Locked, keyboard/touch and reduced-motion behavior. The Writing demonstration remains eight Activity Screens.
-- **E-01 full-bleed stage:** landscape sky / distant peaks / hills / trees / clouds / subtle plane + parallax is the sole default presentation; no residual beige header/footer bands may occlude the scene. Level navigation and language selector remain usable above scenery without overlapping nodes. Background never captures pointer events or course state.
-- **Camera visibility:** drag, wheel, keyboard, Home and End must reach complete visible first/last nodes, including card bounds, decorative terraces, sticky header and viewport padding; no unreachable clipped upper-right or lower-left cards.
-- **Terrace:** choose the **Layered Landscape Terrace** family (2–3 shallow rounded grass/landform layers). Retire high translucent rectangular vertical pillars. Preserve Lesson card bottom anchors and existing path navigation geometry. Terrace colors/curves are design candidates, not yet approved numeric specifications.
+- **E-01 full-bleed stage (`v2-terraces`):** the path landscape is layered terraces. Separate platforms sit on a stack of mountain layers. From back to front: the sky (the stage background color), clouds, hill 2, hill 1, then the lesson platforms and cards. The landscape fills the stage, including the area behind the level header. Level navigation and the language selector stay usable and leave the nodes clear. The scenery ignores pointer events and leaves course state unchanged.
+- **Path scroll:** drag, wheel, and keyboard movement along the staircase move the scenic layers at different speeds. Nearer ground shifts farther than the clouds, so the learner sees separate depths. Lesson platforms and cards stay locked to the path steps. The motion does not change the current lesson, score, or saved progress. Speed ratios and the sky color are visual candidates in DESIGN.md, pending Joe Approved.
+- **Path art:** use version **`v2-terraces`** and these ids only.
+  - `path.v2-terraces.hill-1-foreground` — foreground mountain layer — `apps/writing/public/path/v2-terraces/hill-1-foreground.png`
+  - `path.v2-terraces.hill-2-mid` — second / mid mountain layer — `apps/writing/public/path/v2-terraces/hill-2-mid.png`
+  - `path.v2-terraces.cloud` — floating sky cloud — `apps/writing/public/path/v2-terraces/cloud.png`
+  The Writing app serves them at `/path/v2-terraces/<file>`. Compositing and placement are in DESIGN.md.
+- **Camera visibility:** drag, wheel, keyboard, Home and End must reach complete visible first/last nodes, including card bounds, decorative platforms, sticky header and viewport padding; the far-left/lower and far-right/upper nodes stay fully reachable.
+- **Lesson platform:** the **Layered Landscape Terrace** (2–3 shallow rounded grass layers) under each node, in front of hill 1. One platform per node. Lesson card bottom anchors and path navigation geometry stay as this chapter and chapter 16 define them. Platform colors and curves are designer-review candidates [E].
 - **Lesson state:** choose **Number Seal + Attached Symbol**. Lesson number remains dominant; attached small status icon encodes current, completed or locked. Do not restore giant colored status capsules or redundant You're here / Finish prior unit captions. Accessible status descriptions remain; actual state gates do not change. Exact final icon geometry is a designer review candidate.
 - **Unit fold:** folded face must be a continuous rounded corner integrated with the card's outer edge; no detached corner triangle or inner decorative border crossing the folded region. Decorative folded state is not an interactive target.
 - **Lesson card:** title uses exactly two reserved line boxes, 2-line truncation with accessible full title; estimated duration directly below title as number + localized unit, left aligned. CTA uses shared BAButton (height 70px), all approved hover/pressed/focus and reduced motion states. Outer/inner radius follows concentric relation rather than independent unrelated values.
 - **Activity hierarchy:** one primary separation treatment per structural boundary (surface OR stroke OR divider unless independently justified). Right-column action footer no longer draws its own filled panel or redundant divider; it remains pinned below independently scrolling Coach. Primary and Previous fill footer width at 1:2 with 8px gap and 70px heights. Quiet neutral container strokes must not obscure interactive focus/graded borders. Decrease gaps between peer content containers by one existing spacing scale step; do not tighten line-height or hit targets.
 - **TopBar:** keep title/meta and centered ActivityScreenIndicator shared with the anchored full-screen Popover. Icon Back to Staircase remains 50×50. P7's internal question count is distinct from top eight Activity Screen indicators.
 - **P2:** differentiate Not yet vs Better; Better is instructional emphasis, never a checked practice success event.
-- **Visual source:** the landscape appearance is recorded in the E01-landscape-backdrop source at commit 913dbfe; DESIGN.md specifies the current default and controls terrace changes. Historical implementation toggles do not determine current product behavior.
+- **Visual source:** path artwork and version id are the `v2-terraces` files above. DESIGN.md specifies compositing, placement, and candidate motion.
 
 ## 14. Lesson TopBar and footer actions
 
@@ -541,9 +547,9 @@ If an existing authored Chinese UI/explanation string is absent, identify it for
 
 **Component contract:** separate `screenNumber`, `progressStatus`, `isSelected`, `canOpen`, and `onNavigate`; popover open/close is its container's state. Use the same React Aria focus/keyboard semantics across both locations. Document compact/regular sizes, hover/focus/pressed/disabled and Done+Selected combinations in Storybook; verify 1440/1024/834/390 widths, long headings, and 200% zoom.
 
-## 16. E-01 Staircase behavior
+## 16. E-01 · Staircase behavior
 
-E-01 is a diagonal staircase, lower-left to upper-right, not a vertical list. The path form is separate platforms: one thin platform per node. Card bottom sits on the platform top. Card height grows upward and does not move the anchor, the camera, or the slope.
+E-01 is a diagonal staircase from lower-left to upper-right. The path is layered terraces: separate platforms, one per node, on the `v2-terraces` landscape. Card bottom sits on the platform top. Card height grows upward and does not move the anchor or the camera.
 
 Anchor for node `i` of `n`: `anchorBaseY + (n - 1 - i) × rise`. Rise comes from the viewport height, clamped between 48 and 120 CSS px. Horizontal step is 290 CSS px. Node width is 260 CSS px. Do not hard-code a 15° angle. Drag, wheel, keyboard arrows, Home, and End use that same rise and snap to a step. The path is usable without a pointer, names itself to assistive tech, and honors reduced motion. There is no forced 1024 px minimum width.
 
@@ -559,7 +565,7 @@ Node roles:
 
 Only G2-O lessons call the course session. A locked card never navigates and never looks unlocked. Completed Lesson CTA is Review / 复习, not Start; current/available unfinished lessons show Start or Continue according to saved progress. The top-left number and completion/lock state form a single badge. Level tabs sit in one header row: level title at the left, the tab list centered on the header, language toggle at the right. Changing level changes which path is shown. It does not open a lesson and does not change score or progress. Phone widths may scroll the tab list inside that row.
 
-The E-01 default is the layered landscape environment specified by DESIGN.md; the formerly prescribed warm-brown vertical gradient is retired from the active Writing visual contract. Landscape layers are decorative only and cannot affect navigation, scoring or persistence.
+The E-01 stage is the `v2-terraces` landscape specified by DESIGN.md. Layer order from back to front is sky, clouds, hill 2, hill 1, then the lesson platforms and cards. While the learner scrolls the path, each scenic layer moves at its own speed and the platforms stay on the steps. The scenic layers are decorative. They leave navigation, scoring, and persistence unchanged.
 
 ## 17. Celebration triggers
 
@@ -590,7 +596,6 @@ The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribb
 - **Safety handling (Product Owner):** After two 3+-word safety-flagged Apply submissions, the original generic failed-tries branch can expose `Move on for now`; confirm whether the safety case needs a separate boundary before implementation. No new safety rule is approved by this observation.
 - **Feedback restoration (Product Owner / UX):** Saved attempts and answers persist, but the original in-memory `Pages.lastSaid` feedback cache is not persisted. Confirm desired exact Coach message restoration after hard reload; existing PRODUCT recovery intent remains pending runtime proof.
 
-- Landscape is the E-01 default; the former brown gradient and pillar-based terrace are not valid current requirements.
 - Non-answer dimming treatments, including the 40% candidate, require accessibility contrast review. Shake and audio cues remain optional candidates and cannot change gates.
 - Exact static artwork for the reduced-motion success state.
 - If a milestone becomes incomplete (for example after a failed Check revokes a skip) and later becomes complete again, whether that return auto-plays is not decided. Do not add a new celebration for that case.

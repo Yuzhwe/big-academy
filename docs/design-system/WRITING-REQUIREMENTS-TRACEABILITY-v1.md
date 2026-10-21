@@ -33,8 +33,8 @@ Verification type: **static source/code inspection only**. No frontend code chan
 
 | Requirement | DESIGN.md authority | Token / contract interface | Actual implementation status |
 |---|---|---|---|
-| Default E-01 landscape | Writing section 9 landscape stack, source commit `913dbfe` | `--ba-writing-landscape-*`; BA-WR-009 LandscapeBackdrop | Source captured from separate feature branch; cannot claim integrated in main |
-| Layered Landscape Terrace | Section 9 terrain; 2–3 shallow rounded layers, no rectangular pillar | `--ba-writing-terrace-*`; BA-WR-010 | Specified, numerical [E] awaiting designer review |
+| Default E-01 landscape | Writing section 9 path landscape **v2-terraces** | PNG art under `apps/writing/public/path/v2-terraces/`; BA-WR-009 LandscapeBackdrop | Artwork and stack are current. Sky color and parallax ratios remain [E] |
+| Layered Landscape Terrace | Section 9 terrain; 2–3 shallow rounded layers | `--ba-writing-terrace-*`; BA-WR-010 | Specified, numerical [E] awaiting designer review |
 | Number Seal + Attached Symbol | Section 9 card/status | `--ba-writing-status-*`; BA-WR-005 | Contract present, visual implementation still requires render review |
 | Unit folded corner | Section 9 Unit fold | `--ba-writing-unit-fold-*`; BA-WR-007 | Specified, not proof of rendered fold quality |
 | BAButton reuse | Component section 8 and R3 Writing section | BA-UI-001; size 50 Back / 70 CTA+Footer | Existing StairLessonCard imports React Aria Button directly, so shared reuse gate fails until engineering repair |
@@ -52,7 +52,7 @@ Verification type: **static source/code inspection only**. No frontend code chan
 
 1. **Do not edit PRODUCT.md to match an incomplete UI slice.** Complete the missing runtime behavior later using the original authored source/grader.
 2. **Do not mark a component Visually Approved from Tokens or Contracts alone.**
-3. Preserve established 50×50 Back / 70px BAButton CTA/Footer, TopBar indicator, 8 Screen lesson, current landscape and R3 terrace/status visuals.
+3. Preserve established 50×50 Back / 70px BAButton CTA/Footer, TopBar indicator, 8 Screen lesson, the v2-terraces landscape, the per-node lesson platform, and status visuals.
 4. Future engineering PR must exercise each activity template and failed/passed branches, plus save/refresh/reentry, with explicit browser evidence.
 
 ## Unresolved evidence / approval
