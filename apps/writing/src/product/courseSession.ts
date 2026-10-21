@@ -23,6 +23,7 @@ import {
   type ScreenRef,
   type StepTag,
 } from './loadAlexSource';
+import { gradeApply, gradeProduction, type ApplyResult } from './lessonOneGrading';
 
 export const ALEX_STATE_KEY = 'g2o_unit_state_v4';
 export const CELEBRATION_KEY = 'ba_writing_milestone_receipts_v1';
@@ -38,10 +39,24 @@ export interface TaskProgress {
   picked?: number[];
   wrong?: number[];
   hintLv?: number;
+  built?: string[];
+  misses?: number;
+  text?: string;
   sel?: number | null;
   bad?: number | null;
 }
 
+export interface AssessmentAnswer { picked?: number[]; sel?: number | null; text?: string; }
+export interface AssessmentState {
+  passed?: boolean;
+  finished?: boolean;
+  attempt?: number;
+  question?: number;
+  blankConfirmed?: boolean;
+  responses?: Record<string, Record<string, AssessmentAnswer>>;
+  result?: { score:number;total:number;passed:boolean;answers:{id:string;correct:boolean;writing:boolean}[] };
+}
+export interface ApplyState { text:string;checks:number;passed:boolean;moveOn?:boolean;result?:ApplyResult; }
 export interface AlexState {
   v: 4;
   screen: number;
@@ -59,9 +74,9 @@ export interface AlexState {
   listen: boolean;
   regions: Record<string, { t: string; s: string }[]>;
   tasks: Record<string, TaskProgress>;
-  checks: Record<string, { passed?: boolean; finished?: boolean }>;
+  checks: Record<string, AssessmentState>;
   plan: { topic: string; checks: number; result: unknown };
-  applies: Record<string, unknown>;
+  applies: Record<string, ApplyState>;
   feedback: { drafts: { text?: string }[]; cups: Record<string, unknown>; finished?: boolean };
   reflection: unknown;
   events: { t: number; type: string; page?: string; screen?: number; data?: Record<string, unknown> }[];
@@ -143,6 +158,9 @@ export interface ActivityModel {
   tapword?: {
     words: { index: number; text: string; selected: boolean; wrong: boolean }[];
   };
+  build?: { cells:string[]; built:string[]; expected:string; locked:boolean };
+  writing?: { value:string; label:string; tip:string; type:'practice'|'apply'; locked:boolean; result?:ApplyResult };
+  assessment?: { index:number; count:number; attempt:number; id:string; ask:string; kind:string; options?:{index:number;text:string;letter:string;selected:boolean}[]; words?:{index:number;text:string;selected:boolean}[]; text:string; done:boolean[]; result?:{score:number;total:number;passed:boolean;answers:{id:string;correct:boolean;writing:boolean}[]} };
   unsupportedReason?: string;
   skip: SkipOffer | null;
   hints: string[];
@@ -842,6 +860,44 @@ export class CourseSession {
       }
     }
 
+
+    if (screen.kind === 'task' && screen.task) {
+      const task = this.task(screen.task);
+      const progress = this.taskState(this.taskKey(screen));
+      if (task.type === 'build') return {
+        ...base, supported:true, ask:this.text(task.ask),
+        hints:(task.coach?.hints ?? []).slice(0,progress.hintLv??0).map(h=>this.text(h)),
+        hintAction:this.hintAction(task,progress),
+        build: {cells:(task.cells??[]).map(c=>typeof c==='string'?c:c.t),built:progress.built??[],expected:task.answer_text??'',locked:progress.status!=='open'},
+      };
+      if (task.frameFill || task.rules) return {
+        ...base,supported:true,ask:this.text(task.ask),
+        hints:(task.coach?.hints??[]).slice(0,progress.hintLv??0).map(h=>this.text(h)),
+        hintAction:this.hintAction(task,progress),
+        writing:{value:progress.text ?? task.start ?? task.frameFill?.frame ?? '',label:this.zh?'你的句子':'Your sentence',tip:this.text(task.why),type:'practice',locked:progress.status!=='open'}
+      };
+    }
+    if (screen.kind === 'apply') {
+      const task = this.task(page?.task ?? screen.page);
+      const apply = this.applyState(screen.page);
+      return {...base,supported:true,ask:this.text(task.ask),hintAction:apply.passed?null:'hint',
+        writing:{value:apply.text,label:this.zh?'你的主题句':'Your topic sentences',tip:this.text(task.tip),type:'apply',locked:apply.passed||!!apply.moveOn,result:apply.result}};
+    }
+    if (screen.kind === 'check') {
+      const state = this.assessmentState(screen.page);
+      const ids=this.assessmentIds();
+      const ix=Math.min(state.question??0,ids.length-1);
+      const task=this.task(ids[ix]);
+      const ans=this.assessmentResponse(ids[ix]);
+      return {...base,supported:true,ask:this.text(task.ask),hints:[],hintAction:null,coachMore:false,
+        assessment:{index:ix,count:ids.length,attempt:state.attempt??0,id:task.id,ask:this.text(task.ask),kind:task.type,
+          options:task.lines?.map((line,index)=>({index,text:line,letter:this.engine.choiceLetter(index),selected:(ans.picked??[]).includes(index)})),
+          words:task.type==='tapword'&&task.text?this.engine.tokens(task.text).map((w,index)=>({index,text:w.w,selected:ans.sel===index})):undefined,
+          text:ans.text??task.start??task.text??'',
+          done:ids.map(id=>this.assessmentAnswered(this.task(id),this.assessmentResponse(id))),
+          result:state.result}
+      };
+    }
     return {
       ...base,
       supported: false,
