@@ -53,6 +53,8 @@ test('E-01 terraces: camera, permissions, and one landscape stage', async ({ pag
 
   await page.setViewportSize({ width: 834, height: 1112 });
   await page.getByRole('button', { name: '中文' }).click();
+  await expect(page.getByTestId('locked-note')).toContainText('第 1 课');
+  await expect(page.getByTestId('locked-note')).not.toContainText('Lesson 1');
   await expect(scene).toHaveAttribute('data-path', 'terraces');
   await expect(page.locator('.staircase-continuous-path')).toHaveCount(0);
   await page.screenshot({ path: resolve(evidenceDir, 'terraces-834-zh.png'), fullPage: false });

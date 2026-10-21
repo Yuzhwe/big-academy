@@ -36,6 +36,25 @@ export type LessonCourseState = 'locked' | 'current' | 'available' | 'done' | 's
 export type TaskChipStatus = 'done' | 'current' | 'available' | 'locked' | 'skipped';
 export type CourseView = 'path' | 'lesson' | 'preview' | 'lessonEnd';
 
+/** Path toast copied into `message`. Locale toggle renders it again. */
+type PathChrome =
+  | { kind: 'playable-lock'; unitId: string; lessonNumber: number }
+  | { kind: 'later-level' }
+  | { kind: 'after-lessons' };
+
+/** Shell note copied into `feedback`. A graded coach line is not one of these. */
+type FeedbackChrome =
+  | { kind: 'blocked-forward' }
+  | { kind: 'locked-screen'; index: number; withUnsupported?: boolean }
+  | { kind: 'apply-stub-short' }
+  | { kind: 'apply-stub-long' }
+  | { kind: 'apply-short' }
+  | { kind: 'check-blank'; blank: number[] }
+  | { kind: 'pick-empty'; multi: boolean }
+  | { kind: 'tap-empty' };
+
+type NoticeChrome = 'milestone-again' | 'milestones-many';
+
 export interface TaskProgress {
   tries: number;
   status: 'open' | 'done' | 'shown';
@@ -413,6 +432,14 @@ export class CourseSession {
   /** In-memory until a successful presentation writes LESSON_CELEBRATION_KEY. */
   lessonCelebration: LessonCelebrationEvent | null = null;
   openNotice = '';
+  /**
+   * Chrome copied into message, feedback, or openNotice.
+   * Locale toggle renders these again. A check result clears the feedback tag
+   * so that sentence stays in the language of the check.
+   */
+  private pathChrome: PathChrome | null = null;
+  private feedbackChrome: FeedbackChrome | null = null;
+  private noticeChrome: NoticeChrome | null = null;
   returnFocus: { unitId: string; number: number } | null = null;
   /** UI receipt only. Not part of Alex course state. */
   private returnTo: { unitId: string; number: number } | null = null;
@@ -475,13 +502,130 @@ export class CourseSession {
 
   toggleLocale(): void {
     this.state.zh = !this.state.zh;
+    this.refreshLocaleChrome();
     this.save(true);
     this.emit();
   }
 
   dismissMessage(): void {
-    this.message = '';
+    this.clearPathChrome();
     this.emit();
+  }
+
+  /** Rewrites stored chrome from the bilingual pairs already used when it was shown. */
+  private refreshLocaleChrome(): void {
+    if (this.pathChrome) this.message = this.renderPathChrome(this.pathChrome);
+    if (this.feedbackChrome) this.feedback = this.renderFeedbackChrome(this.feedbackChrome);
+    if (this.noticeChrome) this.openNotice = this.renderNoticeChrome(this.noticeChrome);
+  }
+
+  private showPathChrome(chrome: PathChrome): void {
+    this.pathChrome = chrome;
+    this.message = this.renderPathChrome(chrome);
+  }
+
+  private clearPathChrome(): void {
+    this.pathChrome = null;
+    this.message = '';
+  }
+
+  private showFeedbackChrome(chrome: FeedbackChrome, tone?: ActivityModel['feedbackTone']): void {
+    this.feedbackChrome = chrome;
+    this.feedback = this.renderFeedbackChrome(chrome);
+    if (tone) this.feedbackTone = tone;
+  }
+
+  /** Coach and learning feedback. Locale toggle must not replace this sentence. */
+  private setAuthoredFeedback(text: string, tone?: ActivityModel['feedbackTone']): void {
+    this.feedbackChrome = null;
+    this.feedback = text;
+    if (tone) this.feedbackTone = tone;
+  }
+
+  private clearFeedbackChrome(): void {
+    this.feedbackChrome = null;
+    this.feedback = '';
+  }
+
+  private showNoticeChrome(chrome: NoticeChrome): void {
+    this.noticeChrome = chrome;
+    this.openNotice = this.renderNoticeChrome(chrome);
+  }
+
+  private clearNoticeChrome(): void {
+    this.noticeChrome = null;
+    this.openNotice = '';
+  }
+
+  private renderPathChrome(chrome: PathChrome): string {
+    if (chrome.kind === 'playable-lock') {
+      const unit = this.unit(chrome.unitId);
+      return unit
+        ? this.lockWhy(unit, chrome.lessonNumber)
+        : this.zh
+          ? '先完成前一课。'
+          : 'Finish the lesson before this one first.';
+    }
+    if (chrome.kind === 'later-level') {
+      return this.zh
+        ? `这一级之后才开始。你现在在 ${this.levelPath.current_level}，先把这一级走完。`
+        : `This level comes later. You are in ${this.levelPath.current_level} now, so finish the steps there first.`;
+    }
+    return this.zh ? '这一课要先学完前面的课才会打开。' : 'This one opens after the lessons before it.';
+  }
+
+  private renderFeedbackChrome(chrome: FeedbackChrome): string {
+    if (chrome.kind === 'blocked-forward') {
+      const lead = this.zh ? '那一页还没打开。' : 'That page opens later. ';
+      return `${lead}${this.lockedMsg(this.firstOpen())}`.trim();
+    }
+    if (chrome.kind === 'locked-screen') {
+      const screen = this.screens[chrome.index]?.screen;
+      const reason = chrome.withUnsupported && screen ? this.unsupportedReason(screen) : '';
+      return `${this.lockedMsg(chrome.index)} ${reason}`.trim();
+    }
+    if (chrome.kind === 'apply-stub-short') {
+      return this.zh ? '先再写几个词。这次不算尝试。' : 'Write a little first. This does not count as an attempt.';
+    }
+    if (chrome.kind === 'apply-stub-long') {
+      return this.zh
+        ? '草稿已留下。第一阶段还没有接入写作评分，所以这次不记尝试，也不会打开下一屏。'
+        : 'Your draft is saved. Phase 1 does not grade this writing yet, so this press does not count an attempt or open the next screen.';
+    }
+    if (chrome.kind === 'apply-short') {
+      return this.zh ? '先写一点，我再来读。' : 'Write a little first. Then I’ll read it.';
+    }
+    if (chrome.kind === 'check-blank') {
+      const blank = chrome.blank;
+      const list =
+        blank.length === 1
+          ? `Question ${blank[0]} is`
+          : `Questions ${blank.slice(0, -1).join(', ')} and ${blank[blank.length - 1]} are`;
+      return this.zh
+        ? `还有题没做：${blank.join('、')}。可以回去试一试，也可以直接交。`
+        : `${list} still blank. You can go back and try, or hand it in as it is.`;
+    }
+    if (chrome.kind === 'pick-empty') {
+      return chrome.multi
+        ? this.zh
+          ? '先选出答案，我再和你一起检查。'
+          : 'Choose your answers first. Then I’ll check them with you.'
+        : this.zh
+          ? '先选一个答案，我再和你一起检查。'
+          : 'Choose an answer first. Then I’ll check it with you.';
+    }
+    return this.zh ? '先点句子里的一个词，我再检查。' : 'Tap a word in the sentence first. Then I’ll check it.';
+  }
+
+  private renderNoticeChrome(chrome: NoticeChrome): string {
+    if (chrome === 'milestone-again') {
+      return this.zh
+        ? '这个里程碑在变化之后又达成了。撤销后再达成时是否自动庆祝仍未决定，这次不自动播放。'
+        : 'This milestone was reached again after it changed. Whether a later return should celebrate automatically is still open, so nothing plays automatically.';
+    }
+    return this.zh
+      ? '有多个里程碑同时新达成。怎么庆祝仍未决定（Q-M05），这次不自动播放。'
+      : 'More than one milestone was newly reached. How to celebrate them together is still open (Q-M05), so nothing plays automatically.';
   }
 
   dismissCelebration(): void {
@@ -756,7 +900,7 @@ export class CourseSession {
     if (!this.levelPath.levels.some((level) => level.id === levelId)) return;
     this.levelId = levelId;
     this.view = 'path';
-    this.message = '';
+    this.clearPathChrome();
     this.save(true);
     this.emit();
   }
@@ -769,7 +913,7 @@ export class CourseSession {
       const indexes = this.liveIdx(lessonIndex);
       const courseState = this.liveState(lessonIndex);
       if (courseState === 'locked') {
-        this.message = this.lockWhy(unit, lessonNumber);
+        this.showPathChrome({ kind: 'playable-lock', unitId, lessonNumber });
         this.returnFocus = { unitId, number: lessonNumber };
         this.view = 'path';
         this.emit();
@@ -783,8 +927,8 @@ export class CourseSession {
       if (!this.canOpen(target)) target = indexes[0];
       this.remember(unitId, lessonNumber);
       this.view = 'lesson';
-      this.feedback = '';
-      this.message = '';
+      this.clearFeedbackChrome();
+      this.clearPathChrome();
       this.go(target);
       this.offerLessonCelebration();
       if (this.lessonCelebration) this.emit();
@@ -792,14 +936,7 @@ export class CourseSession {
     }
     const courseState = this.lessonStates(unit)[lessonNumber - 1];
     if (courseState === 'locked' || courseState === 'view') {
-      this.message =
-        courseState === 'view'
-          ? this.zh
-            ? `这一级之后才开始。你现在在 ${this.levelPath.current_level}，先把这一级走完。`
-            : `This level comes later. You are in ${this.levelPath.current_level} now, so finish the steps there first.`
-          : this.zh
-            ? '这一课要先学完前面的课才会打开。'
-            : 'This one opens after the lessons before it.';
+      this.showPathChrome(courseState === 'view' ? { kind: 'later-level' } : { kind: 'after-lessons' });
       this.returnFocus = { unitId, number: lessonNumber };
       this.view = 'path';
       this.emit();
@@ -807,7 +944,7 @@ export class CourseSession {
     }
     this.remember(unitId, lessonNumber);
     this.view = 'preview';
-    this.message = '';
+    this.clearPathChrome();
     this.emit();
     return true;
   }
@@ -829,9 +966,9 @@ export class CourseSession {
     if (this.returnTo) this.returnFocus = { ...this.returnTo };
     this.layoutReviewId = null;
     this.view = 'path';
-    this.feedback = '';
+    this.clearFeedbackChrome();
     this.feedbackTone = 'neutral';
-    this.message = '';
+    this.clearPathChrome();
     this.save(true);
     this.emit();
   }
@@ -845,9 +982,9 @@ export class CourseSession {
     if (!ref || ref.screen.kind !== 'apply') return false;
     this.layoutReviewId = screenId;
     this.view = 'lesson';
-    this.feedback = '';
+    this.clearFeedbackChrome();
     this.feedbackTone = 'neutral';
-    this.message = '';
+    this.clearPathChrome();
     this.emit();
     return true;
   }
@@ -884,20 +1021,16 @@ export class CourseSession {
     if (transitions.length === 1 && !this.receipt.celebrated[transitions[0]]) {
       const unitId = transitions[0];
       this.receipt.celebrated[unitId] = true;
-      this.openNotice = '';
+      this.clearNoticeChrome();
       this.celebration = {
         unitId,
         title: this.shortTitle(this.unit(unitId)?.title ?? { en: unitId }),
         replay: false,
       };
     } else if (transitions.length === 1) {
-      this.openNotice = this.zh
-        ? '这个里程碑在变化之后又达成了。撤销后再达成时是否自动庆祝仍未决定，这次不自动播放。'
-        : 'This milestone was reached again after it changed. Whether a later return should celebrate automatically is still open, so nothing plays automatically.';
+      this.showNoticeChrome('milestone-again');
     } else {
-      this.openNotice = this.zh
-        ? '有多个里程碑同时新达成。怎么庆祝仍未决定（Q-M05），这次不自动播放。'
-        : 'More than one milestone was newly reached. How to celebrate them together is still open (Q-M05), so nothing plays automatically.';
+      this.showNoticeChrome('milestones-many');
     }
     this.writeReceipt();
     this.emit();
@@ -955,9 +1088,7 @@ export class CourseSession {
     if (globalIndex < 0) return;
     const backward = globalIndex < this.state.screen;
     if (!backward && !this.canOpen(globalIndex)) {
-      const lead = this.zh ? '那一页还没打开。' : 'That page opens later. ';
-      this.feedbackTone = 'hint';
-      this.feedback = `${lead}${this.lockedMsg(this.firstOpen())}`.trim();
+      this.showFeedbackChrome({ kind: 'blocked-forward' }, 'hint');
       this.emit();
       return;
     }
@@ -1072,9 +1203,7 @@ export class CourseSession {
       ...base,
       supported: false,
       ask: screen.task ? this.text(this.task(screen.task).ask) : this.text(screen.title),
-      unsupportedReason: this.zh
-        ? `这一屏是 ${screen.template} / ${screen.kind}。垂直切片还没有接上这个模板，所以这里不能把它标成完成。`
-        : `This screen is ${screen.template} / ${screen.kind}. The vertical slice does not run this template yet, so it cannot be marked done here.`,
+      unsupportedReason: this.unsupportedReason(screen),
     };
   }
 
@@ -1161,7 +1290,7 @@ export class CourseSession {
         record.q -= 1;
         record.blankAsk = false;
         this.writeCheck(checkScreen.page, record);
-        this.feedback = '';
+        this.clearFeedbackChrome();
         this.save(true);
         this.emit();
         return;
@@ -1209,12 +1338,12 @@ export class CourseSession {
         else if (task?.type === 'build') this.buildBlocked(task);
         else if (task?.type === 'write' || task?.type === 'edit') this.editCheck(task, this.taskKey(screen));
         else {
-          this.feedback = `${this.lockedMsg(index)} ${this.activity()?.unsupportedReason ?? ''}`.trim();
+          this.showFeedbackChrome({ kind: 'locked-screen', index, withUnsupported: true });
           this.emit();
         }
         return;
       }
-      this.feedback = this.lockedMsg(index);
+      this.showFeedbackChrome({ kind: 'locked-screen', index });
       this.emit();
       return;
     }
@@ -1380,8 +1509,7 @@ export class CourseSession {
       if (cellText !== want) {
         taskState.miss = (taskState.miss ?? 0) + 1;
         this.log('set_miss', { task: task.id, cell: cellText });
-        this.feedbackTone = 'incorrect';
-        this.feedback = this.text(task.why);
+        this.setAuthoredFeedback(this.text(task.why), 'incorrect');
         this.save();
         this.emit();
         return;
@@ -1409,8 +1537,7 @@ export class CourseSession {
           ? this.text(this.config.coach.diagnostics.order)
           : '';
       const why = this.text(task.why) || 'Not quite. Read it out loud. Does it make sense?';
-      this.feedbackTone = 'incorrect';
-      this.feedback = [order, why].filter(Boolean).join(' ');
+      this.setAuthoredFeedback([order, why].filter(Boolean).join(' '), 'incorrect');
       taskState.built = [];
       this.save(true);
       this.emit();
@@ -1506,7 +1633,7 @@ export class CourseSession {
     record.q = 0;
     record.view = null;
     record.blankAsk = false;
-    this.feedback = '';
+    this.clearFeedbackChrome();
     this.save(true);
     this.emit();
   }
@@ -1645,18 +1772,12 @@ export class CourseSession {
   private applyStub(pageId: string): void {
     const words = (regionText(this.state.regions[pageId]).match(/[A-Za-z0-9']+/g) ?? []).length;
     if (words < 3) {
-      this.feedbackTone = 'hint';
-      this.feedback = this.zh
-        ? '先再写几个词。这次不算尝试。'
-        : 'Write a little first. This does not count as an attempt.';
+      this.showFeedbackChrome({ kind: 'apply-stub-short' }, 'hint');
       this.log('next_blocked', { reason: 'apply_short' });
       this.emit();
       return;
     }
-    this.feedbackTone = 'neutral';
-    this.feedback = this.zh
-      ? '草稿已留下。第一阶段还没有接入写作评分，所以这次不记尝试，也不会打开下一屏。'
-      : 'Your draft is saved. Phase 1 does not grade this writing yet, so this press does not count an attempt or open the next screen.';
+    this.showFeedbackChrome({ kind: 'apply-stub-long' }, 'neutral');
     this.log('next_blocked', { reason: 'apply_grader_pending' });
     this.emit();
   }
@@ -1667,8 +1788,7 @@ export class CourseSession {
     const record = this.readApply(page.skill);
     const text = this.engine.stripPictures(regionText(this.state.regions[pageId])).trim();
     if (this.analyzer.wordCount(text) < 3) {
-      this.feedbackTone = 'hint';
-      this.feedback = this.zh ? '先写一点，我再来读。' : 'Write a little first. Then I’ll read it.';
+      this.showFeedbackChrome({ kind: 'apply-short' }, 'hint');
       this.log('next_blocked', { reason: 'apply_short' });
       this.emit();
       return;
@@ -1683,8 +1803,7 @@ export class CourseSession {
         checks: [],
       };
       record.history.push({ passed: false, safety: true });
-      this.feedbackTone = 'incorrect';
-      this.feedback = record.result.feedback;
+      this.setAuthoredFeedback(record.result.feedback, 'incorrect');
       this.log('apply_check', { skill: page.skill, passed: false, safety: true });
       this.save(true);
       this.emit();
@@ -1703,14 +1822,16 @@ export class CourseSession {
     record.history.push({ passed: !!graded.passed, safety: false });
     if (graded.passed) this.state.done[pageId] = true;
     const passText = 'Yes. You used it in your own writing.';
-    this.feedbackTone = graded.passed ? 'correct' : 'incorrect';
-    this.feedback = graded.passed
-      ? this.zh && graded.zh
-        ? graded.zh
-        : passText
-      : this.zh && graded.zh
-        ? graded.zh
-        : graded.feedback || 'Nearly there. Read it again and try one more change.';
+    this.setAuthoredFeedback(
+      graded.passed
+        ? this.zh && graded.zh
+          ? graded.zh
+          : passText
+        : this.zh && graded.zh
+          ? graded.zh
+          : graded.feedback || 'Nearly there. Read it again and try one more change.',
+      graded.passed ? 'correct' : 'incorrect',
+    );
     this.log('apply_check', { skill: page.skill, passed: graded.passed, source: graded.source });
     this.save(true);
     this.emit();
@@ -1986,7 +2107,7 @@ export class CourseSession {
     }
     if (record.view != null) {
       record.view = null;
-      this.feedback = '';
+      this.clearFeedbackChrome();
       this.save();
       this.emit();
       return;
@@ -2002,14 +2123,7 @@ export class CourseSession {
       .filter((index) => index > 0);
     if (blank.length && !record.blankAsk) {
       record.blankAsk = true;
-      const list =
-        blank.length === 1
-          ? `Question ${blank[0]} is`
-          : `Questions ${blank.slice(0, -1).join(', ')} and ${blank[blank.length - 1]} are`;
-      this.feedbackTone = 'hint';
-      this.feedback = this.zh
-        ? `还有题没做：${blank.join('、')}。可以回去试一试，也可以直接交。`
-        : `${list} still blank. You can go back and try, or hand it in as it is.`;
+      this.showFeedbackChrome({ kind: 'check-blank', blank }, 'hint');
       this.log('check_blank_warn', { page: page.id, blank });
       this.save(true);
       this.emit();
@@ -2049,15 +2163,15 @@ export class CourseSession {
     if (mastery.passed || record.attempt >= 1) this.state.done[page.id] = true;
     if (!mastery.passed && page.skill) this.checkFailed(page.skill);
     if (mastery.passed) this.offerLessonCelebration();
-    this.feedback = '';
+    this.clearFeedbackChrome();
     this.feedbackTone = 'neutral';
     this.save(true);
     this.emit();
   }
 
   private buildBlocked(task: AlexTask): void {
-    this.feedbackTone = 'hint';
-    this.feedback = 'Build it with the word cards below first.';
+    // Alex Tasks.say passes null for the Chinese line. Leave the English sentence.
+    this.setAuthoredFeedback('Build it with the word cards below first.', 'hint');
     this.log('next_blocked', { task: task.id });
     this.emit();
   }
@@ -2088,8 +2202,10 @@ export class CourseSession {
           ? graded.zh
           : graded.explanation
         : '';
-    this.feedbackTone = 'incorrect';
-    this.feedback = [diagnosisText, explanation].filter(Boolean).join(' ') || 'Not yet. Have another look.';
+    this.setAuthoredFeedback(
+      [diagnosisText, explanation].filter(Boolean).join(' ') || 'Not yet. Have another look.',
+      'incorrect',
+    );
     this.save(true);
     this.emit();
   }
@@ -2110,7 +2226,11 @@ export class CourseSession {
         text,
       );
     }
-    return { correct: false, explanation: 'Not quite yet. Read it again slowly. What is missing?' };
+    return {
+      correct: false,
+      explanation: 'Not quite yet. Read it again slowly. What is missing?',
+      zh: '还不太对。慢慢再读一遍，少了什么？',
+    };
   }
 
   private activePractice(): { task: AlexTask; key: string; inCheck: boolean } | null {
@@ -2379,7 +2499,7 @@ export class CourseSession {
   private go(index: number, back = false): boolean {
     if (index < 0 || index >= this.screens.length) return false;
     if (!back && !this.canOpen(index)) {
-      this.feedback = this.lockedMsg(this.firstOpen());
+      this.showFeedbackChrome({ kind: 'locked-screen', index: this.firstOpen() });
       this.emit();
       return false;
     }
@@ -2387,7 +2507,7 @@ export class CourseSession {
     this.state.page = this.pageIndex(this.screens[index].screen.page);
     this.view = 'lesson';
     this.layoutReviewId = null;
-    this.feedback = '';
+    this.clearFeedbackChrome();
     this.feedbackTone = 'neutral';
     this.log('screen');
     this.save(true);
@@ -2399,14 +2519,7 @@ export class CourseSession {
     const taskState = this.taskState(key);
     const picked = (taskState.picked ?? []).slice();
     if (!picked.length) {
-      this.feedbackTone = 'hint';
-      this.feedback = task.multi
-        ? this.zh
-          ? '先选出答案，我再和你一起检查。'
-          : 'Choose your answers first. Then I’ll check them with you.'
-        : this.zh
-          ? '先选一个答案，我再和你一起检查。'
-          : 'Choose an answer first. Then I’ll check it with you.';
+      this.showFeedbackChrome({ kind: 'pick-empty', multi: !!task.multi }, 'hint');
       this.log('next_blocked');
       this.emit();
       return;
@@ -2451,8 +2564,7 @@ export class CourseSession {
       taskState.wrong = picked.slice();
       taskState.picked = [];
     }
-    this.feedbackTone = 'incorrect';
-    this.feedback = message;
+    this.setAuthoredFeedback(message, 'incorrect');
     this.log('task_try');
     this.save(true);
     this.emit();
@@ -2461,7 +2573,7 @@ export class CourseSession {
   private wordCheck(task: AlexTask, key: string): void {
     const taskState = this.taskState(key);
     if (taskState.sel == null) {
-      this.feedback = this.zh ? '先点句子里的一个词，我再检查。' : 'Tap a word in the sentence first. Then I’ll check it.';
+      this.showFeedbackChrome({ kind: 'tap-empty' });
       this.log('next_blocked');
       this.emit();
       return;
@@ -2481,13 +2593,15 @@ export class CourseSession {
     const note = task.coach?.words?.[word.toLowerCase().replace(/[^a-z']/g, '')];
     taskState.bad = taskState.sel;
     taskState.sel = null;
-    this.feedback = note
-      ? this.zh
-        ? `${note.zh ?? note.en ?? ''} 再试一次。`
-        : `${note.en ?? ''} Which word tells what someone thinks? Try again.`
-      : this.zh
-        ? '你点的不是那个词。哪个词说明作者的想法？再试一次。'
-        : 'The word you tapped isn’t the one. Which word tells what someone thinks? Try again.';
+    this.setAuthoredFeedback(
+      note
+        ? this.zh
+          ? `${note.zh ?? note.en ?? ''} 再试一次。`
+          : `${note.en ?? ''} Which word tells what someone thinks? Try again.`
+        : this.zh
+          ? '你点的不是那个词。哪个词说明作者的想法？再试一次。'
+          : 'The word you tapped isn’t the one. Which word tells what someone thinks? Try again.',
+    );
     this.save(true);
     this.emit();
   }
@@ -2496,15 +2610,16 @@ export class CourseSession {
     const taskState = this.taskState(key);
     taskState.status = status;
     const graded = this.gradedText(task, taskState, status === 'done');
-    this.feedbackTone = status === 'done' ? 'correct' : 'revealed';
-    this.feedback =
+    this.setAuthoredFeedback(
       task.type === 'pick' || (task.type === 'tapword' && status === 'shown' && (task.targets ?? []).length === 1)
         ? graded
         : status === 'done'
           ? this.affirm(this.text(task.ok) || this.text(task.why))
           : this.zh
             ? `答案在这里。${this.text(task.why)}`
-            : `Here is the answer. ${this.text(task.why)}`;
+            : `Here is the answer. ${this.text(task.why)}`,
+      status === 'done' ? 'correct' : 'revealed',
+    );
     this.markPageIfTasksDone(task);
     this.log('task_done');
     this.save(true);
@@ -2674,6 +2789,12 @@ export class CourseSession {
       return this.zh ? `下一节：${this.text(next.step.label)}` : `Next: ${this.text(next.step.label)}`;
     }
     return this.zh ? '下一页' : 'Next';
+  }
+
+  private unsupportedReason(screen: AlexScreen): string {
+    return this.zh
+      ? `这一屏是 ${screen.template} / ${screen.kind}。垂直切片还没有接上这个模板，所以这里不能把它标成完成。`
+      : `This screen is ${screen.template} / ${screen.kind}. The vertical slice does not run this template yet, so it cannot be marked done here.`;
   }
 
   private lockedMsg(index: number): string {

@@ -42,6 +42,7 @@ test('E-01 to lesson 1 check and back', async ({ page }) => {
 
   await page.setViewportSize({ width: 834, height: 1112 });
   await page.getByRole('button', { name: '中文' }).click();
+  await expect(page.getByTestId('locked-note')).toContainText('第 1 课');
   await expect(page.getByRole('heading', { name: /第 2 级/ })).toBeVisible();
   await expect(page.locator('[data-lesson-id="G2-O:1"]')).toContainText('继续');
   await shot('path-834-zh');

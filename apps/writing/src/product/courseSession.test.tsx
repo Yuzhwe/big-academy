@@ -310,6 +310,39 @@ describe('phase 2 lesson 1 flow', () => {
     expect(course.topBar()?.tasks).toHaveLength(8);
   });
 
+  it('rewrites stored chrome when the UI locale changes and leaves a graded line as given', () => {
+    const course = session();
+    expect(course.openLesson('G2-O', 2)).toBe(false);
+    expect(course.message).toMatch(/First finish Lesson 1/);
+    course.toggleLocale();
+    expect(course.message).toMatch(/第 1 课/);
+    expect(course.message).not.toMatch(/First finish/);
+    expect(course.message).not.toMatch(/Lesson 1/);
+    course.dismissMessage();
+    course.toggleLocale();
+    expect(course.message).toBe('');
+
+    expect(course.openLesson('G2-O', 1)).toBe(true);
+    course.navigateLocal(3);
+    expect(course.feedback).toMatch(/That page opens later/);
+    expect(course.feedback).toMatch(/Finish this page first/);
+    course.toggleLocale();
+    expect(course.feedback).toMatch(/那一页还没打开/);
+    expect(course.feedback).toMatch(/先完成这一页/);
+    expect(course.feedback).not.toMatch(/That page opens later/);
+    course.pressPrimary();
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/先选一个答案/);
+    course.toggleLocale();
+    expect(course.feedback).toMatch(/Choose an answer first/);
+    course.pick(0);
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/You chose A/);
+    course.toggleLocale();
+    expect(course.feedback).toMatch(/You chose A/);
+    expect(course.activity()?.pick?.options.map((option) => option.text).join(' ')).toMatch(/Gardens have plants/);
+  });
+
   it('restores the screen, answer, and tries after reload', () => {
     const storage = createMemoryStorage();
     const course = session('', storage);
