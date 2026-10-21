@@ -1,0 +1,6 @@
+.ba-status {box-sizing:border-box;border-radius:var(--ba-writing-coach-message-radius,12px);padding:var(--ba-writing-coach-message-padding,12px);border:1px solid var(--ba-color-warm-4);background:var(--ba-writing-coach-surface-orientation);color:var(--ba-color-content-primary);font:400 var(--ba-type-control-size,16px)/1.5 var(--ba-type-body-family);}
+.ba-status[data-tone="hint"] {background:var(--ba-writing-coach-surface-hint);border-color:var(--ba-color-warning-4);}
+.ba-status[data-tone="warning"] {background:var(--ba-color-warning-1);border-color:var(--ba-color-warning-5);}
+.ba-status[data-tone="correct"] {background:var(--ba-writing-coach-surface-correct);border-color:var(--ba-color-success-5);}
+.ba-status[data-tone="incorrect"] {background:var(--ba-writing-coach-surface-incorrect);border-color:var(--ba-color-danger-5);}
+.ba-status[data-tone="revealed"] {background:var(--ba-writing-coach-surface-revealed);border-color:var(--ba-color-info-5);}
