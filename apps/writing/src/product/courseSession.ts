@@ -56,7 +56,7 @@ export interface AssessmentState {
   responses?: Record<string, Record<string, AssessmentAnswer>>;
   result?: { score:number;total:number;passed:boolean;answers:{id:string;correct:boolean;writing:boolean}[] };
 }
-export interface ApplyState { text:string;checks:number;passed:boolean;moveOn?:boolean;result?:ApplyResult; }
+export interface ApplyState { text:string;checks:number;passed:boolean;moveOn?:boolean;hintLv?:number;result?:ApplyResult; }
 export interface AlexState {
   v: 4;
   screen: number;
@@ -889,7 +889,9 @@ export class CourseSession {
     if (screen.kind === 'apply') {
       const task = this.task(page?.task ?? screen.page);
       const apply = this.applyState(screen.page);
-      return {...base,supported:true,ask:this.text(task.ask),hintAction:apply.passed?null:'hint',
+      const availableHints=task.coach?.hints??[];
+      const hintLv=apply.hintLv??0;
+      return {...base,supported:true,ask:this.text(task.ask),hints:availableHints.slice(0,hintLv).map(h=>this.text(h)),hintAction:apply.passed||apply.moveOn||hintLv>=availableHints.length?null:hintLv>0?'another':'hint',
         writing:{value:apply.text,label:this.zh?'你的主题句':'Your topic sentences',tip:this.text(task.tip),type:'apply',locked:apply.passed||!!apply.moveOn,result:apply.result}};
     }
     if (screen.kind === 'check') {
@@ -1220,6 +1222,18 @@ export class CourseSession {
 
   openHint(): void {
     const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind === 'apply') {
+      const state=this.applyState(screen.page);
+      if(state.passed||state.moveOn)return;
+      const task=this.task(this.pageOf(screen.page)?.task??screen.page);
+      const total=task.coach?.hints?.length??0;
+      if((state.hintLv??0)<total){
+        state.hintLv=(state.hintLv??0)+1;
+        this.log('hint_open',{task:task.id});
+        this.save();this.emit();
+      }
+      return;
+    }
     if (!screen?.task) return;
     const task = this.task(screen.task);
     const taskState = this.taskState(this.taskKey(screen));
