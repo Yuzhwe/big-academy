@@ -11,7 +11,7 @@ export interface LessonWorkspaceProps {
 
 /**
  * BA-WR-002 · paper column and coach column.
- * Previous and Next sit in a lesson-wide footer under both columns, outside Coach.
+ * Previous and the primary action sit at the bottom of the Coach rail.
  * Visual treatment is a candidate Warm Frame. Not validated.
  */
 export function LessonWorkspace({ activity, coach, navigation, navigationLayout = 'pair' }: LessonWorkspaceProps) {
@@ -24,9 +24,9 @@ export function LessonWorkspace({ activity, coach, navigation, navigationLayout 
         <div className="lesson-workspace__coach" data-testid="coach">
           {coach}
         </div>
-      </div>
-      <div className="lesson-workspace__footer" data-testid="lesson-footer" data-layout={navigationLayout} data-span="lesson">
-        {navigation}
+        <div className="lesson-workspace__footer" data-testid="lesson-footer" data-layout={navigationLayout} data-span="rail">
+          {navigation}
+        </div>
       </div>
     </div>
   );

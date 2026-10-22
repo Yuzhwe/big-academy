@@ -188,9 +188,14 @@ describe('course slice UI', () => {
 
     expect(screen.getByRole('heading', { name: /Level 2/ })).toBeInTheDocument();
     expect(screen.getByTestId('level-goal')).toHaveAttribute('data-formula', 'open');
+    expect(document.querySelector('[data-testid="unit-fold"]')).toBeTruthy();
+    expect(document.querySelector('.course-unit ul, .course-unit li')).toBeNull();
+    expect(document.querySelector('.course-unit__goal')?.tagName).toBe('P');
     await user.click(document.querySelector('[data-lesson-focus="G2-O:1"]') as HTMLElement);
 
     expect(screen.getByRole('heading', { name: /Topic sentences/ })).toBeInTheDocument();
+    expect(screen.getByTestId('better-panel')).toHaveAttribute('data-cue', 'pedagogical');
+    expect(screen.getByTestId('better-panel').querySelector('[data-icon-name="check"]')).toBeTruthy();
     expect(screen.getAllByText(/top bun/i).length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: 'Show me another' })).toHaveAttribute('data-kind', 'secondary');
     expect(screen.getByTestId('lesson-footer')).toHaveAttribute('data-layout', 'pair');
@@ -234,7 +239,7 @@ function reach(course: Session, match: (screen: Session['screens'][number]['scre
 }
 
 describe('designer preview seed', () => {
-  it('shows Level 1 and Level 2 lessons completed without writing progress or mastery', () => {
+  it('shows Level 0 and Level 1 lessons completed without writing progress or mastery', () => {
     const storage = createMemoryStorage();
     const course = session('?demo=preview-seed', storage);
     const record = storage.getItem(ALEX_STATE_KEY);
@@ -243,7 +248,7 @@ describe('designer preview seed', () => {
     expect(saved.tasks).toEqual({});
     expect(saved.checks).toEqual({});
     expect(saved.skills).toBeUndefined();
-    for (const levelId of ['L1', 'L2']) {
+    for (const levelId of ['L0', 'L1']) {
       const nodes = course.pathNodes(levelId);
       const lessons = nodes.filter((node) => node.kind === 'lesson');
       const milestones = nodes.filter((node) => node.kind === 'milestone');
@@ -253,30 +258,34 @@ describe('designer preview seed', () => {
       expect(lessons.some((node) => node.lesson?.detail === 'Opens later')).toBe(false);
       expect(milestones.every((node) => node.milestone?.completed)).toBe(true);
     }
+    const live = course.pathNodes('L2').filter((node) => node.kind === 'lesson');
+    expect(live.some((node) => node.lesson?.courseState !== 'done')).toBe(true);
     const l1Intro = course.pathNodes('L1').find((node) => node.kind === 'intro')?.intro ?? '';
     const l1 = course.levelPath.levels.find((level) => level.id === 'L1');
     expect(l1Intro).toBe(`${course.text(l1?.name)}. One step at a time, up to the top.`);
     expect(l1Intro).not.toMatch(/look around|open later|之后才打开|可以先看看/i);
+    const l0 = course.levelPath.levels.find((level) => level.id === 'L0');
+    const l0Intro = course.pathNodes('L0').find((node) => node.kind === 'intro')?.intro ?? '';
+    expect(l0Intro).toBe(`${course.text(l0?.name)}. One step at a time, up to the top.`);
     const l2Intro = course.pathNodes('L2').find((node) => node.kind === 'intro')?.intro ?? '';
     expect(l2Intro).toMatch(/^In Level 2 you learn/);
-    const l0Intro = course.pathNodes('L0').find((node) => node.kind === 'intro')?.intro ?? '';
-    expect(l0Intro).toMatch(/look around/);
-    const earlier = course.pathNodes('L0').filter((node) => node.kind === 'lesson');
-    expect(earlier.some((node) => node.lesson?.courseState !== 'done')).toBe(true);
     expect(storage.getItem(ALEX_STATE_KEY)).toBe(record);
     expect(course.inspect().tasks).toEqual({});
     expect(course.inspect().done).toEqual({});
     expect(course.unitMilestoneDone(course.playUnit(), true)).toBe(false);
-    expect(course.openLesson('G2-O', 2)).toBe(true);
-    expect(course.view).toBe('lesson');
-    expect(course.unitMilestoneDone(course.playUnit(), true)).toBe(false);
+    expect(course.openLesson('G2-O', 2)).toBe(false);
+    const l1Unit = course.pathNodes('L1').find((node) => node.kind === 'unit')?.unit?.id ?? '';
+    expect(course.openLesson(l1Unit, 1)).toBe(true);
+    expect(course.view).toBe('preview');
     expect(course.inspect().done).toEqual({});
     expect(course.inspect().skills).toBeUndefined();
     course.backToPath();
-    course.replayMilestone('G2-O');
-    expect(course.celebration?.unitId).toBe('G2-O');
+    course.switchLevel('L1');
+    course.replayMilestone(l1Unit);
+    expect(course.celebration?.unitId).toBe(l1Unit);
     expect(course.celebration?.replay).toBe(true);
     expect(course.unitMilestoneDone(course.playUnit(), true)).toBe(false);
+    expect(storage.getItem(ALEX_STATE_KEY)).toBe(record);
   });
 });
 
@@ -287,6 +296,10 @@ describe('Lesson 1 screens 5–8', () => {
     reach(course, (screen) => screen.task === 'ss.L2-04');
     render(<CourseApp session={course} />);
     expect(screen.queryByRole('button', { name: /Start again|重新开始/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: '本题词块' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: '观点' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: '标点' })).toBeInTheDocument();
+    expect(screen.getByTestId('lesson-footer')).toHaveAttribute('data-span', 'rail');
     expect(screen.getByTestId('build-bench').textContent).not.toMatch(/…|\.{3}/);
     expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
     expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
@@ -310,6 +323,7 @@ describe('Lesson 1 screens 5–8', () => {
   it('does not count a short Apply, and offers Move on after two failed tries', () => {
     const course = session();
     reach(course, (screen) => screen.kind === 'apply' && screen.page === 'L2-04.apply');
+    expect(course.activity()?.wordGrid?.groups.map((group) => group.label)).toEqual(['Opinion', 'Nouns', 'Adjectives', 'Marks']);
     course.setCanvas('Hi');
     course.pressPrimary();
     expect(course.feedback).toMatch(/Write a little first/);

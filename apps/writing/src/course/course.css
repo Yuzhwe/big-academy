@@ -108,6 +108,10 @@
   font-size: 28px;
 }
 
+.course-app:not([lang='zh-CN']) .course-unit h2 {
+  line-height: 1.15;
+}
+
 /* BA-WR-007 folded sheet. Seam is the F×F diagonal. Decorative only. */
 .course-unit {
   --unit-fold: var(--ba-writing-unit-fold-size, 32px);
@@ -185,6 +189,20 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.course-examples__better {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ba-space-2, 8px);
+  background: var(--ba-color-success-2, #e1f8e9);
+  border-color: var(--ba-color-success-4, #98e3b3);
+  color: var(--ba-color-success-8, #0e6637);
+}
+
+.course-examples__better .ba-icon {
+  flex: none;
+  margin-top: 2px;
 }
 
 .course-words {

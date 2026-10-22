@@ -1,4 +1,4 @@
-/* BA-WR-003 candidate connected tabs. Not Approved. */
+/* BA-WR-003 Approved peach connected sticky tabs and white pills. */
 .word-grid {
   --word-tab: #f3d2bf;
   margin-top: 16px;
@@ -27,6 +27,7 @@
 
 .word-grid__tab[data-selected] {
   background: var(--word-tab);
+  border-radius: 14px 14px 0 0;
   z-index: 1;
   margin-bottom: -1px;
 }

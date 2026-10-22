@@ -28,7 +28,7 @@ export interface WordGridProps {
 /**
  * BA-WR-003 vocabulary palette.
  * Tabs change the visible set only. The parent owns insertion and grading.
- * Connected-tab colors are a candidate, not Approved.
+ * Peach connected sticky tabs and white pills are Approved.
  */
 export function WordGrid({
   groups,
@@ -70,7 +70,7 @@ export function WordGrid({
 
   if (!showTabs) {
     return (
-      <div className="word-grid" data-component="BA-WR-003" data-presentation={presentation} data-visual="candidate" data-tabs="off">
+      <div className="word-grid" data-component="BA-WR-003" data-presentation={presentation} data-visual="approved" data-tabs="off">
         {cards}
       </div>
     );
@@ -81,7 +81,7 @@ export function WordGrid({
       className="word-grid"
       data-component="BA-WR-003"
       data-presentation={presentation}
-      data-visual="candidate"
+      data-visual="approved"
       selectedKey={active}
       onSelectionChange={(key) => onGroupChange?.(String(key))}
     >

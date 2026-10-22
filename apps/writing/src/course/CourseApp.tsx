@@ -1,6 +1,6 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import { useSyncExternalStore } from 'react';
-import { BAButton, BAChoice, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
+import { BAButton, BAChoice, BAIcon, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { LessonWorkspace } from '../components/writing/LessonWorkspace';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
@@ -382,8 +382,11 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
                 </p>
               ) : null}
               {activity.learn.strong ? (
-                <p lang="en">
-                  <span>{activity.learn.strongLabel}</span> {activity.learn.strong}
+                <p className="course-examples__better" lang="en" data-testid="better-panel" data-cue="pedagogical">
+                  <BAIcon name="check" />
+                  <span>
+                    <span>{activity.learn.strongLabel}</span> {activity.learn.strong}
+                  </span>
                 </p>
               ) : null}
             </div>

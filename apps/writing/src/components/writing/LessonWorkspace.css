@@ -3,7 +3,7 @@
   box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--ba-workspace-rail);
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr);
   column-gap: 16px;
   row-gap: 0;
   min-height: 0;
@@ -34,9 +34,8 @@
   margin: 0 16px 16px 0;
   display: flex;
   flex-direction: column;
-  background: var(--ba-paper, #ffffff);
-  border: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
-  border-radius: 16px;
+  background: transparent;
+  border: 0;
 }
 
 .lesson-workspace__coach {
@@ -44,23 +43,37 @@
   min-height: 0;
   overflow: auto;
   padding: 20px 16px;
+  background: var(--ba-paper, #ffffff);
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
+  border-radius: 16px;
 }
 
 .lesson-workspace__footer {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  gap: var(--ba-space-2, 8px);
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: var(--ba-writing-lesson-footer-gap, 8px);
   width: 100%;
   box-sizing: border-box;
-  padding: 12px 16px;
+  margin-top: var(--ba-space-3, 12px);
+  padding: 0;
   background: transparent;
   border: 0;
 }
 
-.lesson-workspace__footer[data-layout='end'] {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.lesson-workspace__footer[data-layout='pair'] > :first-child {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.lesson-workspace__footer[data-layout='pair'] > :last-child {
+  flex: 2 1 0;
+  min-width: 0;
+}
+
+.lesson-workspace__footer[data-layout='end'] > * {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .lesson-workspace__footer .ba-button {
@@ -71,13 +84,14 @@
 
 .lesson-workspace__footer .ba-button__assembly {
   width: 100%;
+  height: var(--ba-writing-lesson-footer-button-height, 70px);
   margin-inline: 0;
 }
 
 @media (max-width: 720px) {
   .lesson-workspace {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(16rem, 1fr) minmax(16rem, 0.8fr) auto;
+    grid-template-rows: minmax(16rem, 1fr) minmax(16rem, 0.8fr);
     height: auto;
     min-height: calc(100dvh - 80px);
   }
@@ -90,9 +104,5 @@
 
   .lesson-workspace__rail {
     grid-row: 2;
-  }
-
-  .lesson-workspace__footer {
-    grid-row: 3;
   }
 }

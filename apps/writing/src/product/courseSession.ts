@@ -213,7 +213,7 @@ export interface ActivityModel {
   };
   canvas?: { text: string; tip: string; label: string };
   wordGrid?: {
-    groups: { id: string; label: string; words: { id: string; text: string; used?: boolean; hint?: boolean }[] }[];
+    groups: { id: string; label: string; words: { id: string; text: string; used?: boolean; hint?: boolean; shake?: boolean }[] }[];
     active: string;
   };
   applyMoveOn?: boolean;
@@ -845,7 +845,7 @@ export class CourseSession {
   }
 
   private showsPreviewSeed(levelId: string): boolean {
-    return this.previewSeed && (levelId === 'L1' || levelId === 'L2');
+    return this.previewSeed && (levelId === 'L0' || levelId === 'L1');
   }
 
   topBar(): TopBarModel | null {
@@ -1413,6 +1413,16 @@ export class CourseSession {
         used.splice(found, 1);
       }
     }
+    const screen = this.screens[this.state.screen]?.screen;
+    const page = screen ? this.pageOf(screen.page) : null;
+    const level = page?.grid?.level && page.grid.level !== 'off' ? page.grid.level : 'chunks';
+    const taskWords = cards.map((card, index) => ({
+      id: `${card.text}-${index}`,
+      text: card.text,
+      used: card.used,
+      hint: card.hint,
+      shake: card.shake,
+    }));
     return {
       build: {
         bench,
@@ -1421,16 +1431,12 @@ export class CourseSession {
         revealed: taskState.status === 'shown' ? task.answer_text : undefined,
         cards,
       },
-      wordGrid: {
-        groups: [{ id: 'set', label: this.zh ? '句组' : 'Sentence set',         words: cards.map((card, index) => ({
-          id: `${card.text}-${index}`,
-          text: card.text,
-          used: card.used,
-          hint: card.hint,
-          shake: card.shake,
-        })) }],
-        active: 'set',
-      },
+      wordGrid: task.in_order
+        ? this.trioGrid(screen ? this.gridKey(screen) : task.id, taskWords, level, task)
+        : {
+            groups: [{ id: 'set', label: this.zh ? '句组' : 'Sentence set', words: taskWords }],
+            active: 'set',
+          },
     };
   }
 
@@ -1441,13 +1447,20 @@ export class CourseSession {
       value: taskState.blanks?.[index] ?? '',
       minWords: blank.min_words,
     }));
+    const page = this.pageOf(this.screens[this.state.screen].screen.page);
+    const level = page?.grid?.level && page.grid.level !== 'off' ? page.grid.level : 'chunks';
     return {
       frame: {
         parts,
         blanks,
         focus: taskState.focusBlank ?? 0,
       },
-      wordGrid: this.wordGrid(this.pageOf(this.screens[this.state.screen].screen.page), task, key),
+      wordGrid: this.trioGrid(
+        key,
+        (task.cells ?? []).map((cell, index) => ({ id: `task-${index}-${this.cellText(cell)}`, text: this.cellText(cell) })),
+        level,
+        task,
+      ),
     };
   }
 
@@ -1935,6 +1948,29 @@ export class CourseSession {
     };
     this.state.checks[screen.page] = fresh;
     return fresh;
+  }
+
+  private trioGrid(
+    key: string,
+    taskWords: { id: string; text: string; used?: boolean; hint?: boolean; shake?: boolean }[],
+    level: string,
+    task: AlexTask,
+  ): NonNullable<ActivityModel['wordGrid']> {
+    const labels = { task: '本题词块', opinion: '观点', marks: '标点' } as const;
+    const ids = ['task', 'opinion', 'marks'] as const;
+    const saved = this.state.grid.tab[key];
+    const active = ids.some((id) => id === saved) ? saved : 'task';
+    return {
+      active,
+      groups: ids.map((id) => ({
+        id,
+        label: labels[id],
+        words:
+          id === 'task'
+            ? taskWords
+            : this.gridWords(id, task, level).map((word, index) => ({ id: `${id}-${index}-${word}`, text: word })),
+      })),
+    };
   }
 
   private wordGrid(page: AlexPage | null, task: AlexTask | null, key: string): ActivityModel['wordGrid'] {
