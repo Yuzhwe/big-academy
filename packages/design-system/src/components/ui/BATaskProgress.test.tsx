@@ -26,6 +26,8 @@ describe('BATaskProgress', () => {
       <BATaskProgress tasks={tasks} activeIndex={2} canOpen={() => true} locale="en" />,
     );
     expect(screen.getByRole('button', { name: 'Task 1: Learn, done' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Task 1: Learn, done' }).querySelector('.ba-task-progress__digit')).toHaveTextContent('1');
+    expect(screen.getByRole('button', { name: 'Task 5: Check, locked' }).querySelector('.ba-task-progress__digit')).toHaveTextContent('5');
     expect(screen.getByRole('button', { name: 'Task 2: Find the opinion word, skipped' })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Task 3: Opinion or fact?, current' })).toHaveAttribute(
       'aria-current',

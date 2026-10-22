@@ -17,7 +17,7 @@ Writing v1 target: **L2/G2-O Lesson 1, eight Activity Screens**, E-01 Staircase 
 - Product Owner: Writing curriculum, grading, completion and learning rules.
 - AI Agents: implement, test, provide reproducible review evidence and open PRs.
 - Never use or modify RaoJing414 repositories.
-- Preserve approved **A — Warm Frame + White Canvas** and A independent-platform diagonal Staircase.
+- Preserve approved **A — Warm Frame + White Canvas** and the separate-platform diagonal Staircase on the v2-terraces landscape.
 - React Aria Components provide accessible interaction foundation; shared Big Academy components own reusable visual language.
 - Numeric and semantic values belong in shared CSS Tokens, with approved Primitive → Semantic → optional Component hierarchy.
 - English heading/numeral: Dosis ExtraBold 800; English body Jost; Chinese heading Douyin; Chinese body Noto Sans SC; Iconoir is standard UI icon library.

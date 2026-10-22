@@ -108,6 +108,48 @@
   font-size: 28px;
 }
 
+.course-app:not([lang='zh-CN']) .course-unit h2 {
+  line-height: 1.15;
+}
+
+/* BA-WR-007 folded sheet. Seam is the F×F diagonal. Decorative only. */
+.course-unit {
+  --unit-fold: var(--ba-writing-unit-fold-size, 32px);
+  --unit-radius: 16px;
+  position: relative;
+  background: var(--ba-writing-unit-paper-surface, #fff9f2);
+  border-color: var(--ba-writing-unit-paper-border, #dcc3ab);
+  border-radius: var(--unit-radius);
+  padding-right: var(--unit-fold);
+}
+.course-unit__fold {
+  position: absolute;
+  top: calc(var(--ba-border-weight, 0.5px) * -1);
+  right: calc(var(--ba-border-weight, 0.5px) * -1);
+  width: calc(var(--unit-fold) + var(--ba-border-weight, 0.5px));
+  height: calc(var(--unit-fold) + var(--ba-border-weight, 0.5px));
+  overflow: visible;
+  pointer-events: none;
+}
+.course-unit__fold-under {
+  fill: var(--ba-writing-unit-fold-under, #f8f1ea);
+}
+.course-unit__fold-flap {
+  filter: drop-shadow(var(--ba-writing-unit-fold-shadow, 0 2px 4px rgba(71, 44, 34, 0.12)));
+}
+.course-unit__meta,
+.course-unit__goal {
+  margin: 0;
+  font-size: var(--ba-writing-description-font-size, 16px);
+  line-height: 1.4;
+}
+.course-unit__goals {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
 .course-nodes {
   list-style: none;
   margin: 0;
@@ -149,44 +191,18 @@
   text-transform: uppercase;
 }
 
-.course-choices {
-  display: grid;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.course-choice {
+.course-examples__better {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 44px;
-  padding: 10px 12px;
-  border: var(--ba-border-weight, 0.5px) solid var(--ba-brand-dark, #133547);
-  border-radius: 12px;
-  background: var(--ba-paper, #ffffff);
-  color: var(--ba-brand-dark, #133547);
-  cursor: pointer;
+  align-items: flex-start;
+  gap: var(--ba-space-2, 8px);
+  background: var(--ba-color-success-2, #e1f8e9);
+  border-color: var(--ba-color-success-4, #98e3b3);
+  color: var(--ba-color-success-8, #0e6637);
 }
 
-.course-choice[data-selected='true'],
-.course-choice[data-selected] {
-  border-color: var(--ba-writing-accent, #b25415);
-  box-shadow: inset 0 0 0 1px var(--ba-writing-accent, #b25415);
-}
-
-.course-choice[data-wrong='true'] {
-  border-color: #9b4f36;
-}
-
-.course-choice[data-focus-visible='true'] {
-  outline: 2px solid var(--ba-brand-dark, #133547);
-  outline-offset: 2px;
-}
-
-.course-choice__letter {
-  font-family: "Dosis", "Arial Narrow", sans-serif;
-  font-weight: 800;
-  font-size: 20px;
+.course-examples__better .ba-icon {
+  flex: none;
+  margin-top: 2px;
 }
 
 .course-words {
@@ -216,15 +232,33 @@
   border-color: #9b4f36;
 }
 
+.course-word[data-revealed='true'] {
+  box-shadow: inset 0 0 0 2px #14ae5c;
+}
+
 .course-word:focus-visible {
   outline: 2px solid var(--ba-brand-dark, #133547);
   outline-offset: 2px;
 }
 
 .course-feedback {
+  margin: 12px 0 0;
   padding: 12px;
   border-radius: 12px;
-  background: color-mix(in srgb, var(--ba-brand-dark, #133547) 6%, var(--ba-paper, #ffffff));
+  background: var(--ba-paper, #ffffff);
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-choice-border, #c9b8b2);
+}
+
+.course-feedback[data-outcome='correct'] {
+  border-color: var(--ba-success, #14ae5c);
+}
+
+.course-bench__blank {
+  display: inline-block;
+  width: var(--ba-space-12, 48px);
+  margin-inline: var(--ba-space-1, 4px);
+  border-bottom: var(--ba-border-weight, 0.5px) solid currentColor;
+  vertical-align: baseline;
 }
 
 .course-preview {
@@ -312,4 +346,143 @@
 .course-app[lang='zh-CN'] .course-lesson .lesson-topbar__name {
   font-family: var(--ba-font-zh-title);
   font-weight: 700;
+}
+
+.course-bench,
+.course-revealed,
+.course-frame {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--ba-paper, #ffffff);
+  color: var(--ba-brand-dark, #133547);
+}
+
+.course-frame input {
+  min-width: 8ch;
+  margin: 0 4px;
+  padding: 6px 8px;
+  border: 1px solid var(--ba-choice-border, #c9b8b2);
+  border-radius: 12px;
+  font: inherit;
+  color: inherit;
+}
+
+.course-canvas {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.course-canvas textarea {
+  min-height: 140px;
+  padding: 12px;
+  border: 1px solid var(--ba-choice-border, #c9b8b2);
+  border-radius: 16px;
+  font: inherit;
+  color: var(--ba-brand-dark, #133547);
+  background: var(--ba-paper, #ffffff);
+}
+
+.course-check {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.course-check__number {
+  margin: 0;
+  font-family: var(--ba-font-heading-en, "Dosis", sans-serif);
+  font-weight: 800;
+  font-size: 64px;
+  line-height: 1;
+}
+
+.course-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.course-dot {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 2px solid var(--ba-brand-dark, #133547);
+  border-radius: 999px;
+  background: transparent;
+}
+
+.course-dot[data-answered='true'] {
+  background: var(--ba-brand-dark, #133547);
+}
+
+.course-dot[aria-current='true'] {
+  outline: 2px solid var(--ba-brand-dark, #133547);
+  outline-offset: 3px;
+}
+
+.course-results ol {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.course-results button {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  min-height: 50px;
+  padding: 10px 12px;
+  border: 1px solid var(--ba-choice-border, #c9b8b2);
+  border-radius: 16px;
+  background: var(--ba-paper, #ffffff);
+  color: inherit;
+  text-align: left;
+  font: inherit;
+}
+
+.course-practice {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: var(--ba-paper, #ffffff);
+  color: var(--ba-brand-dark, #133547);
+  box-shadow: 0 8px 24px rgba(19, 53, 71, 0.16);
+  pointer-events: none;
+}
+
+.course-practice button {
+  pointer-events: auto;
+  min-height: 36px;
+}
+
+.course-practice__sparks {
+  display: flex;
+  gap: 3px;
+}
+
+.course-practice__sparks i {
+  width: 6px;
+  height: 10px;
+  background: #14ae5c;
+  animation: course-spark 700ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-practice__sparks {
+    display: none;
+  }
+}
+
+@keyframes course-spark {
+  from { transform: translateY(6px) scale(0.6); opacity: 0; }
+  to { transform: translateY(-8px) scale(1); opacity: 1; }
 }

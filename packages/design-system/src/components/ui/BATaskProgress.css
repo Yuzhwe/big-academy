@@ -53,6 +53,7 @@
 }
 
 .ba-task-progress__marker {
+  position: relative;
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -114,9 +115,28 @@
   outline-offset: 2px;
 }
 
-.ba-task-progress__icon {
+.ba-task-progress__badge {
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  display: grid;
+  place-items: center;
   width: 16px;
   height: 16px;
+  border-radius: 50%;
+  background: var(--ba-color-surface-canvas, #ffffff);
+  color: var(--ba-color-content-primary, #133547);
+  box-shadow: 0 0 0 1px var(--ba-control-border, #133547);
+  transform: translateX(-50%);
+}
+
+.ba-task-progress__button[data-state='done'] .ba-task-progress__badge {
+  color: var(--ba-success, #14ae5c);
+}
+
+.ba-task-progress__icon {
+  width: 12px;
+  height: 12px;
   display: block;
 }
 

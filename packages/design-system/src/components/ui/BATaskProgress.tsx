@@ -16,9 +16,21 @@ export interface BATaskProgressProps {
 }
 
 function Marker({ status, number }: { status: TaskProgressItem['status']; number: number }) {
-  if (status === 'done') return <BAIcon name="check" size={16} className="ba-task-progress__icon" />;
-  if (status === 'locked') return <BAIcon name="lock" size={16} className="ba-task-progress__icon" />;
-  return <span>{number}</span>;
+  return (
+    <>
+      <span className="ba-task-progress__digit">{number}</span>
+      {status === 'done' ? (
+        <span className="ba-task-progress__badge" data-badge="check">
+          <BAIcon name="check" size={12} className="ba-task-progress__icon" />
+        </span>
+      ) : null}
+      {status === 'locked' ? (
+        <span className="ba-task-progress__badge" data-badge="lock">
+          <BAIcon name="lock" size={12} className="ba-task-progress__icon" />
+        </span>
+      ) : null}
+    </>
+  );
 }
 
 /**

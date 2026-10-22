@@ -43,3 +43,8 @@ export const CoachOverflow: Story = {
   args: { activity: 'Paper', coach: 'Coach', navigation: 'Footer' },
   render: () => <Frame coach="A long coach note stays inside the rail" />,
 };
+
+export const CoachRailNavBottomRight: Story = {
+  args: { activity: 'Paper', coach: 'Coach', navigation: 'Footer' },
+  render: () => <Frame coach="Previous and the primary action sit under the coach" />,
+};

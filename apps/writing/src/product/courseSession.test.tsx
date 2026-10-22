@@ -188,14 +188,25 @@ describe('course slice UI', () => {
 
     expect(screen.getByRole('heading', { name: /Level 2/ })).toBeInTheDocument();
     expect(screen.getByTestId('level-goal')).toHaveAttribute('data-formula', 'open');
+    expect(document.querySelector('[data-testid="unit-fold"]')).toBeTruthy();
+    expect(document.querySelector('.course-unit ul, .course-unit li')).toBeNull();
+    expect(document.querySelector('.course-unit__goal')?.tagName).toBe('P');
     await user.click(document.querySelector('[data-lesson-focus="G2-O:1"]') as HTMLElement);
 
     expect(screen.getByRole('heading', { name: /Topic sentences/ })).toBeInTheDocument();
-    expect(screen.getByText(/top bun/i)).toBeInTheDocument();
+    expect(screen.getByTestId('better-panel')).toHaveAttribute('data-cue', 'pedagogical');
+    expect(screen.getByTestId('better-panel').querySelector('[data-icon-name="check"]')).toBeTruthy();
+    expect(screen.getAllByText(/top bun/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: 'Show me another' })).toHaveAttribute('data-kind', 'secondary');
+    expect(screen.getByTestId('lesson-footer')).toHaveAttribute('data-layout', 'pair');
+    expect(screen.getByRole('button', { name: 'Next' })).toHaveAttribute('data-size', '70');
     await user.click(screen.getByRole('button', { name: 'Next' }));
     await user.click(screen.getByRole('radio', { name: /Our school should have a garden/ }));
     await user.click(screen.getByRole('button', { name: 'Check' }));
     expect(screen.getByTestId('feedback')).toHaveTextContent(/Right\. You chose B/);
+    expect(screen.getByTestId('feedback')).toHaveAttribute('data-outcome', 'correct');
+    expect(screen.getByTestId('practice-burst')).toHaveAttribute('data-preset', 'ribbons-explosions');
+    expect(screen.getByTestId('practice-burst')).toHaveAttribute('data-lesson', 'false');
 
     await user.click(screen.getByRole('button', { name: 'Back to my path' }));
     const lessonOne = document.querySelector('[data-lesson-id="G2-O:1"]');
@@ -206,5 +217,146 @@ describe('course slice UI', () => {
     expect(screen.getByTestId('locked-note')).toHaveTextContent(/Lesson 1/);
     expect(screen.getByRole('heading', { name: /Level 2/ })).toBeInTheDocument();
     expect(course.inspect().screen).toBe(1);
+  });
+});
+
+function reach(course: Session, match: (screen: Session['screens'][number]['screen']) => boolean) {
+  const target = course.screens.findIndex((ref) => match(ref.screen));
+  const state = course.inspect();
+  for (let index = 0; index < target; index += 1) {
+    const screenRef = course.screens[index].screen;
+    if (screenRef.kind === 'task' || screenRef.kind === 'model_task') {
+      state.tasks[`${screenRef.page}:${screenRef.task}`] = { tries: 1, status: 'done' };
+    } else if (screenRef.kind === 'apply' || screenRef.kind === 'check') {
+      state.done[screenRef.page] = true;
+    } else {
+      state.seen[screenRef.id] = true;
+    }
+  }
+  state.screen = target;
+  expect(course.openLesson('G2-O', 1)).toBe(true);
+  expect(course.inspect().screen).toBe(target);
+}
+
+describe('designer preview seed', () => {
+  it('shows Level 0 and Level 1 lessons completed without writing progress or mastery', () => {
+    const storage = createMemoryStorage();
+    const course = session('?demo=preview-seed', storage);
+    const record = storage.getItem(ALEX_STATE_KEY);
+    const saved = JSON.parse(record ?? '{}') as { done: Record<string, boolean>; tasks: Record<string, unknown>; checks: Record<string, unknown>; skills?: Record<string, string> };
+    expect(saved.done).toEqual({});
+    expect(saved.tasks).toEqual({});
+    expect(saved.checks).toEqual({});
+    expect(saved.skills).toBeUndefined();
+    for (const levelId of ['L0', 'L1']) {
+      const nodes = course.pathNodes(levelId);
+      const lessons = nodes.filter((node) => node.kind === 'lesson');
+      const milestones = nodes.filter((node) => node.kind === 'milestone');
+      expect(lessons.length).toBeGreaterThan(0);
+      expect(lessons.every((node) => node.lesson?.courseState === 'done' && node.lesson.action === 'review')).toBe(true);
+      expect(lessons.every((node) => node.lesson?.detail?.startsWith('Done'))).toBe(true);
+      expect(lessons.some((node) => node.lesson?.detail === 'Opens later')).toBe(false);
+      expect(milestones.every((node) => node.milestone?.completed)).toBe(true);
+    }
+    const live = course.pathNodes('L2').filter((node) => node.kind === 'lesson');
+    expect(live.some((node) => node.lesson?.courseState !== 'done')).toBe(true);
+    const l1Intro = course.pathNodes('L1').find((node) => node.kind === 'intro')?.intro ?? '';
+    const l1 = course.levelPath.levels.find((level) => level.id === 'L1');
+    expect(l1Intro).toBe(`${course.text(l1?.name)}. One step at a time, up to the top.`);
+    expect(l1Intro).not.toMatch(/look around|open later|之后才打开|可以先看看/i);
+    const l0 = course.levelPath.levels.find((level) => level.id === 'L0');
+    const l0Intro = course.pathNodes('L0').find((node) => node.kind === 'intro')?.intro ?? '';
+    expect(l0Intro).toBe(`${course.text(l0?.name)}. One step at a time, up to the top.`);
+    const l2Intro = course.pathNodes('L2').find((node) => node.kind === 'intro')?.intro ?? '';
+    expect(l2Intro).toMatch(/^In Level 2 you learn/);
+    expect(storage.getItem(ALEX_STATE_KEY)).toBe(record);
+    expect(course.inspect().tasks).toEqual({});
+    expect(course.inspect().done).toEqual({});
+    expect(course.unitMilestoneDone(course.playUnit(), true)).toBe(false);
+    expect(course.openLesson('G2-O', 2)).toBe(false);
+    const l1Unit = course.pathNodes('L1').find((node) => node.kind === 'unit')?.unit?.id ?? '';
+    expect(course.openLesson(l1Unit, 1)).toBe(true);
+    expect(course.view).toBe('preview');
+    expect(course.inspect().done).toEqual({});
+    expect(course.inspect().skills).toBeUndefined();
+    course.backToPath();
+    course.switchLevel('L1');
+    course.replayMilestone(l1Unit);
+    expect(course.celebration?.unitId).toBe(l1Unit);
+    expect(course.celebration?.replay).toBe(true);
+    expect(course.unitMilestoneDone(course.playUnit(), true)).toBe(false);
+    expect(storage.getItem(ALEX_STATE_KEY)).toBe(record);
+  });
+});
+
+describe('Lesson 1 screens 5–8', () => {
+  it('shows one word hint after two wrong taps and keeps the placed word', async () => {
+    const user = userEvent.setup();
+    const course = session();
+    reach(course, (screen) => screen.task === 'ss.L2-04');
+    render(<CourseApp session={course} />);
+    expect(screen.queryByRole('button', { name: /Start again|重新开始/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: '本题词块' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: '观点' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: '标点' })).toBeInTheDocument();
+    expect(screen.getByTestId('lesson-footer')).toHaveAttribute('data-span', 'rail');
+    expect(screen.getByTestId('build-bench').textContent).not.toMatch(/…|\.{3}/);
+    expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
+    expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
+    const garden = screen.getByRole('button', { name: 'garden' });
+    await user.click(garden);
+    expect(screen.getByRole('button', { name: 'garden' })).not.toHaveAttribute('data-hint', 'true');
+    expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
+    await user.click(screen.getByRole('button', { name: 'garden' }));
+    expect(screen.getByRole('button', { name: 'garden' })).toHaveAttribute('data-hint', 'true');
+    expect(screen.getByRole('button', { name: 'school' })).not.toHaveAttribute('data-hint', 'true');
+    expect(screen.getByTestId('feedback')).toHaveAttribute('data-outcome', 'wrong');
+    await user.click(screen.getByRole('button', { name: 'our' }));
+    expect(screen.getByTestId('bench-text')).toHaveTextContent(/our/i);
+    expect(screen.getAllByTestId('bench-blank')).toHaveLength(10);
+    expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.wrongTaps?.garden).toBe(2);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['our']);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+  });
+
+  it('does not count a short Apply, and offers Move on after two failed tries', () => {
+    const course = session();
+    reach(course, (screen) => screen.kind === 'apply' && screen.page === 'L2-04.apply');
+    expect(course.activity()?.wordGrid?.groups.map((group) => group.label)).toEqual(['Opinion', 'Nouns', 'Adjectives', 'Marks']);
+    course.setCanvas('Hi');
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/Write a little first/);
+    expect(course.inspect().applies['L2-04']?.tries ?? 0).toBe(0);
+    course.setCanvas('Hello there friend');
+    course.pressPrimary();
+    course.setCanvas('Hello there again');
+    course.pressPrimary();
+    expect(course.inspect().applies['L2-04']?.tries).toBe(2);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    expect(course.activity()?.applyMoveOn).toBe(true);
+    course.moveOn();
+    expect(course.screenDone(course.inspect().screen)).toBe(true);
+    expect(course.inspect().applies['L2-04']?.passed).toBe(false);
+  });
+
+  it('keeps the first failed check closed and completes the second hand-in without a pass', () => {
+    const course = session();
+    reach(course, (screen) => screen.kind === 'check' && screen.page === 'L2-04.check');
+    for (let step = 0; step < 3; step += 1) course.pressPrimary();
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/still blank/);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/Not yet/);
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+    expect(course.inspect().checks['L2-04.check']?.passed).toBe(false);
+    course.pressPrimary();
+    for (let step = 0; step < 3; step += 1) course.pressPrimary();
+    course.pressPrimary();
+    course.pressPrimary();
+    expect(course.screenDone(course.inspect().screen)).toBe(true);
+    expect(course.inspect().checks['L2-04.check']?.passed).toBe(false);
+    expect(JSON.stringify(course.inspect())).not.toContain('celebrated');
   });
 });

@@ -9,7 +9,7 @@
   min-height: 80px;
   padding: 8px 16px;
   background: var(--ba-surface-warm, #fef9ef);
-  border-bottom: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
+  border-bottom: 0;
   color: var(--ba-brand-dark, #133547);
   font-family: var(--ba-font-sans, sans-serif);
   container-type: inline-size;

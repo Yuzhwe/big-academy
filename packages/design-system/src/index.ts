@@ -16,3 +16,6 @@ export type { BASegmentedControlProps, BASegmentOption, BASegmentSize } from './
 
 export { BATabs, BATabList, BATabPanel } from './components/ui/BATabs';
 export type { BATabOption, BATabsProps, BATabListProps } from './components/ui/BATabs';
+
+export { BAChoice, choiceVisual } from './components/ui/BAChoice';
+export type { BAChoiceProps, ChoiceOption, ChoiceFeedback, ChoiceVisualState } from './components/ui/BAChoice';

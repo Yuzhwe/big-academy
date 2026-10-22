@@ -1,20 +1,20 @@
 {
-  "registryVersion": "0.2.0",
+  "registryVersion": "0.4.0-r3",
   "project": "Big Academy Writing (pilot)",
   "status": "pilot-in-review",
   "sourceOfTruth": {
-    "product": "apps/writing/PRODUCT.md — only current Writing product rules, screen data and state/navigation contracts",
-    "design": "/DESIGN.md — only current design rules, including complete spacing/radius guidance and activity indicator visual system; tokens.css stores executable values",
-    "components": "this registry maps to code and interactive stories when implemented"
+    "product": "apps/writing/PRODUCT.md (v0.4 R3 current behavior)",
+    "design": "/DESIGN.md (v0.6 R3 current visual)",
+    "tokens": "packages/design-system/src/tokens.css (status and lesson-platform candidates; path art is v2-terraces)"
   },
   "components": [
     {
       "id": "BA-UI-001",
       "name": "BAButton",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "figma-v2-candidate-implementation",
+      "visualStatus": "pending-review",
       "implementation": "packages/design-system/src/components/ui/BAButton.tsx",
       "story": "packages/design-system/src/components/ui/BAButton.stories.tsx",
       "props": {
@@ -48,7 +48,11 @@
       "requirements": [
         "Keyboard/space/enter",
         "Touch >=44px",
-        "No motion when reduced"
+        "No motion when reduced",
+        "70px height for Writing Lesson Card CTA and Lesson Footer action pair, scoped variants; don't migrate all shared buttons",
+        "Secondary tone required for Coach Hint and Show me another",
+        "Reuse actual shared BAButton for all Writing Lesson CTAs, top Back and Footer actions; never replace with plain custom button",
+        "Shared click scale: hover 1.02, pressed 0.95, 200ms cubic-bezier(.2,0,0,1). Reduced motion does not scale. Same scale as other clickable controls in DESIGN.md section 7"
       ],
       "requiredStories": [
         "Default",
@@ -56,7 +60,11 @@
         "Disabled",
         "Busy",
         "FigmaV2ButtonMatrix",
-        "FigmaV2IconAndStates"
+        "FigmaV2IconAndStates",
+        "WritingLessonCTA70",
+        "WritingFooterAction70",
+        "CoachSecondary",
+        "WritingSharedButtonHoverPressed"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
@@ -66,7 +74,7 @@
       "id": "BA-UI-002",
       "name": "BATabs",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BATabs.tsx",
       "story": "packages/design-system/src/components/ui/BATabs.stories.tsx",
@@ -103,7 +111,7 @@
         "KeyboardFocus"
       ],
       "figma": "Design decision 2026-10-20: visual style same as Figma Segmented Control 806:3",
-      "runtimeEvidence": "apps/writing/e2e/staircase-ab.spec.ts",
+      "runtimeEvidence": null,
       "visualStatus": "figma-segmented-parity-candidate",
       "notes": "React Aria Tabs/TabList/Tab/TabPanel semantics; same selection geometry and CSS as segmented, no RadioGroup. Styling parity is user-approved direction; exact browser visual review pending."
     },
@@ -111,8 +119,8 @@
       "id": "BA-UI-003",
       "name": "BAChoice",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
-      "status": "planned",
+      "contractVersion": "0.4.0-r3",
+      "status": "implemented",
       "implementation": "packages/design-system/src/components/ui/BAChoice.tsx",
       "story": "packages/design-system/src/components/ui/BAChoice.stories.tsx",
       "props": {
@@ -125,32 +133,138 @@
         "onChange": "(keys) => void"
       },
       "states": [
-        "idle",
+        "default",
         "selected",
         "correct",
+        "correctUnselected",
         "wrong",
         "dim",
-        "disabled"
+        "disabled",
+        "focus-visible"
       ],
+      "aliases": {
+        "idle": "default",
+        "shown": "correctUnselected"
+      },
       "layoutOwner": "Choice owns option internals, content area owns column width",
       "requirements": [
         "Use React Aria radio/checkbox semantics per task",
-        "No scoring in component"
+        "No scoring in component",
+        "Option row radius 24px for short and long copy",
+        "Leading 36x36 status icon, 4px gap, text block padding 8px, letter-to-body gap 12px, outer padding 4px",
+        "Letter Dosis ExtraBold 800 18/20 nowrap; body Jost Medium 18px line-height 1.1",
+        "Min-height stays 50px; one-line composition is about 46px; wrapped rows grow and stay fully visible",
+        "Row and text align flex-start so the icon stays with the first line",
+        "Before Check a row is default or selected only. After Check, the picked correct option is correct (green fill #14AE5C, leading check); a correct option the learner did not pick is correctUnselected (green outline #14AE5C, leading check, no solid green disc); a wrong option is wrong (fill #9B4F36, X). dim is graded chrome at opacity 0.4. disabled is a separate non-interactive state",
+        "default 默认: white, light border #C9B8B2, empty circle. selected 选中: selected fill #9B4F36 and a ring. correct 正确已选: green fill #14AE5C and a leading check. correctUnselected 正确未选: green outline #14AE5C and a leading check, no solid green disc. wrong 错误: fill #9B4F36 and an X. dim 变淡: graded chrome at opacity 0.4. #9B4F36 on selected and wrong is the selected fill, separate from the danger role of --ba-error. Aliases: idle is default, shown is correctUnselected",
+        "Visible row is the letter, the body, and the leading status icon. correct and correctUnselected use the leading check only. The accessible name carries the state",
+        "Border 1px solid",
+        "Hover scale 1.02 and pressed scale 0.95, the same scale as the BAButton CTA. Reduced motion updates state immediately and does not scale",
+        "Keep the focus ring on solid fills. A non-interactive option uses dim or the existing disabled treatment",
+        "Tapword reuses choice state meanings and does not take this option-row anatomy"
       ],
       "requiredStories": [
         "Single",
         "Multiple",
         "WrongRetry",
-        "CorrectDim"
+        "CorrectDim",
+        "ChoiceLongWrapped",
+        "ChoiceSelectedBeforeCheck",
+        "ChoiceCorrectFilled",
+        "ChoiceCorrectUnselected",
+        "ChoiceWrongFilled",
+        "ChoiceDimmed",
+        "TapwordTokens"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": null,
+      "visualStatus": "six-state mapping, 1px border, and 1.02/0.95 click scale locked",
+      "visual": {
+        "status": "locked",
+        "approved": false,
+        "authority": "DESIGN.md section Writing Choice option, BA-UI-003 / BAChoice",
+        "radiusPx": 24,
+        "sameRadiusForShortAndLong": true,
+        "border": "1px solid",
+        "hoverScale": 1.02,
+        "pressedScale": 0.95,
+        "reducedMotion": "immediate state, no scale",
+        "visibleRow": "letter, option body, leading status icon; no state-copy text; accessible name is separate from visible chrome",
+        "overflow": "clip content; keep focus-visible ring",
+        "width": "fill parent; do not hardcode 500",
+        "minHeightPx": 50,
+        "shortRowReferencePx": 46,
+        "longRowReferencePx": 106,
+        "outerPaddingPx": 4,
+        "iconPx": 36,
+        "iconToTextGapPx": 4,
+        "textPaddingPx": 8,
+        "letterToBodyGapPx": 12,
+        "alignment": "flex-start; icon top-aligned with the first line",
+        "letter": "Dosis ExtraBold 800, 18px, line-height 20px, nowrap",
+        "body": "Jost Medium 500, 18px, line-height 1.1, wraps",
+        "dimOpacity": 0.4,
+        "states": {
+          "default": {
+            "name": "默认",
+            "background": "#FFFFFF",
+            "border": "#C9B8B2",
+            "text": "#133547",
+            "icon": "empty circle, stroke about #C9B8B2, no fill"
+          },
+          "correct": {
+            "name": "正确已选",
+            "when": "after Check, the option the learner picked that is correct",
+            "background": "#14AE5C",
+            "border": "#FFFFFF",
+            "text": "#FFFFFF",
+            "icon": "leading check"
+          },
+          "correctUnselected": {
+            "name": "正确未选",
+            "alias": "shown",
+            "when": "after Check, a correct option the learner did not pick",
+            "background": "#FFFFFF",
+            "border": "#14AE5C",
+            "text": "#133547",
+            "icon": "leading check",
+            "treatment": "green outline, no solid green disc"
+          },
+          "selected": {
+            "name": "选中",
+            "when": "before Check",
+            "background": "#9B4F36",
+            "fillRole": "selected fill",
+            "border": "#FFFFFF",
+            "text": "#FFFFFF",
+            "icon": "ring"
+          },
+          "wrong": {
+            "name": "错误",
+            "when": "after Check",
+            "background": "#9B4F36",
+            "fillRole": "selected fill",
+            "border": "#FFFFFF",
+            "text": "#FFFFFF",
+            "icon": "X"
+          },
+          "dim": {
+            "name": "变淡",
+            "opacity": 0.4,
+            "chrome": "graded"
+          },
+          "disabled": {
+            "role": "separate non-interactive state"
+          }
+        }
+      },
+      "notes": "Canonical states: default, selected, correct, correctUnselected, wrong, dim. Aliases: idle is default, shown is correctUnselected. selected and wrong use fill #9B4F36 as the selected fill, separate from the danger role of --ba-error. correct is green fill #14AE5C with a leading check. correctUnselected is a green outline #14AE5C with a leading check and no solid green disc. dim is graded chrome at opacity 0.4. disabled is a separate non-interactive state. Before Check a row is default or selected. The row shows the letter, the body, and the leading icon. Border is 1px. Hover 1.02 and pressed 0.95 match the BAButton CTA. Reduced motion does not scale. One-line and wrapped rows use align-items flex-start. Grading and Coach feedback stay in PRODUCT.md."
     },
     {
       "id": "BA-UI-004",
       "name": "BAField",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "planned",
       "implementation": "packages/design-system/src/components/ui/BAField.tsx",
       "story": "packages/design-system/src/components/ui/BAField.stories.tsx",
@@ -190,7 +304,7 @@
       "id": "BA-UI-005",
       "name": "BAOverlay",
       "kind": "primitive",
-      "contractVersion": "0.2.0",
+      "contractVersion": "0.4.0-r3",
       "status": "planned",
       "implementation": "packages/design-system/src/components/ui/BAOverlay.tsx",
       "story": "packages/design-system/src/components/ui/BAOverlay.stories.tsx",
@@ -228,7 +342,7 @@
       "id": "BA-UI-006",
       "name": "BATaskProgress",
       "kind": "primitive",
-      "contractVersion": "0.2.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "in-review",
       "implementation": "packages/design-system/src/components/ui/BATaskProgress.tsx",
@@ -261,9 +375,9 @@
       ],
       "layoutOwner": "TopBar owns global centering, progress owns internal overflow",
       "requirements": [
-        "Same circle/number/check/lock geometry in topbar and All activity screens popover",
-        "No line connecting main numbered circle to lower status circle",
-        "Every Screen number stays visible; Dosis ExtraBold 800 numerals",
+        "Public name ActivityScreenIndicator. Same circle in the TopBar and the All activity screens popover. Every state shows the Activity Screen index inside the circle. Lesson 1 is 1-8. Status uses color, a ring, or a secondary mark",
+        "Done uses a smaller check-circle at the main circle bottom; locked uses a smaller lock-circle. No line connecting the numbered circle to the lower status circle",
+        "Dosis ExtraBold 800 numerals",
         "Only canOpen-authorized screen navigation; locked never navigates",
         "Popover shows full screen list with responsive grid and bounded internal scroll",
         "Escape/outside/trigger dismiss, focus restoration, keyboard and touch accessibility",
@@ -285,13 +399,13 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "New interaction/visual contract in review; current implementation may still use legacy chips/scroll rail. BA-UI-006 owns shared marker rendering and overflow presentation, but not product gate or completion decisions. Do not label code visually approved."
+      "notes": "Public name: ActivityScreenIndicator. Registry name: BATaskProgress. Every circle shows the Activity Screen index in every state. Completed is not a check-only circle. Locked is not a lock-only circle. Status uses color, a ring, or a secondary mark. BA-UI-006 owns shared marker rendering and overflow presentation. Product gates and completion stay in PRODUCT.md. The lesson runtime keeps the index digit in every state."
     },
     {
       "id": "BA-UI-007",
       "name": "BAStatus",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "planned",
       "implementation": "packages/design-system/src/components/ui/BAStatus.tsx",
       "story": "packages/design-system/src/components/ui/BAStatus.stories.tsx",
@@ -324,9 +438,9 @@
       "id": "BA-WR-001",
       "name": "LessonTopBar",
       "kind": "composite",
-      "contractVersion": "0.2.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "in-review",
+      "visualStatus": "index digit in every state, no bottom divider, and the 834 title ellipsis 「第1课 主·」 are locked",
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
       "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
       "props": {
@@ -354,7 +468,14 @@
         "Center progress across whole bar",
         "Initial Lesson entry selects first Screen and all successors are locked until earned",
         "Use BA-UI-006 shared ActivityScreenIndicator + anchored All activity screens popover, not an alternative marker design",
-        "Full-bar geometric centering, no hamburger, no extra right-side action"
+        "Full-bar geometric centering, no hamburger, no extra right-side action",
+        "Retain Lesson metadata plus eight Activity Screen indicators and overflow",
+        "Standalone visible icon-only top Back returns to Staircase; no visible helper words",
+        "Footer Previous is distinct, previous Activity Screen only, disabled on first screen",
+        "Top Back 50x50 shared accessible button, hover/pressed/focus motion; keeps lesson title/meta and centered activity status indicators",
+        "Circle numbered ActivityScreenIndicator reused identically within TopBar and anchored popover. The digit stays visible in every state. No line to the small check/lock status circle",
+        "No horizontal divider between the lesson TopBar and the lesson content",
+        "At tablet 834 the lesson-title ellipsis stays 「第1课 主·」"
       ],
       "requiredStories": [
         "Desktop",
@@ -362,19 +483,24 @@
         "ManyTasks",
         "FirstScreenOnlyUnlocked",
         "OverflowPopoverSharedIndicator",
-        "BackAndResume"
+        "BackAndResume",
+        "IconOnlyBack",
+        "R1HeaderLessonInfoProgress",
+        "Back50HoverPressed",
+        "CenteredTopBarLongTitle",
+        "PopoverMatchingIndicators"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Product and design contract updated; rendered implementation needs separate QA. Popover and TopBar reuse exactly one ActivityScreenIndicator implementation."
+      "notes": "Popover and TopBar reuse exactly one ActivityScreenIndicator implementation. Every step circle shows its index. The lesson TopBar has no horizontal divider between the bar and the lesson content. At tablet 834 the lesson-title ellipsis stays 「第1课 主·」. The lesson runtime now keeps the digit and has no bar divider."
     },
     {
       "id": "BA-WR-002",
       "name": "LessonWorkspace",
       "kind": "composite",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "candidate-warm-frame",
+      "visualStatus": "pending-review",
       "implementation": "apps/writing/src/components/writing/LessonWorkspace.tsx",
       "story": "apps/writing/src/components/writing/LessonWorkspace.stories.tsx",
       "props": {
@@ -393,23 +519,38 @@
       "requirements": [
         "Warm Frame + White Canvas",
         "Coach independently scrolls",
-        "Footer outside Coach pinned"
+        "Previous and the primary action sit at the bottom of the Coach rail, bottom-right, outside the scrolling transcript",
+        "Coach-rail Previous and primary actions use height 70px, gap 8px, flex proportions 1:2",
+        "Coach independently scrolls; each feedback message is its own card",
+        "Listen icon-only floats in instruction container top-right with fixed safe inset",
+        "P2 Better panel uses a pale green fill and a leading check; the cue is pedagogical",
+        "One primary separator per content boundary; neutral container borders use quieter token, not for graded/focus borders",
+        "Peer container gaps reduce one existing spacing-token step without altering touch targets or typography"
       ],
       "requiredStories": [
         "Desktop",
         "TabletPortrait",
-        "CoachOverflow"
+        "CoachOverflow",
+        "FooterFirstScreenDisabled",
+        "FooterTwoThirdsPrimary",
+        "CoachSemanticMessages",
+        "FloatingListen",
+        "CoachRailNavBottomRight",
+        "FirstScreenDisabledPrevious",
+        "P2BetterEmphasis",
+        "R3TransparentFooter",
+        "R3ContainerSeparationAndGap"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
-      "notes": "Candidate Warm Frame layout for the E-01 lesson slice. Not validated and not visually approved. Footer is outside the scrolling coach."
+      "notes": "Warm Frame + White Canvas. Previous and the primary action sit at the bottom of the Coach rail, at the bottom-right of the lesson, outside the scrolling transcript. The group uses 1:2, an 8px gap, and a 70px height. The P2 Better panel uses a pale green fill and a leading check. Storybook fixture CoachRailNavBottomRight matches that placement. Feedback-card fill and border stay a candidate."
     },
     {
       "id": "BA-WR-003",
       "name": "WordGrid",
       "kind": "composite",
-      "contractVersion": "0.1.0",
-      "status": "planned",
+      "contractVersion": "0.4.0-r3",
+      "status": "implemented",
       "implementation": "apps/writing/src/components/writing/WordGrid.tsx",
       "story": "apps/writing/src/components/writing/WordGrid.stories.tsx",
       "props": {
@@ -432,23 +573,36 @@
       "requirements": [
         "Task-gated visibility",
         "Tablet on-demand only within writing area",
-        "Preserve caret"
+        "Preserve caret",
+        "Pill word options min 50px high and wrap in rows",
+        "Single group has no tab, multiple groups use sticky-note tabs with panel-connected active appearance",
+        "Tabs switch authored vocabulary data only, no grader mutation",
+        "Approved peach connected sticky tabs joined to the bank, and white pill cards",
+        "Ordered-build tabs are 本题词块, 观点, and 标点",
+        "Apply tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点)",
+        "Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match the Approved visuals wordgrid-ordered-build-approved and wordgrid-apply-approved",
+        "Ordered-build bench underlines are the writing-area line. The WordGrid panel is the word-card palette. Each remaining blank is an underline, one horizontal line per word still to place. Screen controls are the word cards and the Coach-rail button group. A placed word stays in the line"
       ],
       "requiredStories": [
         "MultiGroup",
         "OverlayTablet",
         "Locked",
-        "Chinese"
+        "Chinese",
+        "OneGroupNoTab",
+        "MultipleStickyTabs",
+        "WordWrapTablet"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": null,
+      "visualStatus": "Approved",
+      "notes": "Joe Approved the WordGrid peach connected sticky-tab bank and white pill cards. The ordered-build bank tabs are 本题词块, 观点, and 标点. The Apply bank tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点). The active tab joins the peach bank. Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match wordgrid-ordered-build-approved.png and wordgrid-apply-approved.png. A single group shows its cards directly. Ordered-build empty slots are underlines. The ordered-build controls are the word cards and the Coach-rail button group. A placed word stays in the line. PRODUCT.md chapter 12 owns the per-word hint and grading."
     },
     {
       "id": "BA-WR-004",
       "name": "HamburgerLayer",
       "kind": "composite",
-      "contractVersion": "0.1.0",
-      "status": "planned",
+      "contractVersion": "0.4.0-r3",
+      "status": "implemented",
       "implementation": "apps/writing/src/components/writing/HamburgerLayer.tsx",
       "story": "apps/writing/src/components/writing/HamburgerLayer.stories.tsx",
       "props": {
@@ -471,24 +625,28 @@
       "requirements": [
         "Label and entry same color surface",
         "Underline editing focus",
-        "No white nested field"
+        "No white nested field",
+        "Three Hamburger layers share two typographic roles (title and supporting text), consistent values per layer",
+        "Do not invent missing educational copy to populate support tier"
       ],
       "requiredStories": [
         "Idle",
         "Focused",
         "ReadOnly",
-        "LongContent"
+        "LongContent",
+        "AllThreeLayersTwoTextLevels"
       ],
       "figma": null,
-      "runtimeEvidence": null
+      "runtimeEvidence": null,
+      "visualStatus": "R1-candidate-pending-designer-review"
     },
     {
       "id": "BA-WR-005",
       "name": "StairLessonCard",
       "kind": "composite",
-      "contractVersion": "0.2.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "in-review-folded-corner",
+      "visualStatus": "pending-review",
       "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx",
       "props": {
@@ -512,11 +670,17 @@
         "Number at top left",
         "No local progress authority",
         "Preserve skip badge",
-        "Reusable CSS folded-paper corner across every Unit, no cut-only geometry",
-        "45-degree inward fold with separate paper layer and subtle shadow",
-        "Preserve Unit bounding box, anchor, existing text, color, state and interaction",
         "No pointer interception, focus clipping or overlap with title/progress",
-        "Desktop and Tablet visual evidence, EN/ZH long-title checks; designer signoff required"
+        "Desktop and Tablet visual evidence, EN/ZH long-title checks; designer signoff required",
+        "CTA height 70px, Start/Continue/Review according to real status; completed always Review",
+        "Paper surface white with rounded corners, warm base shadow and readable long content",
+        "Title fixed to exactly 2 line boxes; text clamped at 2, reserve empty second line, accessible complete title",
+        "Duration number + localized unit immediately below title on same left content axis",
+        "CTA MUST render shared BAButton height 70px with working hover/pressed/focus/reduced-motion states",
+        "All Lesson cards same height for equivalent viewport/tier",
+        "R3 number seal is primary identity; small attached status symbol current/done/locked; no wide status capsules or visible redundant phrases",
+        "Two-line title, left-aligned time, 70px actual BAButton; card/CTA concentric corner relationships",
+        "Preserve same card bottom/platform anchor under new rounded landscape terrace"
       ],
       "requiredStories": [
         "Start",
@@ -524,9 +688,19 @@
         "Review",
         "Locked",
         "Skipped",
-        "FoldedUnitAllStates",
-        "FoldedUnitDesktopTablet",
-        "FoldedUnitLongContent"
+        "LessonCurrentHere",
+        "LessonAvailableOutlined",
+        "LessonCompletedReview",
+        "LessonLockedPrerequisite",
+        "LessonLongTitle70CTA",
+        "TwoLineTitleShortAndLong",
+        "TitleDurationAligned",
+        "CardCurrentNoBubble",
+        "CardLockedNoSlogan",
+        "SharedBAButtonHoverPressed",
+        "R3NumberSealCurrentCompletedLocked",
+        "R3ConcentricCTA",
+        "R3LandscapeTerraceAnchor"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
@@ -536,7 +710,7 @@
       "id": "BA-WR-006",
       "name": "UnitMilestone",
       "kind": "composite",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "candidate-warm-frame",
       "implementation": "apps/writing/src/components/writing/UnitMilestone.tsx",
@@ -574,7 +748,7 @@
       "id": "BA-UI-008",
       "name": "BAIcon",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "candidate-foundation",
       "implementation": "packages/design-system/src/components/ui/BAIcon.tsx",
@@ -612,7 +786,7 @@
       "id": "BA-UI-009",
       "name": "BAText",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "candidate-foundation",
       "implementation": "packages/design-system/src/components/ui/BATypography.tsx",
@@ -647,7 +821,7 @@
       "id": "BA-UI-010",
       "name": "BANumber",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "candidate-foundation",
       "implementation": "packages/design-system/src/components/ui/BATypography.tsx",
@@ -679,7 +853,7 @@
       "id": "BA-UI-011",
       "name": "BASegmentedControl",
       "kind": "primitive",
-      "contractVersion": "0.1.0",
+      "contractVersion": "0.4.0-r3",
       "status": "implemented",
       "visualStatus": "figma-v1-candidate-implementation",
       "implementation": "packages/design-system/src/components/ui/BASegmentedControl.tsx",
@@ -720,86 +894,318 @@
       "figma": "06PPYhEQn3CqVYGlfopJWx/806:3",
       "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts",
       "notes": "Figma Segmented V1: outer heights 36/50/70/90; selected surface 32/46/66/86; Strong background product-mapped, Subtle shared neutral; future exact visual QA required."
+    },
+    {
+      "id": "BA-WR-007",
+      "name": "StairUnitCard",
+      "kind": "writing-product-composite",
+      "contractVersion": "0.4.0-r3",
+      "status": "implemented",
+      "visualStatus": "English title smaller line-height and the folded corner are normative",
+      "implementation": "apps/writing/src/course/CourseApp.tsx (.course-unit)",
+      "props": {
+        "unit": "PathUnit",
+        "status": "CourseUnitStatus",
+        "locale": "Locale"
+      },
+      "events": [],
+      "states": [
+        "normal",
+        "current",
+        "done",
+        "locked"
+      ],
+      "layoutOwner": "Staircase scene owns placement and anchor; UnitCard owns its paper surface and fold",
+      "requirements": [
+        "Distinct light tinted informative card with decorative warm border",
+        "45-degree top-right genuine layered fold with rounded flap tip, cream under-fold, gentle warm shadow and no alpha holes",
+        "Fold must not cover text and preserve outer body round corners",
+        "English unit title uses a smaller line-height",
+        "Folded corner is mandatory on every unit state",
+        "Unit goals rendered as plain paragraphs, 16px supporting type; all statuses maintain the same folded structure",
+        "No Lesson CTA or lesson status-number assembly",
+        "Ensure complete card visible at pan terminal bounds",
+        "Inner ornamental border masked at 45-degree fold; upper right seam joins rounded body silhouette without detached triangle",
+        "R3 tinted informational surface remains distinct from white actionable lessons"
+      ],
+      "requiredStories": [
+        "UnitFoldCornerAt200Zoom",
+        "UnitDistinctTintAndBorder",
+        "UnitLongChineseCopy",
+        "UnitAllStatuses"
+      ],
+      "notes": "The folded corner is mandatory on StairUnitCard (BA-WR-007). The English unit title uses a smaller line-height. Goals are plain paragraphs. StairLessonCard (BA-WR-005) is the lesson card."
+    },
+    {
+      "id": "BA-WR-008",
+      "name": "StairLevelIntroCard",
+      "kind": "writing-product-composite",
+      "contractVersion": "0.4.0-r3",
+      "status": "specified-not-implemented",
+      "visualStatus": "pending-review",
+      "implementation": "apps/writing/src/course/CourseApp.tsx (.course-intro)",
+      "props": {
+        "level": "PathLevel",
+        "locale": "Locale"
+      },
+      "events": [],
+      "states": [
+        "display"
+      ],
+      "layoutOwner": "Staircase scene owns position; LevelIntroCard owns its informational surface",
+      "requirements": [
+        "Light tinted decorative border visually distinguishes Level/Intro from Lesson action cards",
+        "Level introduction typography 16px body",
+        "No Lesson CTA; complete card accessible at terminal pan bounds"
+      ],
+      "requiredStories": [
+        "LevelIntroDecorativeBorder",
+        "LongLevelIntroAndGradient"
+      ],
+      "notes": "Keep path navigation and lesson state separate."
+    },
+    {
+      "id": "BA-WR-009",
+      "name": "LandscapeBackdrop",
+      "kind": "writing-presentation-composite",
+      "contractVersion": "0.1.0-r3",
+      "status": "implemented",
+      "visualStatus": "v2-terraces artwork checked in; parallax speed and the sky gradient are the DESIGN.md normative rules",
+      "implementation": "apps/writing/src/course/StaircaseScene.tsx",
+      "props": {
+        "cameraShift": "number"
+      },
+      "events": [],
+      "states": [
+        "static",
+        "parallax",
+        "reduced-motion"
+      ],
+      "layoutOwner": "Staircase stage owns full bleed; backdrop owns visual layers only",
+      "requirements": [
+        "E-01 path landscape version v2-terraces",
+        "Checked-in art only: path.v2-terraces.hill-1-foreground, path.v2-terraces.hill-2-mid, path.v2-terraces.cloud",
+        "Stack back to front: stage sky gradient, cloud, hill 2, hill 1, then lesson platforms",
+        "Composite PNG alpha; the stage background is the sky gradient linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)",
+        "Full viewport, including the area behind navigation; scenery leaves traversable nodes clear",
+        "Usable viewport does not clip the header, cards, platforms, or hill/cloud layers at the top or bottom. Footer and dev banners do not eat the stage",
+        "aria-hidden, pointer-events:none, and no mutation of learning state",
+        "Hill and mountain layers do not scroll at the card/camera horizontal speed to cover the path",
+        "Parallax horizontal speed is slower than the cards. Farther layers are slower: hill 1 is faster than hill 2, and the clouds and sky are slower still",
+        "Speeds are computed from the card/node count and the resulting track length and camera max travel",
+        "Reduced motion adds no parallax drift",
+        "Sky background is linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)"
+      ],
+      "requiredStories": [
+        "V2Terraces1440",
+        "V2Terraces390",
+        "V2TerracesReducedMotion"
+      ],
+      "notes": "Public name: LandscapeBackdrop (BA-WR-009). Implementation: apps/writing/src/course/StaircaseScene.tsx. Artwork: apps/writing/public/path/v2-terraces/. Behavior: apps/writing/PRODUCT.md. Compositing, placement, normative parallax, and the sky gradient: DESIGN.md. The sky is linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)."
+    },
+    {
+      "id": "BA-WR-010",
+      "name": "LandscapeTerrace",
+      "kind": "writing-presentation-composite",
+      "contractVersion": "0.1.0-r3",
+      "status": "specified-not-implemented",
+      "visualStatus": "specified 2-3 grass layers; interim scene uses one platform per node; numeric geometry pending designer approval",
+      "implementation": "apps/writing/src/course/StaircaseScene.tsx (future component extraction possible)",
+      "props": {
+        "nodeId": "string",
+        "cameraPosition": "number"
+      },
+      "events": [],
+      "states": [
+        "default",
+        "reduced-motion"
+      ],
+      "layoutOwner": "Staircase scene owns anchor; terrace decorative only",
+      "requirements": [
+        "Layered Landscape Terrace: 2–3 shallow rounded grass layers under each node, in front of hill 1",
+        "One platform per node; card bottom sits on the platform top",
+        "Card anchor and terminal visibility stay complete",
+        "Platform decoration leaves hit areas and the card clear"
+      ],
+      "requiredStories": [
+        "V2TerracePlatformDesktop",
+        "V2TerracePlatformMobile",
+        "V2TerracePlatformLocked"
+      ],
+      "notes": "LandscapeTerrace (BA-WR-010) specifies 2–3 shallow rounded grass layers under each node. The interim scene, implemented in StaircaseScene, paints one platform per node (352×64, card bottom on the platform). Numeric geometry remains [E]."
     }
   ],
-  "reviewOverlay": {
-    "version": "R6-2026-10-20",
-    "status": "proposed-contract-reconciliation",
-    "source": "apps/writing/PRODUCT.md R6 overlay",
-    "components": [
-      {
-        "id": "BA-WR-ANS-BASE",
-        "kind": "writing-composite-foundation",
-        "props": [
-          "value",
-          "options",
-          "selectedKeys",
-          "feedback",
-          "disabled"
-        ],
-        "events": [
-          "onSelectionChange",
-          "onCheckRequested"
-        ],
-        "states": [
-          "idle",
-          "selected",
-          "incorrect",
-          "correct",
-          "shown",
-          "disabled",
-          "focus-visible"
-        ],
-        "slots": [
-          "label",
-          "leading-index",
-          "feedback"
-        ],
-        "layout": {
-          "minHeightPx": 50,
-          "multiline": "first-line top aligned",
-          "singleLine": "vertically centered"
-        },
-        "businessOwner": "Alex CourseSession; no grading in renderer",
-        "acceptance": [
-          "keyboard",
-          "touch",
-          "wrapped content",
-          "50px min",
-          "shown distinct from correct"
-        ]
+  "currentDirection": {
+    "product": "Writing L2 G2-O Lesson 1",
+    "defaultStaircaseTheme": "landscape",
+    "pathLandscape": "v2-terraces",
+    "terrace": "Layered Landscape Terrace",
+    "lessonStatus": "Number Seal + Attached Symbol",
+    "visualApproval": "pending-designer-rendered-review",
+    "productBehavior": "apps/writing/PRODUCT.md",
+    "design": "DESIGN.md",
+    "tokens": "packages/design-system/src/tokens.css",
+    "implementation": "not-proven-by-documentation"
+  },
+  "lesson1ActivityMappings": [
+    {
+      "screenId": "L2-04.learn",
+      "templateId": "P2",
+      "layoutVariantId": "P2.rule-pair.hamburger",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-004",
+        "BA-UI-006",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
       },
-      {
-        "id": "BA-WR-CELEBRATION-ADAPTER",
-        "kind": "writing-adapter-proposal",
-        "props": [
-          "effect",
-          "eventId",
-          "anchorElement",
-          "disabledByReducedMotion"
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts1",
+      "templateId": "P3",
+      "layoutVariantId": "P3.list.option.single",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md section Writing Choice option, BA-UI-003 / BAChoice (candidate, pending designer Approved)"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts4",
+      "templateId": "P3",
+      "layoutVariantId": "P3.passage.word.single",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [
+        "selectable passage word tokens"
+      ],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts3",
+      "templateId": "P3",
+      "layoutVariantId": "P3.list.option.multi",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md section Writing Choice option, BA-UI-003 / BAChoice (candidate, pending designer Approved)"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ss.L2-04",
+      "templateId": "P4",
+      "layoutVariantId": "P4.build.word.guided-order",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-003",
+        "BA-UI-007"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.t.ts8",
+      "templateId": "P4",
+      "layoutVariantId": "P4.fill.chunks.frame",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    },
+    {
+      "screenId": "L2-04.apply",
+      "templateId": "P5",
+      "layoutVariantId": "P5.write.constraint-apply",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-003",
+        "BA-UI-007",
+        "BA-UI-001"
+      ],
+      "internalComposites": [
+        "writing canvas"
+      ],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified",
+      "wordGrid": {
+        "required": true,
+        "level": "words",
+        "groups": [
+          "opinion",
+          "nouns",
+          "adjectives",
+          "marks"
         ],
-        "events": [
-          "onPlaybackFinished",
-          "onPlaybackCancelled"
-        ],
-        "states": [
-          "idle",
-          "locating",
-          "loading",
-          "playing",
-          "stopped",
-          "suppressed",
-          "error"
-        ],
-        "businessOwner": "Alex milestone/lesson eligibility",
-        "requirements": [
-          "Ribbons count 30 for lesson",
-          "Milestone startCount 50, quantity 0, life count 1",
-          "completed flags manual replay",
-          "multi-new milestones display highest and handle other auto receipts",
-          "no grade/unlock mutation"
-        ]
+        "interaction": "tab switches available words; word card inserts at active writing caret, without grading"
       }
-    ]
-  }
+    },
+    {
+      "screenId": "L2-04.check",
+      "templateId": "P7",
+      "layoutVariantId": "P7.assessment.3-auto-1-writing",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-UI-001",
+        "BA-UI-006"
+      ],
+      "internalComposites": [
+        "P7 internal question pager"
+      ],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified"
+    }
+  ],
+  "lesson1ActivityMappingVersion": "1.0.0-review"
 }

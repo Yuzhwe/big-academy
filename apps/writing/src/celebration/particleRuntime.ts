@@ -34,6 +34,81 @@ function prepareEngine() {
   return enginePromise;
 }
 
+/** Milestone Confetti preset. Parameters are the PRODUCT §17 lock. */
+export function milestoneConfettiOptions(x: number, y: number): ISourceOptions {
+  return {
+    preset: 'confetti',
+    fullScreen: { enable: true, zIndex: 40 },
+    fpsLimit: 60,
+    background: { color: { value: 'transparent' } },
+    interactivity: { detectsOn: 'window' },
+    motion: { disable: true },
+    emitters: {
+      startCount: 50,
+      position: { x, y },
+      size: { width: 0, height: 0 },
+      rate: { delay: 0, quantity: 0 },
+      life: { duration: 0.1, count: 1 },
+    },
+  };
+}
+
+/** Practice uses Ribbons + Explosions. The lesson set is 30 ribbons and three explosions. */
+export function practiceExplosionOptions(bursts: number): ISourceOptions {
+  return {
+    preset: 'confettiExplosions',
+    fullScreen: { enable: true, zIndex: 40 },
+    fpsLimit: 60,
+    background: { color: { value: 'transparent' } },
+    interactivity: { detectsOn: 'window' },
+    motion: { disable: true },
+    emitters: {
+      life: { count: bursts, duration: 0.1, delay: 0.4 },
+      rate: { delay: 0, quantity: 50 },
+    },
+  };
+}
+
+function silence(container: Container | undefined) {
+  const canvas = container?.canvas.domElement;
+  if (!canvas) return;
+  canvas.setAttribute('aria-hidden', 'true');
+  canvas.setAttribute('data-celebration-canvas', '');
+  canvas.style.pointerEvents = 'none';
+}
+
+export async function startMilestoneConfetti(x: number, y: number): Promise<{ destroy: () => void }> {
+  await prepareEngine();
+  const container = await tsParticles.load({
+    id: `writing-milestone-confetti-${Date.now()}`,
+    options: milestoneConfettiOptions(x, y),
+  });
+  silence(container);
+  return { destroy: () => void container?.destroy() };
+}
+
+export async function startPracticeCelebration(lesson: boolean): Promise<{ destroy: () => void }> {
+  await prepareEngine();
+  const stamp = Date.now();
+  const ribbon = await ribbons(lesson ? `writing-lesson-ribbons-${stamp}` : `writing-practice-ribbons-${stamp}`, {
+    ...(lesson ? { count: 30 } : {}),
+    colors: RIBBON_COLORS,
+    disableForReducedMotion: true,
+    zIndex: 40,
+  });
+  const explosions = await tsParticles.load({
+    id: `writing-practice-explosions-${stamp}`,
+    options: practiceExplosionOptions(lesson ? 3 : 1),
+  });
+  silence(explosions);
+  return {
+    destroy: () => {
+      void ribbon?.destroy();
+      void explosions?.destroy();
+    },
+  };
+}
+
 export async function startEffect(preset: PresetId, id: string): Promise<Container> {
   await prepareEngine();
   let container: Container | undefined;

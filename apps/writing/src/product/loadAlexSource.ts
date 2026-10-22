@@ -11,6 +11,14 @@ export interface Bilingual {
   zh?: string;
 }
 
+export type GridCell = string | { t: string; zh?: string; pic?: string };
+
+export interface FrameFillSpec {
+  frame: string;
+  blanks: { label: string; min_words: number }[];
+  vagueLast?: boolean;
+}
+
 export interface AlexTask {
   id: string;
   type: string;
@@ -28,8 +36,22 @@ export interface AlexTask {
     hints?: Bilingual[];
     options?: Bilingual[];
     words?: Record<string, Bilingual>;
+    diagnose?: string[];
   };
   fields?: string[];
+  in_order?: boolean;
+  cells?: GridCell[];
+  target?: string[];
+  answer_text?: string;
+  distractors?: string[];
+  frameFill?: FrameFillSpec;
+  rules?: Record<string, unknown>;
+  grid?: { level?: string; tabs?: string[] };
+  criteria?: string[];
+  tip?: Bilingual;
+  continue_after?: number;
+  apply?: boolean;
+  set?: string;
 }
 
 export interface AlexScreen {
@@ -56,6 +78,14 @@ export interface AlexLesson {
   screens: AlexScreen[];
 }
 
+export interface PlanSlot {
+  field: string;
+  label: string;
+  zh?: string;
+  ph?: string;
+  part?: string;
+}
+
 export interface AlexPage {
   id: string;
   kind: string;
@@ -64,6 +94,19 @@ export interface AlexPage {
   teach?: Bilingual | string;
   tasks?: string[];
   task?: string;
+  grid?: { level?: string; tabs?: string[] };
+  pool?: string[];
+  writing?: string;
+  auto_per_attempt?: number;
+  slots?: PlanSlot[];
+}
+
+export interface GridTab {
+  label?: string;
+  zh?: string;
+  color?: string;
+  words?: { t: string; zh?: string }[];
+  chunks?: { t: string; zh?: string }[];
 }
 
 export interface AlexSkill {
@@ -100,6 +143,7 @@ export interface AlexConfig {
   step_tags?: StepTag[];
   unit_goals?: Bilingual[];
   unit?: { skill_skip?: { merge_below_min?: number } };
+  grids?: { tabs: Record<string, GridTab> };
 }
 
 export interface PathLesson {
@@ -159,12 +203,71 @@ export interface EngineApi {
   tokens: (text: string) => { w: string; start: number; end: number }[];
   skipMode: (status: string, allow: boolean) => 'auto' | 'offer' | 'none';
   stripPictures: (text: string) => string;
+  pageById: (config: AlexConfig, id: string) => AlexPage | null;
+  smartInsert: (
+    value: string,
+    start: number,
+    end: number,
+    insert: string,
+    kind: string,
+  ) => { value: string; caret: number };
+  sameText: (a: string, b: string) => boolean;
+  norm: (value: string) => string;
+  frameFill: (
+    text: string,
+    frame: FrameFillSpec,
+    ok?: Bilingual,
+  ) => { correct: boolean; explanation: string; zh?: string };
+  gridFor: (
+    config: AlexConfig,
+    page: AlexPage | null,
+    task: AlexTask | null,
+  ) => { level: string; tabs: string[]; locked: boolean; collapsed: boolean };
+  cellsFor: (config: AlexConfig, tabId: string, level: string) => { t: string; zh?: string }[];
+  masteryItems: (page: AlexPage, attempt: number) => string[];
+  masteryPass: (answers: { correct?: boolean; writing?: boolean }[]) => {
+    auto_correct: number;
+    auto_total: number;
+    writing_correct: boolean;
+    score: number;
+    total: number;
+    passed: boolean;
+  };
+}
+
+export interface ApplyCheck {
+  label: string;
+  met: boolean;
+  tip?: string;
+  zh?: string;
+}
+
+export interface AnalyzerApi {
+  checkApply: (
+    skillId: string,
+    text: string,
+  ) => {
+    passed: boolean;
+    checks: ApplyCheck[];
+    feedback: string;
+    zh?: string;
+    glow?: string;
+    source?: string;
+  };
+  checkProduction: (
+    item: { check?: AlexTask['rules']; success?: string; successZh?: string },
+    answer: string,
+  ) => { correct: boolean; explanation: string; zh?: string };
+  wordCount: (text: string) => number;
+  cjkRatio: (text: string) => number;
+  safetyScreen: (text: string) => boolean;
 }
 
 export interface AlexSource {
   config: AlexConfig;
   levelPath: LevelPath;
   engine: EngineApi;
+  analyzer: AnalyzerApi;
 }
 
 const cache = new Map<string, AlexSource>();
@@ -196,17 +299,29 @@ export function extractAssignedJson(source: string, name: string): unknown {
   throw new Error(`Alex source has an unclosed ${name} object`);
 }
 
-export function loadEngine(source: string): EngineApi {
-  const start = source.indexOf('var Engine = (function () {');
-  const endMarker =
-    "if (typeof module !== 'undefined' && module.exports) module.exports = { Engine: Engine, Prov: Prov };";
-  const end = source.indexOf(endMarker);
-  if (start < 0 || end < 0 || end <= start) {
+const RUNTIME_END =
+  "if (typeof module !== 'undefined' && module.exports) module.exports = { Engine: Engine, Prov: Prov };";
+
+export function loadRuntime(source: string): { engine: EngineApi; analyzer: AnalyzerApi } {
+  const start = source.indexOf('var Analyzer = (function () {');
+  const end = source.indexOf(RUNTIME_END);
+  const analyzerEnd = source.indexOf('</script>', start);
+  const engineStart = source.indexOf('var Engine = (function () {', analyzerEnd);
+  if (start < 0 || end < 0 || analyzerEnd < 0 || engineStart < 0 || engineStart >= end) {
     throw new Error('Alex Engine script was not found in the source HTML');
   }
-  const script = source.slice(start, end);
-  const factory = new Function(`${script}\nreturn Engine;`) as () => EngineApi;
-  return factory();
+  // Analyzer and Engine live in separate script tags. Concatenate the two bodies.
+  const script = `${source.slice(start, analyzerEnd)}\n${source.slice(engineStart, end)}`;
+  const factory = new Function(`${script}\nreturn { Engine: Engine, Analyzer: Analyzer };`) as () => {
+    Engine: EngineApi;
+    Analyzer: AnalyzerApi;
+  };
+  const runtime = factory();
+  return { engine: runtime.Engine, analyzer: runtime.Analyzer };
+}
+
+export function loadEngine(source: string): EngineApi {
+  return loadRuntime(source).engine;
 }
 
 export function loadAlexSource(html: string): AlexSource {
@@ -217,7 +332,8 @@ export function loadAlexSource(html: string): AlexSource {
   for (const level of levelPath.levels) {
     for (const unit of level.units) unit.level = level.id;
   }
-  const loaded = { config, levelPath, engine: loadEngine(html) };
+  const runtime = loadRuntime(html);
+  const loaded = { config, levelPath, engine: runtime.engine, analyzer: runtime.analyzer };
   cache.set(html, loaded);
   return loaded;
 }
