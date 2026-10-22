@@ -519,13 +519,11 @@
       "requirements": [
         "Warm Frame + White Canvas",
         "Coach independently scrolls",
-        "Footer outside Coach pinned",
-        "Footer Previous and primary actions use height 70px, gap 8px, flex proportions 1:2",
-        "Coach independently scrolls, semantic message containers, footer outside Coach",
+        "Previous and the primary action sit at the bottom of the Coach rail, bottom-right, outside the scrolling transcript",
+        "Coach-rail Previous and primary actions use height 70px, gap 8px, flex proportions 1:2",
+        "Coach independently scrolls; each feedback message is its own card",
         "Listen icon-only floats in instruction container top-right with fixed safe inset",
-        "Footer action group fills entire right-column width, 1:2 CSS grid minmax(0,1fr)/minmax(0,2fr), gap 8px and children width 100%, min-width 0, 70px height",
-        "P2 Not yet vs Better teaching example panels contrast in favor of Better, never scored",
-        "R3 transparent fixed Footer outside Coach; no redundant top divider; grid fills available width 1:2 and 8px gap",
+        "P2 Better panel uses a pale green fill and a leading check; the cue is pedagogical",
         "One primary separator per content boundary; neutral container borders use quieter token, not for graded/focus borders",
         "Peer container gaps reduce one existing spacing-token step without altering touch targets or typography"
       ],
@@ -537,7 +535,7 @@
         "FooterTwoThirdsPrimary",
         "CoachSemanticMessages",
         "FloatingListen",
-        "FullWidthFooter1440Tablet",
+        "CoachRailNavBottomRight",
         "FirstScreenDisabledPrevious",
         "P2BetterEmphasis",
         "R3TransparentFooter",
@@ -545,7 +543,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
-      "notes": "Candidate Warm Frame layout for the E-01 lesson slice. Not validated and not visually approved. Footer is outside the scrolling coach."
+      "notes": "Warm Frame + White Canvas. Previous and the primary action sit at the bottom of the Coach rail, at the bottom-right of the lesson, outside the scrolling transcript. The group uses 1:2, an 8px gap, and a 70px height. The P2 Better panel uses a pale green fill and a leading check. Storybook fixture CoachRailNavBottomRight matches that placement. Feedback-card fill and border stay a candidate."
     },
     {
       "id": "BA-WR-003",
@@ -579,7 +577,11 @@
         "Pill word options min 50px high and wrap in rows",
         "Single group has no tab, multiple groups use sticky-note tabs with panel-connected active appearance",
         "Tabs switch authored vocabulary data only, no grader mutation",
-        "Ordered topic-sentence bench is the writing-area line, not this word-card panel: each remaining blank is an underline, one horizontal line per word still to place. Ellipsis placeholders and dotted placeholders are not used. Screen controls are the word cards and the lesson footer. A placed word stays in the line"
+        "Approved peach connected sticky tabs joined to the bank, and white pill cards",
+        "Ordered-build tabs are 本题词块, 观点, and 标点",
+        "Apply tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点)",
+        "Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match the Approved visuals wordgrid-ordered-build-approved and wordgrid-apply-approved",
+        "Ordered-build bench underlines are the writing-area line. The WordGrid panel is the word-card palette. Each remaining blank is an underline, one horizontal line per word still to place. Screen controls are the word cards and the Coach-rail button group. A placed word stays in the line"
       ],
       "requiredStories": [
         "MultiGroup",
@@ -592,8 +594,8 @@
       ],
       "figma": null,
       "runtimeEvidence": null,
-      "visualStatus": "R1-candidate-pending-designer-review",
-      "notes": "Writing WordGrid visual exploration: connected multi-group tabs and white pill vocabulary; single-group sets do not show decorative lone tabs. Tab and pill chrome remain pending visual approval. The ordered topic-sentence bench is specified in PRODUCT.md chapter 12.7 and DESIGN.md: each remaining blank is an underline; ellipsis and dotted placeholders are not used; screen controls are the word cards and the lesson footer. PRODUCT.md chapter 12 owns group availability, the per-word hint, and grading."
+      "visualStatus": "Approved",
+      "notes": "Joe Approved the WordGrid peach connected sticky-tab bank and white pill cards. The ordered-build bank tabs are 本题词块, 观点, and 标点. The Apply bank tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点). The active tab joins the peach bank. Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match wordgrid-ordered-build-approved.png and wordgrid-apply-approved.png. A single group shows its cards directly. Ordered-build empty slots are underlines. The ordered-build controls are the word cards and the Coach-rail button group. A placed word stays in the line. PRODUCT.md chapter 12 owns the per-word hint and grading."
     },
     {
       "id": "BA-WR-004",
@@ -899,7 +901,7 @@
       "kind": "writing-product-composite",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "pending-review",
+      "visualStatus": "English title smaller line-height and the folded corner are normative",
       "implementation": "apps/writing/src/course/CourseApp.tsx (.course-unit)",
       "props": {
         "unit": "PathUnit",
@@ -918,7 +920,9 @@
         "Distinct light tinted informative card with decorative warm border",
         "45-degree top-right genuine layered fold with rounded flap tip, cream under-fold, gentle warm shadow and no alpha holes",
         "Fold must not cover text and preserve outer body round corners",
-        "Unit goals rendered as plain paragraphs, 16px supporting type; all statuses maintain same folded structure",
+        "English unit title uses a smaller line-height",
+        "Folded corner is mandatory on every unit state",
+        "Unit goals rendered as plain paragraphs, 16px supporting type; all statuses maintain the same folded structure",
         "No Lesson CTA or lesson status-number assembly",
         "Ensure complete card visible at pan terminal bounds",
         "Inner ornamental border masked at 45-degree fold; upper right seam joins rounded body silhouette without detached triangle",
@@ -930,7 +934,7 @@
         "UnitLongChineseCopy",
         "UnitAllStatuses"
       ],
-      "notes": "The unit folded corner belongs to StairUnitCard (BA-WR-007). StairLessonCard (BA-WR-005) is the lesson card."
+      "notes": "The folded corner is mandatory on StairUnitCard (BA-WR-007). The English unit title uses a smaller line-height. Goals are plain paragraphs. StairLessonCard (BA-WR-005) is the lesson card."
     },
     {
       "id": "BA-WR-008",
