@@ -1,75 +1,122 @@
+/* BA-WR-005 presentation candidate. Inset 20px + shared BAButton radius 35px
+ * yields concentric 55px outer radius. No business-status decisions in CSS. */
 .stair-lesson-card {
+  --ba-lesson-inset: 20px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: 260px;
+  min-height: 280px;
+  padding: var(--ba-lesson-inset);
+  background: var(--ba-color-surface-canvas, #fff);
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-color-border-default, #d9cbb8);
+  border-radius: calc(35px + var(--ba-lesson-inset));
+  color: var(--ba-color-content-primary, #133547);
+  box-shadow: 0 6px 20px rgba(19, 53, 71, .08);
+  font-family: var(--ba-font-body-en, "Jost", sans-serif);
+}
+.stair-lesson-card__seal {
+  position: relative;
+  align-self: flex-start;
+  flex: none;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 12px 16px;
-  align-items: center;
-  min-height: 88px;
-  padding: 14px 16px;
-  background: var(--ba-paper, #ffffff);
-  border: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
-  border-radius: 16px;
-  color: var(--ba-brand-dark, #133547);
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--ba-writing-accent, #b25415);
+  border-radius: 50%;
+  background: var(--ba-paper, #fff);
+  color: var(--ba-writing-accent, #b25415);
 }
-
-.stair-lesson-card[data-state='locked'],
-.stair-lesson-card[data-state='view'] {
-  background: color-mix(in srgb, var(--ba-surface-warm, #fef9ef) 72%, var(--ba-paper, #ffffff));
-}
-
 .stair-lesson-card__number {
   margin: 0;
-  min-width: 44px;
-  font-family: "Dosis", "Arial Narrow", sans-serif;
-  font-size: 32px;
-  font-weight: 800;
-  line-height: 1;
+  min-width: 0;
+  font: 800 32px/1 var(--ba-font-digit, "Dosis", "Arial Narrow", sans-serif);
   font-variant-numeric: lining-nums;
 }
-
-.stair-lesson-card__title {
-  margin: 0;
-  font-family: "Dosis", "Arial Narrow", sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1.2;
+.stair-lesson-card__symbol {
+  position: absolute;
+  right: -7px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  box-sizing: border-box;
+  border: 2px solid var(--ba-paper, #fff);
+  border-radius: 50%;
+  background: var(--ba-success, #14ae5c);
+  color: #fff;
 }
-
-.stair-lesson-card[lang='zh-CN'] .stair-lesson-card__title,
-.course-app[lang='zh-CN'] .stair-lesson-card__title {
-  font-family: "Douyin Sans", "PingFang SC", "Noto Sans SC", sans-serif;
+.stair-lesson-card__current-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.stair-lesson-card[data-state='continue'] .stair-lesson-card__seal {
+  background: var(--ba-color-brand-10, #133547);
+  color: #fff;
+  border-color: var(--ba-color-brand-10, #133547);
+}
+.stair-lesson-card[data-state='continue'] .stair-lesson-card__symbol {
+  background: #fff;
+  color: var(--ba-color-brand-10, #133547);
+}
+.stair-lesson-card[data-state='locked'] {
+  background: var(--ba-surface-warm, #fef9ef);
+}
+.stair-lesson-card[data-state='locked'] .stair-lesson-card__seal {
+  color: var(--ba-color-content-secondary, #6f747c);
+  border-color: var(--ba-color-border-default, #b8b8b8);
+}
+.stair-lesson-card[data-state='locked'] .stair-lesson-card__symbol {
+  background: var(--ba-color-content-secondary, #6f747c);
+}
+.stair-lesson-card__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.stair-lesson-card__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  margin: 0;
+  height: 60px;
+  font: 800 24px/30px var(--ba-font-heading-en, "Dosis", "Arial Narrow", sans-serif);
+}
+.stair-lesson-card:lang(zh-CN) .stair-lesson-card__title {
+  font-family: var(--ba-font-heading-zh, "Douyin Sans", "Noto Sans SC", sans-serif);
   font-weight: 700;
 }
-
-.stair-lesson-card__detail,
+.stair-lesson-card__duration, .stair-lesson-card__skip {
+  margin: 6px 0 0;
+  font: 500 16px/20px var(--ba-font-body-en, "Jost", sans-serif);
+}
+.stair-lesson-card:lang(zh-CN) .stair-lesson-card__duration,
+.stair-lesson-card:lang(zh-CN) .stair-lesson-card__skip {
+  font-family: var(--ba-font-body-zh, "Noto Sans SC", sans-serif);
+}
+.stair-lesson-card__duration-number {
+  font-family: var(--ba-font-digit, "Dosis", sans-serif);
+  font-weight: 800;
+}
 .stair-lesson-card__skip {
-  margin: 4px 0 0;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 12px;
+}
+.stair-lesson-card__action.ba-button {
+  display: block;
+  flex: none;
+  width: 100%;
+  margin-top: auto;
+  min-width: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stair-lesson-card * { animation: none !important; }
 }
 
-.stair-lesson-card__action {
-  box-sizing: border-box;
-  min-width: 96px;
-  min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid var(--ba-writing-accent, #b25415);
-  border-radius: 999px;
-  background: var(--ba-writing-accent, #b25415);
-  color: var(--ba-paper, #ffffff);
-  font: 700 16px/1 var(--ba-font-sans, sans-serif);
-  cursor: pointer;
-}
-
-.stair-lesson-card[data-state='locked'] .stair-lesson-card__action,
-.stair-lesson-card[data-state='review'] .stair-lesson-card__action,
-.stair-lesson-card[data-state='skipped'] .stair-lesson-card__action {
-  background: var(--ba-paper, #ffffff);
-  color: var(--ba-brand-dark, #133547);
-  border-color: var(--ba-brand-dark, #133547);
-}
-
-.stair-lesson-card__action[data-focus-visible='true'] {
-  outline: 2px solid var(--ba-brand-dark, #133547);
-  outline-offset: 2px;
-}

@@ -1,3 +1,4 @@
+@import '../components/writing/LandscapeTerrace.css';
 /* E-01 v2-terraces. Sky is the locked gradient. Parallax speed comes from the track. */
 .course-path:has(.staircase-viewport) {
   max-width: none;
@@ -185,23 +186,7 @@
 }
 .path-hill-1 { z-index: 2; }
 .staircase-rail { z-index: 3; }
-/* One shallow terrace per node. Top of the platform meets the card bottom. Candidate curves. */
-.staircase-rail .course-nodes > li::before {
-  content: '';
-  position: absolute;
-  z-index: 0;
-  pointer-events: none;
-  top: 100%;
-  left: -46px;
-  width: 352px;
-  height: 64px;
-  border-radius: 46% 46% 18px 18px / 70% 70% 12px 12px;
-  background:
-    linear-gradient(#d7eb86, #d7eb86) 0 0 / 100% 28px no-repeat,
-    linear-gradient(#8fbf55, #4e8a3c) 0 22px / 100% 30px no-repeat,
-    linear-gradient(#3c7434, #3c7434) 8px 48px / calc(100% - 16px) 12px no-repeat;
-  filter: drop-shadow(0 6px 0 rgba(36, 78, 32, 0.18));
-}
+/* Platforms reuse BA-WR-010 CSS, also shown in the component workbench. */
 .staircase-viewport:focus-visible { outline-color:var(--ba-color-focus); }
 @media (max-width:900px) {
   .course-path .course-path__header { gap:8px; }
@@ -216,3 +201,4 @@
   .course-level-tablist .ba-tabs__option { min-width:38px; }
   .course-path__header-locale .ba-button { min-width:44px; padding-inline:7px; font-size:12px; }
 }
+

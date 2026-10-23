@@ -181,6 +181,7 @@ function PathView({ session }: { session: CourseSession }) {
                     lessonId={lesson.lessonId}
                     number={lesson.number}
                     title={lesson.title}
+                    minutes={lesson.minutes}
                     state={cardState(lesson.courseState, lesson.action)}
                     detail={lesson.detail}
                     locale={session.locale}
@@ -679,3 +680,4 @@ function ChoiceGallery({ zh }: { zh: boolean }) {
     </main>
   );
 }
+

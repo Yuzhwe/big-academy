@@ -96,7 +96,7 @@ function OptionBody({ option, state }: { option: ChoiceOption; state: ChoiceVisu
       </span>
       <span className="ba-choice__text">
         <span className="ba-choice__letter">{option.letter}</span>
-        <span className="ba-choice__body" lang="en">
+        <span className="ba-choice__body">
           {option.text}
         </span>
       </span>
@@ -180,3 +180,4 @@ export function BAChoice({
     </RadioGroup>
   );
 }
+

@@ -30,6 +30,8 @@ export interface BAButtonProps {
   className?: string;
   id?: string;
   type?: 'button' | 'submit' | 'reset';
+  /** Pass data attributes through without reimplementing the button. */
+  dataAttributes?: { [key: `data-${string}`]: string | number | undefined };
 }
 
 /** BA-UI-001: Figma Button V2 presentation on React Aria's Button.
@@ -54,6 +56,7 @@ export function BAButton({
   className,
   id,
   type = 'button',
+  dataAttributes,
 }: BAButtonProps) {
   const pendingLabel = busyLabel ?? taskChrome(locale).busy;
   const visualVariant = variant === 'ghost' ? 'tertiary' : variant;
@@ -65,6 +68,7 @@ export function BAButton({
       type={type}
       className={cls}
       data-component="BA-UI-001"
+      {...dataAttributes}
       data-variant={variant}
       data-kind={visualVariant}
       data-size={size}
@@ -92,3 +96,4 @@ export function BAButton({
     </Button>
   );
 }
+
