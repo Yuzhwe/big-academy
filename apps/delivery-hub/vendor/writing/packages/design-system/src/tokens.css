@@ -1,0 +1,24 @@
+/*
+ * Big Academy temporary foundation tokens.
+ *
+ * Approved values are copied from DESIGN.md and marked [A].
+ * Everything else is a pilot stand-in so states can be tested.
+ * Do not treat this file as visual sign-off.
+ */
+
+:root {
+  --ba-brand-dark: #133547; /* [A] */
+  --ba-writing-accent: #b25415; /* [A] */
+  --ba-paper: #ffffff; /* [A] */
+  --ba-border-weight: 0.5px; /* [A] ordinary separators */
+  --ba-surface-warm: #fef9ef; /* [E] candidate, not approved */
+  --ba-border-temporary: #d9cbb8; /* temporary warm separator */
+  --ba-control-border: #133547; /* temporary; control edges need to stay visible */
+  --ba-muted: #4a5963; /* temporary disabled/locked ink, not an approved token */
+  --ba-muted-surface: #f4f1ea; /* temporary */
+  --ba-focus-ring: #133547; /* temporary; uses approved brand ink */
+  --ba-font-sans: "Noto Sans", "Noto Sans SC", "WenQuanYi Micro Hei", "PingFang SC",
+    "Microsoft YaHei", "Droid Sans Fallback", sans-serif;
+  --ba-hit-min: 44px;
+  --ba-focus-width: 2px;
+}

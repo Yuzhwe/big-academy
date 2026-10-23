@@ -1,0 +1,315 @@
+/*
+ * Candidate Warm Frame for the E-01 → lesson slice.
+ * Approved ink: #133547, accent #B25415, paper #FFFFFF, ordinary borders 0.5px.
+ * #FEF9EF is a candidate surface, not a signed-off token.
+ * Dosis ExtraBold and Jost and Noto Sans SC load from Google Fonts when the
+ * network allows. Douyin Sans is not redistributed; Chinese titles fall back.
+ */
+
+.course-app {
+  --ba-font-en-title: "Dosis", "Arial Narrow", "Nimbus Sans Narrow", sans-serif;
+  --ba-font-en-body: "Jost", "Noto Sans", "Segoe UI", sans-serif;
+  --ba-font-zh-title: "Douyin Sans", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --ba-font-zh-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ba-font-sans: var(--ba-font-en-body);
+  min-height: 100%;
+  background: var(--ba-surface-warm, #fef9ef);
+  color: var(--ba-brand-dark, #133547);
+  font-family: var(--ba-font-en-body);
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.course-app[lang='zh-CN'] {
+  --ba-font-sans: var(--ba-font-zh-body);
+  font-family: var(--ba-font-zh-body);
+}
+
+.course-skip {
+  position: absolute;
+  left: 12px;
+  top: -40px;
+  background: var(--ba-paper, #ffffff);
+  color: var(--ba-brand-dark, #133547);
+  padding: 8px 12px;
+}
+
+.course-skip:focus {
+  top: 12px;
+  z-index: 5;
+}
+
+.course-path {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.course-path__bar,
+.course-levels {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.course-levels {
+  margin: 16px 0 24px;
+}
+
+.course-kicker {
+  margin: 0 0 4px;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.course-title {
+  margin: 0 0 12px;
+  font-family: var(--ba-font-en-title);
+  font-weight: 800;
+  font-size: 32px;
+  line-height: 1.15;
+}
+
+.course-app[lang='zh-CN'] .course-title,
+.course-app[lang='zh-CN'] .course-unit h2,
+.course-app[lang='zh-CN'] .unit-milestone__title {
+  font-family: var(--ba-font-zh-title);
+  font-weight: 700;
+}
+
+.course-intro,
+.course-unit,
+.course-goal,
+.course-message,
+.course-candidate,
+.course-preview {
+  background: var(--ba-paper, #ffffff);
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
+  border-radius: 16px;
+}
+
+.course-intro,
+.course-unit,
+.course-goal,
+.course-message,
+.course-candidate {
+  margin: 0 0 12px;
+  padding: 16px;
+}
+
+.course-unit h2,
+.course-goal h2 {
+  margin: 0;
+  font-family: var(--ba-font-en-title);
+  font-weight: 800;
+  font-size: 28px;
+}
+
+.course-nodes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.course-candidate {
+  font-size: 14px;
+}
+
+.course-lesson {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.course-lesson .lesson-workspace {
+  height: calc(100dvh - 80px);
+}
+
+.course-teach {
+  font-size: 22px;
+}
+
+.course-examples p {
+  margin: 8px 0;
+  padding: 12px;
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-border-temporary, #d9cbb8);
+  border-radius: 12px;
+}
+
+.course-examples span {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.course-choices {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.course-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-brand-dark, #133547);
+  border-radius: 12px;
+  background: var(--ba-paper, #ffffff);
+  color: var(--ba-brand-dark, #133547);
+  cursor: pointer;
+}
+
+.course-choice[data-selected='true'],
+.course-choice[data-selected] {
+  border-color: var(--ba-writing-accent, #b25415);
+  box-shadow: inset 0 0 0 1px var(--ba-writing-accent, #b25415);
+}
+
+.course-choice[data-wrong='true'] {
+  border-color: #9b4f36;
+}
+
+.course-choice[data-focus-visible='true'] {
+  outline: 2px solid var(--ba-brand-dark, #133547);
+  outline-offset: 2px;
+}
+
+.course-choice__letter {
+  font-family: "Dosis", "Arial Narrow", sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.course-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.course-word {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 10px;
+  border: var(--ba-border-weight, 0.5px) solid var(--ba-brand-dark, #133547);
+  border-radius: 10px;
+  background: var(--ba-paper, #ffffff);
+  color: var(--ba-brand-dark, #133547);
+  font: inherit;
+  cursor: pointer;
+}
+
+.course-word[data-selected='true'] {
+  border-color: var(--ba-writing-accent, #b25415);
+  box-shadow: inset 0 0 0 1px var(--ba-writing-accent, #b25415);
+}
+
+.course-word[data-wrong='true'] {
+  border-color: #9b4f36;
+}
+
+.course-word:focus-visible {
+  outline: 2px solid var(--ba-brand-dark, #133547);
+  outline-offset: 2px;
+}
+
+.course-feedback {
+  padding: 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ba-brand-dark, #133547) 6%, var(--ba-paper, #ffffff));
+}
+
+.course-preview {
+  max-width: 720px;
+  margin: 32px auto;
+  padding: 24px;
+}
+
+.course-celebration {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--ba-brand-dark, #133547) 28%, transparent);
+  z-index: 20;
+}
+
+.course-celebration__card {
+  width: min(28rem, calc(100% - 32px));
+  padding: 24px;
+  background: var(--ba-paper, #ffffff);
+  color: var(--ba-brand-dark, #133547);
+  border-radius: 16px;
+}
+
+.course-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.course-confetti i {
+  position: absolute;
+  top: -12px;
+  left: calc(6% * var(--i, 1));
+  width: 8px;
+  height: 14px;
+  background: var(--ba-writing-accent, #b25415);
+  animation: course-fall 1400ms ease-in forwards;
+}
+
+.course-confetti i:nth-child(odd) {
+  background: var(--ba-brand-dark, #133547);
+}
+
+.course-confetti i:nth-child(1) { left: 8%; }
+.course-confetti i:nth-child(2) { left: 16%; }
+.course-confetti i:nth-child(3) { left: 24%; }
+.course-confetti i:nth-child(4) { left: 32%; }
+.course-confetti i:nth-child(5) { left: 40%; }
+.course-confetti i:nth-child(6) { left: 48%; }
+.course-confetti i:nth-child(7) { left: 56%; }
+.course-confetti i:nth-child(8) { left: 64%; }
+.course-confetti i:nth-child(9) { left: 72%; }
+.course-confetti i:nth-child(10) { left: 80%; }
+.course-confetti i:nth-child(11) { left: 88%; }
+.course-confetti i:nth-child(12) { left: 12%; }
+.course-confetti i:nth-child(13) { left: 28%; }
+.course-confetti i:nth-child(14) { left: 44%; }
+.course-confetti i:nth-child(15) { left: 60%; }
+.course-confetti i:nth-child(16) { left: 76%; }
+.course-confetti i:nth-child(17) { left: 92%; }
+.course-confetti i:nth-child(18) { left: 50%; }
+
+@keyframes course-fall {
+  to {
+    transform: translateY(100vh) rotate(180deg);
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-confetti {
+    display: none;
+  }
+}
+
+.course-lesson .lesson-topbar__title,
+.course-lesson .ba-task-progress__marker {
+  font-family: "Dosis", "Arial Narrow", sans-serif;
+  font-weight: 800;
+}
+
+.course-app[lang='zh-CN'] .course-lesson .lesson-topbar__name {
+  font-family: var(--ba-font-zh-title);
+  font-weight: 700;
+}

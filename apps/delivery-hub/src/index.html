@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f5f1">
+  <meta name="description" content="Big Academy 交付区域，集中浏览设计系统、组件契约、产品规范与 Writing 交付成果。">
+  <title>Big Academy 交付区域</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./assets/fonts.css">
+  <link rel="stylesheet" href="./foundations.css">
+  <script src="./data.js" defer></script>
+  <script src="./system.js" defer></script>
+  <script src="./assets/shell-icons.js" defer></script>
+  <script src="./app.js" defer></script>
+  <script src="./foundations.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳转到主要内容</a>
+<aside class="sidebar" id="sidebar" aria-label="网站导航">
+  <a class="brand" href="#overview" aria-label="Big Academy 首页"><span class="brand-mark">B<span>·</span></span><span><strong>Big Academy</strong><small>交付区域</small></span></a>
+  <button class="search-trigger" data-action="search"><span data-icon="search"></span><span>搜索文档与交付</span><kbd>⌘ K</kbd></button>
+  <nav>
+    <a class="nav-item" href="#overview" data-nav="overview"><span data-icon="grid"></span>工作台</a>
+    <p class="nav-label">设计总结经验</p>
+    <a class="nav-item" href="#knowledge" data-nav="knowledge"><span data-icon="book"></span>设计知识库<span class="nav-count" id="doc-count">—</span></a>
+    <a class="nav-item" href="#foundations" data-nav="foundations"><span data-icon="palette"></span>设计系统总览</a>
+    <a class="nav-item sub" href="#tokens" data-nav="tokens">颜色与 Tokens</a>
+    <a class="nav-item sub" href="#icons" data-nav="icons">Iconoir 图标库</a>
+    <a class="nav-item sub" href="#typography" data-nav="typography">文字系统</a>
+    <a class="nav-item sub" href="#layout" data-nav="layout">布局 · 形状 · 动效</a>
+    <a class="nav-item" href="#components" data-nav="components"><span data-icon="component"></span>组件目录<span class="nav-count">13</span></a>
+    <p class="nav-label">需求交付</p>
+    <a class="nav-item" href="#deliveries" data-nav="deliveries"><span data-icon="layers"></span>全部需求<span class="nav-count">1</span></a>
+    <a class="nav-item sub" href="#writing" data-nav="writing"><i class="writing-dot"></i>Writing<span class="tiny-tag">试点</span></a>
+  </nav>
+  <div class="sidebar-bottom">
+    <a class="nav-item" href="#collaboration" data-nav="collaboration"><span data-icon="git"></span>Agent 协作指南</a>
+    <a class="repo-card" href="https://github.com/Yuzhwe/big-academy" target="_blank" rel="noopener noreferrer"><span data-icon="github"></span><span><strong>big-academy</strong><small>GitHub · 私有仓库</small></span><span data-icon="external"></span></a>
+    <div class="user"><span class="avatar">YL</span><span>Yuzhe Liu<small>UI / UX Designer</small></span><span class="owner">Owner</span></div>
+  </div>
+</aside>
+<div class="mobile-shade" id="mobile-shade"></div>
+<div class="shell">
+  <header class="topbar"><div class="breadcrumb"><button class="icon-btn mobile-toggle" aria-label="展开导航" aria-controls="sidebar" aria-expanded="false" data-action="menu"><span data-icon="menu"></span></button><span class="desktop-crumb">交付区域</span><span class="crumb-slash">/</span><strong id="breadcrumb">工作台</strong></div><div class="top-actions"><span class="snapshot-badge"><i></i>GitHub 内容快照</span><button class="button button-small" data-action="share"><span data-icon="share"></span>分享</button></div></header>
+  <main id="main" tabindex="-1"></main>
+  <footer class="site-footer"><span>Big Academy <span class="footer-dot">·</span> 从规范到交付，每一步都有依据。</span><span id="snapshot-date"></span></footer>
+</div>
+<dialog id="search-dialog" class="search-dialog"><div class="search-modal-head"><span data-icon="search"></span><input id="global-search" aria-label="搜索文档、组件和交付" placeholder="搜索文档、组件和交付…" autocomplete="off"><button class="icon-btn" data-close aria-label="关闭搜索"><span data-icon="close"></span></button></div><div class="search-results" id="search-results"></div><div class="search-foot">搜索当前快照中的完整文档与组件契约 <kbd>Esc 关闭</kbd></div></dialog>
+<dialog id="detail-dialog" class="detail-dialog"><div class="dialog-top"><span id="detail-eyebrow">文档预览</span><button class="icon-btn" data-close aria-label="关闭详情"><span data-icon="close"></span></button></div><div id="detail-content"></div></dialog>
+<dialog id="share-dialog" class="share-dialog"><div class="dialog-top"><strong>分享交付区域</strong><button class="icon-btn" data-close aria-label="关闭分享"><span data-icon="close"></span></button></div><div class="share-body"><span class="large-icon" data-icon="share"></span><h2>让团队看到同一份进展</h2><p>当前网站为私有访问。复制链接不会自动授予访问权限。</p><label for="share-url">当前页面链接</label><div class="copy-field"><input id="share-url" readonly><button class="button primary" data-action="copy-link">复制链接</button></div><div class="share-options"><div><span data-icon="lock"></span><span><strong>定向分享</strong><small>在网站的分享设置中添加指定访问者（以可用选项为准）。</small></span></div><div><span data-icon="globe"></span><span><strong>公开链接</strong><small>需要时将访问范围改为公开，让持有链接的人访问。</small></span></div><div><span data-icon="github"></span><span><strong>协作修改</strong><small>为 Agent 对应账号授予 GitHub 仓库写权限，通过分支和 PR 提交。</small></span></div></div></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

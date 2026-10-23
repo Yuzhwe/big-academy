@@ -1,0 +1,115 @@
+{
+  "repository": "Yuzhwe/big-academy",
+  "branch": "cursor/writing-e01-lesson-slice-7d6c",
+  "commit": "614d4a4f1304930c675f15988e8bb01c5b31ce01",
+  "files": [
+    {
+      "path": "apps/writing/source/alex-original.html",
+      "sha": "c06c8db7317092f081febcebc9eb70979d357c11"
+    },
+    {
+      "path": "apps/writing/src/App.tsx",
+      "sha": "b5386f3b815d7c3eee57a6c4f9475474affa57f3"
+    },
+    {
+      "path": "apps/writing/src/PilotPreview.tsx",
+      "sha": "947c35ab68d9dc14dc3d4af1a3b0192409826a1b"
+    },
+    {
+      "path": "apps/writing/src/components/writing/LessonTopBar.css",
+      "sha": "bf99fe33c4bf9ef780bb193d1f1b7f2435a7919d"
+    },
+    {
+      "path": "apps/writing/src/components/writing/LessonTopBar.tsx",
+      "sha": "ab3abe58195cc1763fdc8e0e58b58e32d00b32bd"
+    },
+    {
+      "path": "apps/writing/src/components/writing/LessonWorkspace.css",
+      "sha": "ac9d59de73a120938802e03510bddb17426bb89d"
+    },
+    {
+      "path": "apps/writing/src/components/writing/LessonWorkspace.tsx",
+      "sha": "e3bd55efc0a815f21f1c10803296cc0bd6e2e41b"
+    },
+    {
+      "path": "apps/writing/src/components/writing/StairLessonCard.css",
+      "sha": "77185c9d5422a8784ed366209e80d3ecf474444b"
+    },
+    {
+      "path": "apps/writing/src/components/writing/StairLessonCard.tsx",
+      "sha": "6a6590756c4b1ada25a87a8bb960a280f9718618"
+    },
+    {
+      "path": "apps/writing/src/components/writing/UnitMilestone.css",
+      "sha": "3f540b91daa6abd63ddfd7741c1c88e5aa791bf5"
+    },
+    {
+      "path": "apps/writing/src/components/writing/UnitMilestone.tsx",
+      "sha": "de5f3dcc0ca8b8245095554839aefc53dc32ebee"
+    },
+    {
+      "path": "apps/writing/src/course/CourseApp.tsx",
+      "sha": "ec55c0c951675a332fe1902fe24a5a3bf6b14528"
+    },
+    {
+      "path": "apps/writing/src/course/course.css",
+      "sha": "19255fab2d0515e5e790a7b432aca998df00aace"
+    },
+    {
+      "path": "apps/writing/src/fixtures/topbarFixtures.ts",
+      "sha": "e648f1c02b8293819de7d41f46204b6c10d811f5"
+    },
+    {
+      "path": "apps/writing/src/main.tsx",
+      "sha": "3d56cf1067c5543148c6e71760b8b844b5853ef9"
+    },
+    {
+      "path": "apps/writing/src/preview.css",
+      "sha": "06d6a77cf47fbf6de7b828d03fbfffba2a41c0be"
+    },
+    {
+      "path": "apps/writing/src/product/courseSession.ts",
+      "sha": "b612361bad89dd9a37a894a3c528087a04d5fe17"
+    },
+    {
+      "path": "apps/writing/src/product/loadAlexSource.ts",
+      "sha": "0336867048b0d03c7a189fa012ba7679135e3c05"
+    },
+    {
+      "path": "apps/writing/src/vite-env.d.ts",
+      "sha": "11f02fe2a0061d6e6e1f271b21da95423b448b32"
+    },
+    {
+      "path": "packages/design-system/src/components/ui/BAButton.css",
+      "sha": "b7c7b8e24c6965b42586482f377145bdb6517e15"
+    },
+    {
+      "path": "packages/design-system/src/components/ui/BAButton.tsx",
+      "sha": "9fa297562258e2b9b600a85f829a71e295163c09"
+    },
+    {
+      "path": "packages/design-system/src/components/ui/BATaskProgress.css",
+      "sha": "399498b778b55d2b617cb84cfa07f56ab3942208"
+    },
+    {
+      "path": "packages/design-system/src/components/ui/BATaskProgress.tsx",
+      "sha": "6461e21c7d4a2c47ba314a45d581b49da857e493"
+    },
+    {
+      "path": "packages/design-system/src/i18n/chrome.ts",
+      "sha": "f2c2f7adefadad60094348076975d719750b9919"
+    },
+    {
+      "path": "packages/design-system/src/index.ts",
+      "sha": "8169d9cdd4e510fe91ededaa359e3d5d13d65e15"
+    },
+    {
+      "path": "packages/design-system/src/tokens.css",
+      "sha": "dda3e6f6f63b055b05914bfa6851c971ae5e4aa8"
+    },
+    {
+      "path": "packages/design-system/src/types/task.ts",
+      "sha": "40929456688787ffbefba6e9b461d9beb954bd44"
+    }
+  ]
+}
