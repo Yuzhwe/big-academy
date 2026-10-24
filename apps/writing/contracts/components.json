@@ -106,14 +106,18 @@
         "Locale labels"
       ],
       "requiredStories": [
-        "LevelTabs",
-        "StrongSubtle",
+        "LevelNavigation",
+        "Chinese",
+        "Disabled",
+        "Sizes",
         "KeyboardFocus"
       ],
       "figma": "Design decision 2026-10-20: visual style same as Figma Segmented Control 806:3",
       "runtimeEvidence": null,
-      "visualStatus": "figma-segmented-parity-candidate",
-      "notes": "React Aria Tabs/TabList/Tab/TabPanel semantics; same selection geometry and CSS as segmented, no RadioGroup. Styling parity is user-approved direction; exact browser visual review pending."
+      "visualStatus": "ready-for-visual-review (not approved)",
+      "notes": "React Aria Tabs/TabList/Tab/TabPanel semantics; same selection geometry and CSS as segmented, no RadioGroup. Styling parity is user-approved direction; exact browser visual review pending.",
+      "reviewStatus": "Ready for Visual Review",
+      "reviewEntry": "Workbench / 01 · Level Tabs"
     },
     {
       "id": "BA-UI-003",
@@ -164,21 +168,22 @@
         "Tapword reuses choice state meanings and does not take this option-row anatomy"
       ],
       "requiredStories": [
-        "Single",
-        "Multiple",
-        "WrongRetry",
-        "CorrectDim",
-        "ChoiceLongWrapped",
-        "ChoiceSelectedBeforeCheck",
-        "ChoiceCorrectFilled",
-        "ChoiceCorrectUnselected",
-        "ChoiceWrongFilled",
-        "ChoiceDimmed",
-        "TapwordTokens"
+        "Default",
+        "Selected",
+        "Correct",
+        "CorrectUnselected",
+        "Wrong",
+        "Dim",
+        "Disabled",
+        "LongText",
+        "Chinese",
+        "FocusVisible",
+        "SingleInteractive",
+        "MultipleInteractive"
       ],
       "figma": null,
       "runtimeEvidence": null,
-      "visualStatus": "six-state mapping, 1px border, and 1.02/0.95 click scale locked",
+      "visualStatus": "ready-for-visual-review (not approved)",
       "visual": {
         "status": "locked",
         "approved": false,
@@ -258,7 +263,9 @@
           }
         }
       },
-      "notes": "Canonical states: default, selected, correct, correctUnselected, wrong, dim. Aliases: idle is default, shown is correctUnselected. selected and wrong use fill #9B4F36 as the selected fill, separate from the danger role of --ba-error. correct is green fill #14AE5C with a leading check. correctUnselected is a green outline #14AE5C with a leading check and no solid green disc. dim is graded chrome at opacity 0.4. disabled is a separate non-interactive state. Before Check a row is default or selected. The row shows the letter, the body, and the leading icon. Border is 1px. Hover 1.02 and pressed 0.95 match the BAButton CTA. Reduced motion does not scale. One-line and wrapped rows use align-items flex-start. Grading and Coach feedback stay in PRODUCT.md."
+      "notes": "Canonical states: default, selected, correct, correctUnselected, wrong, dim. Aliases: idle is default, shown is correctUnselected. selected and wrong use fill #9B4F36 as the selected fill, separate from the danger role of --ba-error. correct is green fill #14AE5C with a leading check. correctUnselected is a green outline #14AE5C with a leading check and no solid green disc. dim is graded chrome at opacity 0.4. disabled is a separate non-interactive state. Before Check a row is default or selected. The row shows the letter, the body, and the leading icon. Border is 1px. Hover 1.02 and pressed 0.95 match the BAButton CTA. Reduced motion does not scale. One-line and wrapped rows use align-items flex-start. Grading and Coach feedback stay in PRODUCT.md.",
+      "reviewStatus": "Ready for Visual Review",
+      "reviewEntry": "Workbench / 03 · Choice"
     },
     {
       "id": "BA-UI-004",
@@ -646,14 +653,17 @@
       "kind": "composite",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "pending-review",
+      "visualStatus": "ready-for-visual-review (not approved)",
       "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx",
       "props": {
         "lessonId": "string",
         "number": "number",
         "title": "string",
-        "state": "start | continue | review | locked | skipped"
+        "state": "start | continue | review | locked | skipped",
+        "minutes": "number (optional; localized minutes in component)",
+        "locale": "en | zh",
+        "detail": "string (legacy fallback)"
       },
       "events": {
         "onEnter": "(lessonId) => void"
@@ -688,23 +698,18 @@
         "Review",
         "Locked",
         "Skipped",
-        "LessonCurrentHere",
-        "LessonAvailableOutlined",
-        "LessonCompletedReview",
-        "LessonLockedPrerequisite",
-        "LessonLongTitle70CTA",
-        "TwoLineTitleShortAndLong",
-        "TitleDurationAligned",
-        "CardCurrentNoBubble",
-        "CardLockedNoSlogan",
-        "SharedBAButtonHoverPressed",
-        "R3NumberSealCurrentCompletedLocked",
-        "R3ConcentricCTA",
-        "R3LandscapeTerraceAnchor"
+        "CardOnly",
+        "FullComposition",
+        "InteractiveAllStates",
+        "LongTitle",
+        "Chinese",
+        "KeyboardFocus"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
-      "notes": "Candidate Warm Frame. Not validated and not visually approved. Lesson number stays top left. Action labels are Start / Continue / Review / Locked. Skipped keeps Review plus a mastered label. The card does not grant unlock."
+      "notes": "Candidate Warm Frame. Not validated and not visually approved. Lesson number stays top left. Action labels are Start / Continue / Review / Locked. Skipped keeps Review plus a mastered label. The card does not grant unlock.",
+      "reviewStatus": "Ready for Visual Review",
+      "reviewEntry": "Workbench / 02 · Lesson Card"
     },
     {
       "id": "BA-WR-006",
@@ -1008,9 +1013,9 @@
       "name": "LandscapeTerrace",
       "kind": "writing-presentation-composite",
       "contractVersion": "0.1.0-r3",
-      "status": "specified-not-implemented",
-      "visualStatus": "specified 2-3 grass layers; interim scene uses one platform per node; numeric geometry pending designer approval",
-      "implementation": "apps/writing/src/course/StaircaseScene.tsx (future component extraction possible)",
+      "status": "implemented-interim-scene-and-story-decoration",
+      "visualStatus": "ready-for-visual-review (not approved)",
+      "implementation": "apps/writing/src/components/writing/LandscapeTerrace.css; apps/writing/src/components/writing/LandscapeTerrace.tsx; used by apps/writing/src/course/StaircaseScene.css",
       "props": {
         "nodeId": "string",
         "cameraPosition": "number"
@@ -1028,11 +1033,13 @@
         "Platform decoration leaves hit areas and the card clear"
       ],
       "requiredStories": [
-        "V2TerracePlatformDesktop",
-        "V2TerracePlatformMobile",
-        "V2TerracePlatformLocked"
+        "FullComposition",
+        "CardOnly"
       ],
-      "notes": "LandscapeTerrace (BA-WR-010) specifies 2–3 shallow rounded grass layers under each node. The interim scene, implemented in StaircaseScene, paints one platform per node (352×64, card bottom on the platform). Numeric geometry remains [E]."
+      "notes": "LandscapeTerrace (BA-WR-010) specifies 2–3 shallow rounded grass layers under each node. The interim scene, implemented in StaircaseScene, paints one platform per node (352×64, card bottom on the platform). Numeric geometry remains [E].",
+      "reviewStatus": "Ready for Visual Review",
+      "reviewEntry": "Workbench / 02 · Lesson Card",
+      "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx (FullComposition)"
     }
   ],
   "currentDirection": {

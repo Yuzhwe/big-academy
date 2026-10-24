@@ -29,3 +29,17 @@ Only **L2/G2-O Lesson 1: Topic sentences (eight screens)** is in scope for high-
 ## Workflow
 
 Create independent feature branches from `main`, implement against the four authoritative assets, then request designer review before merging. Historical stacked PRs and other agents' prototypes are reference-only and should not be used as new baselines.
+
+
+## Phase 1 Component Workbench Pilot · 2026-10-24
+
+Branch: \`feat/component-workbench-pilot-20261024\` (unmerged). UI status: **Ready for Visual Review**, not Approved.
+
+- Storybook: \`npm run storybook\`, then \`http://127.0.0.1:6006/\`. Workbench Stories: \`Workbench/01 Level Tabs (BA-UI-002)\`, \`Workbench/02 Lesson Card (BA-WR-005)\`, \`Workbench/03 Choice (BA-UI-003)\`. Base token overview remains \`http://127.0.0.1:5173/?system\` when \`npm run dev\` is running. Desktop 1440x900, tablet 834x1112, mobile 390x844 are review targets.
+- BA-UI-002: React Aria Tabs with controlled selection, keyboard, disabled L3, EN/ZH and size variants. Writing session still owns the level navigation logic.
+- BA-WR-005: real shared BAButton size 70, two reserved title lines, numeric minutes supplied by product, number seal/attached state symbol, five states, long text, EN/ZH. Locked CTA disabled; product still owns unlock. Implementation \`apps/writing/src/components/writing/StairLessonCard.tsx\`.
+- BA-WR-010: \`LandscapeTerrace.css\` shares the existing interim CSS platform geometry with the real scene. \`LandscapeTerrace.tsx\` is an optional decoration only for isolated compositions; not a duplicate business component. The scene CSS imports this source. Candidate art is not designer-approved.
+- BA-UI-003: React Aria single/multiple and graded states; Storybook includes controlled Check/Reset demo (not real pedagogy). Text now inherits EN/ZH language. Grading, retries, Coach and unlock remain in product.
+- Contract authority remains \`apps/writing/contracts/components.json\`; no new registry platform. These are presentation candidates. Run typecheck, tests, build and browser QA locally; no build, screenshot or accessibility pass is asserted until actually run. GitHub-only editing cannot open the user's Mac localhost or produce authentic Mac screenshots.
+- Future HTML Generation Agent must look up IDs in the existing registry, import the real implementation and supply props; never restyle or reimplement states in a generated lesson. Only the designer can mark Approved.
+
