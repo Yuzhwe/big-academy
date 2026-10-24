@@ -22,16 +22,17 @@ describe('component registry', () => {
       expect(byId[id]?.status).toBe('implemented');
       expect(byId[id]?.status).not.toBe('validated');
     }
-    expect(byId['BA-WR-002']?.visualStatus).toBe('R2-candidate-pending-review');
-    expect(byId['BA-WR-005']?.visualStatus).toBe('R2-candidate-pending-review');
+    expect(byId['BA-WR-002']?.visualStatus).toBe('pending-review');
+    expect(byId['BA-WR-005']?.visualStatus).toBe('ready-for-visual-review (not approved)');
     expect(byId['BA-WR-006']?.visualStatus).toBe('candidate-warm-frame');
-    expect(byId['BA-UI-003']?.visualStatus).toBe('candidate-pending-designer-approval');
+    expect(byId['BA-UI-003']?.visualStatus).toBe('ready-for-visual-review (not approved)');
     const implemented = new Set([
       'BA-UI-001', 'BA-UI-002', 'BA-UI-003', 'BA-UI-006', 'BA-UI-008', 'BA-UI-009', 'BA-UI-010', 'BA-UI-011',
-      'BA-WR-001', 'BA-WR-002', 'BA-WR-003', 'BA-WR-004', 'BA-WR-005', 'BA-WR-006', 'BA-WR-007', 'BA-WR-009',
+      'BA-WR-001', 'BA-WR-002', 'BA-WR-003', 'BA-WR-004', 'BA-WR-005', 'BA-WR-006', 'BA-WR-007', 'BA-WR-009', 'BA-WR-010',
     ]);
     for (const component of registry.components) {
-      if (implemented.has(component.id)) expect(component.status).toBe('implemented');
+      if (component.id === 'BA-WR-010') expect(component.status).toBe('implemented-interim-scene-and-story-decoration');
+      else if (implemented.has(component.id)) expect(component.status).toBe('implemented');
       else expect(['planned', 'specified-not-implemented']).toContain(component.status);
       // Engineering implementation is not final designer visual acceptance.
       expect(component.status).not.toBe('validated');
