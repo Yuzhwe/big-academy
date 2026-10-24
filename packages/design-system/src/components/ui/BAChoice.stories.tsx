@@ -34,9 +34,9 @@ export const FocusVisible: Story = { render: args => <div><p>Tab / arrow keys fo
 function InteractiveChoice({choiceMode = 'single',options = en, disabled = false, ...props}: BAChoiceProps) {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [graded, setGraded] = useState(false);
-  const gradedOptions = graded ? options.map(o => ({
-    ...o, state: o.id === 'b' ? (selectedKeys.includes('b') ? 'correct' : 'correctUnselected') as const :
-      (selectedKeys.includes(o.id) ? 'wrong' : 'dim') as const,
+  const gradedOptions: ChoiceOption[] = graded ? options.map(o => ({
+    ...o, state: o.id === 'b' ? (selectedKeys.includes('b') ? 'correct' : 'correctUnselected') :
+      (selectedKeys.includes(o.id) ? 'wrong' : 'dim'),
   })) : options;
   return <div data-ba-product="writing" style={{ display: 'grid', gap: 14, maxWidth: 560 }}>
     <BAChoice {...props} aria-label="Choose an answer" choiceMode={choiceMode} options={gradedOptions}
