@@ -45,6 +45,10 @@ export function StairLessonCard({
       data-lesson-id={lessonId}
       lang={locale === 'zh' ? 'zh-CN' : 'en'}
       aria-label={(locale === 'zh' ? '第' + number + '课' : 'Lesson ' + number) + ': ' + title + ' · ' + stateText}
+      onPointerDownCapture={locked ? () => onEnter?.(lessonId) : undefined}
+      onKeyDownCapture={locked ? (event) => {
+        if (event.key === 'Enter' || event.key === ' ') onEnter?.(lessonId);
+      } : undefined}
     >
       <div className="stair-lesson-card__seal" aria-hidden="true">
         <span className="stair-lesson-card__number">{number}</span>
