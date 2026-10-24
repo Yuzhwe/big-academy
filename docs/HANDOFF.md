@@ -43,3 +43,12 @@ Branch: \`feat/component-workbench-pilot-20261024\` (unmerged). UI status: **Rea
 - Contract authority remains \`apps/writing/contracts/components.json\`; no new registry platform. These are presentation candidates. Run typecheck, tests, build and browser QA locally; no build, screenshot or accessibility pass is asserted until actually run. GitHub-only editing cannot open the user's Mac localhost or produce authentic Mac screenshots.
 - Future HTML Generation Agent must look up IDs in the existing registry, import the real implementation and supply props; never restyle or reimplement states in a generated lesson. Only the designer can mark Approved.
 
+
+
+## Local QA · 2026-10-24
+
+- Environment: macOS arm64; official Node.js LTS v22.23.4 installed locally under .local/node-v22; npm 10.9.9; dependencies installed with npm ci.
+- Storybook: npm run storybook is running at http://127.0.0.1:6006/; Workbench / 02 · Lesson Card (BA-WR-005) · Full Composition is open for visual review.
+- Passing: npm run typecheck, npm test (13 files / 52 tests), npm run build, npm run build-storybook, npm run check:docs.
+- Browser QA: 13/16 Playwright tests pass after installing Chromium. Three existing E-01 issues remain: two 60s timeouts around the celebration overlay path and one legacy terrace height expectation conflicts with the current fixed two-line Lesson Card contract. No visual approval is claimed.
+- Screenshots: apps/writing/docs/evidence/staircase-ab/ and apps/writing/docs/evidence/slice/ include desktop 1440x900 and tablet 834x1112 evidence; mobile 390x844 evidence remains in apps/writing/docs/evidence/celebration/mobile-zh.png.
