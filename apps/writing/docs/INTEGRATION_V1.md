@@ -74,3 +74,5 @@ Third-party notices remain in `packages/design-system/THIRD_PARTY_NOTICES.md` an
 | Launcher shell syntax and repository whitespace checks | passed |
 
 The initial regressions exposed obsolete disabled-button click and old green-platform expectations, plus unstable font/camera sampling. They were corrected against the actual approved contract and the complete suite was rerun. The final local gallery contains 40 screenshots. JSON summaries and accessibility output accompany it. Screenshots stay local; source, assets, reproducible tests and the portable report are included in the review branch.
+
+GitHub delivery: [Draft PR #52](https://github.com/Yuzhwe/big-academy/pull/52), `feat/writing-hifi-integration-v1` → `feat/component-library-r2`. The launcher was executed successfully on this Mac and detected/opened the running website. To obtain a normal Git checkout, clone this branch using your authenticated GitHub client, then double-click the launcher.
