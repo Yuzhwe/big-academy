@@ -22,8 +22,9 @@ function allow(tasks: TaskProgressItem[]) {
 }
 
 const meta = {
-  title: 'UI/BATaskProgress',
+  title: 'Primitives/BATaskProgress',
   component: BATaskProgress,
+  parameters: { ba: { contractId: 'BA-UI-006', status: 'in-review', owner: 'Design System', purpose: 'Activity progress and locked navigation states' } },
   args: {
     tasks: mixed,
     activeIndex: 2,

@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from 'react';
+import type { ComponentProps, ReactNode, CSSProperties } from 'react';
 import { Button, ProgressBar } from 'react-aria-components';
 import type { BALocale } from '../../types/task';
 import { taskChrome } from '../../i18n/chrome';
@@ -7,7 +7,7 @@ import './BAButton.css';
 type ButtonPressEvent = Parameters<NonNullable<ComponentProps<typeof Button>['onPress']>>[0];
 export type BAButtonSize = 36 | 50 | 70 | 90;
 export type BAButtonRadius = 'full' | 'standard';
-export type BAButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'ghost';
+export type BAButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'outline';
 export interface BAButtonProps {
   /** "ghost" is backwards-compatible alias for Figma tertiary. */
   variant?: BAButtonVariant;
@@ -17,6 +17,9 @@ export interface BAButtonProps {
   intent?: 'default' | 'destructive';
   /** Accent applies to tertiary only with default intent. */
   tone?: 'default' | 'accent';
+  layout?: 'hug' | 'fixed' | 'full';
+  fixedWidth?: number;
+  wrap?: boolean;
   iconOnly?: boolean;
   leadingIcon?: ReactNode;
   trailingIcon?: ReactNode;
@@ -43,6 +46,7 @@ export function BAButton({
   radius = 'full',
   intent = 'default',
   tone = 'default',
+  layout = 'hug', fixedWidth = 240, wrap = false,
   iconOnly = false,
   leadingIcon,
   trailingIcon,
@@ -72,6 +76,10 @@ export function BAButton({
       data-variant={variant}
       data-kind={visualVariant}
       data-size={size}
+      data-layout={layout}
+      data-wrap={wrap}
+      data-visual-review={variant === 'outline' ? 'candidate' : undefined}
+      style={{ '--ba-button-fixed-width': `${Math.max(44, fixedWidth)}px` } as CSSProperties}
       data-radius={radius}
       data-intent={intent}
       data-tone={tone}

@@ -120,3 +120,11 @@
   .stair-lesson-card * { animation: none !important; }
 }
 
+
+/* Opt-in R2 title slot; existing path geometry keeps its two-line default. */
+.stair-lesson-card { max-width:100%; }
+.stair-lesson-card[data-title-lines='3'] { min-height:310px; }
+.stair-lesson-card[data-title-lines='3'] .stair-lesson-card__title { -webkit-line-clamp:var(--ba-lesson-r2-title-lines); line-clamp:var(--ba-lesson-r2-title-lines); height:calc(var(--ba-writing-lesson-title-line-height) * var(--ba-lesson-r2-title-lines)); }
+.stair-lesson-card[data-current='true'][data-title-lines='3'] { border-color:var(--ba-color-action-primary); box-shadow:0 0 0 2px var(--ba-color-action-primary); }
+.stair-lesson-card[data-current='true'] .stair-lesson-card__seal { background:var(--ba-color-brand-10); color:var(--ba-color-surface-canvas); }
+.stair-lesson-card[data-state='locked'][data-title-lines='3'] { background:var(--ba-color-disabled-surface); color:var(--ba-color-disabled-content); border-color:var(--ba-color-disabled-border); }

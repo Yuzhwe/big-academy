@@ -5,6 +5,7 @@ const repoRoot = resolve(import.meta.dirname, '../../..');
 
 const config: StorybookConfig = {
   stories: [
+    '../src/storybook/**/*.stories.tsx',
     '../../../packages/design-system/src/**/*.stories.tsx',
     '../src/**/*.stories.tsx',
   ],

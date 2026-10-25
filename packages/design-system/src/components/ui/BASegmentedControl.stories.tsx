@@ -5,7 +5,7 @@ import { BASegmentedControl } from './BASegmentedControl';
 const opts = [{id:'day',label:'Day'},{id:'week',label:'Week'},{id:'month',label:'Month'},{id:'year',label:'Year'}];
 
 const meta = {
-  title:'UI/BASegmentedControl · Figma V1',
+  title:'Primitives/BASegmentedControl',
   component:BASegmentedControl,
   args:{'aria-label':'Period', options:opts, defaultSelectedKey:'week', size:50, emphasis:'strong',radius:'full',distribution:'hug'}
 } satisfies Meta<typeof BASegmentedControl>;

@@ -406,3 +406,40 @@
   --ba-type-supporting-family: var(--ba-font-body-zh);
   /* Numeral remains Dosis 800 in either locale. */
 }
+
+/* Component library application [E] — candidate shell values, awaiting rendered review.
+   Presentation only; no change to learning components or product state. */
+:root {
+  --ba-library-header-height: 80px;
+  --ba-library-sidebar-width: 240px;
+  --ba-library-content-max: 1280px;
+  --ba-library-example-width: 560px;
+  --ba-library-preview-min-height: 320px;
+  --ba-library-stage-inset: var(--ba-space-8);
+  --ba-library-page-inset: var(--ba-space-12);
+  --ba-library-caption-size: 12px;
+  --ba-library-label-size: 14px;
+  --ba-library-body-size: 16px;
+  --ba-library-section-size: 22px;
+  --ba-library-title-size: 40px;
+  --ba-library-display-size: 48px;
+  --ba-library-line-height: 1.6;
+  --ba-library-title-line-height: 1.2;
+  --ba-library-ink: var(--ba-color-content-primary);
+  --ba-library-muted: var(--ba-color-content-muted);
+  --ba-library-border: var(--ba-color-border-default);
+  --ba-library-shell: var(--ba-color-warm-1);
+  --ba-library-canvas: var(--ba-color-surface-canvas);
+  --ba-library-soft: var(--ba-color-neutral-1);
+  --ba-library-code-bg: var(--ba-color-brand-10);
+  --ba-library-code-ink: var(--ba-color-brand-1);
+  --ba-library-status-dot: 6px;
+  --ba-library-feedback-height: 112px;
+}
+
+/* R2 explicit requirements / candidate geometry. Existing color values are unchanged. */
+:root {
+  --ba-wordgrid-surface: #f3d2bf; /* [A] moved verbatim from approved WordGrid bank CSS */
+  --ba-choice-row-inset: 6px; /* [E] symmetric inset; 36px icon + 2px border + 12px = 50px */
+  --ba-lesson-r2-title-lines: 3; /* R2 explicit requirement; opt-in, original product default retained */
+}

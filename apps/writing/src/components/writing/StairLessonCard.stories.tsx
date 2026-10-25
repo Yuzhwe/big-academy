@@ -4,9 +4,9 @@ import { StairLessonCard, type StairLessonState } from './StairLessonCard';
 import { LandscapeTerrace } from './LandscapeTerrace';
 
 const meta = {
-  title: 'Workbench / 02 · Lesson Card (BA-WR-005)',
+  title: 'Writing/Path/StairLessonCard',
   component: StairLessonCard,
-  parameters: { layout: 'centered' },
+  parameters: { ba: { contractId: 'BA-WR-005', status: 'ready-for-visual-review', owner: 'Writing', purpose: 'Lesson entry, continue, review and locked states' }, layout: 'centered' },
   args: {
     lessonId: 'G2-O:1', number: 1, title: 'Topic sentences',
     state: 'start', minutes: 10, locale: 'en',
@@ -56,3 +56,7 @@ export const KeyboardFocus: Story = {
   render: args => <div style={{ display: 'grid', gap: 16 }}><p>Tab to the real CTA. Locked cards are not focusable.</p><StairLessonCard {...args}/></div>,
 };
 
+
+export const R2ThreeLines: Story = {args:{titleLines:3,title:'Writing a convincing topic sentence for a detailed opinion paragraph with evidence'}};
+export const R2CurrentStart: Story = {args:{titleLines:3,current:true,state:'start'}};
+export const R2CurrentContinue: Story = {args:{titleLines:3,current:true,state:'continue'}};

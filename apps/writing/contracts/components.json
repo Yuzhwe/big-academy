@@ -18,7 +18,7 @@
       "implementation": "packages/design-system/src/components/ui/BAButton.tsx",
       "story": "packages/design-system/src/components/ui/BAButton.stories.tsx",
       "props": {
-        "variant": "primary | secondary | tertiary | ghost (legacy tertiary alias)",
+        "variant": "primary | secondary | tertiary | ghost (legacy tertiary alias) | outline (R2 candidate)",
         "disabled": "boolean",
         "busy": "boolean",
         "children": "ReactNode",
@@ -31,7 +31,10 @@
         "tone": "default | accent (tertiary/default only)",
         "iconOnly": "boolean; requires aria-label for icon-only",
         "leadingIcon": "ReactNode optional",
-        "trailingIcon": "ReactNode optional"
+        "trailingIcon": "ReactNode optional",
+        "layout": "hug | fixed | full (default hug); layout is independent of variant",
+        "fixedWidth": "number, default 240; constrained to container",
+        "wrap": "boolean, default false; opt-in auto-height long content"
       },
       "events": {
         "onPress": "(event) => void"
@@ -68,7 +71,8 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Figma node 30:2 Button V2. Visible assembly scales (hover 1.02, pressed 0.95, 200ms cubic-bezier(.2,0,0,1)); outer hit fixed. Bottom 3px border is a geometric stroke, not a generic elevation token. Provisional visuals awaiting designer browser comparison."
+      "notes": "Figma node 30:2 Button V2. Visible assembly scales (hover 1.02, pressed 0.95, 200ms cubic-bezier(.2,0,0,1)); outer hit fixed. Bottom 3px border is a geometric stroke, not a generic elevation token. Provisional visuals awaiting designer browser comparison.",
+      "r2VisualStatus": "Updated / Pending Review; Outline is Candidate / Pending Approval; existing defaults preserved"
     },
     {
       "id": "BA-UI-002",
@@ -87,7 +91,8 @@
         "radius": "full|standard",
         "distribution": "equal|hug",
         "aria-label": "BATabList required",
-        "id": "BATabPanel id matches tab id"
+        "id": "BATabPanel id matches tab id",
+        "appearance": "light | dark (default light; dark is Candidate / Pending Approval)"
       },
       "events": {
         "onSelectionChange": "(key: string) => void"
@@ -103,7 +108,8 @@
       "requirements": [
         "ARIA tabs",
         "Arrow-key interaction",
-        "Locale labels"
+        "Locale labels",
+        "R2 indicator has uniform 2px padding inside track border; scroll tab overflow horizontally; preserve readable labels"
       ],
       "requiredStories": [
         "LevelNavigation",
@@ -117,7 +123,8 @@
       "visualStatus": "ready-for-visual-review (not approved)",
       "notes": "React Aria Tabs/TabList/Tab/TabPanel semantics; same selection geometry and CSS as segmented, no RadioGroup. Styling parity is user-approved direction; exact browser visual review pending.",
       "reviewStatus": "Ready for Visual Review",
-      "reviewEntry": "Workbench / 01 · Level Tabs"
+      "reviewEntry": "Primitives/BATabs",
+      "r2VisualStatus": "Updated symmetric inset / Pending Review; Dark appearance Candidate / Pending Approval"
     },
     {
       "id": "BA-UI-003",
@@ -131,7 +138,8 @@
         "choiceMode": "single | multiple",
         "options": "ChoiceOption[]",
         "selectedKeys": "string[]",
-        "feedback": "ChoiceFeedback"
+        "feedback": "ChoiceFeedback",
+        "disabled": "boolean; semantic disabled colors, distinct from dim and graded read-only"
       },
       "events": {
         "onChange": "(keys) => void"
@@ -155,9 +163,9 @@
         "Use React Aria radio/checkbox semantics per task",
         "No scoring in component",
         "Option row radius 24px for short and long copy",
-        "Leading 36x36 status icon, 4px gap, text block padding 8px, letter-to-body gap 12px, outer padding 4px",
+        "Leading 36x36 status icon, 4px gap, text block padding 8px, letter-to-body gap 12px, outer padding --ba-choice-row-inset (6px, R2 Updated / Pending Review)",
         "Letter Dosis ExtraBold 800 18/20 nowrap; body Jost Medium 18px line-height 1.1",
-        "Min-height stays 50px; one-line composition is about 46px; wrapped rows grow and stay fully visible",
+        "Min-height stays 50px; one-line composition is 50px; wrapped rows grow and stay fully visible",
         "Row and text align flex-start so the icon stays with the first line",
         "Before Check a row is default or selected only. After Check, the picked correct option is correct (green fill #14AE5C, leading check); a correct option the learner did not pick is correctUnselected (green outline #14AE5C, leading check, no solid green disc); a wrong option is wrong (fill #9B4F36, X). dim is graded chrome at opacity 0.4. disabled is a separate non-interactive state",
         "default 默认: white, light border #C9B8B2, empty circle. selected 选中: selected fill #9B4F36 and a ring. correct 正确已选: green fill #14AE5C and a leading check. correctUnselected 正确未选: green outline #14AE5C and a leading check, no solid green disc. wrong 错误: fill #9B4F36 and an X. dim 变淡: graded chrome at opacity 0.4. #9B4F36 on selected and wrong is the selected fill, separate from the danger role of --ba-error. Aliases: idle is default, shown is correctUnselected",
@@ -265,7 +273,8 @@
       },
       "notes": "Canonical states: default, selected, correct, correctUnselected, wrong, dim. Aliases: idle is default, shown is correctUnselected. selected and wrong use fill #9B4F36 as the selected fill, separate from the danger role of --ba-error. correct is green fill #14AE5C with a leading check. correctUnselected is a green outline #14AE5C with a leading check and no solid green disc. dim is graded chrome at opacity 0.4. disabled is a separate non-interactive state. Before Check a row is default or selected. The row shows the letter, the body, and the leading icon. Border is 1px. Hover 1.02 and pressed 0.95 match the BAButton CTA. Reduced motion does not scale. One-line and wrapped rows use align-items flex-start. Grading and Coach feedback stay in PRODUCT.md.",
       "reviewStatus": "Ready for Visual Review",
-      "reviewEntry": "Workbench / 03 · Choice"
+      "reviewEntry": "Primitives/BAChoice",
+      "r2VisualStatus": "Updated symmetric inset and explicit disabled semantics / Pending Review; grading remains external"
     },
     {
       "id": "BA-UI-004",
@@ -561,13 +570,16 @@
       "implementation": "apps/writing/src/components/writing/WordGrid.tsx",
       "story": "apps/writing/src/components/writing/WordGrid.stories.tsx",
       "props": {
-        "groups": "WordGroup[]",
+        "groups": "WordGridGroup[]; word has optional selection(default|selected|used), evaluation(neutral|correct|incorrect|hint|shown), disabled, kind(word|punctuation|emoji|sentence), lang; legacy used/hint/shake supported",
         "activeGroup": "string",
-        "presentation": "docked | overlay"
+        "presentation": "docked | overlay",
+        "tabs": "auto | show | hide; auto preserves legacy single hidden / multiple shown",
+        "locale": "en | zh"
       },
       "events": {
         "onGroupChange": "(key) => void",
-        "onInsert": "(word) => void"
+        "onInsert": "(word) => void",
+        "onWordAction": "(word: WordGridWord, groupId: string) => void; takes precedence over legacy onInsert; parent owns selection/insertion/grading"
       },
       "states": [
         "hidden",
@@ -582,13 +594,15 @@
         "Tablet on-demand only within writing area",
         "Preserve caret",
         "Pill word options min 50px high and wrap in rows",
-        "Single group has no tab, multiple groups use sticky-note tabs with panel-connected active appearance",
+        "Single group tab is configurable show/hide; auto keeps legacy hidden. Multiple groups use connected sticky tabs and horizontal overflow.",
         "Tabs switch authored vocabulary data only, no grader mutation",
         "Approved peach connected sticky tabs joined to the bank, and white pill cards",
         "Ordered-build tabs are 本题词块, 观点, and 标点",
         "Apply tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点)",
         "Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match the Approved visuals wordgrid-ordered-build-approved and wordgrid-apply-approved",
-        "Ordered-build bench underlines are the writing-area line. The WordGrid panel is the word-card palette. Each remaining blank is an underline, one horizontal line per word still to place. Screen controls are the word cards and the Coach-rail button group. A placed word stays in the line"
+        "Ordered-build bench underlines are the writing-area line. The WordGrid panel is the word-card palette. Each remaining blank is an underline, one horizontal line per word still to place. Screen controls are the word cards and the Coach-rail button group. A placed word stays in the line",
+        "Used never implies disabled; product explicitly marks consumed ordered-build words disabled. The component never grades.",
+        "Sentence cards fill their row and wrap; word/punctuation/emoji keep complete content and touch targets. New selection/evaluation chrome is candidate only."
       ],
       "requiredStories": [
         "MultiGroup",
@@ -602,7 +616,8 @@
       "figma": null,
       "runtimeEvidence": null,
       "visualStatus": "Approved",
-      "notes": "Joe Approved the WordGrid peach connected sticky-tab bank and white pill cards. The ordered-build bank tabs are 本题词块, 观点, and 标点. The Apply bank tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点). The active tab joins the peach bank. Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match wordgrid-ordered-build-approved.png and wordgrid-apply-approved.png. A single group shows its cards directly. Ordered-build empty slots are underlines. The ordered-build controls are the word cards and the Coach-rail button group. A placed word stays in the line. PRODUCT.md chapter 12 owns the per-word hint and grading."
+      "notes": "Joe Approved the WordGrid peach connected sticky-tab bank and white pill cards. The ordered-build bank tabs are 本题词块, 观点, and 标点. The Apply bank tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点). The active tab joins the peach bank. Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match wordgrid-ordered-build-approved.png and wordgrid-apply-approved.png. A single group shows its cards directly. Ordered-build empty slots are underlines. The ordered-build controls are the word cards and the Coach-rail button group. A placed word stays in the line. PRODUCT.md chapter 12 owns the per-word hint and grading.",
+      "r2VisualStatus": "Existing neutral peach bank Approved; explicit selection/evaluation/sentence extensions Candidate / Pending Approval"
     },
     {
       "id": "BA-WR-004",
@@ -663,10 +678,13 @@
         "state": "start | continue | review | locked | skipped",
         "minutes": "number (optional; localized minutes in component)",
         "locale": "en | zh",
-        "detail": "string (legacy fallback)"
+        "detail": "string (legacy fallback)",
+        "titleLines": "2 | 3; existing path default 2 preserved; R2 library explicitly uses 3",
+        "current": "boolean optional; allows current course with Start or Continue supplied by state"
       },
       "events": {
-        "onEnter": "(lessonId) => void"
+        "onEnter": "(lessonId) => void",
+        "onBlocked": "(lessonId) => void; optional blocked-attempt explanation, never entry. CourseApp retains its guarded session handler."
       },
       "states": [
         "start",
@@ -684,13 +702,14 @@
         "Desktop and Tablet visual evidence, EN/ZH long-title checks; designer signoff required",
         "CTA height 70px, Start/Continue/Review according to real status; completed always Review",
         "Paper surface white with rounded corners, warm base shadow and readable long content",
-        "Title fixed to exactly 2 line boxes; text clamped at 2, reserve empty second line, accessible complete title",
+        "titleLines selects 2 (legacy path) or 3 (R2 library); reserve same slot across states and preserve full accessible title",
         "Duration number + localized unit immediately below title on same left content axis",
         "CTA MUST render shared BAButton height 70px with working hover/pressed/focus/reduced-motion states",
         "All Lesson cards same height for equivalent viewport/tier",
         "R3 number seal is primary identity; small attached status symbol current/done/locked; no wide status capsules or visible redundant phrases",
-        "Two-line title, left-aligned time, 70px actual BAButton; card/CTA concentric corner relationships",
-        "Preserve same card bottom/platform anchor under new rounded landscape terrace"
+        "Configurable two/three-line title, left-aligned time, 70px actual BAButton; card/CTA concentric corner relationships",
+        "Preserve same card bottom/platform anchor under new rounded landscape terrace",
+        "R2 CTA visible BAButton assembly fills card content width, height 70px, full pill; locked does not call onEnter. Current outline and three-line layout await rendered review."
       ],
       "requiredStories": [
         "Start",
@@ -709,7 +728,8 @@
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
       "notes": "Candidate Warm Frame. Not validated and not visually approved. Lesson number stays top left. Action labels are Start / Continue / Review / Locked. Skipped keeps Review plus a mastered label. The card does not grant unlock.",
       "reviewStatus": "Ready for Visual Review",
-      "reviewEntry": "Workbench / 02 · Lesson Card"
+      "reviewEntry": "Writing/Path/StairLessonCard",
+      "r2VisualStatus": "Updated full-width CTA and opt-in three-line/current treatment / Pending Review; product gating unchanged"
     },
     {
       "id": "BA-WR-006",
@@ -1038,7 +1058,7 @@
       ],
       "notes": "LandscapeTerrace (BA-WR-010) specifies 2–3 shallow rounded grass layers under each node. The interim scene, implemented in StaircaseScene, paints one platform per node (352×64, card bottom on the platform). Numeric geometry remains [E].",
       "reviewStatus": "Ready for Visual Review",
-      "reviewEntry": "Workbench / 02 · Lesson Card",
+      "reviewEntry": "Writing/Path/StairLessonCard",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx (FullComposition)"
     }
   ],

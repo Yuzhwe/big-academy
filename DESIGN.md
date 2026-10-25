@@ -745,3 +745,14 @@ The visible choice row is the letter, the body, and the leading icon. `correct` 
 - **Approved Design Governance:** A · lightweight; significant changes reviewed, ordinary agent implementation autonomous; separate engineering and visual acceptance, GitHub PR/HANDOFF records.
 - **Current verification gaps:** confirm component consumption of token aliases, responsive sizing and status colors; validate contrast and rendered elevation; implement and test the Motion Runtime (numerical spring parameters already exist, but do not execute animations on their own). Do not infer absence of an entire token family merely because integration evidence is missing.
 - **Gate:** this rewritten canonical specification is under UI/UX Designer review; implementation approval separately requires a running component, Storybook states and browser QA. Component contract and product docs remain authoritative for UI interfaces and learning rules.
+
+
+## Component Library R2 — scoped review additions (2026-10-25)
+
+The explicit R2 request permits a three-line LessonCard title and configurable single-group WordGrid tabs. The library sets `titleLines=3`; existing Writing path defaults retain two lines until scene-level review, preserving anchors. CTA visible assembly fills the content width at its existing 70px height. Current and Available remain distinct presentation roles supplied by the caller.
+
+R2 replaces the Choice row's asymmetric spare minimum-height space with a symmetric 6px candidate inset (36px icon + 12px padding + 2px border = 50px). Text-block inset, radius, grading colors and product grading remain unchanged. Disabled uses the existing disabled surface/content/border tokens; dim remains a separate state. BATabs receives equal indicator insets and horizontally scrollable overflow. These geometric updates are Updated / Pending Review.
+
+Outline BAButton, Dark BATabs, and explicit WordGrid selection/evaluation visuals are Candidate / Pending Approval and must not silently become Writing defaults. WordGrid's neutral peach bank remains Approved. Single-tab show/hide and sentence full-row wrapping are authorized R2 behaviors. `used` does not imply `disabled`; the Writing adapter explicitly disables consumed ordered-build words, retaining its no-undo rule. Free-build undo and deterministic feedback in the component library are clearly labeled demonstration data, not new curriculum logic.
+
+The current path uses the existing LandscapeTerrace, not a new cloud asset. R2 composition previews reuse that decoration unchanged. Root DESIGN.md and the existing PRODUCT/contracts remain authoritative; no second design specification is introduced.

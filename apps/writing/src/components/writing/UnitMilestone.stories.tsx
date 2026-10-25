@@ -2,8 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { UnitMilestone } from './UnitMilestone';
 
 const meta = {
-  title: 'Writing/UnitMilestone',
+  title: 'Writing/Path/UnitMilestone',
   component: UnitMilestone,
+  parameters: { ba: { contractId: 'BA-WR-006', status: 'candidate-warm-frame', owner: 'Writing', purpose: 'Unit completion and celebration entry' } },
   args: {
     unitId: 'G2-O',
     title: 'Opinion Paragraph',

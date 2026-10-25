@@ -18,6 +18,7 @@
   },
   "include": [
     "vitest.setup.ts",
+    "apps/library/src/**/*.test.tsx",
     "packages/design-system/src/**/*.test.tsx",
     "packages/design-system/src/**/*.stories.tsx",
     "apps/writing/src/**/*.test.tsx",

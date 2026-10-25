@@ -3,10 +3,10 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { BATabs, BATabList, BATabPanel } from './BATabs';
 
 const meta = {
-  title: 'Workbench / 01 · Level Tabs (BA-UI-002)',
+  title: 'Primitives/BATabs',
   component: BATabs,
+  parameters: { ba: { contractId: 'BA-UI-002', status: 'ready-for-visual-review', owner: 'Design System', purpose: 'Level navigation with keyboard and locale support' }, layout: 'centered' },
   args: { defaultSelectedKey: 'L2', children: <span>Interactive controls below</span> },
-  parameters: { layout: 'centered' },
 } satisfies Meta<typeof BATabs>;
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -36,3 +36,11 @@ export const KeyboardFocus: Story = { render: () => <div><p>Tab into the strip, 
 export const LevelTabs = LevelNavigation;
 export const StrongSubtle: Story = { render: () => <LiveTabs size={50}/> };
 
+
+function R2Tabs({dark=false}:{dark?:boolean}) {
+  const [selected,setSelected]=useState('0');
+  const options=Array.from({length:10},(_,i)=>({id:String(i),label:`Level ${i} · Learning progress`,disabled:i===9}));
+  return <div style={{width:320,padding:16,background:dark?'var(--ba-brand-dark)':'var(--ba-paper)'}}><BATabs selectedKey={selected} onSelectionChange={setSelected}><BATabList options={options} selectedKey={selected} appearance={dark?'dark':'light'} aria-label="R2 overflow tabs"/>{options.map(o=><BATabPanel key={o.id} id={o.id}>{o.label}</BATabPanel>)}</BATabs></div>;
+}
+export const R2LightOverflow: Story = {render:()=><R2Tabs/>};
+export const R2DarkCandidate: Story = {render:()=><R2Tabs dark/>};

@@ -9,10 +9,13 @@ export interface StairLessonCardProps {
   title: string;
   state: StairLessonState;
   minutes?: number;
+  current?: boolean;
+  titleLines?: 2 | 3;
   /** Legacy supporting text: only shown when a duration was not supplied. */
   detail?: string;
   locale?: BALocale;
   onEnter?: (lessonId: string) => void;
+  onBlocked?: (lessonId: string) => void;
 }
 
 const actionLabel: Record<BALocale, Record<StairLessonState, string>> = {
@@ -31,7 +34,7 @@ const statusLabel: Record<BALocale, Record<StairLessonState, string>> = {
  * Geometry and seal details remain candidates until designer visual review.
  */
 export function StairLessonCard({
-  lessonId, number, title, state, minutes, detail, locale = 'en', onEnter,
+  lessonId, number, title, state, minutes, detail, locale = 'en', onEnter, onBlocked, current, titleLines = 2,
 }: StairLessonCardProps) {
   const locked = state === 'locked';
   const complete = state === 'review' || state === 'skipped';
@@ -42,12 +45,14 @@ export function StairLessonCard({
       className="stair-lesson-card"
       data-component="BA-WR-005"
       data-state={state}
+      data-current={current ?? state === 'continue'}
+      data-title-lines={titleLines}
       data-lesson-id={lessonId}
       lang={locale === 'zh' ? 'zh-CN' : 'en'}
       aria-label={(locale === 'zh' ? '第' + number + '课' : 'Lesson ' + number) + ': ' + title + ' · ' + stateText}
-      onPointerDownCapture={locked ? () => onEnter?.(lessonId) : undefined}
+      onPointerDownCapture={locked ? () => onBlocked?.(lessonId) : undefined}
       onKeyDownCapture={locked ? (event) => {
-        if (event.key === 'Enter' || event.key === ' ') onEnter?.(lessonId);
+        if (event.key === 'Enter' || event.key === ' ') onBlocked?.(lessonId);
       } : undefined}
     >
       <div className="stair-lesson-card__seal" aria-hidden="true">
@@ -79,7 +84,8 @@ export function StairLessonCard({
         locale={locale}
         disabled={locked}
         dataAttributes={{ 'data-testid': 'lesson-row', 'data-state': state, 'data-lesson-focus': lessonId }}
-        onPress={() => onEnter?.(lessonId)}
+        layout="full"
+        onPress={() => { if (!locked) onEnter?.(lessonId); }}
       >
         {label}
       </BAButton>
