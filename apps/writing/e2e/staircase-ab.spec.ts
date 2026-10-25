@@ -2,6 +2,7 @@ import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 
+test.use({ reducedMotion: 'reduce' });
 const evidenceDir = resolve(import.meta.dirname, '../docs/evidence/staircase-ab');
 
 async function visibleTerraces(page: Page) {
@@ -10,7 +11,8 @@ async function visibleTerraces(page: Page) {
     return [...document.querySelectorAll('.staircase-rail .course-nodes > li')].flatMap((node) => {
       const box = node.getBoundingClientRect();
       if (box.right <= stage.left + 1 || box.left >= stage.right - 1) return [];
-      const platform = parseFloat(getComputedStyle(node, '::before').height) || 0;
+      const pseudo = getComputedStyle(node, '::before');
+      const platform = pseudo.content === 'none' ? 0 : (parseFloat(pseudo.height) || 0) - 49;
       const top = box.top - stage.top;
       const bottom = box.bottom + platform + 6 - stage.top;
       if (top >= -1 && bottom <= stage.height + 1) return [];
@@ -24,6 +26,7 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
   mkdirSync(evidenceDir, { recursive: true });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   const scene = page.locator('.staircase-viewport');
 
   await expect(scene).toHaveAttribute('data-landscape', 'v2-terraces');
@@ -37,7 +40,7 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
     const box = (sel: string) => document.querySelector(sel)!.getBoundingClientRect();
     const hill1 = box('[data-testid="path-hill-1"]');
     const hill2 = box('[data-testid="path-hill-2"]');
-    const cloud = box('[data-testid="path-cloud"] img');
+    const cloud = box('[data-testid="path-cloud"]');
     return {
       sky: read('[data-testid="path-sky"]'),
       cloud: read('[data-testid="path-cloud"]'),
@@ -78,7 +81,7 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
   expect(layers.hill1Right).toBeGreaterThanOrEqual(layers.stageRight - 1);
   expect(layers.hill2Left).toBeLessThanOrEqual(layers.stageLeft + 1);
   expect(layers.hill2Right).toBeGreaterThanOrEqual(layers.stageRight - 1);
-  expect(Math.abs(layers.hill1Right - layers.hill2Right)).toBeLessThanOrEqual(1);
+  expect(Math.abs((layers.hill1Right - layers.hill1Left) - (layers.hill2Right - layers.hill2Left))).toBeLessThanOrEqual(1);
   expect(layers.cloudBottom).toBeGreaterThan(layers.stageTop);
   expect(layers.cloudTop).toBeLessThan(layers.stageBottom);
   const track = Number(await scene.getAttribute('data-track-length'));
@@ -130,11 +133,11 @@ test('E-01 v2-terraces layers, parallax, and lesson lock', async ({ page }) => {
     const before = getComputedStyle(el, '::before');
     return { width: before.width, height: before.height, content: before.content };
   });
-  expect(platform.width).toBe('352px');
-  expect(platform.height).toBe('64px');
+  expect(platform.width).toBe('300px');
+  expect(platform.height).toBe('94px');
   expect(platform.content).not.toBe('none');
 
-  await page.locator('[data-lesson-focus="G2-O:2"]').click();
+  await page.locator('[data-lesson-id="G2-O:2"] .stair-lesson-card__title').click();
   await expect(page.getByTestId('locked-note')).toContainText(/Lesson 1/);
   await expect(page).toHaveURL(/\/$/);
 
@@ -151,6 +154,8 @@ test('card height never moves the terrace anchor', async ({ page }) => {
   const viewport = page.locator('.staircase-viewport');
   await expect(viewport).toHaveAttribute('data-anchor-basis', 'pedestal-y');
   const li = page.locator('.staircase-rail .course-nodes > li').filter({ has: page.locator('.stair-lesson-card') }).first();
+  await page.evaluate(() => document.fonts.ready);
+  await li.locator('button').click({ trial: true });
   const before = await li.evaluate((el) => {
     const rect = el.getBoundingClientRect();
     return { top: rect.top, bottom: rect.bottom, height: rect.height };
@@ -162,9 +167,13 @@ test('card height never moves the terrace anchor', async ({ page }) => {
     const rect = el.getBoundingClientRect();
     return { top: rect.top, bottom: rect.bottom, height: rect.height };
   });
-  expect(after.height).toBeGreaterThan(before.height);
+  expect(after.height).toBe(before.height); // Three-line title slot truncates long content.
+  await li.locator('.stair-lesson-card').evaluate((el, height) => { el.style.minHeight = (height + 80) + 'px'; }, before.height);
+  const expanded = await li.boundingBox();
+  expect(expanded!.height).toBeGreaterThan(before.height);
+  expect(Math.abs(expanded!.y + expanded!.height - before.bottom)).toBeLessThanOrEqual(1);
   expect(Math.abs(after.bottom - before.bottom)).toBeLessThanOrEqual(1);
-  expect(after.top).toBeLessThan(before.top);
+  expect(expanded!.y).toBeLessThan(before.top);
 });
 
 test('desktop and 834: one row header with geometrically centered accessible Level Tablist', async ({ page }) => {

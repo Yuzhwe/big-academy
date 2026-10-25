@@ -136,3 +136,8 @@
     animation: none;
   }
 }
+
+/* Canonical Back is icon-only at every width, including wide desktop. */
+.lesson-topbar__back.ba-button { width:var(--ba-writing-back-size); height:var(--ba-writing-back-size); padding:0; flex:none; }
+.lesson-topbar__back .ba-button__assembly { width:100%; height:100%; border-radius:var(--ba-radius-circle); }
+.lesson-topbar__number { font-family:var(--ba-font-digit); font-weight:800; }

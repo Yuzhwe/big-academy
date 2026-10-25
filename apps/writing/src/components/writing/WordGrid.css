@@ -24,7 +24,7 @@
   border-radius: 14px 14px 0 0;
   background: color-mix(in srgb, var(--word-tab) 55%, white);
   color: var(--ba-brand-dark, #133547);
-  font: 700 15px/1.2 var(--ba-font-heading-en, "Dosis", sans-serif);
+  font: 800 15px/1.2 var(--ba-font-heading-en, "Dosis", sans-serif);
   cursor: pointer;
 }
 
@@ -112,3 +112,17 @@
 
 /* Preserve legacy approved used-word presentation in existing Writing callers. */
 .word-grid__card[data-used='true']:not([data-extended]) { background:var(--ba-paper); color:var(--ba-brand-dark); box-shadow:none; opacity:.45; cursor:default; }
+
+/* The selected tab joins the bank. Reverse curves close both tab shoulders. */
+.word-grid__tabs { margin:0; gap:var(--ba-wordgrid-tab-gap); overflow:visible; padding-inline:0; }
+.word-grid__tab { border-radius:var(--ba-wordgrid-tab-radius) var(--ba-wordgrid-tab-radius) 0 0; }
+.word-grid__tab[data-selected] { isolation:isolate; margin-bottom:0; }
+.word-grid__tab[data-selected]::before,.word-grid__tab[data-selected]::after {
+  content:''; position:absolute; bottom:0; width:var(--ba-wordgrid-tab-radius); height:var(--ba-wordgrid-tab-radius); pointer-events:none;
+}
+.word-grid__tab[data-selected]::before { right:100%; background:radial-gradient(circle at 0 0,transparent 70%,var(--word-tab) 72%); }
+.word-grid__tab[data-selected]::after { left:100%; background:radial-gradient(circle at 100% 0,transparent 70%,var(--word-tab) 72%); }
+.word-grid__tab:first-child[data-selected]::before { display:none; }
+.word-grid__panel { border-radius:var(--ba-wordgrid-radius); }
+.word-grid[data-first-active='true'] .word-grid__panel { border-start-start-radius:0; }
+@media(max-width:600px) { .word-grid__tabs { overflow-x:auto; } .word-grid__tab { padding-inline:var(--ba-space-2); } }

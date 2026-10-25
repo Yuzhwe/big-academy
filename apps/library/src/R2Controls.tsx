@@ -6,7 +6,7 @@ function Select({label,value,items,onChange}:{label:string;value:string;items:re
 export function R2Controls({scene,update}:{scene:Scene;update:(patch:Partial<Scene>)=>void}) {
   const field=(key:keyof Scene,label:string,items:readonly (readonly [string,string])[])=><Select label={label} value={String(scene[key])} items={items} onChange={v=>update({[key]:v})}/>;
   return <>
-    {['button','tabs'].includes(scene.component)&&field('background','预览背景',[['light','Light · 浅底'],['dark','Dark · 深底']])}
+    {['button','tabs'].includes(scene.component)&&field('background','预览背景',[['light','Light · 浅底'],['dark','Dark · 深底'],['glass','Glass · 玻璃候选']])}
     {scene.component==='button'&&<>{field('buttonContent','内容组合',[['text','纯文字'],['icon','纯图标'],['leading','图标在前'],['trailing','图标在后']])}{field('layout','按钮宽度',[['hug','内容自适应'],['fixed','固定 240px'],['full','Fill Container']])}</>}
     {scene.component==='tabs'&&field('tabCount','标签数量',[['1','1 个'],['2','2 个'],['4','4 个'],['10','10 个']])}
     {scene.component==='choice'&&field('material','内容语言',[['en','英文学习材料'],['zh','中文排版样例']])}

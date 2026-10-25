@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-26",
+  "baseline": "e2886bab2e013252ae1f358cf5b9711677f34a35",
+  "docs": "passed",
+  "typecheck": "passed",
+  "unitTests": {
+    "passed": 83,
+    "files": 16
+  },
+  "playwright": {
+    "passed": 24,
+    "includesIntegration": 8
+  },
+  "build": [
+    "design-system",
+    "writing",
+    "storybook",
+    "library"
+  ],
+  "axe": {
+    "scenarios": [
+      "path",
+      "learn",
+      "choice-correct"
+    ],
+    "violations": 0
+  },
+  "screenshots": 40,
+  "limits": [
+    "Physical device and screen-reader tests not run",
+    "200 percent layout simulation, not native menu zoom",
+    "Full R2 Design Review 01 unavailable",
+    "Missing Douyin distributable font",
+    "Existing build chunk warnings"
+  ]
+}

@@ -92,7 +92,7 @@
         "distribution": "equal|hug",
         "aria-label": "BATabList required",
         "id": "BATabPanel id matches tab id",
-        "appearance": "light | dark (default light; dark is Candidate / Pending Approval)"
+        "appearance": "light | dark | glass; dark/glass candidates pending designer acceptance"
       },
       "events": {
         "onSelectionChange": "(key: string) => void"
@@ -119,8 +119,8 @@
         "KeyboardFocus"
       ],
       "figma": "Design decision 2026-10-20: visual style same as Figma Segmented Control 806:3",
-      "runtimeEvidence": null,
-      "visualStatus": "ready-for-visual-review (not approved)",
+      "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
+      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
       "notes": "React Aria Tabs/TabList/Tab/TabPanel semantics; same selection geometry and CSS as segmented, no RadioGroup. Styling parity is user-approved direction; exact browser visual review pending.",
       "reviewStatus": "Ready for Visual Review",
       "reviewEntry": "Primitives/BATabs",
@@ -190,8 +190,8 @@
         "MultipleInteractive"
       ],
       "figma": null,
-      "runtimeEvidence": null,
-      "visualStatus": "ready-for-visual-review (not approved)",
+      "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
+      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
       "visual": {
         "status": "locked",
         "approved": false,
@@ -456,7 +456,7 @@
       "kind": "composite",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "index digit in every state, no bottom divider, and the 834 title ellipsis 「第1课 主·」 are locked",
+      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
       "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
       "props": {
@@ -507,7 +507,7 @@
         "PopoverMatchingIndicators"
       ],
       "figma": null,
-      "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
+      "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
       "notes": "Popover and TopBar reuse exactly one ActivityScreenIndicator implementation. Every step circle shows its index. The lesson TopBar has no horizontal divider between the bar and the lesson content. At tablet 834 the lesson-title ellipsis stays 「第1课 主·」. The lesson runtime now keeps the digit and has no bar divider."
     },
     {
@@ -614,8 +614,8 @@
         "WordWrapTablet"
       ],
       "figma": null,
-      "runtimeEvidence": null,
-      "visualStatus": "Approved",
+      "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
+      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
       "notes": "Joe Approved the WordGrid peach connected sticky-tab bank and white pill cards. The ordered-build bank tabs are 本题词块, 观点, and 标点. The Apply bank tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点). The active tab joins the peach bank. Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match wordgrid-ordered-build-approved.png and wordgrid-apply-approved.png. A single group shows its cards directly. Ordered-build empty slots are underlines. The ordered-build controls are the word cards and the Coach-rail button group. A placed word stays in the line. PRODUCT.md chapter 12 owns the per-word hint and grading.",
       "r2VisualStatus": "Existing neutral peach bank Approved; explicit selection/evaluation/sentence extensions Candidate / Pending Approval"
     },
@@ -668,7 +668,7 @@
       "kind": "composite",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "ready-for-visual-review (not approved)",
+      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
       "implementation": "apps/writing/src/components/writing/StairLessonCard.tsx",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx",
       "props": {
@@ -679,7 +679,7 @@
         "minutes": "number (optional; localized minutes in component)",
         "locale": "en | zh",
         "detail": "string (legacy fallback)",
-        "titleLines": "2 | 3; existing path default 2 preserved; R2 library explicitly uses 3",
+        "titleLines": "2 | 3; default 3 per confirmed integration request",
         "current": "boolean optional; allows current course with Start or Continue supplied by state"
       },
       "events": {
@@ -725,8 +725,8 @@
         "KeyboardFocus"
       ],
       "figma": null,
-      "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
-      "notes": "Candidate Warm Frame. Not validated and not visually approved. Lesson number stays top left. Action labels are Start / Continue / Review / Locked. Skipped keeps Review plus a mastered label. The card does not grant unlock.",
+      "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
+      "notes": "Candidate Warm Frame. Not validated and not visually approved. Lesson number stays top left. Action labels are Start / Continue / Review / Locked. Skipped keeps Review plus a mastered label. The card does not grant unlock. Integration v1 uses three reserved title lines by default; current/completed/locked roles preserve Start/Continue/Review/Locked/Skipped actions.",
       "reviewStatus": "Ready for Visual Review",
       "reviewEntry": "Writing/Path/StairLessonCard",
       "r2VisualStatus": "Updated full-width CTA and opt-in three-line/current treatment / Pending Review; product gating unchanged"
@@ -737,7 +737,7 @@
       "kind": "composite",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "candidate-warm-frame",
+      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
       "implementation": "apps/writing/src/components/writing/UnitMilestone.tsx",
       "story": "apps/writing/src/components/writing/UnitMilestone.stories.tsx",
       "props": {
@@ -766,7 +766,7 @@
         "ManualReplay"
       ],
       "figma": null,
-      "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
+      "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
       "notes": "Candidate Warm Frame. Not validated and not visually approved. Completed state is injected from Alex lesson states. Confetti receipt is UI-only and does not unlock anything. Level Goal formula stays open."
     },
     {
@@ -1034,7 +1034,7 @@
       "kind": "writing-presentation-composite",
       "contractVersion": "0.1.0-r3",
       "status": "implemented-interim-scene-and-story-decoration",
-      "visualStatus": "ready-for-visual-review (not approved)",
+      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
       "implementation": "apps/writing/src/components/writing/LandscapeTerrace.css; apps/writing/src/components/writing/LandscapeTerrace.tsx; used by apps/writing/src/course/StaircaseScene.css",
       "props": {
         "nodeId": "string",
@@ -1056,10 +1056,11 @@
         "FullComposition",
         "CardOnly"
       ],
-      "notes": "LandscapeTerrace (BA-WR-010) specifies 2–3 shallow rounded grass layers under each node. The interim scene, implemented in StaircaseScene, paints one platform per node (352×64, card bottom on the platform). Numeric geometry remains [E].",
+      "notes": "R2.12 supplied cloud-platform.webp replaces CSS green terrace. Decorative; no progress ownership. Scene and component library consume the same image and positioning CSS.",
       "reviewStatus": "Ready for Visual Review",
       "reviewEntry": "Writing/Path/StairLessonCard",
-      "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx (FullComposition)"
+      "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx (FullComposition)",
+      "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md"
     }
   ],
   "currentDirection": {

@@ -75,3 +75,13 @@ Branch: \`feat/component-workbench-pilot-20261024\` (unmerged). UI status: **Rea
 - Version delivery uses `feat/component-library-r2` from the byte-verified current `feat/component-workbench-pilot-20261024` baseline (efa38def), per this task's explicit current-baseline instruction. This supplied directory has no .git; the GitHub connector is used for commit/PR. Neither main nor Vercel is changed. Technical verification is not designer approval.
 
 - Review screenshots remain local-only by user decision on 2026-10-26. The review branch includes source and the text report, not image artifacts. Other checkouts show a local-evidence notice instead of requesting absent screenshots.
+
+## Writing Hi-Fi Integration v1.0 · 2026-10-26
+
+Implemented on an isolated branch from byte-verified PR #51/e2886bab, with the remote delivery commit retaining that actual parent. The local supplied workspace had no Git metadata; the isolated local snapshot history is documented in `apps/writing/docs/INTEGRATION_V1.md`.
+
+Shared component updates, R2.12 cloud/scenery/badge/flag migration, canonical Lesson 1's eight screens, first/second assessment sets, distinct mastery/non-mastery outcomes, Lesson End/Review, feedback and caret/provenance recovery are integrated. Edit writes debounce 250ms; navigation, grading and page exit flush immediately. No additional course content, main merge or Vercel deployment. Git deployments disabled in this review branch.
+
+Mac entry: `Start Big Academy.command`. Local Writing: http://127.0.0.1:5174/. Component library and Storybook remain independent. Local screenshots/gallery and detailed validation/known issues are linked in `apps/writing/docs/INTEGRATION_V1.md`; final check counts are recorded there after the last run.
+
+Visual status is in-review. Do not merge before designer acceptance. The complete R2 Design Review 01 and the exact `(1)`-suffixed HTML were unavailable; explicit current-request review items and the located R2.12 reference are implemented. Douyin asset, physical-device/screen-reader/native-menu-zoom tests, source localization gaps and PRODUCT §19 owner decisions remain as documented limitations.

@@ -55,7 +55,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
     return <div className="preview-example"><BATabs selectedKey={active} onSelectionChange={key=>{setTab(key);update?.({tabActive:key});}}>
       <BATabList options={options} selectedKey={active} size={scene.size} appearance={scene.background} aria-label={zh ? '选择级别' : 'Choose level'} />
       {options.map(o => <BATabPanel key={o.id} id={o.id}><p className="preview-result">{zh ? '当前级别' : 'Current level'}: {o.id}</p></BATabPanel>)}
-    </BATabs>{scene.background==='dark'&&<p className="candidate-label">Dark · Candidate / Pending Approval</p>}
+    </BATabs>{scene.background!=='light'&&<p className="candidate-label">{scene.background} · Candidate / Pending Approval</p>}
     {['hover','pressed','focus'].includes(state)&&<p>{zh?'悬停、按住或用方向键切换，观察真实交互。':'Hover, hold or use arrow keys to explore the actual interactions.'}</p>}</div>;
   }
   if (scene.component === 'lesson') {
@@ -70,7 +70,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
   if (scene.component === 'words') return <WordPlayground scene={scene} update={update}/>;
   const tasks: TaskProgressItem[] = Array.from({ length: 8 }, (_, i) => ({
     id: String(i + 1), label: zh ? `活动 ${i + 1}` : `Activity ${i + 1}`,
-    status: i === activity ? 'current' : i < 2 ? 'done' : i === 2 ? 'available' : 'locked',
+    status: state === 'done' && i <= activity ? 'done' : state === 'skipped' && i < activity ? 'skipped' : i < 2 ? 'done' : i === 2 ? 'available' : 'locked',
   }));
   return <div className="preview-example preview-example--wide"><LessonTopBar lessonNumber={zh ? '第1课' : 'Lesson 1'}
     lessonTitle={scene.sample === 'long' || state === 'long' ? (zh ? '学习如何用主题句清晰表达自己的观点和理由' : 'Writing a convincing topic sentence for a detailed opinion paragraph') : (zh ? '主题句' : 'Topic sentences')}

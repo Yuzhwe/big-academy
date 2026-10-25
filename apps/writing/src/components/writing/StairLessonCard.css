@@ -128,3 +128,8 @@
 .stair-lesson-card[data-current='true'][data-title-lines='3'] { border-color:var(--ba-color-action-primary); box-shadow:0 0 0 2px var(--ba-color-action-primary); }
 .stair-lesson-card[data-current='true'] .stair-lesson-card__seal { background:var(--ba-color-brand-10); color:var(--ba-color-surface-canvas); }
 .stair-lesson-card[data-state='locked'][data-title-lines='3'] { background:var(--ba-color-disabled-surface); color:var(--ba-color-disabled-content); border-color:var(--ba-color-disabled-border); }
+
+/* R2 roles: current, completed and locked; Start/Continue retain distinct actions. */
+.stair-lesson-card[data-current='true'] { border-color:var(--ba-color-action-primary); box-shadow:var(--ba-lesson-current-shadow); }
+.stair-lesson-card[data-state='review'] .stair-lesson-card__seal,
+.stair-lesson-card[data-state='skipped'] .stair-lesson-card__seal { border-color:var(--ba-color-success-fill); color:var(--ba-color-success-text); }

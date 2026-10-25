@@ -34,7 +34,7 @@ const statusLabel: Record<BALocale, Record<StairLessonState, string>> = {
  * Geometry and seal details remain candidates until designer visual review.
  */
 export function StairLessonCard({
-  lessonId, number, title, state, minutes, detail, locale = 'en', onEnter, onBlocked, current, titleLines = 2,
+  lessonId, number, title, state, minutes, detail, locale = 'en', onEnter, onBlocked, current, titleLines = 3,
 }: StairLessonCardProps) {
   const locked = state === 'locked';
   const complete = state === 'review' || state === 'skipped';

@@ -31,7 +31,7 @@ export interface BATabListProps {
   'aria-label': string;
   size?: BASegmentSize;
   emphasis?: 'strong' | 'subtle';
-  appearance?: 'light' | 'dark';
+  appearance?: 'light' | 'dark' | 'glass';
   radius?: 'full' | 'standard';
   distribution?: 'equal' | 'hug';
   className?: string;
@@ -70,7 +70,7 @@ export function BATabList({
     '--ba-seg-indicator-opacity': rect?1:0,
   } as CSSProperties;
   return <div ref={rootRef} data-component="BA-UI-002-TABLIST"
-      data-size={size} data-emphasis={emphasis} data-appearance={appearance} data-visual-review={appearance === 'dark' ? 'candidate' : 'updated'} data-radius={radius}
+      data-size={size} data-emphasis={emphasis} data-appearance={appearance} data-visual-review={appearance !== 'light' ? 'candidate' : 'updated'} data-radius={radius}
       data-distribution={distribution}
       className={['ba-segmented','ba-tabs__wrapper',className].filter(Boolean).join(' ')}>
     <TabList className="ba-segmented__track ba-tabs__tablist" aria-label={label} style={style}>

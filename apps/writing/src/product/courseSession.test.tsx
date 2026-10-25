@@ -296,19 +296,17 @@ describe('Lesson 1 screens 5–8', () => {
     reach(course, (screen) => screen.task === 'ss.L2-04');
     render(<CourseApp session={course} />);
     expect(screen.queryByRole('button', { name: /Start again|重新开始/ })).not.toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: '本题词块' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: '观点' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: '标点' })).toBeInTheDocument();
+    expect(screen.queryByRole('tablist')).not.toBeInTheDocument(); // PRODUCT §12.1: one authored build group
     expect(screen.getByTestId('lesson-footer')).toHaveAttribute('data-span', 'rail');
     expect(screen.getByTestId('build-bench').textContent).not.toMatch(/…|\.{3}/);
     expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
     expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
-    const garden = screen.getByRole('button', { name: 'garden' });
+    const garden = screen.getByRole('button', { name: /^garden(?: ·.*)?$/ });
     await user.click(garden);
-    expect(screen.getByRole('button', { name: 'garden' })).not.toHaveAttribute('data-hint', 'true');
+    expect(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ })).not.toHaveAttribute('data-hint', 'true');
     expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
-    await user.click(screen.getByRole('button', { name: 'garden' }));
-    expect(screen.getByRole('button', { name: 'garden' })).toHaveAttribute('data-hint', 'true');
+    await user.click(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ }));
+    expect(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ })).toHaveAttribute('data-hint', 'true');
     expect(screen.getByRole('button', { name: 'school' })).not.toHaveAttribute('data-hint', 'true');
     expect(screen.getByTestId('feedback')).toHaveAttribute('data-outcome', 'wrong');
     await user.click(screen.getByRole('button', { name: 'our' }));
@@ -359,4 +357,34 @@ describe('Lesson 1 screens 5–8', () => {
     expect(course.inspect().checks['L2-04.check']?.passed).toBe(false);
     expect(JSON.stringify(course.inspect())).not.toContain('celebrated');
   });
+});
+
+describe('integration v1 recovery and assessment boundaries',()=>{
+ it('persists wrong-attempt feedback without regrading on reload',()=>{
+  const storage=createMemoryStorage();const course=session('',storage);course.openLesson('G2-O',1);course.pressPrimary();course.pick(0);course.pressPrimary();const feedback=course.feedback;
+  const restored=session('',storage);restored.openLesson('G2-O',1);expect(restored.activity()?.feedback).toBe(feedback);expect(restored.inspect().tasks['L2-04.skill:ts1'].tries).toBe(1);
+ });
+ it('inserts in a focused frame blank at the caret',()=>{
+  const course=session();reach(course,s=>s.task==='ts8');course.setBlank(1,'kids play');course.focusBlank(1);course.setCaret(5,5);course.placeCard('need');expect(course.activity()?.frame?.blanks[1].value).toBe('kids need play');
+ });
+ it('preserves pasted and word-grid source spans while typing elsewhere',()=>{
+  const course=session();reach(course,s=>s.kind==='apply');course.markPaste();course.setCanvas('Our garden.');course.setCaret(4,4);course.placeCard('school');course.setCanvas('Our school garden. More');
+  const spans=course.inspect().regions['L2-04.apply'];expect(spans.some(s=>s.s==='paste')).toBe(true);expect(spans.some(s=>s.s==='grid')).toBe(true);expect(spans.at(-1)?.s).toBe('typed');
+ });
+ it('requires writing plus at least two auto answers and preserves attempt-specific responses',()=>{
+  const course=session();reach(course,s=>s.kind==='check');
+  const answer=(picks:number[],writing:string)=>{course.pick(picks[0]);course.pressPrimary();course.pick(picks[1]);course.pressPrimary();if(course.activity()?.tapword)course.tapWord(2);else course.pick(picks[2]);course.pressPrimary();course.setCanvas(writing);course.pressPrimary();};
+  answer([1,2,0],'pets');expect(course.inspect().checks['L2-04.check'].passed).toBe(false);course.pressPrimary();
+  answer([2,2,2],'I believe kids should have pets at home.');expect(course.inspect().checks['L2-04.check'].passed).toBe(false);expect(course.screenDone(course.inspect().screen)).toBe(true);
+  course.retryCheck();expect(course.inspect().checks['L2-04.check'].attempt).toBe(2);expect(course.inspect().regions['L2-04.check:a0:L2-04.mw']).toBeDefined();expect(course.inspect().regions['L2-04.check:a1:L2-04.mw']).toBeDefined();
+ });
+});
+
+describe('integration v1 authored hints and tapword feedback',()=>{
+ it('offers Apply hints without revealing, grading, or using an attempt',()=>{
+  const course=session();reach(course,s=>s.kind==='apply');course.openHint();course.openHint();course.openHint();expect(course.activity()?.hints).toHaveLength(2);expect(course.activity()?.hintAction).toBeNull();expect(course.inspect().applies['L2-04'].tries).toBe(0);expect(course.screenDone(course.inspect().screen)).toBe(false);
+ });
+ it('locks a correctly checked tapword and keeps its correct mark on return',()=>{
+  const course=session();reach(course,s=>s.task==='ts4');course.tapWord(1);course.pressPrimary();expect(course.activity()?.tapword?.locked).toBe(true);expect(course.activity()?.tapword?.words[1].correct).toBe(true);course.backToPath();course.openLesson('G2-O',1);expect(course.activity()?.tapword?.words[1].correct).toBe(true);
+ });
 });

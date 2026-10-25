@@ -4,7 +4,7 @@ export const catalog = [
   { key: 'choice', id: 'BA-UI-003', name: '选择题', en: 'BAChoice', category: '基础交互', description: '从做出选择，到看见反馈。清楚呈现每一种作答状态。', anatomy: '选项行 → 状态图标 → 字母标记 → 内容。状态由调用方传入，组件本身不评分。', states: ['default', 'selected', 'correct', 'correctUnselected', 'wrong', 'dim', 'disabled'], story: 'primitives-bachoice--single-interactive' },
   { key: 'button', id: 'BA-UI-001', name: '按钮', en: 'BAButton', category: '基础交互', description: '让下一步清晰可见。统一主要操作、次要操作与等待反馈。', anatomy: '固定命中区域 → 可缩放视觉层 → 图标与标签。等待中保留可访问名称。', states: ['default', 'hover', 'pressed', 'focus', 'disabled', 'busy'], story: 'primitives-babutton--default' },
   { key: 'tabs', id: 'BA-UI-002', name: '标签导航', en: 'BATabs', category: '基础交互', description: '在相关内容之间切换，始终知道自己所在的位置。', anatomy: 'TabList → Tab → 对应 TabPanel。方向键切换焦点与选中项。', states: ['default', 'hover', 'pressed', 'focus', 'disabled'], story: 'primitives-batabs--level-navigation' },
-  { key: 'topbar', id: 'BA-WR-001', name: '课程顶栏', en: 'LessonTopBar', category: 'Writing', description: '把课程身份、当前进度与返回路径放在一个清晰的框架中。', anatomy: '左侧返回与课程标题；居中 Activity Screen 进度；右侧留空。', states: ['default', 'long'], story: 'writing-shell-lessontopbar--desktop' },
+  { key: 'topbar', id: 'BA-WR-001', name: '课程顶栏', en: 'LessonTopBar', category: 'Writing', description: '把课程身份、当前进度与返回路径放在一个清晰的框架中。', anatomy: '左侧返回与课程标题；居中 Activity Screen 进度；右侧留空。', states: ['default', 'long', 'done', 'locked', 'skipped'], story: 'writing-shell-lessontopbar--desktop' },
   { key: 'lesson', id: 'BA-WR-005', name: '课程卡片', en: 'StairLessonCard', category: 'Writing', description: '在学习路径上，区分开始、继续、复习与未解锁的课程。', anatomy: '课号印章 → 标题与时长 → 共享 BAButton。解锁与课程数据由产品提供。', states: ['start', 'currentStart', 'continue', 'review', 'locked', 'skipped'], story: 'writing-path-stairlessoncard--start' },
   { key: 'words', id: 'BA-WR-003', name: '词卡面板', en: 'WordGrid', category: 'Writing', description: '按类别找到表达所需的词，让写作一步一步展开。', anatomy: '连接式分类标签 → 词卡区域。切换类别不执行插入，点击词卡才发出插入事件。', states: ['default', 'selected', 'used', 'disabled', 'correct', 'incorrect', 'hint', 'shown', 'hover', 'pressed', 'focus'], story: 'writing-activities-wordgrid--multi-group' },
 ] as const;
@@ -36,7 +36,7 @@ export type Scene = {
   mode: 'live' | 'state'; state: string; locale: 'en' | 'zh'; width: 'fit' | '320' | '390' | '560' | '768' | '834' | '1440';
   size: 36 | 50 | 70 | 90; choice: 'single' | 'multiple'; sample: 'standard' | 'long';
   variant: 'primary' | 'secondary' | 'tertiary' | 'outline' | 'ghost'; motion: 'system' | 'reduce'; selected: string[];
-  buttonContent:'text'|'icon'|'leading'|'trailing'; layout:'hug'|'fixed'|'full'; background:'light'|'dark';
+  buttonContent:'text'|'icon'|'leading'|'trailing'; layout:'hug'|'fixed'|'full'; background:'light'|'dark'|'glass';
   tabCount:'1'|'2'|'4'|'10'; tabActive:string; composition:'card'|'terrace'; currentAction:'start'|'continue'; material:'en'|'zh'; answerPhase:'open'|'checked';
   wordScenario:'A'|'B'|'C'|'D'|'E'|'F'|'G'|'H'; wordContent:'word'|'punctuation'|'emoji'|'sentence'|'mixed';
   wordTabs:'auto'|'show'|'hide'; wordCount:'1'|'4'|'10'; wordSelection:'default'|'selected'|'used'; wordEvaluation:'neutral'|'correct'|'incorrect'|'hint'|'shown'; wordInteraction:'enabled'|'disabled';
@@ -68,7 +68,7 @@ export function readScene(search: string): Scene {
     variant: oneOf(p.get('variant'), ['primary', 'secondary', 'tertiary', 'outline', 'ghost'], 'primary'),
     motion: oneOf(p.get('motion'), ['system', 'reduce'], 'system'),
     buttonContent:oneOf(p.get('buttonContent'),['text','icon','leading','trailing'],'text'),
-    layout:oneOf(p.get('layout'),['hug','fixed','full'],'hug'), background:oneOf(p.get('background'),['light','dark'],'light'),
+    layout:oneOf(p.get('layout'),['hug','fixed','full'],'hug'), background:oneOf(p.get('background'),['light','dark','glass'],'light'),
     tabCount:oneOf(p.get('tabCount'),['1','2','4','10'],'4'), tabActive:oneOf(p.get('tabActive'),Array.from({length:10},(_,i)=>`L${i}`),'L2'),
     composition:oneOf(p.get('composition'),['card','terrace'],'card'),currentAction:oneOf(p.get('currentAction'),['start','continue'],'start'),
     material:oneOf(p.get('material'),['en','zh'],'en'),answerPhase:oneOf(p.get('answerPhase'),['open','checked'],'open'),

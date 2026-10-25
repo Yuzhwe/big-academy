@@ -1,3 +1,9 @@
+# Writing Hi-Fi Integration v1.0
+
+Mac：双击根目录 `Start Big Academy.command`，打开 http://127.0.0.1:5174/ 。
+
+[完整交付、验收证据与已知限制](apps/writing/docs/INTEGRATION_V1.md)。本次只实现 L2 / G2-O / Lesson 1 的八屏完整流程，等待一次性设计验收。
+
 # Big Academy — baseline v0.1
 
 Code-first K–12 education product workspace. Writing is the active pilot.

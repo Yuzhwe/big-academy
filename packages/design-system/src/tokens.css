@@ -443,3 +443,43 @@
   --ba-choice-row-inset: 6px; /* [E] symmetric inset; 36px icon + 2px border + 12px = 50px */
   --ba-lesson-r2-title-lines: 3; /* R2 explicit requirement; opt-in, original product default retained */
 }
+
+/* Writing Hi-Fi Integration v1: R2 Review implementation candidates, pending rendered approval. */
+:root {
+  --ba-choice-hover-shadow: 0 8px 20px rgb(19 53 71 / 14%);
+  --ba-tabs-glass-surface: rgb(255 255 255 / 65%);
+  --ba-tabs-glass-border: rgb(255 255 255 / 86%);
+  --ba-tabs-glass-blur: 18px;
+  --ba-wordgrid-radius: var(--ba-radius-16, 16px);
+  --ba-wordgrid-tab-radius: 14px;
+  --ba-wordgrid-tab-gap: var(--ba-space-1);
+  --ba-cloud-platform-width: 300px;
+  --ba-cloud-platform-height: 94px;
+  --ba-cloud-platform-left: -20px;
+  --ba-cloud-platform-overlap: 49px;
+  --ba-path-arrow-size: 56px;
+  --ba-path-badge-size: 190px;
+  --ba-lesson-current-shadow: 0 0 0 2px var(--ba-color-action-primary);
+}
+
+/* R2.12 composition values; artwork-derived candidates, not new primitives. */
+:root {
+  --ba-path-cloud-shadow: 0 8px 8px rgb(39 88 104 / 12%);
+  --ba-path-locked-cloud-shadow: 0 8px 8px rgb(39 88 104 / 11%);
+  --ba-path-cloud-opacity: .9;
+  --ba-path-badge-shadow: 0 6px 6px rgb(0 0 0 / 12%);
+  --ba-path-badge-depth: 36px;
+  --ba-path-badge-duration: 480ms;
+  --ba-path-camera-duration: 830ms;
+  --ba-path-camera-easing: cubic-bezier(.18,.77,.16,1);
+  --ba-path-cloud-duration: 28s;
+  --ba-path-cloud-fill: rgb(255 255 255 / 91%);
+  --ba-path-cloud-puff-fill: rgb(255 255 255 / 94%);
+  --ba-path-sun-fill: rgb(255 255 221 / 88%);
+  --ba-path-cloud-travel-start: -28px;
+  --ba-path-cloud-travel-end: 30px;
+  --ba-check-dot-size: 16px;
+  --ba-practice-notice-offset: 104px;
+}
+
+:root { --ba-path-flag-wind: .04; }

@@ -59,7 +59,7 @@ export function WordGrid({ groups, activeGroup, presentation='docked', tabs='aut
   </div>;
   const review = groups.some(g=>g.words.some(w=>w.selection || w.evaluation || w.kind==='sentence')) ? 'candidate' : 'approved';
   if(!showTabs) return <div className="word-grid" data-component="BA-WR-003" data-presentation={presentation} data-visual={review} data-tabs="off">{cards}</div>;
-  return <Tabs className="word-grid" data-component="BA-WR-003" data-presentation={presentation} data-visual={review}
+  return <Tabs className="word-grid" data-component="BA-WR-003" data-presentation={presentation} data-visual={review} data-first-active={active === groups[0].id ? 'true' : 'false'}
     selectedKey={active} onSelectionChange={key=>onGroupChange?.(String(key))}>
     <TabList className="word-grid__tabs" aria-label={locale==='zh'?'词表分类':'Word groups'}>
       {groups.map(group=><Tab key={group.id} id={group.id} className="word-grid__tab">{group.label}</Tab>)}
