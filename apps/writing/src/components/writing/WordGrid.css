@@ -1,13 +1,14 @@
 /* BA-WR-003 Approved peach connected sticky tabs and white pills. */
 .word-grid {
-  --word-tab: #f3d2bf;
+  --word-tab: var(--ba-wordgrid-surface, #f3d2bf);
   margin-top: 16px;
   min-width: 0;
 }
 
 .word-grid__tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   gap: 6px;
   margin: 0 8px;
   padding: 0;
@@ -15,6 +16,8 @@
 
 .word-grid__tab {
   position: relative;
+  flex-shrink: 0;
+  white-space: nowrap;
   min-height: 44px;
   padding: 8px 14px 10px;
   border: 0;
@@ -61,10 +64,7 @@
   cursor: pointer;
 }
 
-.word-grid__card[data-used='true'] {
-  opacity: 0.45;
-  cursor: default;
-}
+
 
 .word-grid__card[data-hint='true'] {
   outline: 2px solid var(--ba-brand-dark, #133547);
@@ -91,3 +91,24 @@
 @media (prefers-reduced-motion: reduce) {
   .word-grid__card.shake { animation: none; }
 }
+
+/* R2 extensions: neutral peach/white base remains; added state colors are candidates. */
+.word-grid__card { display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:var(--ba-space-1); min-width:var(--ba-hit-min); max-width:100%; overflow-wrap:anywhere; transition:transform 200ms cubic-bezier(.2,0,0,1); }
+.word-grid__text { min-width:0; }
+.word-grid__card[data-kind='sentence'] { flex-basis:100%; width:100%; height:auto; border-radius:var(--ba-radius-24); text-align:left; justify-content:flex-start; line-height:1.5; }
+.word-grid__card:lang(zh-CN) { font-family:var(--ba-font-body-zh); }
+.word-grid__state-label { display:block; flex-basis:100%; font-size:var(--ba-type-caption-size); line-height:1.4; }
+.word-grid__card[data-selection='selected'] { box-shadow:inset 0 0 0 2px var(--ba-color-action-primary); }
+.word-grid__card[data-selection='used'] { background:var(--ba-color-neutral-2); }
+.word-grid__card[data-evaluation='correct'] { background:var(--ba-color-success-surface); color:var(--ba-color-success-text); box-shadow:inset 0 0 0 2px var(--ba-color-success-fill); }
+.word-grid__card[data-evaluation='incorrect'] { background:var(--ba-color-error-surface); color:var(--ba-color-error-text); box-shadow:inset 0 0 0 2px var(--ba-color-error-fill); }
+.word-grid__card[data-evaluation='hint'] { background:var(--ba-color-warning-surface); color:var(--ba-color-warning-text); }
+.word-grid__card[data-evaluation='shown'] { background:var(--ba-color-info-surface); color:var(--ba-color-info-text); box-shadow:inset 0 0 0 2px var(--ba-color-info-fill); }
+.word-grid__card[data-disabled] { background:var(--ba-color-disabled-surface); color:var(--ba-color-disabled-content); box-shadow:inset 0 0 0 1px var(--ba-color-disabled-border); cursor:not-allowed; }
+.word-grid__card[data-hovered]:not([data-disabled]) { transform:scale(1.02); }
+.word-grid__card[data-pressed]:not([data-disabled]) { transform:scale(.95); }
+.word-grid__card[data-focus-visible] { outline:2px solid var(--ba-color-focus); outline-offset:2px; }
+@media(prefers-reduced-motion:reduce) { .word-grid__card { transform:none !important; transition:none; } }
+
+/* Preserve legacy approved used-word presentation in existing Writing callers. */
+.word-grid__card[data-used='true']:not([data-extended]) { background:var(--ba-paper); color:var(--ba-brand-dark); box-shadow:none; opacity:.45; cursor:default; }

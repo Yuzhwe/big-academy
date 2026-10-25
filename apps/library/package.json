@@ -1,0 +1,8 @@
+{
+  "name": "@big-academy/library",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "vite --host 127.0.0.1 --port 6007", "build": "tsc --noEmit && vite build", "typecheck": "tsc --noEmit" },
+  "dependencies": { "@big-academy/design-system": "*", "react": "^19.0.0", "react-dom": "^19.0.0", "react-aria-components": "^1.13.0" }
+}

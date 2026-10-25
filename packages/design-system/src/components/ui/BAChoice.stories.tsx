@@ -12,8 +12,9 @@ const zh: ChoiceOption[] = [
   { id: 'c', letter: 'C', text: '我喜欢花。' },
 ];
 const meta = {
-  title: 'Workbench / 03 · Choice (BA-UI-003)',
+  title: 'Primitives/BAChoice',
   component: BAChoice,
+  parameters: { ba: { contractId: 'BA-UI-003', status: 'ready-for-visual-review', owner: 'Design System', purpose: 'Accessible choice states before and after Check' } },
   args: { choiceMode: 'single', options: en, selectedKeys: [], 'aria-label': 'Choose an answer' },
   argTypes: { choiceMode: { control: 'radio', options: ['single', 'multiple'] } },
 } satisfies Meta<typeof BAChoice>;

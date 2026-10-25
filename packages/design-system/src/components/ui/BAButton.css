@@ -116,3 +116,13 @@
   .ba-button[data-pressed]:not([data-disabled]):not([data-pending]) .ba-button__assembly { transform:none; }
   .ba-button__pending { animation:none; border-right-color:currentColor; }
 }
+
+/* R2: opt-in layout and Outline candidate; original variants/defaults stay intact. */
+.ba-button[data-kind='outline'] { --ba-button-bg:transparent; --ba-button-ink:var(--ba-color-action-primary); --ba-button-border:var(--ba-color-action-primary); }
+.ba-button[data-layout='full'],.ba-button[data-layout='fixed'] { padding-inline:0; min-width:0; max-width:100%; }
+.ba-button[data-layout='full'] { width:100%; }
+.ba-button[data-layout='fixed'] { width:var(--ba-button-fixed-width); }
+.ba-button[data-layout='full'] .ba-button__assembly,.ba-button[data-layout='fixed'] .ba-button__assembly { width:100%; margin:0; }
+.ba-button[data-wrap='true'] { max-width:100%; min-width:0; }
+.ba-button[data-wrap='true'] .ba-button__assembly { min-width:0; max-width:100%; height:auto; min-height:var(--ba-button-height); padding-block:var(--ba-space-2); white-space:normal; }
+.ba-button[data-wrap='true'] .ba-button__label { overflow-wrap:anywhere; text-align:center; }

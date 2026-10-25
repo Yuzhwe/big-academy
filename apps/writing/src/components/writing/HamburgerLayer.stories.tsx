@@ -2,8 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { HamburgerLayer } from './HamburgerLayer';
 
 const meta = {
-  title: 'Writing/HamburgerLayer',
+  title: 'Writing/Activities/HamburgerLayer',
   component: HamburgerLayer,
+  parameters: { ba: { contractId: 'BA-WR-004', status: 'candidate-pending-designer-review', owner: 'Writing', purpose: 'Paragraph layer content and emphasis' } },
   args: {
     layerId: 'top',
     label: 'Top bun: My opinion',

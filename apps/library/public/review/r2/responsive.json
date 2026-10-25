@@ -1,0 +1,44 @@
+[
+  {
+    "cardOverflow": 0,
+    "frame": 287,
+    "frameScroll": 287,
+    "page": 320,
+    "viewport": 320
+  },
+  {
+    "cardOverflow": 0,
+    "frame": 357,
+    "frameScroll": 357,
+    "page": 390,
+    "viewport": 390
+  },
+  {
+    "cardOverflow": 0,
+    "frame": 527,
+    "frameScroll": 527,
+    "page": 560,
+    "viewport": 560
+  },
+  {
+    "cardOverflow": 0,
+    "frame": 479,
+    "frameScroll": 479,
+    "page": 768,
+    "viewport": 768
+  },
+  {
+    "cardOverflow": 0,
+    "frame": 545,
+    "frameScroll": 545,
+    "page": 834,
+    "viewport": 834
+  },
+  {
+    "cardOverflow": 0,
+    "frame": 1103,
+    "frameScroll": 1103,
+    "page": 1440,
+    "viewport": 1440
+  }
+]

@@ -9,8 +9,9 @@ const groups = [
 ];
 
 const meta = {
-  title: 'Writing/WordGrid',
+  title: 'Writing/Activities/WordGrid',
   component: WordGrid,
+  parameters: { ba: { contractId: 'BA-WR-003', status: 'approved', owner: 'Writing', purpose: 'Connected sticky tabs and word-card bank' } },
   args: { groups, activeGroup: 'opinion' },
 } satisfies Meta<typeof WordGrid>;
 
@@ -36,3 +37,7 @@ export const WordWrapTablet: Story = {
     activeGroup: 'task',
   },
 };
+
+export const R2SingleVisible: Story = {args:{tabs:'show',groups:[{id:'words',label:'Words',words:[{id:'a',text:'garden'}]}],activeGroup:'words'}};
+export const R2SentenceWrap: Story = {args:{tabs:'hide',groups:[{id:'sentences',label:'Sentences',words:[{id:'s',kind:'sentence',text:'A school garden gives every student a quiet place to learn about plants, grow vegetables, and spend time with friends after a busy day.'}]}],activeGroup:'sentences'},render:args=><div style={{width:280}}><WordGrid {...args}/></div>};
+export const R2StateDimensionsCandidate: Story = {args:{groups:[{id:'states',label:'Independent states',words:[{id:'s',text:'Selected',selection:'selected',evaluation:'neutral'},{id:'u',text:'Used, still enabled',selection:'used'},{id:'h',text:'Hint',evaluation:'hint'},{id:'a',text:'System shown',evaluation:'shown'},{id:'d',text:'Unavailable',disabled:true}]}],activeGroup:'states'}};

@@ -5,8 +5,9 @@ import { BAIcon } from './BAIcon';
 
 
 const meta = {
-  title: 'UI/BAButton',
+  title: 'Primitives/BAButton',
   component: BAButton,
+  parameters: { ba: { contractId: 'BA-UI-001', status: 'pending-review', owner: 'Design System', purpose: 'Shared action control for lessons and navigation' } },
   args: {
     children: 'Check',
     variant: 'primary',
@@ -100,3 +101,6 @@ export const FigmaV2IconAndStates: Story = {
     </div>
   )
 };
+
+export const R2OutlineCandidate: Story = { args: { variant: 'outline', children: 'Outline · Candidate / Pending Approval' } };
+export const R2FullWidthLong: Story = { args: { layout:'full', wrap:true, children:'Continue learning and discover new ideas with your friends in our school garden' }, render:args=><div style={{width:280}}><BAButton {...args}/></div> };

@@ -186,6 +186,7 @@ function PathView({ session }: { session: CourseSession }) {
                     detail={lesson.detail}
                     locale={session.locale}
                     onEnter={() => session.openLesson(lesson.unitId, lesson.number)}
+                    onBlocked={() => session.openLesson(lesson.unitId, lesson.number)}
                   />
                 </li>
               );
@@ -515,7 +516,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.wordGrid ? (
         <WordGrid
-          groups={activity.wordGrid.groups}
+          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, disabled: word.used })) }))}
           activeGroup={activity.wordGrid.active}
           locale={session.locale}
           onGroupChange={(key) => session.selectGrid(key)}

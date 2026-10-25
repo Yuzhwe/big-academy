@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { LessonWorkspace } from './LessonWorkspace';
 
 const meta = {
-  title: 'Writing/LessonWorkspace',
+  title: 'Writing/Shell/LessonWorkspace',
   component: LessonWorkspace,
-  parameters: { layout: 'fullscreen' },
+  parameters: { ba: { contractId: 'BA-WR-002', status: 'pending-review', owner: 'Writing', purpose: 'White activity paper with independently scrolling Coach rail' }, layout: 'fullscreen' },
 } satisfies Meta<typeof LessonWorkspace>;
 
 export default meta;

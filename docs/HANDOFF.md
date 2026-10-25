@@ -14,6 +14,17 @@
 
 Only **L2/G2-O Lesson 1: Topic sentences (eight screens)** is in scope for high-fidelity Writing v1. E-01 Staircase supports entry/return, and Lesson End reflects real mastered/unmastered assessment status.
 
+## Independent designer library · 2026-10-25
+
+The designer entry is now `apps/library`, an independent application with its own navigation, layout and build. Start with `npm run dev:library` at `http://127.0.0.1:6007/`. Storybook remains the separate development/test entry on port 6006; earlier Storybook task-flow fixtures are not the designer website.
+
+- Six real components are indexed: BAChoice, BAButton, BATabs, LessonTopBar, StairLessonCard and WordGrid. The default page opens BAChoice's real preview. Search, state exploration, supported sizes, language, container widths, long text and reduced motion are integrated into browsing rather than presented as a task-flow explanation.
+- State comparison, usage/contracts, actual source and review evidence/feedback use progressive disclosure. Shared components, shared CSS tokens and the existing contracts remain authoritative. Library tokens are candidates [E]; no component approval status was changed.
+- Scenario links preserve configuration and BAChoice selection. Review status is read-only; checklist/notes copy to a feedback draft and never update contracts or learner progress. Screenshots and actual verification scope are available inside the evidence disclosure.
+- Verification: documentation check, all four TypeScript scopes, all 59 tests and design-system/Writing/Storybook/library builds passed using installed CLIs with bundled Node. Writing/Storybook retain bundle-size warnings. Browser evidence covers desktop 1440×900, tablet 834×1112 and mobile 390×844, real interactions, share/refresh and feedback copy. See `apps/library/public/review/verification.md` and the adjacent screenshots.
+- This supersedes the earlier localhost-binding limitation for the library: the independent preview was successfully opened and verified in the browser. No public deployment or full Writing Playwright/axe audit was performed. Douyin font assets remain missing. Only the six indexed components are included in this release.
+- **Ready for designer review, not approved.** The supplied workspace has no Git metadata; this delivery consists of local source changes, with no new branch/commit/PR/merge. Existing historical branch labels below are not evidence of a current checkout.
+
 ## Known gaps
 
 - Lesson 1 (eight Activity Screens) is wired in CourseApp on the v2-terraces branch: routing, `canOpen`, grading FSM, `g2o_unit_state_v4`, and EN/ZH chrome. WordGrid peach tabs and white pills are Approved. Other unreviewed visuals stay candidates where PRODUCT.md and DESIGN.md say so. Screens outside Lesson 1 remain unsupported.
@@ -35,15 +46,14 @@ Create independent feature branches from `main`, implement against the four auth
 
 Branch: \`feat/component-workbench-pilot-20261024\` (unmerged). UI status: **Ready for Visual Review**, not Approved.
 
-- Storybook: \`npm run storybook\`, then \`http://127.0.0.1:6006/\`. Workbench Stories: \`Workbench/01 Level Tabs (BA-UI-002)\`, \`Workbench/02 Lesson Card (BA-WR-005)\`, \`Workbench/03 Choice (BA-UI-003)\`. Base token overview remains \`http://127.0.0.1:5173/?system\` when \`npm run dev\` is running. Desktop 1440x900, tablet 834x1112, mobile 390x844 are review targets.
+- Storybook: \`npm run storybook\`, then \`http://127.0.0.1:6006/\`. Review entries: \`Primitives/BATabs\`, \`Writing/Path/StairLessonCard\`, \`Primitives/BAChoice\`. Start Here includes the Storybook guide, design review checklist and progressive-disclosure task flow. Base token overview remains \`http://127.0.0.1:5173/?system\` when \`npm run dev\` is running. Desktop 1440x900, tablet 834x1112, mobile 390x844 are review targets.
 - BA-UI-002: React Aria Tabs with controlled selection, keyboard, disabled L3, EN/ZH and size variants. Writing session still owns the level navigation logic.
 - BA-WR-005: real shared BAButton size 70, two reserved title lines, numeric minutes supplied by product, number seal/attached state symbol, five states, long text, EN/ZH. Locked CTA disabled; product still owns unlock. Implementation \`apps/writing/src/components/writing/StairLessonCard.tsx\`.
 - BA-WR-010: \`LandscapeTerrace.css\` shares the existing interim CSS platform geometry with the real scene. \`LandscapeTerrace.tsx\` is an optional decoration only for isolated compositions; not a duplicate business component. The scene CSS imports this source. Candidate art is not designer-approved.
 - BA-UI-003: React Aria single/multiple and graded states; Storybook includes controlled Check/Reset demo (not real pedagogy). Text now inherits EN/ZH language. Grading, retries, Coach and unlock remain in product.
 - Contract authority remains \`apps/writing/contracts/components.json\`; no new registry platform. These are presentation candidates. Run typecheck, tests, build and browser QA locally; no build, screenshot or accessibility pass is asserted until actually run. GitHub-only editing cannot open the user's Mac localhost or produce authentic Mac screenshots.
+- Storybook UX IA update · 2026-10-25: Storybook now has a Start Here guide and design-review checklist, a progressive-disclosure task-flow fixture under `Review Workbench/Task Flows`, global Writing/Neutral, EN/ZH and Reduced Motion toolbar globals, and a shared warm-frame preview surface. Formal stories use `Foundations`, `Primitives`, `Writing/Shell`, `Writing/Activities`, and `Writing/Path` prefixes. Core stories carry Contract ID, owner, purpose and review status in `parameters.ba`. The static build completed successfully with the bundled Node runtime; the dev server could not bind port 6006 in the restricted environment, so browser screenshots and live localhost review remain pending on a normal local run.
 - Future HTML Generation Agent must look up IDs in the existing registry, import the real implementation and supply props; never restyle or reimplement states in a generated lesson. Only the designer can mark Approved.
-
-
 
 ## Local QA · 2026-10-24
 
@@ -52,3 +62,16 @@ Branch: \`feat/component-workbench-pilot-20261024\` (unmerged). UI status: **Rea
 - Passing: npm run typecheck, npm test (13 files / 52 tests), npm run build, npm run build-storybook, npm run check:docs.
 - Browser QA: 13/16 Playwright tests pass after installing Chromium. Three existing E-01 issues remain: two 60s timeouts around the celebration overlay path and one legacy terrace height expectation conflicts with the current fixed two-line Lesson Card contract. No visual approval is claimed.
 - Screenshots: apps/writing/docs/evidence/staircase-ab/ and apps/writing/docs/evidence/slice/ include desktop 1440x900 and tablet 834x1112 evidence; mobile 390x844 evidence remains in apps/writing/docs/evidence/celebration/mobile-zh.png.
+
+
+
+## Component Library R2 · 2026-10-26
+
+- Independent designer site: `apps/library`, `npm run dev:library`, http://127.0.0.1:6007/. Storybook remains the separate developer/test entry. R1 layout and all six real component imports are retained; no iframe shell or duplicate component implementation.
+- R2 adds all 186 scoped color/effect declarations, four button variants (Outline candidate), content/layout options, symmetric Tabs and Choice insets, candidate Dark Tabs, four lesson roles with full-width 70px CTA and opt-in three-line titles, and WordGrid A–H interactive scenarios. URL sharing restores R2 configuration and WordGrid/Choice state.
+- WordGrid selection/evaluation/interaction are independent. Used does not imply disabled. Writing explicitly supplies disabled for consumed ordered-build words, retaining its no-undo rule. System-shown answer is not learner correctness; the standalone free-build demo applies feedback to the sentence. Empty group list remains hidden. Locked lesson actions never call onEnter; onBlocked preserves the existing product explanation path.
+- Visual review pending: Outline, Dark Tabs, Tabs/Choice spacing correction, current-card emphasis/three-line composition, WordGrid added feedback. Existing approved peach/white WordGrid baseline and existing brand values are preserved. Existing decoration is LandscapeTerrace, not a newly invented cloud.
+- Passing checks and browser evidence are recorded in `apps/library/public/review/r2/verification.md`. Browser pressure checks cover 320/390/560/768/834/1440px. Fixed a grid intrinsic-width bug uncovered at 320px. No hardware touch-device or full course E2E pass is claimed. Existing Choice green/white contrast and missing Douyin asset remain review gaps.
+- Version delivery uses `feat/component-library-r2` from the byte-verified current `feat/component-workbench-pilot-20261024` baseline (efa38def), per this task's explicit current-baseline instruction. This supplied directory has no .git; the GitHub connector is used for commit/PR. Neither main nor Vercel is changed. Technical verification is not designer approval.
+
+- Review screenshots remain local-only by user decision on 2026-10-26. The review branch includes source and the text report, not image artifacts. Other checkouts show a local-evidence notice instead of requesting absent screenshots.
