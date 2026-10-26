@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef, type CSSProperties } from 'react';
+import { useEffect, useState, useRef, type CSSProperties, type ReactNode } from 'react';
 import { useSyncExternalStore } from 'react';
 import { BAButton, BAChoice, BAIcon, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
-import { LessonWorkspace } from '../components/writing/LessonWorkspace';
+import { CoachMessage, LessonWorkspace } from '../components/writing/LessonWorkspace';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
 import { HamburgerLayer } from '../components/writing/HamburgerLayer';
@@ -167,7 +167,7 @@ function PathView({ session }: { session: CourseSession }) {
                   <section className="course-unit" data-testid="unit" data-unit={node.unit.id}>
                     <UnitFold id={node.unit.id} />
                     <p className="course-kicker">
-                      {zh ? `第 ${node.unit.index} 单元` : `Unit ${node.unit.index}`} · {node.unit.typeLabel}
+                      {zh ? `第 ${node.unit.index} 单元` : `Unit ${node.unit.index}`}
                     </p>
                     <h2>{node.unit.title}</h2>
                     <p className="course-unit__meta">{node.unit.meta}</p>
@@ -281,13 +281,11 @@ function LessonView({ session }: { session: CourseSession }) {
         activity={<ActivityBody session={session} activity={activity} />}
         coach={
           <div>
-            {activity.coach.map((line) => (
-              <p key={line}>{line}</p>
+            {activity.coach.map((line, index) => (
+              <CoachMessage key={index} tone="orientation">{line}</CoachMessage>
             ))}
-            {activity.hints.map((hint) => (
-              <p key={hint} data-testid="hint">
-                {hint}
-              </p>
+            {activity.hints.map((hint, index) => (
+              <CoachMessage key={index} tone="hint" data-testid="hint">{hint}</CoachMessage>
             ))}
             {activity.coachMore ? (
               <BAButton variant="secondary" locale={session.locale} onPress={() => session.showAnother()}>
@@ -300,9 +298,7 @@ function LessonView({ session }: { session: CourseSession }) {
               </BAButton>
             ) : null}
             {activity.feedback ? (
-              <p className="course-feedback" role="status" data-testid="feedback" data-outcome={activity.feedbackTone}>
-                {activity.feedback}
-              </p>
+              <CoachMessage tone={activity.feedbackTone} role="status" data-testid="feedback">{activity.feedback}</CoachMessage>
             ) : null}
           </div>
         }
@@ -335,6 +331,13 @@ function LessonView({ session }: { session: CourseSession }) {
   );
 }
 
+function ActivityHeading({ title, speaker }: { title: string; speaker: ReactNode }) {
+  return <div className="course-activity__heading">
+    <h1 className="course-title">{title}</h1>
+    {speaker}
+  </div>;
+}
+
 function ActivityBody({ session, activity }: { session: CourseSession; activity: ActivityModel }) {
   const [speaking, setSpeaking] = useState(false);
   useEffect(() => () => { window.speechSynthesis?.cancel(); }, []);
@@ -360,12 +363,16 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       if (el && el.isConnected) { el.focus(); el.setSelectionRange(session.caret.start, session.caret.end); }
     });
   };
+  const speaker = activity.check?.phase === 'results' ? null : (
+    <BAButton className="course-listen" iconOnly size={50} variant="ghost"
+      aria-label={speaking ? (session.zh ? '停止朗读' : 'Stop listening') : (session.zh ? '朗读题目' : 'Listen to the prompt')}
+      onPress={listen}><BAIcon name="speaker" size={24} /></BAButton>
+  );
   const pickLocked =
     !!activity.pick?.locked ||
     !!activity.pick?.options.some((option) => option.state === 'correct' || option.state === 'correctUnselected' || option.state === 'dim');
   return (
     <article className="course-activity" data-template={activity.template} data-kind={activity.kind} data-writing={activity.canvas ? 'true' : undefined}>
-      {activity.check?.phase !== 'results' ? <BAButton className="course-listen" iconOnly size={50} variant="ghost" aria-label={speaking ? (session.zh ? '停止朗读' : 'Stop listening') : (session.zh ? '朗读题目' : 'Listen to the prompt')} onPress={listen}><BAIcon name="book" /></BAButton> : null}
       {activity.check && activity.check.phase !== 'results' ? (
         <div className="course-check">
           <p className="course-check__number" data-testid="check-number">
@@ -405,7 +412,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.learn ? (
         <>
-          <h1 className="course-title">{activity.learn.heading || activity.title}</h1>
+          <ActivityHeading title={activity.learn.heading || activity.title} speaker={speaker} />
           {activity.learn.teach ? <p className="course-teach">{activity.learn.teach}</p> : null}
           {activity.learn.weak || activity.learn.strong ? (
             <div className="course-examples">
@@ -416,7 +423,6 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
               ) : null}
               {activity.learn.strong ? (
                 <p className="course-examples__better" lang="en" data-testid="better-panel" data-cue="pedagogical">
-                  <BAIcon name="check" />
                   <span>
                     <span className="course-examples__label">{activity.learn.strongLabel}</span> {activity.learn.strong}
                   </span>
@@ -436,7 +442,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.pick && activity.check?.phase !== 'results' ? (
         <>
-          <h1 className="course-title">{activity.ask}</h1>
+          <ActivityHeading title={activity.ask} speaker={speaker} />
           {activity.pick.hint ? <p>{activity.pick.hint}</p> : null}
           <BAChoice
             choiceMode={activity.pick.multi ? 'multiple' : 'single'}
@@ -464,7 +470,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.tapword && activity.check?.phase !== 'results' ? (
         <>
-          <h1 className="course-title">{activity.ask}</h1>
+          <ActivityHeading title={activity.ask} speaker={speaker} />
           <p className="course-words" lang="en">
             {activity.tapword.words.map((word) => (
               <button
@@ -480,7 +486,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
                 aria-label={word.revealed ? `${word.text} · ${session.zh ? '展示答案' : 'Shown answer'}` : word.correct ? `${word.text} · ${session.zh ? '正确' : 'Correct'}` : undefined}
                 onClick={() => session.tapWord(word.index)}
               >
-                {word.correct || word.revealed ? <BAIcon name="check" size={16} /> : null}{word.text}
+                {word.text}
               </button>
             ))}
           </p>
@@ -488,7 +494,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.build ? (
         <>
-          <h1 className="course-title">{activity.ask}</h1>
+          <ActivityHeading title={activity.ask} speaker={speaker} />
           {activity.build.revealed ? (
             <p className="course-revealed" lang="en">
               {activity.build.revealed}
@@ -514,7 +520,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.frame ? (
         <>
-          <h1 className="course-title">{activity.ask}</h1>
+          <ActivityHeading title={activity.ask} speaker={speaker} />
           <p className="course-frame" lang="en" data-testid="frame">
             {activity.frame.parts.map((part, index) => (
               <span key={`${part}-${index}`}>
@@ -536,7 +542,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.canvas && activity.check?.phase !== 'results' ? (
         <>
-          <h1 className="course-title">{activity.ask}</h1>
+          <ActivityHeading title={activity.ask} speaker={speaker} />
           <label className="course-canvas">
             <span className="course-sr">{activity.canvas.label}</span>
             <textarea
@@ -550,7 +556,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
               onChange={(event) => session.setCanvas(event.target.value)}
             />
           </label>
-          {activity.canvas.tip ? <p>{activity.canvas.tip}</p> : null}
+          {activity.kind !== 'apply' && activity.canvas.tip ? <p>{activity.canvas.tip}</p> : null}
         </>
       ) : null}
       {activity.wordGrid ? (
