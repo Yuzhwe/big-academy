@@ -121,3 +121,42 @@ Updated `DESIGN.md`, `apps/writing/PRODUCT.md`, `apps/writing/contracts/componen
 **Verification is pending**: Files were updated and re-read via authenticated GitHub contents API, and the contract is valid JSON; **no post-change TypeScript/build/Vitest/Playwright/a11y tests or screenshot comparison has been executed** in this chat environment. Former PR test counts belong to an earlier branch head and must not be used as evidence for Review 02. Use `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:integration` on the updated local branch. Inspect keyboard/popover placement at 1440/1024/834 and the original fold and numeric positioning reference; the designer has final visual approval.
 
 **Local snapshot caveat:** fixed `http://localhost:5174/` and `http://localhost:6007/` services serve published built copies. Merely pulling this GitHub branch does **not** update the sites. Rebuild and run `npm run local-sites:install` to refresh them, or run the local dev server / launcher. Do not merge or announce release solely on a GitHub commit.
+
+
+## R2 Design Review 03 · 14 changes implemented for design/runtime review (2026-10-26)
+
+**Repository/branch:** `Yuzhwe/big-academy`, `feat/writing-hifi-integration-v1`, Draft PR #52. No main merge or Vercel deployment. R03 adds nine Activity changes + five Staircase changes to the existing R02 integration.
+
+### Activity changes / shared components
+
+1. `BA-UI-006 / BATaskProgress`: done number fill is Writing-brown (action semantic token / #B25415), white Dosis numeral. Existing done+selected outer ring, skipped, locked and 36px / popover rules stay intact.
+2. `BA-WR-002 / CoachMessage`: shared internal Coach card for **every** arrived, expanded, hinted or submitted message. Correct: Success 1/4/9 surface/stroke/ink; wrong: Neutral 2/4/8; ordinary/Hint: Neutral 1/3/9. Every utterance has its own rounded border and background, while Coach scroll stays independent.
+3. Activity title owns a two-column layout with the real 50×50 Speaker BAIcon+BAButton at upper right. Long titles wrap without overlapping; original speech synthesis, stop, cleanup and accessible naming are preserved.
+4. P2 `Better` / `Not yet` example labels share Dosis ExtraBold, with the redundant Better check icon removed.
+5. P3 Tapword correctly selected word has solid Success-6 #14AE5C, white text and **no attached check or visible border**, while `shown` (unearned reveal) stays visually distinct.
+6. P3 multiple select Check is enabled with **one or more** choices, disabled at zero. Grading still requires the original three true answers and incorrect tries/shown rules still apply. This explicitly supersedes R02's erroneous exactly-three *button enabling* rule.
+7. P5 writing canvas hides the redundant `Write each sentence on a new line.` line. Only P5 (not P7) has subtle #EAEDEB paper lines at ~36px pitch; the long editor still fills spare height, scrolls internally and keeps WordGrid docked.
+8. `CourseSession.openHint` and `hintAction`: user-invoked Need a hint/Another hint **only display authored hints**, no auto-answer, no try, no state `shown`, no credit. After all hints, the control disappears. P4 wrong-tile local hints and formal Check failures remain separate; P7 retains the no-hint assessment.
+9. Correct/incorrect Coach status and tones remain testable without changing the underlying answers/grades. Existing `data-testid=feedback` and `data-outcome` are retained for browser tests.
+
+### Staircase changes / canonical Unit Card
+
+10. L0 and L1 always render every Lesson as Completed / Review by default. The existing `preview-seed` flag is optional compatibility only. This is a display fixture in `pathNodes`; learner saved `done`, `tasks`, `skills`, L2 unlocks and Mastery remain untouched.
+11. Every completed Unit Milestone can replay the **existing one-shot tsParticles Confetti from its badge center** (50 start, no emission rate, one lifetime); reduced motion suppresses animation. No duplicate celebration library was introduced.
+12. The Unit top caption displays only `UNIT N` / `第 N 单元`, no `Writing Unit` type suffix.
+13. Unit metadata contains only the real per-Unit lesson count and optional exact duration, e.g. `9 lessons · 170 mins` / `9 课 · 170 分钟`; no `0 of`, `about`, `约` or hardcoded shared data values.
+14. Metadata has one thin warm-border full-rounded pill using existing paper tokens.
+
+`BA-WR-007 StairUnitCard` was extracted with no redesign from CourseApp into a single code component reused by **Staircase, designer-library preview and Storybook**. The existing folded-paper SVG, typography, goals and cloud platform are retained.
+
+### Files and verification
+
+Changed runtime: CourseApp, course styles, CourseSession, LessonWorkspace/CoachMessage, BATaskProgress CSS, BAIcon, Tokens. Added StairUnitCard + Storybook fixtures, designer library catalogue/preview, regression cases for Unit Card/Coach/Hint/multi Check/L0-L1 fixture and Playwright exercises. Updated `DESIGN.md`, `apps/writing/PRODUCT.md`, component contracts, this handoff and the PR body.
+
+**Static evidence only:** GitHub commits have been read back, the contract was parsed as JSON, and targeted source/invariant checks were performed. **No post-R03 npm TypeScript/build, Vitest, Playwright, accessibility or real browser visual run has completed in this environment.** Do not promote any prior PR test totals as R03 validation. Tests and design approval remain pending.
+
+**Next verification on the updated local branch:**
+`npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:integration`.
+Compare rendered components and actual pages at 1440/1024/834 widths, long EN/ZH titles, Coach/Hint/graded states, P5 editor scrolling/WordGrid, L0/L1 fixture, Confetti replay and true L2 progression. In particular check new StairUnitCard's paper-fold alignment against the user screenshot; P5 ruled lines under scrolling; popup complete number color; 50px speaker right alignment and focus.
+
+**Local built site caveat:** pulling this branch doesn't update the previous static `localhost:5174` or `:6007` copies until rebuilt and published with `npm run local-sites:install`, or run local development sites. Do not merge main/deploy Vercel. Designer final visual acceptance is still required.
