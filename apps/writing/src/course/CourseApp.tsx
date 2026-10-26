@@ -256,11 +256,7 @@ function LessonView({ session }: { session: CourseSession }) {
         ? session.zh
           ? '再来一个提示'
           : 'Another hint'
-        : activity.hintAction === 'reveal'
-          ? session.zh
-            ? '看答案'
-            : 'Show me the answer'
-          : null;
+        : null;
   const lessonEnd = session.view === 'lessonEnd';
 
   return (
