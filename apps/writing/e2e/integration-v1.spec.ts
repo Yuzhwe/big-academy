@@ -106,9 +106,26 @@ test('accessibility audit of path, lesson and graded Choice; report retained',as
  };
  await page.goto('/');await page.locator('[data-lesson-focus="G2-O:1"]').waitFor();await audit('path');await page.locator('[data-lesson-focus="G2-O:1"]').click();await audit('learn');await forward(page);await options(page).nth(1).click();await forward(page);await audit('choice-correct');
 });
-test('R2.12 flag uses original wind paths and stops for reduced motion',async({page})=>{
- await page.emulateMedia({reducedMotion:'no-preference'});await page.goto('/');const cloth=page.locator('.course-goal__flag .flag-cloth');await cloth.waitFor({state:'attached'});const original=await cloth.getAttribute('d');await expect.poll(()=>cloth.getAttribute('d')).not.toBe(original);
- await page.emulateMedia({reducedMotion:'reduce'});await expect(cloth).toHaveAttribute('d','M40 29 Q75 17 106 29 Q139 39 177 24 L177 113 Q141 131 107 115 Q70 100 40 111 Z');
+test('R04 Canvas flag has moving pixels and freezes on reduced motion',async({page})=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.goto('/');
+ const canvas=page.locator('.course-goal__flag .ba-flag__canvas');
+ await expect(canvas).toHaveCount(1);
+ const snapshot=()=>canvas.evaluate(el=>(el as HTMLCanvasElement).toDataURL());
+ await expect.poll(async()=>canvas.evaluate(el=>{
+   const c=el as HTMLCanvasElement,ctx=c.getContext('2d');
+   if(!ctx||!c.width||!c.height)return false;
+   const pixels=ctx.getImageData(0,0,c.width,c.height).data;
+   for(let i=3;i<pixels.length;i+=4)if(pixels[i]>0)return true;
+   return false;
+ }),{timeout:10000}).toBe(true);
+ const moving=await snapshot();
+ await expect.poll(snapshot,{timeout:5000,intervals:[200,250,300,400]}).not.toBe(moving);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.waitForTimeout(150); // Let the OS preference change repaint once.
+ const frozen=await snapshot();
+ await page.waitForTimeout(350);
+ expect(await snapshot()).toBe(frozen);
 });
 
 
