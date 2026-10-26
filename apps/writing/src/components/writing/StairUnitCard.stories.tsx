@@ -38,7 +38,7 @@ export const MinimalInformation: Story = { args: {
 }};
 
 
-export const TransparentCutoutCandidate:Story={
-  args:{corner:'cutout'},
-  parameters:{ba:{contractId:'BA-WR-007',status:'candidate-pending-designer-review',note:'Actual transparent clipped triangle; no painted fold patch. Existing Staircase still uses folded.'}},
+export const FourRoundedCornersR2:Story={
+  args:{corner:'rounded'},
+  parameters:{ba:{contractId:'BA-WR-007',status:'candidate-pending-designer-review',note:'16px all corners, 20px UNIT plus 16px full pill inline, 24px headline. Staircase still folded until Stage B.'}},
 };
