@@ -59,7 +59,7 @@ export function BATaskProgress({ tasks, activeIndex, canOpen, onNavigate, locale
   useLayoutEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const update = () => setAvailableWidth(root.clientWidth);
+    const update = () => setAvailableWidth(root.clientWidth || 480); // JSDOM and unmeasured initial render
     update();
     if (typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(update);
@@ -123,7 +123,7 @@ export function BATaskProgress({ tasks, activeIndex, canOpen, onNavigate, locale
   }, [activeIndex]);
 
   useEffect(() => {
-    if (open) popoverRef.current?.querySelector<HTMLElement>('[aria-current="step"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    if (open) popoverRef.current?.querySelector<HTMLElement>('[aria-current="step"]')?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
   }, [open, activeIndex]);
 
   return <>
