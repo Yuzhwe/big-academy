@@ -33,13 +33,14 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Browser integration regression
         run: npm run test:integration
-      - name: Report Playwright artifacts on failure
-        if: failure()
+      - name: Upload real browser QA evidence and videos
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cloud-m4-playwright-failures
+          name: cloud-m4-browser-evidence
           path: |
             apps/writing/playwright-report/
+            apps/writing/docs/evidence/cloud-m4/browser-renderer-observations.json
             apps/writing/test-results/
             apps/writing/docs/evidence/cloud-m4/
             apps/writing/docs/evidence/integration-v1/
