@@ -50,16 +50,14 @@
 }
 
 .lesson-topbar__name {
-  display: -webkit-box;
+  display: block;
   flex: 1 1 auto;
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
-  overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  white-space: normal;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
 }
 
 .lesson-topbar__tags {
