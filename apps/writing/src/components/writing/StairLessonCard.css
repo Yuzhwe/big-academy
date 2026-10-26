@@ -83,7 +83,7 @@
   overflow-wrap: anywhere;
   margin: 0;
   height: 60px;
-  font: 800 24px/30px var(--ba-font-heading-en, "Dosis", "Arial Narrow", sans-serif);
+  font: 800 var(--ba-writing-lesson-card-title-size, 24px)/var(--ba-writing-lesson-title-line-height, 30px) var(--ba-font-heading-en, "Dosis", "Arial Narrow", sans-serif);
 }
 .stair-lesson-card:lang(zh-CN) .stair-lesson-card__title {
   font-family: var(--ba-font-heading-zh, "Douyin Sans", "Noto Sans SC", sans-serif);
