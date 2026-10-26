@@ -30,8 +30,8 @@
   display: block;
 }
 .solar-lesson-preview[data-solar-status='active'] .stair-lesson-card {
-  border-color: var(--ba-writing-accent, #b25415);
-  box-shadow: 0 0 0 2px var(--ba-writing-accent, #b25415);
+  border-color: var(--ba-solar-border-color, #b25415);
+  box-shadow: 0 0 0 2px var(--ba-solar-border-color, #b25415);
 }
 .solar-lesson-preview[data-solar-status='fallback'] .solar-border-canvas {
   visibility: hidden;
