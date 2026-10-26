@@ -817,3 +817,23 @@ For Lesson 1 Screen 05, PRODUCT §12.1's authored single `set` bank takes preced
 - **BA-WR-011 LevelRewardFlag:** existing SVG and adjustable 4% wind from Stage 1 remain as preview; no live flag styling changes.
 
 R04 Stage A is a designer-library experiment **except** the approved completed-number color bug fix. Do not use this section as permission to apply candidates automatically to Writing pages. Full checklist and links are in `docs/REVIEW_04_STAGEA.md`.
+
+## R2 Design Review 04 · Stage A R2 — latest designer-authorized target (2026-10-26)
+
+This section **supersedes the earlier Stage A experiments and design proposals where inconsistent**. The implementation is still strictly component-library first. Actual Writing product pages must not be silently changed before their approved Stage B/C integration.
+
+**WordGrid / BA-WR-003:** Slanted Tabs are **REJECTED AND REMOVED**. Keep original peach Connected Rounded Tabs and its four groups. Fix the exposed upper-left gap when first Tab is unselected using a **14px same-color backing seam layer beneath the first Tab**, pointer-events none; it must not cover label, selected ring, or word cards. Use the inactive color computed from the same WordGrid surface token, with no need for new business state. Tab outlines do not slant, lift, or morph; 180ms color-only transition with reduced-motion bypass. Stage A changes touch shared CSS, but behavior is unchanged. No proof of visual correctness until actual browser review.
+
+**HamburgerComposition / BA-WR-004:** width 88/100/88%; Top bun green `#E7F6DF`, radii `28px 28px 10px 10px`; Reason ivory `#F3EFE4`, `10px` all; Bottom warm gold `#E7C48A`, radii `10px 10px 28px 28px`. Titles Dosis 800/18px, samples 16px, vertical centering, 8px tier gap. These are component-composition rules; do not alter other hamburger activities without Stage B approval.
+
+**StairUnitCard / BA-WR-007:** former folded/transparent-corner ideas are **REJECTED AS FUTURE DESIGN**. New target has **four equal 16px rounded corners** and no triangular pieces. First row inline `UNIT 1` Dosis 800/20px (must not exceed main title), followed by fully rounded `9 lessons · 170 mins` pill Jost 600/16px. Main Unit title Dosis 800/24px/30px stays below. Paper `#FFF9F2`, outline `#DCC3AB`; preserve content, goals, clouds, card dimensions. Storybook and Designer Library should default to the rounded candidate. **Legacy production Staircase still uses folded** until Stage B page integration; earlier mandatory fold language describes only that transitional code, not future design authority. Do not reuse/ship cutout and fold patches once Stage B migrates the page.
+
+**UnitMilestone / BA-WR-006:** latest designer assets replace the incorrect preview artwork: `writing_milestone_1.png` is the gold check (TOP), `writing_milestone_2.png` the gold seal (BOTTOM). The checked-in PNGs are **optimized derivatives of user-provided 1024px originals** for this web library; originals remain with original user uploads. Preserve overlap/parallax, Completed 7s sweep and enabled replay, gray Upcoming with no sweep/replay. The existing real E-01 gold-missing defect remains Stage B, not fixed through this trial.
+
+**Current Solar preview:** the designer's confirmed default is Custom, **Border #FFA82E / Glow #FFA82E**, with Ray Intensity `1.80`, Ray Length `1.26`, Ray Count `64`, Bokeh `1.12`, Rim Boost `0.74`, Glow Spread `10px`, Brightness `1.34`. The Restore Designer Configuration button resets these values; A/B/C palette choices are optional. The existing seven-second CTA sweep and deep brown no-WebGL static fallback are unchanged. Solar source rights/provenance still pending; no Stage C integration yet.
+
+**LessonTopBar / BA-UI-006:** keep the correctly fixed completed circle color `#B25415`. Change only the `All activity screens` popover padding to **24px on all sides**, retaining 40px radius, 36px visible circles, 44px targets, six left-aligned columns, focus, Escape, outside click and close controls.
+
+**Frozen:** CTA 7-second sweep, Cross Blur page-transition candidate, Level Reward Flag. No requested new styling. Cross Blur Stage A visual accepted, still waits for Stage C navigation integration. No Vercel deployment or main branch changes.
+
+Full preview URLs, QA truth and Stage B/C handoff in `docs/REVIEW_04_STAGEA_R2.md`.
