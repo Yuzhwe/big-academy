@@ -1,3 +1,8 @@
+> **CURRENT AUTHORITATIVE IMPLEMENTATION — Review 04 integrated (2026-10-26).** See [docs/REVIEW_04_INTEGRATED.md](docs/REVIEW_04_INTEGRATED.md). This new chapter supersedes older in-file instructions about two-line LessonTopBar, folded or cut Unit corners, 20px Unit labels, Slanted Tabs/concave WordGrid joints, 4% SVG flag wind, and library-only Solar/Cross Blur. Treat older descriptions as historical rationale, not current design directives. Designer visual acceptance and runtime QA still pending.
+>
+> **Locked now:** StairLessonCard internal design stays unchanged. LessonTopBar name one line, overflow ellipsis. StairUnitCard has 16px *all four* corners, `UNIT 1` Dosis800 **18px** Writing brown `#B25415` and inline all-round brown text pill `9 lessons · 170 min` (real course data); title Dosis800 24px. Hamburger layers use exact 28/28/10/10, 10, 10/10/28/28 and per-layer `0 4px 10px rgba(71,44,34,.12)` shadow. WordGrid bank always has four outward 16px corners, no inverse cutouts. Gold/silver dual-image milestones both translate in 3D. Current Solar #FFA82E and Cross Blur are now shared with real Writing pages. Canvas flag default 1.6s / waves6×PI / amplitude4px, **temporary old flag image until user supplies the final art**.
+>
+
 # Big Academy — DESIGN.md
 
 **Edition:** Canonical Design System & Writing visual specification v1 · 2026-10-21
