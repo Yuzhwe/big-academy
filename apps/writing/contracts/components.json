@@ -55,7 +55,8 @@
         "70px height for Writing Lesson Card CTA and Lesson Footer action pair, scoped variants; don't migrate all shared buttons",
         "Secondary tone required for Coach Hint and Show me another",
         "Reuse actual shared BAButton for all Writing Lesson CTAs, top Back and Footer actions; never replace with plain custom button",
-        "Shared click scale: hover 1.02, pressed 0.95, 200ms cubic-bezier(.2,0,0,1). Reduced motion does not scale. Same scale as other clickable controls in DESIGN.md section 7"
+        "Shared click scale: hover 1.02, pressed 0.95, 200ms cubic-bezier(.2,0,0,1). Reduced motion does not scale. Same scale as other clickable controls in DESIGN.md section 7",
+        "Writing Footer controls receive disabled from the product session, not visual inference; while disabled they cannot run press handlers or alter grade/attempt state."
       ],
       "requiredStories": [
         "Default",
@@ -369,9 +370,9 @@
         "canOpen": "(index) => boolean, lesson-local gate supplied by the product adapter",
         "locale": "en | zh, optional status chrome",
         "label": "string, optional accessible name for the group",
-        "indicatorComponent": "ActivityScreenIndicator (one shared visual primitive in TopBar and popover)",
-        "overflowMode": "anchored nonmodal popover; entire lesson index",
-        "visibleCapacity": "responsive available-width measurement; no 8-screen data cap; 8/6/4 only review targets"
+        "indicatorComponent": "One reused 36×36px numeric-only marker (44×44px hit target), no visual size change between rail and popover.",
+        "overflowMode": "Nonmodal popover anchored to the ellipsis; 424px max width / 40px radius / 40px inset, six fixed left-aligned columns and an internally scrolling full index. Same Indicator rendering in both locations.",
+        "visibleCapacity": "The top rail fits at most nine 44px hit slots, including 36px visible numeric/ellipsis buttons. Actual measured container width controls count; reserve one for ellipsis whenever needed. Current item takes priority."
       },
       "events": {
         "onNavigate": "(index) => void",
@@ -393,12 +394,14 @@
       "requirements": [
         "Public name ActivityScreenIndicator. Same numeric-only numbered circle in LessonTopBar and the All activity screens popover. Every state shows the Activity Screen index (Lesson 1: 1-8) without a separate visible check/lock/status icon.",
         "Unselected Done: dark fill with white digit. Selected Done: dark fill/white digit plus outer selected ring. Unselected Skipped: dashed inner outline. Selected Skipped: same dashed inner outline plus outer selected ring. Incomplete selected: neutral base plus outer selected ring. Locked: disabled colors, no icon.",
-        "Dosis ExtraBold 800 numerals. Status remains in the accessible button name while the visual marker contains only the screen index.",
+        "Dosis ExtraBold 800 numerals; 36×36px visual circle. Status remains in the accessible button name while the visual marker contains only the screen index.",
         "Only canOpen-authorized screen navigation; locked never navigates",
-        "Popover shows full screen list with responsive grid and bounded internal scroll",
         "Escape/outside/trigger dismiss, focus restoration, keyboard and touch accessibility",
         "Screen reader distinguishes shown from correctly completed",
-        "Keep current screen visible in compact rail; no fixed eight-item data limit"
+        "Keep current screen visible in compact rail; no fixed eight-item data limit",
+        "No more than nine rail elements including a 36×36px visible ellipsis. Focused current screen remains in the visible contiguous range. No fixed 8/6/4 breakpoints.",
+        "Popup near the trigger with top-left All activity screens / 所有活动页面 heading, top-right Close, 424px max width, 40px radius and padding. Full indices in six fixed, left-aligned columns. A short final row begins at column one.",
+        "Trigger, Close, outside pointer, and Escape dismiss; restore focus or move it safely if the trigger disappears. Locked indicators cannot navigate. Keyboard, touch, focus and selection a11y."
       ],
       "requiredStories": [
         "MixedStatus",
@@ -417,7 +420,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "BA-UI-006 renders a numeric-only marker in every progress state with no separate check, lock or other icon. Stored progress status and selected activity index are independent. Done uses brand-dark fill and white digit; Skipped keeps its dashed border; selected adds an outer ring without overwriting either state. Locked uses disabled colors and cannot navigate. Accessible labels retain status, and any distinction between shown and truly correct completion must come from product data. Same component is used in TopBar and any full-list/popup presentation. PRODUCT.md owns navigation gates and results."
+      "notes": "BA-UI-006 renders a numeric-only marker in every progress state with no separate check, lock or other icon. Stored progress status and selected activity index are independent. Done uses brand-dark fill and white digit; Skipped keeps its dashed border; selected adds an outer ring without overwriting either state. Locked uses disabled colors and cannot navigate. Accessible labels retain status, and any distinction between shown and truly correct completion must come from product data. Same component is used in TopBar and any full-list/popup presentation. PRODUCT.md owns navigation gates and results. R2 Review 02 sizes are strictly 36px visible for both numeral and ellipsis; top max 9 items including trigger, six-column left-aligned full-list popup. 320px/mobile special layout deferred."
     },
     {
       "id": "BA-UI-007",
@@ -494,7 +497,8 @@
         "Numeric-only ActivityScreenIndicator reused identically within TopBar and full-list navigation; done dark/white, skipped dashed, locked disabled, and selected outer rings preserve each original progress state",
         "No horizontal divider between the lesson TopBar and the lesson content",
         "Title uses available safe width and wraps to at most two lines; centered progress is independent of title length. At narrow widths, progress may occupy a second centered row.",
-        "50×50 icon-only Back, no visible label; two-line adaptive title; Progress selection is independent of source status. Preserve status, grading, unlocking, and persisted answers."
+        "50×50 icon-only Back, no visible label; two-line adaptive title; Progress selection is independent of source status. Preserve status, grading, unlocking, and persisted answers.",
+        "Whole-bar-centered progress uses BA-UI-006 responsive collapsed rail and one anchored 6-column full-list popover; only layout changes across the two placements, markers must remain identical."
       ],
       "requiredStories": [
         "Desktop",
@@ -511,7 +515,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
-      "notes": "LessonTopBar uses an icon-only 50×50 Back with accessible name; title fills the safe left width and clamps to two lines, without displacing progress centered against the whole bar. At narrow widths the activity indicators may occupy a second full-width centered row. The shared BA-UI-006 marker displays only numbers; completed/selected and skipped/selected are distinct composite visuals, with status-aware accessible labels. No bar divider. Final rendered visual signoff remains with the designer."
+      "notes": "LessonTopBar uses an icon-only 50×50 Back with accessible name; title fills the safe left width and clamps to two lines, without displacing progress centered against the whole bar. At narrow widths the activity indicators may occupy a second full-width centered row. The shared BA-UI-006 marker displays only numbers; completed/selected and skipped/selected are distinct composite visuals, with status-aware accessible labels. No bar divider. Final rendered visual signoff remains with the designer. R2 Review 02: top one row of max 9 elements including 36px ellipsis, current activity priority; popup 424px max, 40px radius/padding and 6 left-aligned columns."
     },
     {
       "id": "BA-WR-002",
@@ -544,7 +548,9 @@
         "Listen icon-only floats in instruction container top-right with fixed safe inset",
         "P2 Better panel uses a pale green fill and a leading check; the cue is pedagogical",
         "One primary separator per content boundary; neutral container borders use quieter token, not for graded/focus borders",
-        "Peer container gaps reduce one existing spacing-token step without altering touch targets or typography"
+        "Peer container gaps reduce one existing spacing-token step without altering touch targets or typography",
+        "On long-form Apply Writing the Textarea fills the remaining white-paper height and scrolls internally without resizing; WordGrid docks at the bottom of the paper content, not the viewport or Coach.",
+        "The Footer contextual primary uses real disabled state until the authored task readiness condition is met. P7 retains its existing ability to navigate blank internal questions and warn once on blank Hand in."
       ],
       "requiredStories": [
         "Desktop",
@@ -605,7 +611,8 @@
         "Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match the Approved visuals wordgrid-ordered-build-approved and wordgrid-apply-approved",
         "Ordered-build bench underlines are the writing-area line. The WordGrid panel is the word-card palette. Each remaining blank is an underline, one horizontal line per word still to place. Screen controls are the word cards and the Coach-rail button group. A placed word stays in the line",
         "Used never implies disabled; product explicitly marks consumed ordered-build words disabled. The component never grades.",
-        "Sentence cards fill their row and wrap; word/punctuation/emoji keep complete content and touch targets. New selection/evaluation chrome is candidate only."
+        "Sentence cards fill their row and wrap; word/punctuation/emoji keep complete content and touch targets. New selection/evaluation chrome is candidate only.",
+        "On P5 Apply Writing, the parent paper layout docks this same WordGrid at the bottom under a flexing Textarea; WordGrid itself does not own height or authoring/grade logic."
       ],
       "requiredStories": [
         "MultiGroup",
@@ -678,7 +685,7 @@
         "lessonId": "string",
         "number": "number",
         "title": "string",
-        "state": "start | continue | review | locked | skipped",
+        "state": "Source business input start | continue | review | locked | skipped, mapped visually to enterable | completed | locked; true progress status is retained",
         "minutes": "number (optional; localized minutes in component)",
         "locale": "en | zh",
         "detail": "string (legacy fallback)",
@@ -690,11 +697,9 @@
         "onBlocked": "(lessonId) => void; optional blocked-attempt explanation, never entry. CourseApp retains its guarded session handler."
       },
       "states": [
-        "start",
-        "continue",
-        "review",
-        "locked",
-        "skipped"
+        "enterable",
+        "completed",
+        "locked"
       ],
       "layoutOwner": "Staircase owns world position/step size; card owns internals",
       "requirements": [
@@ -712,12 +717,13 @@
         "Number seal stays primary; Completed has success-green filled numeral badge, white number and no badge border. No extra current symbol distinguishes Enterable actions",
         "Configurable two/three-line title, left-aligned time, 70px actual BAButton; card/CTA concentric corner relationships",
         "Preserve card bottom and camera anchor with the R2.12 cloud-image platform, not the old green CSS terrace",
-        "CTA fills card inner content width at 70px height. Enterable uses Available base and current-course outline consistently for start and continue; Locked blocks entry. Rendered review still pending."
+        "CTA fills card inner content width at 70px height. Enterable uses Available base and current-course outline consistently for start and continue; Locked blocks entry. Rendered review still pending.",
+        "All enterable cards (available/new/resumed) have the same Writing brown border token; component library surfaces only Enterable, Completed and Locked.",
+        "Staircase never overrides the internal numeral alignment, which uses the exact same component as the designer-library preview."
       ],
       "requiredStories": [
-        "Start",
-        "Continue",
-        "Review",
+        "Enterable",
+        "Completed",
         "Locked",
         "CardOnly",
         "FullComposition",
@@ -728,7 +734,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
-      "notes": "Three visual roles: Enterable / Completed / Locked (designer approval pending). Internal action/status inputs remain start/continue/review/locked/skipped for session compatibility. Start and Continue share Enter / 进入 and the same Available-plus-outline appearance. Review and Skipped share Completed appearance without a separate Skipped card label, while the session retains skip semantics. Completed numeral uses existing success-fill with white digit and no border. Three title lines default in library and Writing. No visual styling grades or unlocks lessons.",
+      "notes": "Three visual roles: Enterable / Completed / Locked (designer approval pending). Internal action/status inputs remain start/continue/review/locked/skipped for session compatibility. Start and Continue share Enter / 进入 and the same Available-plus-outline appearance. Review and Skipped share Completed appearance without a separate Skipped card label, while the session retains skip semantics. Completed numeral uses existing success-fill with white digit and no border. Three title lines default in library and Writing. No visual styling grades or unlocks lessons. R2 Review 02 uses Writing brown border for Enterable; CardOnly and Staircase scenes share internals, and the designer library does not duplicate new/resumed visual samples.",
       "reviewStatus": "Ready for Visual Review",
       "reviewEntry": "Writing/Path/StairLessonCard",
       "r2VisualStatus": "R2 Design Review 01 follow-up: Enterable/Completed/Locked, unified Enter, green completed numeral, three-line default / Pending Visual Approval; product gates unchanged"
@@ -947,7 +953,7 @@
         "Distinct light tinted informative card with decorative warm border",
         "45-degree top-right genuine layered fold with rounded flap tip, cream under-fold, gentle warm shadow and no alpha holes",
         "Fold must not cover text and preserve outer body round corners",
-        "English unit title uses a smaller line-height",
+        "Unit title matches StairLessonCard heading typography tokens (Dosis 24px 800 / 30px, Chinese uses shared fallback)",
         "Folded corner is mandatory on every unit state",
         "Unit goals rendered as plain paragraphs, 16px supporting type; all statuses maintain the same folded structure",
         "No Lesson CTA or lesson status-number assembly",
@@ -961,7 +967,7 @@
         "UnitLongChineseCopy",
         "UnitAllStatuses"
       ],
-      "notes": "The folded corner is mandatory on StairUnitCard (BA-WR-007). The English unit title uses a smaller line-height. Goals are plain paragraphs. StairLessonCard (BA-WR-005) is the lesson card."
+      "notes": "Unit card keeps current content and size, uses one continuous top/right triangular folded-paper flap with restrained local contact shading, no floating rounded rectangle. Unit main title shares StairLessonCard typography (Dosis 24px / 800 / 30px; same Chinese heading alias). Goals remain plain paragraphs."
     },
     {
       "id": "BA-WR-008",
