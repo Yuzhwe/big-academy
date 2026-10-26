@@ -50,6 +50,10 @@ describe('LessonTopBar', () => {
       'aria-current',
       'step',
     );
+    expect(screen.getByRole('button', { name: '任务 3：找出观点词，已跳过' })).toHaveAttribute('data-state', 'skipped');
+    expect(header.querySelectorAll('.ba-task-progress__digit')).toHaveLength(8);
+    expect(header.querySelector('.ba-task-progress__badge')).toBeNull();
+    expect(header.querySelector('.lesson-topbar__name')).toHaveTextContent(LONG_TITLE_ZH);
   });
 
   it('blocks locked tasks and emits navigate for an open task in a long list', async () => {
