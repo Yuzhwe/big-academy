@@ -1027,10 +1027,9 @@ export class CourseSession {
     const screen = this.screens[index]?.screen;
     if (!screen) return false;
     if (screen.kind === 'check') {
-      const record = this.checkRecord(screen);
-      if (record.finished) return true;
-      const item = this.currentCheckItem(screen);
-      return !!item && (this.questionAnswered(item.task, item.key) || !!record.blankAsk);
+      // P7 explicitly allows blank internal questions and has an authored one-time
+      // blank warning on Hand in. Never turn that workflow into a mandatory answer gate.
+      return true;
     }
     if (this.canNext(index)) return true;
     if (screen.kind === 'apply') {
