@@ -19,6 +19,8 @@ export type CloudShaderSkyProps = {
   cameraMaxTravel?: number;
   paused?: boolean;
   reducedMotion?: boolean;
+  /** Workbench-only failure simulation; do not supply from student scene. */
+  simulateWebGLUnavailable?: boolean;
   onRendererChange?: (renderer: CloudRenderer, reason?: string) => void;
   className?: string;
 };
@@ -173,7 +175,7 @@ function M4Canvas({ params, onFirstFrame, onFailure, paused }: {
 
 export function CloudShaderSky({
   mode = 'auto', preset = 'staircase', cameraX = 0, cameraMaxTravel = 0, cameraY: _cameraY,
-  parallaxStrength = 0.06, paused = false, reducedMotion = false, onRendererChange,
+  parallaxStrength = 0.06, paused = false, reducedMotion = false, simulateWebGLUnavailable = false, onRendererChange,
   className = '', ...overrides
 }: CloudShaderSkyProps) {
   const defaults = preset === 'clear' ? M4_CLEAR : STAIRCASE_SKY;
@@ -184,6 +186,15 @@ export function CloudShaderSky({
     driftSpeed: overrides.driftSpeed ?? defaults.driftSpeed, paused, reducedMotion,
   };
   const [eligible, setEligible] = useState(false);
+  const [systemReduced, setSystemReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    if (!mq) return;
+    const sync = () => setSystemReduced(mq.matches);
+    sync();
+    mq.addEventListener?.('change', sync);
+    return () => mq.removeEventListener?.('change', sync);
+  }, []);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
   const [reason, setReason] = useState('');
@@ -191,10 +202,11 @@ export function CloudShaderSky({
   callbackRef.current = onRendererChange;
   useEffect(() => {
     setReady(false); setFailed(false); setReason('');
+    if (simulateWebGLUnavailable) { setEligible(false); setReason('WebGL unavailable (simulated)'); return; }
     const memory = (navigator as Navigator & {deviceMemory?: number}).deviceMemory;
     setEligible(mode === 'shader' || (mode === 'auto' &&
-      autoAllowsShader({ webgl: typeof window.WebGLRenderingContext !== 'undefined', cores: navigator.hardwareConcurrency, memory, reducedMotion: reducedMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches || false })));
-  }, [mode, reducedMotion]);
+      autoAllowsShader({ webgl: typeof window.WebGLRenderingContext !== 'undefined', cores: navigator.hardwareConcurrency, memory, reducedMotion: reducedMotion || systemReduced })));
+  }, [mode, reducedMotion, systemReduced, simulateWebGLUnavailable]);
   const wantsShader = mode !== 'lightweight' && eligible && !failed;
   const renderer: CloudRenderer = wantsShader && ready ? 'shader' : 'lightweight';
   const shift = cloudParallax(cameraX, parallaxStrength, cameraMaxTravel);
@@ -203,7 +215,7 @@ export function CloudShaderSky({
   const style = { '--m4-shift': `${shift}px`, '--m4-overscan': `${overscan}px`, '--m4-negative-shift': `${-shift}px`, '--m4-negative-overscan': `${-overscan}px`, '--m4-extra-width': `${2*overscan}px` } as CSSProperties;
   return <div className={`cloud-shader-sky ${className}`} data-testid="path-cloud" data-parallax={parallaxStrength} data-mode={mode}
     data-renderer={renderer} data-fallback-reason={reason || undefined} data-preset={preset}
-    data-reduced={reducedMotion ? 'true' : 'false'} style={style} aria-hidden="true">
+    data-reduced={reducedMotion || systemReduced ? 'true' : 'false'} style={style} aria-hidden="true">
     {!ready || !wantsShader ? <div className="path-layer path-cloud m4-lightweight-cloud" data-testid="path-lightweight-cloud">
       <span className="r2-cloud r2-cloud--a"/><span className="r2-cloud r2-cloud--b"/><span className="r2-cloud r2-cloud--c"/>
     </div> : null}
