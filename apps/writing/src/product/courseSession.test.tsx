@@ -241,7 +241,7 @@ function reach(course: Session, match: (screen: Session['screens'][number]['scre
 describe('designer preview seed', () => {
   it('shows Level 0 and Level 1 lessons completed without writing progress or mastery', () => {
     const storage = createMemoryStorage();
-    const course = session('?demo=preview-seed', storage);
+    const course = session('', storage);
     const record = storage.getItem(ALEX_STATE_KEY);
     const saved = JSON.parse(record ?? '{}') as { done: Record<string, boolean>; tasks: Record<string, unknown>; checks: Record<string, unknown>; skills?: Record<string, string> };
     expect(saved.done).toEqual({});
@@ -408,7 +408,7 @@ describe('Review 02 contextual primary prerequisites', () => {
     expect(course.footer().primaryDisabled).toBe(false); // ready to advance after grading
   });
 
-  it('enables multi-select Check at exactly the authored number of selected options', () => {
+  it('enables multi-select Check after the first selection without treating it as correct', () => {
     const course = session();
     course.openLesson('G2-O', 1);
     const multiple = course.liveIdx(0)[3];
@@ -422,10 +422,12 @@ describe('Review 02 contextual primary prerequisites', () => {
     const key = `${screen.page}:${taskId}`;
     const selected = Array.from({length:need-1},(_,i)=>i);
     course.inspect().tasks[key] = {tries:0,status:'open',picked:selected};
-    expect(course.footer().primaryDisabled).toBe(true);
+    expect(course.footer().primaryDisabled).toBe(false);
     selected.push(need-1);
     expect(course.footer().primaryDisabled).toBe(false);
     selected.push(need);
+    expect(course.footer().primaryDisabled).toBe(false);
+    selected.splice(0, selected.length);
     expect(course.footer().primaryDisabled).toBe(true);
   });
 
