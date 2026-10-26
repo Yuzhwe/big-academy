@@ -29,6 +29,7 @@ export function CloudControls({ scene, update }: { scene: Scene; update: (patch:
     {numberField('Drift speed','driftSpeed',0,2,.1)}
     {numberField('Parallax strength','parallaxStrength',0,.5,.01)}
     {numberField('Camera X · 模拟滚动','cloudCameraX',0,1200,10)}
+    <label><input type="checkbox" checked={scene.cloudSimulateUnavailable} onChange={e=>update({cloudSimulateUnavailable:e.target.checked})}/> 模拟 WebGL 不可用</label>
     <label><input type="checkbox" checked={scene.cloudPaused} onChange={e=>update({cloudPaused:e.target.checked})}/> 暂停漂移</label>
   </div>;
 }
