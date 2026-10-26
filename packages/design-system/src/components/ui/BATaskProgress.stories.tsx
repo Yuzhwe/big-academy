@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
+import { expect, within, userEvent } from 'storybook/test';
 import type { TaskProgressItem } from '../../types/task';
 import { BATaskProgress } from './BATaskProgress';
 
@@ -112,7 +112,7 @@ export const AllScreensPopover: Story = {
   ],
   play: async ({ canvasElement }) => {
     const trigger = within(canvasElement).getByRole('button', { name: 'All activity screens' });
-    await trigger.click();
+    await userEvent.click(trigger);
     await expect(within(document.body).getByRole('dialog', { name: 'All activity screens' })).toBeInTheDocument();
   },
 };
