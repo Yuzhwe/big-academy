@@ -66,8 +66,8 @@
 /* The learner's progress status is the INNER treatment; current navigation
  * is an independent OUTER ring. Never erase Done or Skipped on selection. */
 .ba-task-progress__button[data-state='done'] .ba-task-progress__marker {
-  background: var(--ba-color-brand-10, #133547);
-  border-color: var(--ba-color-brand-10, #133547);
+  background: var(--ba-color-action-primary, #b25415);
+  border-color: var(--ba-color-action-primary, #b25415);
   color: var(--ba-color-surface-canvas, #fff);
 }
 
