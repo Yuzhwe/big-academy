@@ -20,7 +20,7 @@ const meta = {
   title: 'Writing/Path/StairUnitCard',
   component: StairUnitCard,
   parameters: { ba: { contractId: 'BA-WR-007', status: 'ready-for-visual-review', owner: 'Writing', purpose: 'One folded Unit card used in both the library and Staircase; simplified caption + pill' }, layout: 'centered' },
-  args: { unit, locale: 'en' },
+  args: { unit, locale: 'en', corner: 'rounded' },
   decorators: [(Story) => <div data-ba-product="writing" style={{ width: 300, background: '#a9e3f3', padding: 32 }}><Story /></div>],
 } satisfies Meta<typeof StairUnitCard>;
 export default meta;
@@ -41,4 +41,9 @@ export const MinimalInformation: Story = { args: {
 export const FourRoundedCornersR2:Story={
   args:{corner:'rounded'},
   parameters:{ba:{contractId:'BA-WR-007',status:'candidate-pending-designer-review',note:'16px all corners, 20px UNIT plus 16px full pill inline, 24px headline. Staircase still folded until Stage B.'}},
+};
+
+export const LegacyFoldedBeforeStageB:Story={
+ args:{corner:'folded'},
+ parameters:{ba:{contractId:'BA-WR-007',status:'legacy-staircase-only',note:'Real Staircase stays on old fold until approved Stage B.'}},
 };
