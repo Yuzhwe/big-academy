@@ -19,8 +19,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Start: Story = {};
-export const Review: Story = { args: { state: 'review' } };
+export const Enterable: Story = {};
+export const Completed: Story = { args: { state: 'review' } };
 export const Locked: Story = { args: { state: 'locked', number: 2 } };
 export const LongTitle: Story = { args: { title: 'Writing a convincing topic sentence for a detailed opinion paragraph with evidence', minutes: 15 } };
 export const Chinese: Story = { args: { locale: 'zh', title: '学习如何用完整的主题句介绍自己的观点和原因', minutes: 12 } };
