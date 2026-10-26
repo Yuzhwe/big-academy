@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react';
+import { useState } from 'react';
 import { BAButton, BAIcon, BAChoice, BATabs, BATabList, BATabPanel, type ChoiceVisualState, type TaskProgressItem } from '@big-academy/design-system';
 import { LessonTopBar } from '../../writing/src/components/writing/LessonTopBar';
 import { StairLessonCard, type StairLessonState } from '../../writing/src/components/writing/StairLessonCard';
