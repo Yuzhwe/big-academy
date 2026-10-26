@@ -38,3 +38,6 @@
 .hamburger-composition > .hamburger-layer[data-layer='bottom'] {
   background:#e7c48a; border-radius:10px 10px 28px 28px;
 }
+
+/* Shared composition layers cast a separate soft shadow; never a rectangular container shadow. */
+.hamburger-composition > .hamburger-layer {box-shadow:0 4px 10px rgba(71,44,34,.12);}
