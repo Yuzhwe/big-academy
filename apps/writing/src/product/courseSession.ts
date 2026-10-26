@@ -244,6 +244,7 @@ export interface FooterModel {
   backDisabled?: boolean;
   primaryLabel: string;
   primaryTestId: string;
+  primaryDisabled?: boolean;
 }
 
 export interface TopBarModel {
@@ -1020,6 +1021,39 @@ export class CourseSession {
     };
   }
 
+  /** Presentation-only readiness follows authored task checks; this never grades or changes records. */
+  primaryReady(index = this.state.screen): boolean {
+    if (this.view === 'lessonEnd' || this.view === 'preview') return true;
+    const screen = this.screens[index]?.screen;
+    if (!screen) return false;
+    if (screen.kind === 'check') {
+      const record = this.checkRecord(screen);
+      if (record.finished) return true;
+      const item = this.currentCheckItem(screen);
+      return !!item && (this.questionAnswered(item.task, item.key) || !!record.blankAsk);
+    }
+    if (this.canNext(index)) return true;
+    if (screen.kind === 'apply') {
+      const text = this.engine.stripPictures(regionText(this.state.regions[screen.page])).trim();
+      return this.analyzer.wordCount(text) >= 3;
+    }
+    if (screen.kind !== 'task' && screen.kind !== 'model_task') return false;
+    if (!screen.task) return false;
+    const task = this.task(screen.task);
+    const key = this.taskKey(screen);
+    const answer = this.state.tasks[key];
+    if (task.type === 'pick') return (answer?.picked?.length ?? 0) >= (task.multi ? (task.answers?.length ?? 1) : 1);
+    if (task.type === 'tapword' && task.need !== 'all') return answer?.sel != null;
+    if (task.type === 'build') return false; // automatically checked as word cards complete the sentence
+    if (task.frameFill) {
+      const blanks = answer?.blanks ?? [];
+      const count = task.frameFill.frame.split('___').length - 1;
+      return count > 0 && blanks.slice(0, count).length === count && blanks.slice(0, count).every(v => !!v.trim());
+    }
+    if (task.type === 'write') return !!regionText(this.state.regions[key]).trim();
+    return false;
+  }
+
   footer(): FooterModel {
     if (this.view === 'lessonEnd') {
       return {
@@ -1039,7 +1073,7 @@ export class CourseSession {
     const screen = this.screens[index]?.screen;
     const backLabel = this.zh ? '上一页' : 'Previous';
     const backDisabled = index === 0;
-    if (screen?.kind === 'check') return this.checkFooter(screen, backLabel, backDisabled);
+    if (screen?.kind === 'check') return { ...this.checkFooter(screen, backLabel, backDisabled), primaryDisabled: !this.primaryReady(index) };
     if (screen?.kind === 'apply' && !this.canNext(index)) {
       const record = this.applyRecord(screen);
       return {
@@ -1047,6 +1081,7 @@ export class CourseSession {
         backDisabled,
         primaryLabel: record.tries ? (this.zh ? '再检查一次' : 'Check again') : this.zh ? '检查我的写作' : 'Check my writing',
         primaryTestId: 'check-writing',
+        primaryDisabled: !this.primaryReady(index),
       };
     }
     if (!this.canNext(index)) {
@@ -1055,6 +1090,7 @@ export class CourseSession {
         backDisabled,
         primaryLabel: this.blockedLabel(index),
         primaryTestId: 'check',
+        primaryDisabled: !this.primaryReady(index),
       };
     }
     return {
@@ -1062,6 +1098,7 @@ export class CourseSession {
       backDisabled,
       primaryLabel: this.nextLabel(index),
       primaryTestId: 'next',
+      primaryDisabled: !this.primaryReady(index),
     };
   }
 
@@ -1100,6 +1137,7 @@ export class CourseSession {
   }
 
   pressPrimary(): void {
+    if (!this.primaryReady()) return;
     if (this.view === 'preview') {
       this.backToPath();
       return;
