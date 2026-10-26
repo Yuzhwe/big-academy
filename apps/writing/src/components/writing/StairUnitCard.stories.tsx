@@ -19,7 +19,7 @@ const unit = {
 const meta = {
   title: 'Writing/Path/StairUnitCard',
   component: StairUnitCard,
-  parameters: { ba: { contractId: 'BA-WR-007', status: 'ready-for-visual-review', owner: 'Writing', purpose: 'R04-R2 four-corner rounded Unit target in library; legacy Staircase fold remains until Stage B' }, layout: 'centered' },
+  parameters: { ba: { contractId: 'BA-WR-007', status: 'ready-for-visual-review', owner: 'Writing', purpose: 'One 16px-rounded Unit card shared across designer library and actual Writing Staircase' }, layout: 'centered' },
   args: { unit, locale: 'en' },
   decorators: [(Story) => <div data-ba-product="writing" style={{ width: 300, background: '#a9e3f3', padding: 32 }}><Story /></div>],
 } satisfies Meta<typeof StairUnitCard>;
@@ -40,6 +40,6 @@ export const MinimalInformation: Story = { args: {
 
 export const FourRoundedCornersR2:Story={
   args:{},
-  parameters:{ba:{contractId:'BA-WR-007',status:'candidate-pending-designer-review',note:'16px all corners, 20px UNIT plus 16px full pill inline, 24px headline. Staircase still folded until Stage B.'}},
+  parameters:{ba:{contractId:'BA-WR-007',status:'shared-hifi-integration',note:'16px all corners, brown 18px UNIT plus brown 16px full pill (9 lessons · 170 min), 24px heading. Staircase uses the same component.'}},
 };
 
