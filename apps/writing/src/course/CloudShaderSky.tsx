@@ -32,9 +32,12 @@ export function cloudParallax(cameraX: number, strength: number, travel: number)
   return clamp(cameraX, 0, Math.max(0, travel)) * clamp(strength, 0, 0.5);
 }
 export function autoAllowsShader(capabilities: { webgl: boolean; cores?: number; memory?: number; reducedMotion: boolean }) {
+  // Hardware hints only reject clearly constrained devices; 4-core / 4GB
+  // machines may have capable integrated GPUs. Actual sustained draw cost
+  // triggers runtime fallback instead of excluding these machines upfront.
   return capabilities.webgl && !capabilities.reducedMotion &&
-    !(capabilities.cores !== undefined && capabilities.cores <= 4) &&
-    !(capabilities.memory !== undefined && capabilities.memory <= 4);
+    !(capabilities.cores !== undefined && capabilities.cores <= 2) &&
+    !(capabilities.memory !== undefined && capabilities.memory <= 2);
 }
 function color3(color: string): [number, number, number] {
   const match = /^#([0-9a-f]{6})$/i.exec(color);
@@ -135,7 +138,12 @@ function M4Canvas({ params, onFirstFrame, onFailure, paused }: {
       context.uniform3fv(loc.cloud, color3(p.cloudColor));
       context.uniform3fv(loc.skyTop, color3(p.skyTop));
       context.uniform3fv(loc.skyBottom, color3(p.skyBottom));
-      context.drawArrays(context.TRIANGLES, 0, 3);
+      try {
+        context.drawArrays(context.TRIANGLES, 0, 3);
+      } catch (error) {
+        fail('WebGL drawing exception: ' + String(error));
+        return;
+      }
       paints++;
       if ((paints === 1 || paints % 20 === 0) && context.getError() !== context.NO_ERROR) { fail('WebGL drawing error'); return; }
       if (paints === 1) firstFrameRef.current();
