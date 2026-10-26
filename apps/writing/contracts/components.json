@@ -403,7 +403,8 @@
         "Popup near the trigger with top-left All activity screens / 所有活动页面 heading, top-right Close, 424px max width, 40px radius and padding. Full indices in six fixed, left-aligned columns. A short final row begins at column one.",
         "Trigger, Close, outside pointer, and Escape dismiss; restore focus or move it safely if the trigger disappears. Locked indicators cannot navigate. Keyboard, touch, focus and selection a11y.",
         "R2 Review 03: done and done-selected inner numeric circles use Writing semantic brown (action-primary / #B25415) plus white number in BOTH rail and popover. Do not recolor completed Lesson Card's separate green seal.",
-        "R04 explicit fix: Done numbers in LessonTopBar and its portaled full-index popover must use primitive --ba-color-writing-7 (#B25415), not generic action-primary that resolves to blue-green outside Writing theme."
+        "R04 explicit fix: Done numbers in LessonTopBar and its portaled full-index popover must use primitive --ba-color-writing-7 (#B25415), not generic action-primary that resolves to blue-green outside Writing theme.",
+        "R04-R2 popup All Activity Screens padding 24px all sides, retaining 40px radius, 6 fixed columns, 36px circles, 44px hit regions and all close/focus actions."
       ],
       "requiredStories": [
         "MixedStatus",
@@ -594,7 +595,7 @@
         "presentation": "docked | overlay",
         "tabs": "auto | show | hide; auto preserves legacy single hidden / multiple shown",
         "locale": "en | zh",
-        "tabAppearance": "connected (default and live page) | slanted (Review 04 Stage A library/Storybook candidate)"
+        "tabAppearance": "connected (only; R04 Slanted retired). First-not-selected uses pale-peach seam bridge matching inactive first tab"
       },
       "events": {
         "onGroupChange": "(key) => void",
@@ -624,7 +625,7 @@
         "Used never implies disabled; product explicitly marks consumed ordered-build words disabled. The component never grades.",
         "Sentence cards fill their row and wrap; word/punctuation/emoji keep complete content and touch targets. New selection/evaluation chrome is candidate only.",
         "On P5 Apply Writing, the parent paper layout docks this same WordGrid at the bottom under a flexing Textarea; WordGrid itself does not own height or authoring/grade logic.",
-        "R04 Stage A Slanted candidate: left vertical + softly rounded top-left, outward right 27px slope; selected tab z-index above adjacent unselected; 2px lift/200ms, content 150ms fade. No reverse-corner pseudo fill, reduced-motion static. Writing page defaults remain connected until approval."
+        "R04-R2 approved direction: Original Connected Rounded Tabs only. When first tab is unselected, a pointer-events-none left 14px underlay matches inactive-tab peach tint to prevent exposed outside background. No visual slant or lift. Full keyboard/touch navigation unchanged."
       ],
       "requiredStories": [
         "MultiGroup",
@@ -634,7 +635,7 @@
         "OneGroupNoTab",
         "MultipleStickyTabs",
         "WordWrapTablet",
-        "SlantedTabsCandidate"
+        "RoundedSeamFix"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
@@ -674,7 +675,7 @@
         "Three Hamburger layers share two typographic roles (title and supporting text), consistent values per layer",
         "Do not invent missing educational copy to populate support tier",
         "Review 04: the preview-only HamburgerComposition groups three reusable HamburgerLayer instances with top and bottom bun 88% of Reason width, title and example vertically centered, no Writing Activity 1 page changes until review.",
-        "R04 Stage A HamburgerComposition: Top green #E7F6DF with 18/18/10/10px radius, Reason #F3EFE4 8px radius, Bottom #E7C48A 10/10/18/18px radius. Width 88/100/88%. Existing Layer and Activity 1 remain unchanged."
+        "R04-R2 hamburger exact: Top green #E7F6DF radii 28/28/10/10; Reason #F3EFE4 radii 10; Bottom #E7C48A radii 10/10/28/28. Width 88/100/88, layer stack gap 8px."
       ],
       "requiredStories": [
         "Idle",
@@ -789,7 +790,8 @@
         "Click completed to replay",
         "No unlock authority",
         "Default high-fidelity L0/L1 fixture shows completed and allows replay, without mutating saved learner mastery/scores. Reduced Motion suppresses particle animation.",
-        "R04 Stage A gold-shine preview retains original two-layer gold artwork on completion and fully gray on upcoming; completed only can emit replay event. The actual Staircase still uses existing style until Stage B approval."
+        "R04 Stage A gold-shine preview retains original two-layer gold artwork on completion and fully gray on upcoming; completed only can emit replay event. The actual Staircase still uses existing style until Stage B approval.",
+        "R04-R2 gold-shine candidate uses exact artwork derived from designer's supplied writing_milestone_1 (check) + writing_milestone_2 (seal) PNGs, optimized for preview. Grayscale Upcoming; 7s sweep Completed only; no extra grading."
       ],
       "requiredStories": [
         "Upcoming",
@@ -966,7 +968,7 @@
         "unit": "PathNode.unit — source-localized index, title, per-Unit total/time label and goal paragraphs; NO hardcoded 9/170 in production",
         "status": "CourseUnitStatus",
         "locale": "en | zh",
-        "corner": "folded (default/live staircase) | cutout (transparent 32px triangle; Stage A library candidate only)"
+        "corner": "folded (production Staircase only pending Stage B) | rounded (Stage A R2 preview primary and new target): all four 16px corners"
       },
       "events": [],
       "states": [
@@ -989,7 +991,7 @@
         "R3 tinted informational surface remains distinct from white actionable lessons",
         "Unit top line only UNIT N / 第 N 单元; never add Writing Unit or Unit type label.",
         "One full-pill warm outline contains actual per-unit lesson total and duration, e.g. 9 lessons · 170 mins. Never show 0 of, about or 约; no fixed 9/170 dummy values.",
-        "R04 Stage A cutout is actual clip-path transparency showing the backdrop. Top-right triangle MUST remain unfilled; preserve paper content, Unit metadata pill, other radii and clouds."
+        "R04-R2 rounded candidate: NO fold/cut/triangle. UNIT heading Dosis 800/20px, inline 16px Jost600 full-pill lessons/min, main heading Dosis800/24px; other three paper corners and layout stable. Current Staircase remains folded as temporary legacy pending Stage B integration."
       ],
       "requiredStories": [
         "UnitFoldCornerAt200Zoom",
@@ -1000,7 +1002,7 @@
         "Chinese",
         "LongTitle",
         "MinimalInformation",
-        "TransparentCutoutCandidate"
+        "FourRoundedCornersR2"
       ],
       "notes": "Unit card keeps current content and size, uses one continuous top/right triangular folded-paper flap with restrained local contact shading, no floating rounded rectangle. Unit main title shares StairLessonCard typography (Dosis 24px / 800 / 30px; same Chinese heading alias). Goals remain plain paragraphs. R2 Review 03: simplified Unit N caption and one warm full-stroke pill for lesson total + exact time in both live and preview levels. Reusable BA-WR-007 implementation now supplies the exact Unit card in both Staircase and designer library; code/demo stories are provisional until visual signoff.",
       "story": "apps/writing/src/components/writing/StairUnitCard.stories.tsx",
