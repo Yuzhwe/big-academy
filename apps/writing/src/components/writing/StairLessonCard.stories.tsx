@@ -12,7 +12,7 @@ const meta = {
     state: 'start', minutes: 10, locale: 'en',
   },
   argTypes: {
-    state: { control: 'select', options: ['start', 'continue', 'review', 'locked'] },
+    state: { control: 'select', options: ['start', 'review', 'locked'] },
     locale: { control: 'radio', options: ['en', 'zh'] },
   },
 } satisfies Meta<typeof StairLessonCard>;
@@ -20,7 +20,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Start: Story = {};
-export const Continue: Story = { args: { state: 'continue' } };
 export const Review: Story = { args: { state: 'review' } };
 export const Locked: Story = { args: { state: 'locked', number: 2 } };
 export const LongTitle: Story = { args: { title: 'Writing a convincing topic sentence for a detailed opinion paragraph with evidence', minutes: 15 } };
@@ -33,7 +32,7 @@ export const InteractiveAllStates: Story = {
       const [presses, setPresses] = useState(0);
       return <div style={{ display: 'grid', gap: 16 }}>
         <label>Card state <select value={state} onChange={e => setState(e.target.value as StairLessonState)}>
-          {(['start','continue','review','locked'] as const).map(s => <option key={s}>{s}</option>)}
+          {(['start','review','locked'] as const).map(s => <option key={s}>{s}</option>)}
         </select></label>
         <StairLessonCard {...args} state={state} onEnter={() => setPresses(p => p + 1)} />
         <output aria-live="polite">CTA pressed: {presses}</output>
@@ -57,5 +56,3 @@ export const KeyboardFocus: Story = {
 
 
 export const R2ThreeLines: Story = {args:{titleLines:3,title:'Writing a convincing topic sentence for a detailed opinion paragraph with evidence'}};
-export const R2CurrentStart: Story = {args:{titleLines:3,current:true,state:'start'}};
-export const R2CurrentContinue: Story = {args:{titleLines:3,current:true,state:'continue'}};
