@@ -160,3 +160,17 @@ Changed runtime: CourseApp, course styles, CourseSession, LessonWorkspace/CoachM
 Compare rendered components and actual pages at 1440/1024/834 widths, long EN/ZH titles, Coach/Hint/graded states, P5 editor scrolling/WordGrid, L0/L1 fixture, Confetti replay and true L2 progression. In particular check new StairUnitCard's paper-fold alignment against the user screenshot; P5 ruled lines under scrolling; popup complete number color; 50px speaker right alignment and focus.
 
 **Local built site caveat:** pulling this branch doesn't update the previous static `localhost:5174` or `:6007` copies until rebuilt and published with `npm run local-sites:install`, or run local development sites. Do not merge main/deploy Vercel. Designer final visual acceptance is still required.
+
+
+## Review 04 · Stage 1 · library-only implementation (2026-10-26)
+
+**Scope is strictly limited to designer-library trials.** This follows the user's explicit order: Solar/current Lesson and CTA 7-second sweep must receive visual approval **before** integration in the Writing Staircase. The previously approved product screens, StairLessonCard runtime source and R03 learning logic have not been modified in Stage 1.
+
+- Existing `StairLessonCard` is rendered inside a new **preview-only** `apps/library/src/SolarLessonPreview.tsx` wrapper when the designer chooses `Current`. It is a visual emphasis of Enterable, not a new business state; ordinary Enterable, Completed and Locked remain intact. The source's 64-ray gold Solar GLSL aura has been adapted to an exterior-only 55px-radius mask, with small per-card transparent WebGL canvas (30 fps cap; 1x resolution; offscreen draw pause); 3px dark-brown fallback if motion is reduced, WebGL fails, or sustained slow frames occur. The CTA uses a clipped 7s repeating shine *only in the wrapper*; the original BAButton and card content/size remain unchanged.
+- `apps/library/src/catalog.ts`, `Preview.tsx`, `R2Controls.tsx`, `Code.tsx`, `Showcase.tsx` and library CSS now expose a Current variant and adjustable Ray Intensity, Ray Length, Ray Count, Bokeh, Rim Boost, Glow Spread and Brightness. Uploaded Solar defaults 0.6/0.45/64/0.16/1.66 are retained, and the query-string scene serializes values.
+- `BA-WR-004` uses a new non-page `HamburgerComposition` preview and Storybook fixture; three existing HamburgerLayer instances, narrower top/bottom buns, vertical title and example centering. No Activity 1 page change.
+- `BA-WR-011` registers the **existing** R2.12 `LevelRewardFlag` as a designer-library and Storybook component, with adjustable 4% default wind. No flag implementation or Staircase page change.
+- Stage-1 source license caveat: the user-supplied Solar ZIP did **not** contain a clear license. The adapted shader is **prototype/review-only** until origin/right-to-use are cleared. It introduces no `three` or other runtime dependency.
+- More detail and preview links: `docs/REVIEW_04_STAGE1.md`.
+
+**Evidence pending:** post-Stage-1 TypeScript, build, browser screenshots, WebGL/reduced-motion performance, keyboard, cloud stacking and visual acceptance have not been executed in this conversation environment. The local historical port :6007 is a built snapshot; refresh from the latest PR branch and rebuild/run `npm run dev:library` (or rebuild/reinstall local sites) before reviewing. No main merge or Vercel deployment.
