@@ -1,0 +1,40 @@
+/* BA-WR-013 · shared M4 sky and existing lightweight clouds.
+ * The parent viewport is the only camera authority. No rail attachment.
+ */
+.cloud-shader-sky {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none !important;
+}
+.cloud-shader-sky * { pointer-events: none !important; }
+.m4-lightweight-cloud {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  transform: translate3d(calc(-1 * var(--m4-shift, 0px)),0,0);
+  will-change: transform;
+}
+.m4-cloud-canvas {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * var(--m4-overscan, 0px));
+  width: calc(100% + 2 * var(--m4-overscan, 0px));
+  height: 100%;
+  display: block;
+  transform: translate3d(calc(-1 * var(--m4-shift, 0px)),0,0);
+  will-change: transform;
+}
+/* Exact legacy R2.12 CSS cloud silhouettes, colors and drift. */
+.cloud-shader-sky .r2-cloud { position:absolute; width:190px; height:70px; opacity:.9; animation:r2-cloud-drift var(--ba-path-cloud-duration, 22s) ease-in-out infinite alternate; }
+.cloud-shader-sky .r2-cloud::before { content:''; position:absolute; background:var(--ba-path-cloud-fill,#fff); height:46px; width:170px; left:6px; bottom:3px; border-radius:60px; }
+.cloud-shader-sky .r2-cloud::after { content:''; position:absolute; width:83px; height:83px; bottom:11px; left:43px; border-radius:50%; background:var(--ba-path-cloud-puff-fill,#fff); box-shadow:51px 16px 0 -16px white,-39px 18px 0 -20px white; }
+.cloud-shader-sky .r2-cloud--a { top:23%; left:20%; transform:scale(.9); }
+.cloud-shader-sky .r2-cloud--b { top:12%; left:64%; transform:scale(.65); opacity:.7; animation-delay:-13s; }
+.cloud-shader-sky .r2-cloud--c { top:39%; left:82%; transform:scale(.55); opacity:.62; animation-delay:-5s; }
+@keyframes r2-cloud-drift { from { margin-left:var(--ba-path-cloud-travel-start, -10px); } to { margin-left:var(--ba-path-cloud-travel-end, 10px); } }
+.cloud-shader-sky[data-reduced='true'] .r2-cloud { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .cloud-shader-sky .r2-cloud { animation:none !important; } }
