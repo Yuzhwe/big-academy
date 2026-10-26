@@ -5,7 +5,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  overflow: hidden;
+  overflow: visible; /* Outer Staircase viewport clips; overscanned Shader must not leave a right-edge gap. */
   isolation: isolate;
   pointer-events: none !important;
   transform: translate3d(var(--m4-negative-shift, 0px), 0, 0);
