@@ -414,7 +414,7 @@ describe('Review 02 contextual primary prerequisites', () => {
     const multiple = course.liveIdx(0)[3];
     const screen = course.screens[multiple].screen;
     const taskId = screen.task!;
-    const authored = course.config.tasks[taskId];
+    const authored = course.config.tasks.find(item => item.id === taskId)!;
     expect(authored.multi).toBe(true);
     const need = authored.answers.length;
     expect(need).toBe(3);
