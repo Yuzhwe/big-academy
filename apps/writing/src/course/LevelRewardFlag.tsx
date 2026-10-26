@@ -41,7 +41,7 @@ export function LevelRewardFlag({
     const context=element.getContext('2d');
     if(!context)return;
     const deviceScale=Math.min(Math.max(window.devicePixelRatio||1,1),2);
-    const w=200,h=160,pad=12;
+    const w=200,h=160,pad=20;
     element.width=Math.round(w*deviceScale);
     element.height=Math.round((h+2*pad)*deviceScale);
     context.setTransform(deviceScale,0,0,deviceScale,0,0);
