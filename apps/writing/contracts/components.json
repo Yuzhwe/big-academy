@@ -364,8 +364,8 @@
       "implementation": "packages/design-system/src/components/ui/BATaskProgress.tsx",
       "story": "packages/design-system/src/components/ui/BATaskProgress.stories.tsx",
       "props": {
-        "tasks": "TaskProgressItem[] — { id, label, status: done|current|available|locked|skipped, number? }. Status is injected.",
-        "activeIndex": "number, lesson-local index",
+        "tasks": "TaskProgressItem[] — { id, label, status: done|current|available|locked|skipped, number? }. Status comes from the product adapter; no visual overrides of progress.",
+        "activeIndex": "number, selected lesson-local index; independent of progress status; Done+Selected and Skipped+Selected preserve their original progress meanings",
         "canOpen": "(index) => boolean, lesson-local gate supplied by the product adapter",
         "locale": "en | zh, optional status chrome",
         "label": "string, optional accessible name for the group",
@@ -391,9 +391,9 @@
       ],
       "layoutOwner": "TopBar owns global centering, progress owns internal overflow",
       "requirements": [
-        "Public name ActivityScreenIndicator. Same circle in the TopBar and the All activity screens popover. Every state shows the Activity Screen index inside the circle. Lesson 1 is 1-8. Status uses color, a ring, or a secondary mark",
-        "Done uses a smaller check-circle at the main circle bottom; locked uses a smaller lock-circle. No line connecting the numbered circle to the lower status circle",
-        "Dosis ExtraBold 800 numerals",
+        "Public name ActivityScreenIndicator. Same numeric-only numbered circle in LessonTopBar and the All activity screens popover. Every state shows the Activity Screen index (Lesson 1: 1-8) without a separate visible check/lock/status icon.",
+        "Unselected Done: dark fill with white digit. Selected Done: dark fill/white digit plus outer selected ring. Unselected Skipped: dashed inner outline. Selected Skipped: same dashed inner outline plus outer selected ring. Incomplete selected: neutral base plus outer selected ring. Locked: disabled colors, no icon.",
+        "Dosis ExtraBold 800 numerals. Status remains in the accessible button name while the visual marker contains only the screen index.",
         "Only canOpen-authorized screen navigation; locked never navigates",
         "Popover shows full screen list with responsive grid and bounded internal scroll",
         "Escape/outside/trigger dismiss, focus restoration, keyboard and touch accessibility",
@@ -407,6 +407,8 @@
         "Skipped",
         "IndicatorFiveStates",
         "DoneSelected",
+        "SkippedSelected",
+        "IncompleteSelected",
         "Locked",
         "ShownAccessible",
         "AllScreensPopover",
@@ -415,7 +417,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "Public name: ActivityScreenIndicator. Registry name: BATaskProgress. Every circle shows the Activity Screen index in every state. Completed is not a check-only circle. Locked is not a lock-only circle. Status uses color, a ring, or a secondary mark. BA-UI-006 owns shared marker rendering and overflow presentation. Product gates and completion stay in PRODUCT.md. The lesson runtime keeps the index digit in every state."
+      "notes": "BA-UI-006 renders a numeric-only marker in every progress state with no separate check, lock or other icon. Stored progress status and selected activity index are independent. Done uses brand-dark fill and white digit; Skipped keeps its dashed border; selected adds an outer ring without overwriting either state. Locked uses disabled colors and cannot navigate. Accessible labels retain status, and any distinction between shown and truly correct completion must come from product data. Same component is used in TopBar and any full-list/popup presentation. PRODUCT.md owns navigation gates and results."
     },
     {
       "id": "BA-UI-007",
@@ -460,7 +462,7 @@
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
       "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
       "props": {
-        "lessonTitle": "string, already localized by the caller",
+        "lessonTitle": "string, already localized; expands to fill safe left-hand available width and clamps at two lines, preserving accessible full title",
         "lessonNumber": "string, already localized by the caller",
         "tasks": "TaskProgressItem[]",
         "current": "number, lesson-local active index",
@@ -478,7 +480,7 @@
         "tablet",
         "mixed-progress"
       ],
-      "layoutOwner": "TopBar owns three-column grid and geometry",
+      "layoutOwner": "TopBar owns full-header centering and safe two-line title space; on narrow screens it may stack the centered progress rail below the identity row.",
       "requirements": [
         "No hamburger menu",
         "Center progress across whole bar",
@@ -489,9 +491,10 @@
         "Standalone visible icon-only top Back returns to Staircase; no visible helper words",
         "Footer Previous is distinct, previous Activity Screen only, disabled on first screen",
         "Top Back 50x50 shared accessible button, hover/pressed/focus motion; keeps lesson title/meta and centered activity status indicators",
-        "Circle numbered ActivityScreenIndicator reused identically within TopBar and anchored popover. The digit stays visible in every state. No line to the small check/lock status circle",
+        "Numeric-only ActivityScreenIndicator reused identically within TopBar and full-list navigation; done dark/white, skipped dashed, locked disabled, and selected outer rings preserve each original progress state",
         "No horizontal divider between the lesson TopBar and the lesson content",
-        "At tablet 834 the lesson-title ellipsis stays 「第1课 主·」"
+        "Title uses available safe width and wraps to at most two lines; centered progress is independent of title length. At narrow widths, progress may occupy a second centered row.",
+        "50×50 icon-only Back, no visible label; two-line adaptive title; Progress selection is independent of source status. Preserve status, grading, unlocking, and persisted answers."
       ],
       "requiredStories": [
         "Desktop",
@@ -508,7 +511,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
-      "notes": "Popover and TopBar reuse exactly one ActivityScreenIndicator implementation. Every step circle shows its index. The lesson TopBar has no horizontal divider between the bar and the lesson content. At tablet 834 the lesson-title ellipsis stays 「第1课 主·」. The lesson runtime now keeps the digit and has no bar divider."
+      "notes": "LessonTopBar uses an icon-only 50×50 Back with accessible name; title fills the safe left width and clamps to two lines, without displacing progress centered against the whole bar. At narrow widths the activity indicators may occupy a second full-width centered row. The shared BA-UI-006 marker displays only numbers; completed/selected and skipped/selected are distinct composite visuals, with status-aware accessible labels. No bar divider. Final rendered visual signoff remains with the designer."
     },
     {
       "id": "BA-WR-002",
