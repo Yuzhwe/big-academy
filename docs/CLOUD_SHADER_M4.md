@@ -42,11 +42,14 @@ Camera data source: `boundedX`, `maxX` and `scenic.cloud` computed once in Stair
 
 `reducedMotion` or OS preference disables continuous Shader drift; lightweight CSS animation is stopped by its stylesheet. Shader stays static if motion preference changes mid-session until a re-render or mode change.
 
-## 5. Current evidence and open gates
+## 5. Actual verification and remaining gates
 
-Static GitHub file/registry checks were performed during implementation. The exact original GLSL vertex and fragment sources match the uploaded HTML by length and FNV-1a: vertex 179 / 0x29cf13d3 and fragment 4599 / 0xd1e1ef50. The transparent derivative has not been WebGL-compiled in a browser. Added Vitest tests cover original params/GLSL signatures, parallax math, low-end auto rules, three-cloud mode, WebGL-null fallback, and designer URL round-trip. **These tests have NOT been executed in a current repository checkout.**
-
-Live browser test, GL compilation on Chrome/Safari, TypeScript, Vite/library/Storybook builds, Playwright, screenshots, drifting video, real performance telemetry, resize/touch/keyboard/long-run and WCAG checks remain **NOT VERIFIED** because this chat's container cannot clone GitHub (DNS inaccessible) or access the user's localhost. Attempts to capture original file HTML in headless Chromium timed out; no fabricated screenshots included.
+- **Original M4 integrity:** the original uploaded vertex/fragment GLSL source matches the repository by length/FNV-1a (VERT 179 chars / `0x29cf13d3`, FRAG 4,599 chars / `0xd1e1ef50`). Source HTML SHA-256: `58289cd3b472c1b04b7a47043f11909410180a44e9435f01e7068a4cb675453e`. No replacement algorithm was introduced.
+- **GitHub Actions real checks:** `npm ci`, `check:docs`, `typecheck`, complete production builds of Writing, design-system, library and Storybook **passed**; BA-WR-013 + registry Vitest **9/9 passed**.
+- **Complete unit baseline:** **118/121 passed**. Three failing assertions are in unchanged CourseSession and Review04Visuals suites. They remain unresolved; do not change scoring, milestone or flag behavior just to mask this unrelated baseline. CI intentionally stays red on this gate.
+- **Browser evidence:** GitHub-hosted Chromium ran 17 Playwright cases, **16 passed**, including **all 4 newly added Cloud M4 visual/interaction cases**. The only failure was an obsolete SVG flag selector from pre-R04 code. The existing real flag is now a Canvas; the test has been updated to validate Canvas motion/reduced-motion and awaits the latest rerun. Real screenshot/video/trace artifact (~17.6 MB): https://github.com/Yuzhwe/big-academy/actions/runs/40329723457/artifacts/12653188207
+- **Shader-versus-fallback proof:** the latest branch QA prints `browser-renderer-observations.json` (Clear vs current-palette) after the Chromium run; only `renderer=shader` establishes that software-GL browser compiled/drew M4. A screenshot produced in forced Shader mode is **not** proof when the observed renderer is `lightweight`.
+- **Not yet verified:** original standalone HTML in actual Chromium/Safari screenshot, Safari/macOS hardware shader visuals, real GPU frame-time field tests, long-run device performance, real tablet touch, designer visual approval and license conditions for externally redistributing source. Linux Chrome software WebGL does not stand in for native Safari or final visual approval. The user's localhost is not remotely accessible from this chat.
 
 On a genuine local checkout:
 ```sh
@@ -63,7 +66,7 @@ npm run dev:library
 npm run storybook
 ```
 
-Visual QA capture at 1440×900, 1024×768, 834×1112 and 390×844. Open `http://127.0.0.1:5173` (use actual Vite output port), designer `http://127.0.0.1:5173/?view=components&component=cloud` only if served by library dev command (use actual port), Storybook on the actual printed port. Writing and the designer library are **separate** Vite apps with independently reported ports (Writing usually 5173/5174; library commonly 6007). Verify real shader drift and scroll in Chrome/Safari, WebGL failure and scene continuity, observe system preference changes, and confirm other card assets and controls are unchanged. Do not treat URL examples as hosted previews.
+Visual QA capture at 1440×900, 1024×768, 834×1112 and 390×844. On macOS, `Start Big Academy.command` normally serves the Writing page at `http://127.0.0.1:5174`; the separate designer workbench is `http://127.0.0.1:6007/?view=components&component=cloud` after `npm run dev:library`. Storybook is normally port 6006. Confirm actual printed Vite/Storybook ports. Verify real shader drift and scroll in Chrome/Safari, WebGL failure and scene continuity, observe system preference changes, and confirm other card assets and controls are unchanged. Do not treat URL examples as hosted previews.
 
 ## 6. Designer decisions
 
