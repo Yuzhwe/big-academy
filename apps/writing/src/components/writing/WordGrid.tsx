@@ -23,8 +23,8 @@ export interface WordGridProps {
   activeGroup: string;
   presentation?: 'docked' | 'overlay';
   tabs?: 'auto' | 'show' | 'hide';
-  /** Review 04 trial. Default connected preserves live Activity 7 until approved. */
-  tabAppearance?: 'connected' | 'slanted';
+  /** R04 seam repair keeps the approved rounded tabs; previous slanted trial retired. */
+  tabAppearance?: 'connected';
   locale?: BALocale;
   onGroupChange?: (key: string) => void;
   onInsert?: (word: string) => void;
