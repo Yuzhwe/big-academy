@@ -3,7 +3,7 @@ import choiceSource from '../../../packages/design-system/src/components/ui/BACh
 import tabsSource from '../../../packages/design-system/src/components/ui/BATabs.tsx?raw';
 import topbarSource from '../../writing/src/components/writing/LessonTopBar.tsx?raw';
 import lessonSource from '../../writing/src/components/writing/StairLessonCard.tsx?raw';
-import solarSource from './SolarLessonPreview.tsx?raw';
+import solarSource from '../../writing/src/components/writing/SolarLessonPreview.tsx?raw';
 import hamburgerSource from '../../writing/src/components/writing/HamburgerComposition.tsx?raw';
 import flagSource from '../../writing/src/course/LevelRewardFlag.tsx?raw';
 import wordsSource from '../../writing/src/components/writing/WordGrid.tsx?raw';
@@ -12,7 +12,7 @@ import milestoneSource from '../../writing/src/components/writing/UnitMilestone.
 import transitionSource from '../../writing/src/components/writing/BAPageTransition.tsx?raw';
 import { choiceOptions, type Scene, type Entry } from './catalog';
 const sources = { button: buttonSource, choice: choiceSource, tabs: tabsSource, topbar: topbarSource,
-  lesson: lessonSource + '\n\n/* Candidate Current Solar overlay (not used in Writing page): */\n' + solarSource,
+  lesson: lessonSource + '\n\n/* Shared Current Solar overlay (same source used in Writing page): */\n' + solarSource,
   unit: unitSource, hamburger: hamburgerSource, flag: flagSource, words: wordsSource,
   milestone:milestoneSource, transition:transitionSource };
 export function Code({ scene, entry }: { scene: Scene; entry: Entry }) {
