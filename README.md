@@ -30,3 +30,12 @@ npm run dev
 Writing uses React Aria Components and a shared Big Academy design-system package. The active implementation target is eight Activity Screens in L2/G2-O Lesson 1. Existing UI/code is a prototype and **does not imply the new written contracts are implemented or visually approved**.
 
 New development should branch from `main`, update contracts/tokens when required, run checks and submit a PR. Prior experimental branches are not authorities.
+
+## 固定本地网址
+
+这台 Mac 已配置后台启动：
+
+- 组件库：http://localhost:6007/
+- 高保真 Writing UI：http://localhost:5174/
+
+登录后自动启动，关闭终端不受影响。电脑开机、已登录且没有睡眠时即可访问。页面来自当前构建的验收版本；修改源码后，需要重新构建并执行 `npm run local-sites:install` 更新，网址保持不变。

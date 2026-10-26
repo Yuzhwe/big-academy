@@ -16,7 +16,8 @@
     "check:docs": "node scripts/check-document-sources.mjs",
     "dev:library": "npm run dev -w @big-academy/library",
     "build:library": "npm run build -w @big-academy/library",
-    "test:integration": "playwright test -c apps/writing/playwright.integration.config.ts"
+    "test:integration": "playwright test -c apps/writing/playwright.integration.config.ts",
+    "local-sites:install": "node scripts/install-local-sites.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",

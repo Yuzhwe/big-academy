@@ -76,3 +76,9 @@ Third-party notices remain in `packages/design-system/THIRD_PARTY_NOTICES.md` an
 The initial regressions exposed obsolete disabled-button click and old green-platform expectations, plus unstable font/camera sampling. They were corrected against the actual approved contract and the complete suite was rerun. The final local gallery contains 40 screenshots. JSON summaries and accessibility output accompany it. Screenshots stay local; source, assets, reproducible tests and the portable report are included in the review branch.
 
 GitHub delivery: [Draft PR #52](https://github.com/Yuzhwe/big-academy/pull/52), `feat/writing-hifi-integration-v1` → `feat/component-library-r2`. The launcher was executed successfully on this Mac and detected/opened the running website. To obtain a normal Git checkout, clone this branch using your authenticated GitHub client, then double-click the launcher.
+
+## Fixed local URLs · 2026-10-26
+
+On this Mac, the library is http://localhost:6007/ and Writing is http://localhost:5174/. Both now run as independent user LaunchAgents, survive closing Terminal and restart at login. The existing 127.0.0.1 aliases remain available, including for progress saved under that origin. Browser storage stays origin-specific; this setup does not migrate learner records between localhost and 127.0.0.1.
+
+Built snapshots and the runtime are installed under `~/Library/Application Support/Big Academy/`. To publish a new local review version, rebuild the apps then run `npm run local-sites:install`. No source-watching server is required. Logs are in that directory's `logs/` folder. Stop/remove a service with `launchctl bootout gui/$(id -u)/com.bigacademy.local.library` (or `.writing`) and remove its corresponding `~/Library/LaunchAgents/com.bigacademy.local.<site>.plist` file. Ordinary login then no longer starts that service.
