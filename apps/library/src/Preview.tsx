@@ -35,7 +35,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
           cloudCount={scene.cloudCount} driftSpeed={scene.driftSpeed}
           parallaxStrength={scene.parallaxStrength} cameraX={scene.cloudCameraX}
           cameraMaxTravel={1200} paused={scene.cloudPaused} reducedMotion={scene.motion==='reduce'}
-          onRendererChange={setCloudRenderer}/>
+          onRendererChange={setCloudRenderer} simulateWebGLUnavailable={scene.cloudSimulateUnavailable}/>
       </div>
       <output aria-live="polite">实际渲染：{cloudRenderer} · 相机 X = {scene.cloudCameraX}px · 视差 = {Math.round(scene.cloudCameraX*scene.parallaxStrength)}px</output>
       <p className="review04-caption">Shader / Lightweight 与正式 Staircase 使用同一 CloudShaderSky；原始 M4 Clear 和阶梯页当前颜色均为可比较候选，需设计师批准。</p>
