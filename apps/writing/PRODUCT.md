@@ -640,3 +640,17 @@ R04 Stage A defines **preview-only design candidates**. It does not change the a
 The following opt-in props are **not active in Writing high-fidelity pages yet**: WordGrid `tabAppearance=slanted` (live default `connected`), StairUnitCard `corner=cutout` (live default `folded`), UnitMilestone `previewAppearance=gold-shine` (live default `existing`), designer-library Solar Current outline, and BAPageTransition Cross Blur navigation. These require visual signoff and Stage B/C work. The real Staircase missing gold Completed Unit Milestone, Activity 1 new layout, Activity 7 new Tab styling/spacing and speaker brown button remain Stage B tasks. Cross Blur and Solar only enter the real page with an explicit Stage C signoff.
 
 Actual learner progress, evaluation and Back/Next must never be inferred or changed by rendering these previews. See `docs/REVIEW_04_STAGEA.md` for preview URLs and remaining testing.
+
+## Review 04 · Stage A R2 — designer target versus live product (2026-10-26)
+
+This staged review **does not change the course business logic or eight authored activity templates**, scoring, hints, tab group data, caret insertion, saving, navigation, unlocks or Milestone completion rights. Only the explicitly approved `All activity screens` popup padding moves 40px→24px in the live LessonTopBar. The existing completed-number Writing-brown fix and seven-second Current CTA sweep remain unchanged.
+
+Shared WordGrid retains the approved Rounded Connected Tabs and repairs the first unselected corner seam; the temporary Slanted Tabs variant is retired.
+
+Stage A library/Storybook target for StairUnitCard is `corner='rounded'`: all corners 16px, UNIT 20px/800, metadata full pill 16px, main title 24px/800, no fold/cutout. **The live Staircase stays on the legacy `corner='folded'` default until Stage B.** Later Product/Design document rules should treat rounded as the target and old folded requirements as current legacy-only.
+
+Stage A library UnitMilestone `previewAppearance='gold-shine'` uses the newly supplied gold check/seal PNG derivatives and gray upcoming. **Real E-01 still needs Stage B visual repair** for the gold Milestone; do not count Stage A as page completion.
+
+Solar Current defaults to Custom `#FFA82E` for both border/glow and designer's seven recorded slider values; library only. Cross Blur behavior is unchanged and only integrates with real navigation in Stage C after separate verification.
+
+No Stage B/C pages or product-learning records were changed by this R2 adjustment. See `docs/REVIEW_04_STAGEA_R2.md`.
