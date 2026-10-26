@@ -8,10 +8,13 @@ import hamburgerSource from '../../writing/src/components/writing/HamburgerCompo
 import flagSource from '../../writing/src/course/LevelRewardFlag.tsx?raw';
 import wordsSource from '../../writing/src/components/writing/WordGrid.tsx?raw';
 import unitSource from '../../writing/src/components/writing/StairUnitCard.tsx?raw';
+import milestoneSource from '../../writing/src/components/writing/UnitMilestone.tsx?raw';
+import transitionSource from '../../writing/src/components/writing/BAPageTransition.tsx?raw';
 import { choiceOptions, type Scene, type Entry } from './catalog';
 const sources = { button: buttonSource, choice: choiceSource, tabs: tabsSource, topbar: topbarSource,
   lesson: lessonSource + '\n\n/* Candidate Current Solar overlay (not used in Writing page): */\n' + solarSource,
-  unit: unitSource, hamburger: hamburgerSource, flag: flagSource, words: wordsSource };
+  unit: unitSource, hamburger: hamburgerSource, flag: flagSource, words: wordsSource,
+  milestone:milestoneSource, transition:transitionSource };
 export function Code({ scene, entry }: { scene: Scene; entry: Entry }) {
   const props = scene.component === 'choice' ? {
     choiceMode: scene.choice,
