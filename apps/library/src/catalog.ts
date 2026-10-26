@@ -1,6 +1,7 @@
 import registry from '../../writing/contracts/components.json';
 
 export const catalog = [
+  { key: 'cloud', id: 'BA-WR-013', name: '动态天空', en: 'CloudShaderSky', category: 'Writing', description: '原始 M4 Shader 与现有轻量云朵共用的天空渲染层，自动选择渲染能力并由同一相机驱动视差。', anatomy: '天空画布或轻量云朵（二选一） → M4 漂移 → Staircase cameraX 视差；正式页面不出现调参 UI。', states: ['default'], story: 'writing-path-cloudshadersky--adaptive' },
   { key: 'choice', id: 'BA-UI-003', name: '选择题', en: 'BAChoice', category: '基础交互', description: '从做出选择，到看见反馈。清楚呈现每一种作答状态。', anatomy: '选项行 → 状态图标 → 字母标记 → 内容。状态由调用方传入，组件本身不评分。', states: ['default', 'selected', 'correct', 'correctUnselected', 'wrong', 'dim', 'disabled'], story: 'primitives-bachoice--single-interactive' },
   { key: 'button', id: 'BA-UI-001', name: '按钮', en: 'BAButton', category: '基础交互', description: '让下一步清晰可见。统一主要操作、次要操作与等待反馈。', anatomy: '固定命中区域 → 可缩放视觉层 → 图标与标签。等待中保留可访问名称。', states: ['default', 'hover', 'pressed', 'focus', 'disabled', 'busy'], story: 'primitives-babutton--default' },
   { key: 'tabs', id: 'BA-UI-002', name: '标签导航', en: 'BATabs', category: '基础交互', description: '在相关内容之间切换，始终知道自己所在的位置。', anatomy: 'TabList → Tab → 对应 TabPanel。方向键切换焦点与选中项。', states: ['default', 'hover', 'pressed', 'focus', 'disabled'], story: 'primitives-batabs--level-navigation' },
@@ -52,6 +53,8 @@ export type Scene = {
   flagAmplitude:number;flagWaves:number;flagPeriod:number;flagPlaying:boolean;flagReset:number;
   solarPreset:'A'|'B'|'C'|'custom';solarBorderColor:string;solarGlowColor:string;
   wordTabAppearance:'connected';
+  cloudRenderMode:'auto'|'shader'|'lightweight';cloudPreset:'clear'|'staircase';
+  skyTop:string;skyBottom:string;cloudColor:string;cloudCount:number;driftSpeed:number;parallaxStrength:number;cloudCameraX:number;cloudPaused:boolean;cloudSimulateUnavailable:boolean;
   transitionDuration:number;transitionBlur:number;transitionPage:'staircase'|'lesson';
 };
 export const defaultScene: Scene = {
@@ -62,6 +65,7 @@ export const defaultScene: Scene = {
   solarRayIntensity:1.80,solarRayLength:1.26,solarRayCount:64,solarBokeh:1.12,solarRimBoost:0.74,solarGlowSpread:10,solarBrightness:1.34,
   flagAmplitude:4,flagWaves:6,flagPeriod:1.6,flagPlaying:true,flagReset:0,
   solarPreset:'custom',solarBorderColor:'#FFA82E',solarGlowColor:'#FFA82E',
+  cloudRenderMode:'auto',cloudPreset:'staircase',skyTop:'#85DBF9',skyBottom:'#F8F4ED',cloudColor:'#FBF8F2',cloudCount:5,driftSpeed:0.8,parallaxStrength:0.06,cloudCameraX:0,cloudPaused:false,cloudSimulateUnavailable:false,
   wordTabAppearance:'connected',transitionDuration:500,transitionBlur:12,transitionPage:'staircase',
 };
 function oneOf<T extends string>(value: string | null, options: readonly T[], fallback: T): T {
@@ -119,6 +123,14 @@ export function readScene(search: string): Scene {
     solarBorderColor:color('solarBorderColor','#FFA82E'),
     solarGlowColor:color('solarGlowColor','#FFA82E'),
     wordTabAppearance:'connected',
+    cloudRenderMode:oneOf(p.get('cloudRenderMode'),['auto','shader','lightweight'],'auto'),
+    cloudPreset:oneOf(p.get('cloudPreset'),['clear','staircase'],'staircase'),
+    skyTop:color('skyTop',p.get('cloudPreset')==='clear'?'#3876BA':'#85DBF9'),
+    skyBottom:color('skyBottom',p.get('cloudPreset')==='clear'?'#8CBFE8':'#F8F4ED'),
+    cloudColor:color('cloudColor','#FBF8F2'),cloudCount:Math.round(num('cloudCount',5,1,6)),
+    driftSpeed:num('driftSpeed',.8,0,2),parallaxStrength:num('parallaxStrength',.06,0,.5),
+    cloudCameraX:num('cloudCameraX',0,0,1200),cloudPaused:oneOf(p.get('cloudPaused'),['true','false'],'false')==='true',
+    cloudSimulateUnavailable:oneOf(p.get('cloudSimulateUnavailable'),['true','false'],'false')==='true',
     transitionDuration:Math.round(num('transitionDuration',500,0,1200)),
     transitionBlur:num('transitionBlur',12,0,30),
     transitionPage:oneOf(p.get('transitionPage'),['staircase','lesson'],'staircase'),

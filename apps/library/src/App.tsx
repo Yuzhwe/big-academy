@@ -5,6 +5,7 @@ import { Preview } from './Preview';
 import { Code } from './Code';
 import { Colors } from './Colors';
 import { R2Controls, ScenarioLinks } from './R2Controls';
+import { CloudControls } from './CloudControls';
 import { Showcase } from './Showcase';
 declare const __BA_LOCAL_REVIEW_IMAGES__: boolean;
 const hasLocalReviewImages = typeof __BA_LOCAL_REVIEW_IMAGES__ !== 'undefined' && __BA_LOCAL_REVIEW_IMAGES__;
@@ -72,6 +73,7 @@ function Detail({ scene, update, openEntry }: { scene: Scene; update: (patch: Pa
         {scene.component === 'button' && <Field label="层级" value={scene.variant} onChange={v => update({ variant: v as Scene['variant'] })}><option value="primary">主要</option><option value="secondary">次要</option><option value="outline">Outline · 候选</option><option value="ghost">Ghost</option><option value="tertiary">Tertiary · 兼容名称</option></Field>}
         {['choice', 'lesson', 'topbar', 'button', 'tabs', 'words'].includes(scene.component) && <Field label="文本样例" value={scene.sample} onChange={v => update({ sample: v as Scene['sample'] })}><option value="standard">标准文本</option><option value="long">长文本</option></Field>}
         <R2Controls scene={scene} update={update}/>
+        <CloudControls scene={scene} update={update}/>
         <Field label="动态效果" value={scene.motion} onChange={v => update({ motion: v as Scene['motion'] })}><option value="system">跟随系统</option><option value="reduce">减少动态</option></Field>
       </div>
     </section>

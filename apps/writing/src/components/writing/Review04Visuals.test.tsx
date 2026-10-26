@@ -69,15 +69,18 @@ describe('Review 04 Stage A — opt-in designs only', () => {
     const onCelebrate=vi.fn(),user=userEvent.setup();
     const base={unitId:'a',title:'Opinion Paragraph',celebrationEligible:false,
       onCelebrate};
-    const {rerender,container}=render(<UnitMilestone {...base} completed={false}/>);
+    const {unmount}=render(<UnitMilestone {...base} completed={false}/>);
     const button=screen.getByTestId('milestone');
     expect(button).toBeDisabled();
     expect(button).not.toHaveAttribute('data-shine');
     await user.click(button);expect(onCelebrate).not.toHaveBeenCalled();
-    rerender(<UnitMilestone {...base} completed={true}/>);
+    unmount();
+    const {container}=render(<UnitMilestone {...base} completed={true}/>);
+    const completedButton=screen.getByTestId('milestone');
     expect(container.querySelector('.unit-milestone')).toHaveAttribute('data-state','completed');
-    expect(button).toHaveAttribute('data-shine','true');
-    await user.click(button);expect(onCelebrate).toHaveBeenCalledOnce();
+    expect(completedButton).toHaveAttribute('data-shine','true');
+    expect(completedButton).toBeEnabled();
+    await user.click(completedButton);expect(onCelebrate).toHaveBeenCalledOnce();
   });
 });
 

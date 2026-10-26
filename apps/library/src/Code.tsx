@@ -10,11 +10,14 @@ import wordsSource from '../../writing/src/components/writing/WordGrid.tsx?raw';
 import unitSource from '../../writing/src/components/writing/StairUnitCard.tsx?raw';
 import milestoneSource from '../../writing/src/components/writing/UnitMilestone.tsx?raw';
 import transitionSource from '../../writing/src/components/writing/BAPageTransition.tsx?raw';
+import cloudSource from '../../writing/src/course/CloudShaderSky.tsx?raw';
+import originalM4ShaderSource from '../../writing/src/course/cloudShaderM4.ts?raw';
 import { choiceOptions, type Scene, type Entry } from './catalog';
 const sources = { button: buttonSource, choice: choiceSource, tabs: tabsSource, topbar: topbarSource,
   lesson: lessonSource + '\n\n/* Shared Current Solar overlay (same source used in Writing page): */\n' + solarSource,
   unit: unitSource, hamburger: hamburgerSource, flag: flagSource, words: wordsSource,
-  milestone:milestoneSource, transition:transitionSource };
+  milestone:milestoneSource, transition:transitionSource,
+  cloud: cloudSource + '\n\n/* Original M4 GLSL and transparent derivative source: */\n' + originalM4ShaderSource };
 export function Code({ scene, entry }: { scene: Scene; entry: Entry }) {
   const props = scene.component === 'choice' ? {
     choiceMode: scene.choice,

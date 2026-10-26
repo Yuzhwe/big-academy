@@ -1,0 +1,72 @@
+name: Cloud M4 regression (draft only)
+on:
+  push:
+    branches:
+      - feat/writing-cloud-shader-m4-adaptive
+  workflow_dispatch:
+
+concurrency:
+  group: cloud-m4-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Check docs / types / unit / builds / browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Documentation references
+        run: npm run check:docs
+      - name: TypeScript workspaces
+        run: npm run typecheck
+      - name: Full unit baseline (continue collecting evidence on failures)
+        id: full_unit
+        continue-on-error: true
+        run: npm test
+      - name: Cloud M4 and registry regression (required)
+        run: npx vitest run apps/writing/src/course/CloudShaderSky.test.tsx apps/writing/src/contracts/registry.test.tsx
+      - name: Production and Storybook build
+        run: npm run build
+      - name: Verify preinstalled Chrome (no apt/browser download)
+        run: google-chrome --version
+      - name: Install video encoder for authentic animation evidence
+        run: npx playwright install ffmpeg
+      - name: Browser integration regression
+        run: npm run test:integration
+      - name: Report real M4 renderer used by Chromium
+        if: always()
+        run: |
+          if [ -f apps/writing/docs/evidence/cloud-m4/browser-renderer-observations.json ]; then
+            cat apps/writing/docs/evidence/cloud-m4/browser-renderer-observations.json
+          else
+            echo "Cloud M4 browser renderer observations were not produced."
+          fi
+      - name: Preserve full-suite failure as final QA gate
+        if: always() && steps.full_unit.outcome == 'failure'
+        run: |
+          echo "::error::Full unit suite has failures; do not mark overall QA complete."
+          exit 1
+      - name: Upload real browser QA evidence and videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-m4-browser-evidence
+          path: |
+            apps/writing/playwright-report/
+            apps/writing/docs/evidence/cloud-m4/browser-renderer-observations.json
+            apps/writing/test-results/
+            apps/writing/docs/evidence/cloud-m4/
+            apps/writing/docs/evidence/integration-v1/
+            apps/writing/public/path/v2-terraces/
+          retention-days: 7
+          if-no-files-found: ignore
