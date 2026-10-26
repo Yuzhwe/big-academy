@@ -96,3 +96,23 @@ export const SkippedSelected: Story = {
 export const IncompleteSelected: Story = {
   args: { tasks: mixed, activeIndex: 2, canOpen: allow(mixed) },
 };
+
+/** DR02-07: rail cap + current-first window with complete index in the same 36px marker. */
+export const Overflow16Screens: Story = {
+  args: { tasks: many.slice(0, 16), activeIndex: 12, canOpen: allow(many) },
+  decorators: [
+    (Story) => <div style={{ width: 520, maxWidth: '100%', margin: '0 auto' }}><Story /></div>,
+  ],
+};
+
+export const AllScreensPopover: Story = {
+  args: { tasks: many, activeIndex: 9, canOpen: allow(many) },
+  decorators: [
+    (Story) => <div style={{ width: 520, maxWidth: '100%', margin: '0 auto' }}><Story /></div>,
+  ],
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', { name: 'All activity screens' });
+    await trigger.click();
+    await expect(within(document.body).getByRole('dialog', { name: 'All activity screens' })).toBeInTheDocument();
+  },
+};
