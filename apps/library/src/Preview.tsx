@@ -3,6 +3,8 @@ import { BAButton, BAIcon, BAChoice, BATabs, BATabList, BATabPanel, type ChoiceV
 import { LessonTopBar } from '../../writing/src/components/writing/LessonTopBar';
 import { StairLessonCard, type StairLessonState } from '../../writing/src/components/writing/StairLessonCard';
 import { StairUnitCard } from '../../writing/src/components/writing/StairUnitCard';
+import { UnitMilestone } from '../../writing/src/components/writing/UnitMilestone';
+import { BAPageTransition } from '../../writing/src/components/writing/BAPageTransition';
 import { LandscapeTerrace } from '../../writing/src/components/writing/LandscapeTerrace';
 import { HamburgerComposition } from '../../writing/src/components/writing/HamburgerComposition';
 import { LevelRewardFlag } from '../../writing/src/course/LevelRewardFlag';
@@ -16,6 +18,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
 
   const [notice, setNotice] = useState('');
   const [activity, setActivity] = useState(2);
+  const [transitionTarget,setTransitionTarget] = useState('staircase');
   const zh = scene.locale === 'zh';
   const state = scene.mode === 'state' ? scene.state : 'default';
   const output = notice ? <output className="preview-result" aria-live="polite">{notice}</output> : null;
@@ -76,6 +79,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
               rayIntensity:scene.solarRayIntensity,rayLength:scene.solarRayLength,
               rayCount:scene.solarRayCount,bokeh:scene.solarBokeh,rimBoost:scene.solarRimBoost,
               glowSpread:scene.solarGlowSpread,brightness:scene.solarBrightness,
+              borderColor:scene.solarBorderColor,glowColor:scene.solarGlowColor,
             }}>{card}</SolarLessonPreview>
           : card}
         {scene.composition==='terrace'&&<LandscapeTerrace/>}
@@ -102,8 +106,33 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
     };
     return <div className="preview-example preview-example--center">
       <div data-ba-product="writing" style={{ width: 320, maxWidth: '100%', background:'#a9e3f3', padding:20, boxSizing:'border-box', borderRadius:16 }}>
-        <StairUnitCard locale={scene.locale} unit={unit} />
+        <StairUnitCard locale={scene.locale} unit={unit} corner={state==='cutout'||scene.unitCorner==='cutout'?'cutout':'folded'} />
       </div>
+    </div>;
+  }
+
+  if (scene.component === 'milestone') {
+    const done=scene.mode==='state' ? state==='completed' : true;
+    return <div className="preview-example preview-example--center review04-milestone-stage">
+      <UnitMilestone unitId="preview-unit" title={zh?'观点段落':'Opinion Paragraph'} completed={done}
+        celebrationEligible={false} locale={scene.locale} previewAppearance="gold-shine"
+        onCelebrate={()=>setNotice(zh?'已触发重播请求，组件库不修改学习记录。':'Replay event received; no learner progress is written.')}/>
+      <p className="review04-caption">{done?'Completed · 金色、7 秒扫光、可点击':'Upcoming · 灰色、无扫光、不可点击'}</p>{output}
+    </div>;
+  }
+  if (scene.component === 'transition') {
+    const target=update?scene.transitionPage:transitionTarget;
+    const view=(name:string)=><div className="review04-transition-page" data-page={name}>
+      <h2>{name==='staircase'?(zh?'Writing · 阶梯页':'Writing · Staircase'):(zh?'Lesson 1 · 主题句':'Lesson 1 · Topic sentences')}</h2>
+      <p>{name==='staircase'?(zh?'请选择课程开始学习':'Choose a lesson to start'):(zh?'Write your own topic sentence.':'Write your own topic sentence.')}</p>
+    </div>;
+    const go=(next:'staircase'|'lesson')=>{setTransitionTarget(next);update?.({transitionPage:next});};
+    return <div className="preview-example review04-transition-stage">
+      <div className="demo-actions"><button type="button" onClick={()=>go('staircase')}>Staircase</button><button type="button" onClick={()=>go('lesson')}>Lesson</button></div>
+      <BAPageTransition viewKey={target} renderView={view}
+        duration={scene.motion==='reduce'?0:scene.transitionDuration} maxBlur={scene.transitionBlur}
+        reducedMotion={scene.motion==='reduce'}/>
+      <p className="review04-caption">{zh?'仅组件库模拟转场，不修改 Writing 导航。':'Library-only transition preview. Writing navigation unchanged.'}</p>
     </div>;
   }
   if (scene.component === 'hamburger') {
