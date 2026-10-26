@@ -85,7 +85,7 @@ test('Chinese path, keyboard, touch, reduced motion and 200 percent layout',asyn
 });
 test('WordGrid preserves caret and provenance across category changes and reload',async({page})=>{
  await start(page);await practices(page);await page.getByTestId('lesson-footer').getByRole('button',{name:'Back',exact:true}).click();
- const canvas=page.getByTestId('writing-canvas');await canvas.fill('Our garden.');await canvas.press('Home');await canvas.press('ArrowRight');await canvas.press('ArrowRight');await canvas.press('ArrowRight');await canvas.press('ArrowRight');
+ const canvas=page.getByTestId('writing-canvas');await expect(canvas).toHaveCSS('resize','none');await expect(canvas).toHaveCSS('overflow-y','auto');await canvas.fill('Our garden.');await canvas.press('Home');await canvas.press('ArrowRight');await canvas.press('ArrowRight');await canvas.press('ArrowRight');await canvas.press('ArrowRight');
  await page.getByRole('tab',{name:'Nouns',exact:true}).click();const first=page.locator('.word-grid__card').first();const word=await first.locator('.word-grid__text').innerText();await first.click();
  await expect(canvas).toHaveValue(new RegExp('^Our '+word+'.*garden\\.$'));
  const text=await canvas.inputValue();await resume(page);await expect(canvas).toHaveValue(text);await expect(page.getByRole('tab',{name:'Nouns',exact:true})).toHaveAttribute('aria-selected','true');
@@ -109,4 +109,29 @@ test('accessibility audit of path, lesson and graded Choice; report retained',as
 test('R2.12 flag uses original wind paths and stops for reduced motion',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});await page.goto('/');const cloth=page.locator('.course-goal__flag .flag-cloth');await cloth.waitFor({state:'attached'});const original=await cloth.getAttribute('d');await expect.poll(()=>cloth.getAttribute('d')).not.toBe(original);
  await page.emulateMedia({reducedMotion:'reduce'});await expect(cloth).toHaveAttribute('d','M40 29 Q75 17 106 29 Q139 39 177 24 L177 113 Q141 131 107 115 Q70 100 40 111 Z');
+});
+
+
+test('R2 Review 02 overflow uses current-first 36px markers and fixed left-aligned six-column index',async({page})=>{
+ await page.setViewportSize({width:1024,height:768});
+ await start(page);
+ const rail=page.locator('.lesson-topbar__center');
+ await rail.evaluate(el=>{(el as HTMLElement).style.width='228px';(el as HTMLElement).style.maxWidth='228px';});
+ const nav=page.locator('.lesson-topbar .ba-task-progress');
+ const overflow=nav.getByRole('button',{name:'All activity screens'});
+ await expect(overflow).toBeVisible();
+ const visible=nav.locator('.ba-task-progress__digit');
+ expect(await visible.count()).toBeLessThanOrEqual(8);
+ await expect(nav.locator('.ba-task-progress__button')).toHaveCount((await visible.count())+1);
+ await overflow.click();
+ const pop=page.getByRole('dialog',{name:'All activity screens'});
+ await expect(pop).toBeVisible();
+ await expect(pop.locator('.ba-task-progress__digit')).toHaveCount(8);
+ await expect(pop.locator('.ba-task-progress__popover-grid')).toHaveCSS('grid-template-columns',/44px 44px 44px 44px 44px 44px/);
+ const firstRow=await pop.locator('.ba-task-progress__button').first().boundingBox();
+ const secondRow=await pop.locator('.ba-task-progress__button').nth(6).boundingBox();
+ expect(secondRow!.x).toBeCloseTo(firstRow!.x,0);
+ await page.keyboard.press('Escape');
+ await expect(pop).toHaveCount(0);
+ await expect(overflow).toBeFocused();
 });
