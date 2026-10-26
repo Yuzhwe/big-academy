@@ -52,8 +52,8 @@
 }
 /* Available, current/start and current/continue share one Enterable appearance. */
 .stair-lesson-card[data-visual-state='enterable'] {
-  border-color: var(--ba-color-action-primary);
-  box-shadow: var(--ba-lesson-current-shadow);
+  border-color: var(--ba-writing-accent, #b25415);
+  box-shadow: 0 0 0 2px var(--ba-writing-accent, #b25415);
 }
 .stair-lesson-card[data-visual-state='completed'] .stair-lesson-card__seal {
   background: var(--ba-color-success-fill);
