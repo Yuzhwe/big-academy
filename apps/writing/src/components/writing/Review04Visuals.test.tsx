@@ -26,17 +26,16 @@ describe('Review 04 Stage A — opt-in designs only', () => {
     expect(container.querySelector('.word-grid')).toHaveAttribute('data-tab-appearance','connected');
   });
 
-  it('makes a four-rounded-corner preview while retaining default folded production anatomy',()=>{
+  it('shares a four-rounded-corner Unit between library and production',()=>{
     const unit={id:'a',index:1,title:'Opinion Paragraph',typeLabel:'',
       meta:'9 lessons · 170 mins',goals:['Write a clear topic sentence']};
-    const {rerender,container}=render(<StairUnitCard unit={unit} corner="rounded"/>);
-    expect(container.querySelector('.course-unit')).toHaveAttribute('data-corner','rounded');
+    const {rerender,container}=render(<StairUnitCard unit={unit}/>);
+    expect(container.querySelector('.course-unit')).toHaveAttribute('data-component','BA-WR-007');
     expect(container.querySelector('.course-unit__identity')).toBeInTheDocument();
-    expect(container.querySelector('.course-unit__meta')).toHaveTextContent('9 lessons · 170 mins');
+    expect(container.querySelector('.course-unit__meta')).toHaveTextContent('9 lessons · 170 min');
     expect(container.querySelector('.course-unit__fold-flap')).not.toBeInTheDocument();
     rerender(<StairUnitCard unit={unit}/>);
-    expect(container.querySelector('.course-unit')).toHaveAttribute('data-corner','folded');
-    expect(container.querySelector('.course-unit__fold-flap')).toBeInTheDocument();
+    expect(container.querySelector('.course-unit__fold-flap')).not.toBeInTheDocument();
   });
 
   it('uses three existing hamburger layers, preserving approved widths',()=>{
