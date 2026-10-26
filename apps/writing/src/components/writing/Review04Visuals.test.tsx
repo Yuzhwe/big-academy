@@ -52,7 +52,7 @@ describe('Review 04 Stage A — opt-in designs only', () => {
   it('allows only completed gold badge to trigger a replay event',async()=>{
     const onCelebrate=vi.fn(),user=userEvent.setup();
     const base={unitId:'a',title:'Opinion Paragraph',celebrationEligible:false,
-      onCelebrate,previewAppearance:'gold-shine' as const};
+      onCelebrate};
     const {rerender,container}=render(<UnitMilestone {...base} completed={false}/>);
     const button=screen.getByTestId('milestone');
     expect(button).toBeDisabled();
@@ -67,7 +67,7 @@ describe('Review 04 Stage A — opt-in designs only', () => {
 
 it('uses the submitted R04 PNG artwork in the completed milestone candidate only',()=>{
  const {container}=render(<UnitMilestone unitId="demo" title="Unit completed" completed
-   previewAppearance="gold-shine" celebrationEligible={false}/>);
+    celebrationEligible={false}/>);
  const imgs=[...container.querySelectorAll('.unit-milestone__action img')];
  expect(imgs).toHaveLength(2);
  expect(imgs[0].getAttribute('src')).toContain('writing_milestone_2.png');
