@@ -54,7 +54,7 @@ export type Scene = {
   solarPreset:'A'|'B'|'C'|'custom';solarBorderColor:string;solarGlowColor:string;
   wordTabAppearance:'connected';
   cloudRenderMode:'auto'|'shader'|'lightweight';cloudPreset:'clear'|'staircase';
-  skyTop:string;skyBottom:string;cloudColor:string;cloudCount:number;driftSpeed:number;parallaxStrength:number;cloudCameraX:number;cloudPaused:boolean;
+  skyTop:string;skyBottom:string;cloudColor:string;cloudCount:number;driftSpeed:number;parallaxStrength:number;cloudCameraX:number;cloudPaused:boolean;cloudSimulateUnavailable:boolean;
   transitionDuration:number;transitionBlur:number;transitionPage:'staircase'|'lesson';
 };
 export const defaultScene: Scene = {
@@ -65,7 +65,7 @@ export const defaultScene: Scene = {
   solarRayIntensity:1.80,solarRayLength:1.26,solarRayCount:64,solarBokeh:1.12,solarRimBoost:0.74,solarGlowSpread:10,solarBrightness:1.34,
   flagAmplitude:4,flagWaves:6,flagPeriod:1.6,flagPlaying:true,flagReset:0,
   solarPreset:'custom',solarBorderColor:'#FFA82E',solarGlowColor:'#FFA82E',
-  cloudRenderMode:'auto',cloudPreset:'staircase',skyTop:'#85DBF9',skyBottom:'#F8F4ED',cloudColor:'#FBF8F2',cloudCount:5,driftSpeed:0.8,parallaxStrength:0.06,cloudCameraX:0,cloudPaused:false,
+  cloudRenderMode:'auto',cloudPreset:'staircase',skyTop:'#85DBF9',skyBottom:'#F8F4ED',cloudColor:'#FBF8F2',cloudCount:5,driftSpeed:0.8,parallaxStrength:0.06,cloudCameraX:0,cloudPaused:false,cloudSimulateUnavailable:false,
   wordTabAppearance:'connected',transitionDuration:500,transitionBlur:12,transitionPage:'staircase',
 };
 function oneOf<T extends string>(value: string | null, options: readonly T[], fallback: T): T {
@@ -130,6 +130,7 @@ export function readScene(search: string): Scene {
     cloudColor:color('cloudColor','#FBF8F2'),cloudCount:Math.round(num('cloudCount',5,1,6)),
     driftSpeed:num('driftSpeed',.8,0,2),parallaxStrength:num('parallaxStrength',.06,0,.5),
     cloudCameraX:num('cloudCameraX',0,0,1200),cloudPaused:oneOf(p.get('cloudPaused'),['true','false'],'false')==='true',
+    cloudSimulateUnavailable:oneOf(p.get('cloudSimulateUnavailable'),['true','false'],'false')==='true',
     transitionDuration:Math.round(num('transitionDuration',500,0,1200)),
     transitionBlur:num('transitionBlur',12,0,30),
     transitionPage:oneOf(p.get('transitionPage'),['staircase','lesson'],'staircase'),
