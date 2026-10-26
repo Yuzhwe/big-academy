@@ -680,7 +680,7 @@
         "locale": "en | zh",
         "detail": "string (legacy fallback)",
         "titleLines": "2 | 3; default 3 per confirmed integration request",
-        "current": "boolean optional; allows current course with Start or Continue supplied by state"
+        "current": "boolean optional, progress metadata only; does not visually distinguish start vs continue"
       },
       "events": {
         "onEnter": "(lessonId) => void",
@@ -697,26 +697,25 @@
       "requirements": [
         "Number at top left",
         "No local progress authority",
-        "Preserve skip badge",
+        "Keep skipped learning state in the session, but do not render a separate Skipped card variant or label",
         "No pointer interception, focus clipping or overlap with title/progress",
         "Desktop and Tablet visual evidence, EN/ZH long-title checks; designer signoff required",
-        "CTA height 70px, Start/Continue/Review according to real status; completed always Review",
+        "CTA height 70px; Start and Continue both display Enter / 进入; Completed displays Review / 复习; the course session owns saved progress",
         "Paper surface white with rounded corners, warm base shadow and readable long content",
-        "titleLines selects 2 (legacy path) or 3 (R2 library); reserve same slot across states and preserve full accessible title",
+        "titleLines defaults to 3 across the library and Writing path, with explicit 2-line legacy override; preserve full accessible title",
         "Duration number + localized unit immediately below title on same left content axis",
         "CTA MUST render shared BAButton height 70px with working hover/pressed/focus/reduced-motion states",
         "All Lesson cards same height for equivalent viewport/tier",
-        "R3 number seal is primary identity; small attached status symbol current/done/locked; no wide status capsules or visible redundant phrases",
+        "Number seal stays primary; Completed has success-green filled numeral badge, white number and no badge border. No extra current symbol distinguishes Enterable actions",
         "Configurable two/three-line title, left-aligned time, 70px actual BAButton; card/CTA concentric corner relationships",
-        "Preserve same card bottom/platform anchor under new rounded landscape terrace",
-        "R2 CTA visible BAButton assembly fills card content width, height 70px, full pill; locked does not call onEnter. Current outline and three-line layout await rendered review."
+        "Preserve card bottom and camera anchor with the R2.12 cloud-image platform, not the old green CSS terrace",
+        "CTA fills card inner content width at 70px height. Enterable uses Available base and current-course outline consistently for start and continue; Locked blocks entry. Rendered review still pending."
       ],
       "requiredStories": [
         "Start",
         "Continue",
         "Review",
         "Locked",
-        "Skipped",
         "CardOnly",
         "FullComposition",
         "InteractiveAllStates",
@@ -726,10 +725,10 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
-      "notes": "Candidate Warm Frame. Not validated and not visually approved. Lesson number stays top left. Action labels are Start / Continue / Review / Locked. Skipped keeps Review plus a mastered label. The card does not grant unlock. Integration v1 uses three reserved title lines by default; current/completed/locked roles preserve Start/Continue/Review/Locked/Skipped actions.",
+      "notes": "Three visual roles: Enterable / Completed / Locked (designer approval pending). Internal action/status inputs remain start/continue/review/locked/skipped for session compatibility. Start and Continue share Enter / 进入 and the same Available-plus-outline appearance. Review and Skipped share Completed appearance without a separate Skipped card label, while the session retains skip semantics. Completed numeral uses existing success-fill with white digit and no border. Three title lines default in library and Writing. No visual styling grades or unlocks lessons.",
       "reviewStatus": "Ready for Visual Review",
       "reviewEntry": "Writing/Path/StairLessonCard",
-      "r2VisualStatus": "Updated full-width CTA and opt-in three-line/current treatment / Pending Review; product gating unchanged"
+      "r2VisualStatus": "R2 Design Review 01 follow-up: Enterable/Completed/Locked, unified Enter, green completed numeral, three-line default / Pending Visual Approval; product gates unchanged"
     },
     {
       "id": "BA-WR-006",
