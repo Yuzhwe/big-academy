@@ -1,6 +1,14 @@
 import type { ReactNode } from 'react';
 import './LessonWorkspace.css';
 
+export type CoachMessageTone = 'orientation' | 'hint' | 'correct' | 'wrong';
+
+export function CoachMessage({ children, tone = 'orientation', ...props }: {
+  children: ReactNode; tone?: CoachMessageTone; role?: 'status'; 'data-testid'?: string;
+}) {
+  return <p className="lesson-workspace__message" data-tone={tone} {...props}>{children}</p>;
+}
+
 export interface LessonWorkspaceProps {
   activity: ReactNode;
   coach: ReactNode;
