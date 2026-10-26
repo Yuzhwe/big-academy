@@ -125,20 +125,14 @@
   }
 }
 
-/* On narrow viewports give the title the entire first row, while the lesson's
-   indicators remain geometrically centered in their own full-width row. */
-@media (max-width: 700px) {
-  .lesson-topbar {
-    grid-template-columns: minmax(0, 1fr) 44px;
-    grid-template-rows: auto auto;
-    row-gap: 8px;
-    min-height: 120px;
-  }
+/* Container-query the component itself, not only the viewport: this also
+   works when the designer previews a narrow TopBar inside a wide desktop. */
+@container (max-width: 700px) {
   .lesson-topbar__start {
-    grid-column: 1;
+    grid-column: 1 / -1;
     grid-row: 1;
-    width: 100%;
-    max-width: 100%;
+    width: calc(100% - 44px);
+    max-width: calc(100% - 44px);
   }
   .lesson-topbar__center {
     position: static;
@@ -148,6 +142,8 @@
     transform: none;
     width: 100%;
     max-width: 100%;
+    margin-top: 8px;
+    margin-bottom: 4px;
   }
   .lesson-topbar__end { grid-column: 2; grid-row: 1; }
 }
