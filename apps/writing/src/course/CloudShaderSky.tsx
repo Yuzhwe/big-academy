@@ -200,11 +200,11 @@ export function CloudShaderSky({
   const shift = cloudParallax(cameraX, parallaxStrength, cameraMaxTravel);
   const overscan = Math.ceil(cloudParallax(cameraMaxTravel, parallaxStrength, cameraMaxTravel)) + 2;
   useEffect(() => { callbackRef.current?.(renderer, reason || undefined); }, [renderer, reason]);
-  const style = { '--m4-shift': `${shift}px`, '--m4-overscan': `${overscan}px` } as CSSProperties;
-  return <div className={`cloud-shader-sky ${className}`} data-testid="cloud-shader-sky" data-mode={mode}
+  const style = { '--m4-shift': `${shift}px`, '--m4-overscan': `${overscan}px`, '--m4-negative-shift': `${-shift}px`, '--m4-negative-overscan': `${-overscan}px`, '--m4-extra-width': `${2*overscan}px` } as CSSProperties;
+  return <div className={`cloud-shader-sky ${className}`} data-testid="path-cloud" data-parallax={parallaxStrength} data-mode={mode}
     data-renderer={renderer} data-fallback-reason={reason || undefined} data-preset={preset}
     data-reduced={reducedMotion ? 'true' : 'false'} style={style} aria-hidden="true">
-    {!ready || !wantsShader ? <div className="path-layer path-cloud m4-lightweight-cloud" data-testid="path-cloud">
+    {!ready || !wantsShader ? <div className="path-layer path-cloud m4-lightweight-cloud" data-testid="path-lightweight-cloud">
       <span className="r2-cloud r2-cloud--a"/><span className="r2-cloud r2-cloud--b"/><span className="r2-cloud r2-cloud--c"/>
     </div> : null}
     {wantsShader && <M4Canvas params={params} paused={paused} onFirstFrame={() => setReady(true)}
