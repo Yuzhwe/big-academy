@@ -20,7 +20,8 @@ export function WordPlayground({scene,update}:{scene:Scene;update?:(patch:Partia
   const check=()=>{ const correct=build?scene.wordAnswer.join(',')==='g0-w0,g0-w1,g0-w2,g0-w3':scene.wordSelected.length===1&&scene.wordSelected[0]==='g0-w0';update?.({wordResult:correct?'correct':'incorrect'}); };
   return <div className="preview-example word-playground">
     <p className="demo-notice">{zh?'组件示例数据，不计学习成绩。新增反馈外观为 Candidate / Pending Approval。':'Component demo only · No learner score. New feedback visuals are candidates.'}</p>
-    <WordGrid groups={display} activeGroup={scene.wordGroup} tabs={scene.wordTabs} locale={scene.locale}
+    <WordGrid groups={display} activeGroup={scene.wordGroup} tabs={scene.wordTabs}
+      tabAppearance={scene.wordTabAppearance==='slanted'||(forced&&scene.state==='slanted')?'slanted':'connected'} locale={scene.locale}
       onGroupChange={wordGroup=>update?.({wordGroup})} onWordAction={w=>change(w.id)}/>
     {build&&<section className="answer-bench" aria-label={zh?'答案区域':'Answer area'} data-result={forced&&stateSelection==='used'?stateEvaluation:scene.wordResult}>
       <h3>{zh?'自由拼句示例':'Free-build example'}</h3><p>{zh?'目标：We love gardens. 此示例允许撤销；Writing 第 5 屏的有序拼句不允许撤销。':'Target: We love gardens. Undo is allowed in this isolated free-build demo, not Writing screen 5.'}</p>
