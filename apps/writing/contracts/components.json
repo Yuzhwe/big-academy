@@ -371,7 +371,7 @@
         "locale": "en | zh, optional status chrome",
         "label": "string, optional accessible name for the group",
         "indicatorComponent": "One reused 36×36px numeric-only marker (44×44px hit target), no visual size change between rail and popover.",
-        "overflowMode": "Nonmodal popover anchored to the ellipsis; 424px max width / 40px radius / 40px inset, six fixed left-aligned columns and an internally scrolling full index. Same Indicator rendering in both locations.",
+        "overflowMode": "Nonmodal popover anchored to the ellipsis; 424px max width / 40px radius / 24px inset, six fixed left-aligned columns and an internally scrolling full index. Same Indicator rendering in both locations.",
         "visibleCapacity": "The top rail fits at most nine 44px hit slots, including 36px visible numeric/ellipsis buttons. Actual measured container width controls count; reserve one for ellipsis whenever needed. Current item takes priority."
       },
       "events": {
@@ -790,7 +790,6 @@
         "Click completed to replay",
         "No unlock authority",
         "Default high-fidelity L0/L1 fixture shows completed and allows replay, without mutating saved learner mastery/scores. Reduced Motion suppresses particle animation.",
-        "R04 Stage A gold-shine preview retains original two-layer gold artwork on completion and fully gray on upcoming; completed only can emit replay event. The actual Staircase still uses existing style until Stage B approval.",
         "R04-R2 gold-shine candidate uses exact artwork derived from designer's supplied writing_milestone_1 (check) + writing_milestone_2 (seal) PNGs, optimized for preview. Grayscale Upcoming; 7s sweep Completed only; no extra grading."
       ],
       "requiredStories": [
@@ -1004,7 +1003,7 @@
         "MinimalInformation",
         "FourRoundedCornersR2"
       ],
-      "notes": "Unit card keeps current content and size, uses one continuous top/right triangular folded-paper flap with restrained local contact shading, no floating rounded rectangle. Unit main title shares StairLessonCard typography (Dosis 24px / 800 / 30px; same Chinese heading alias). Goals remain plain paragraphs. R2 Review 03: simplified Unit N caption and one warm full-stroke pill for lesson total + exact time in both live and preview levels. Reusable BA-WR-007 implementation now supplies the exact Unit card in both Staircase and designer library; code/demo stories are provisional until visual signoff.",
+      "notes": "Unit card keeps current content and size, uses one continuous top/right triangular folded-paper flap with restrained local contact shading, no floating rounded rectangle. Unit main title shares StairLessonCard typography (Dosis 24px / 800 / 30px; same Chinese heading alias). Goals remain plain paragraphs. R2 Review 03: simplified Unit N caption and one warm full-stroke pill for lesson total + exact time in both live and preview levels. Reusable BA-WR-007 implementation now supplies the exact Unit card in both Staircase and designer library; code/demo stories are provisional until visual signoff.\nR04 R2 upcoming target replaces the fold; current live Staircase still uses it only until Stage B.",
       "story": "apps/writing/src/components/writing/StairUnitCard.stories.tsx",
       "runtimeEvidence": "apps/writing/src/components/writing/StairUnitCard.test.tsx"
     },
