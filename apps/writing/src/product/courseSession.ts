@@ -232,7 +232,7 @@ export interface ActivityModel {
   unsupportedReason?: string;
   skip: SkipOffer | null;
   hints: string[];
-  hintAction: 'hint' | 'another' | 'reveal' | null;
+  hintAction: 'hint' | 'another' | null;
   coach: string[];
   coachMore: boolean;
   feedback: string;
