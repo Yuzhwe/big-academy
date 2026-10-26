@@ -85,3 +85,14 @@ export const Skipped: Story = {
     await expect(canvas.getByRole('button', { name: /已完成/ })).toBeInTheDocument();
   },
 };
+
+/** Navigation is independent of status: a Done or Skipped screen can be selected. */
+export const DoneSelected: Story = {
+  args: { tasks: mixed, activeIndex: 0, canOpen: allow(mixed) },
+};
+export const SkippedSelected: Story = {
+  args: { tasks: mixed, activeIndex: 1, canOpen: allow(mixed) },
+};
+export const IncompleteSelected: Story = {
+  args: { tasks: mixed, activeIndex: 2, canOpen: allow(mixed) },
+};
