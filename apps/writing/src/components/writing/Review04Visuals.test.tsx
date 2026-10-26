@@ -38,6 +38,22 @@ describe('Review 04 Stage A — opt-in designs only', () => {
     expect(container.querySelector('.course-unit__fold-flap')).not.toBeInTheDocument();
   });
 
+
+  it('keeps complete lesson wording and the confirmed brown 18px Unit identity across both locale paths',()=>{
+    const unit={id:'r04-unit',index:1,title:'Opinion Paragraph',typeLabel:'',
+      meta:'9 lessons · 170 mins',goals:[]};
+    const {container,rerender}=render(<StairUnitCard unit={unit} locale="en"/>);
+    const kicker=container.querySelector('.course-unit__identity .course-kicker');
+    const pill=container.querySelector('.course-unit__identity .course-unit__meta');
+    expect(kicker).toHaveTextContent('UNIT 1');
+    expect(pill).toHaveTextContent('9 lessons · 170 min');
+    expect(container.querySelector('.course-unit h2')).toHaveTextContent('Opinion Paragraph');
+    expect(container.querySelector('.course-unit__fold')).not.toBeInTheDocument();
+    rerender(<StairUnitCard unit={{...unit,meta:'9 课 · 170 分钟',title:'观点段落'}} locale="zh"/>);
+    expect(container.querySelector('.course-unit__meta')).toHaveTextContent('9 课 · 170 分钟');
+    expect(container.querySelector('.course-unit__fold')).not.toBeInTheDocument();
+  });
+
   it('uses three existing hamburger layers, preserving approved widths',()=>{
     const {container}=render(<HamburgerComposition layers={[
       {layerId:'top',label:'Top bun',value:'A topic sentence.'},
