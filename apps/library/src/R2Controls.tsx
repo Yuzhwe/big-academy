@@ -32,7 +32,7 @@ export function R2Controls({scene,update}:{scene:Scene;update:(patch:Partial<Sce
           <label>Border Color <input type="color" aria-label="Solar Border Color" value={scene.solarBorderColor} onChange={e=>update({solarPreset:'custom',solarBorderColor:e.target.value})}/><code>{scene.solarBorderColor}</code></label>
           <label>Glow Color <input type="color" aria-label="Solar Glow Color" value={scene.solarGlowColor} onChange={e=>update({solarPreset:'custom',solarGlowColor:e.target.value})}/><code>{scene.solarGlowColor}</code></label>
         </div>
-        <button type="button" onClick={()=>update({solarPreset:'A',solarBorderColor:SOLAR_COLOR_PRESETS.A.border,solarGlowColor:SOLAR_COLOR_PRESETS.A.glow,solarRayIntensity:.6,solarRayLength:.45,solarRayCount:64,solarBokeh:.16,solarRimBoost:1.66,solarGlowSpread:18,solarBrightness:1})}>恢复 Solar 默认配置</button>
+        <button type="button" onClick={()=>update({solarPreset:'custom',solarBorderColor:'#FFA82E',solarGlowColor:'#FFA82E',solarRayIntensity:1.80,solarRayLength:1.26,solarRayCount:64,solarBokeh:1.12,solarRimBoost:0.74,solarGlowSpread:10,solarBrightness:1.34})}>恢复设计师确认配置</button>
         {range('solarRayIntensity','Ray Intensity · 光线强度',0,2.5,0.01)}
         {range('solarRayLength','Ray Length · 光线长度',0.2,2.2,0.01)}
         {range('solarRayCount','Ray Count · 光线数量',4,64,1)}
