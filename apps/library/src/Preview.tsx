@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { BAButton, BAIcon, BAChoice, BATabs, BATabList, BATabPanel, type ChoiceVisualState, type TaskProgressItem } from '@big-academy/design-system';
 import { LessonTopBar } from '../../writing/src/components/writing/LessonTopBar';
 import { StairLessonCard, type StairLessonState } from '../../writing/src/components/writing/StairLessonCard';
 import { StairUnitCard } from '../../writing/src/components/writing/StairUnitCard';
 import { LandscapeTerrace } from '../../writing/src/components/writing/LandscapeTerrace';
+import { HamburgerComposition } from '../../writing/src/components/writing/HamburgerComposition';
+import { LevelRewardFlag } from '../../writing/src/course/LevelRewardFlag';
+import { SolarLessonPreview } from './SolarLessonPreview';
+import './Review04Preview.css';
 import { WordPlayground } from './WordPlayground';
 import { choiceOptions, type Scene } from './catalog';
 
@@ -60,12 +64,25 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
     {['hover','pressed','focus'].includes(state)&&<p>{zh?'悬停、按住或用方向键切换，观察真实交互。':'Hover, hold or use arrow keys to explore the actual interactions.'}</p>}</div>;
   }
   if (scene.component === 'lesson') {
-    const cardState=(state==='default'?'start':state) as StairLessonState;
-    return <div className="preview-example preview-example--center"><div className={scene.composition==='terrace'?'lesson-composition':'lesson-alone'}>
-      <StairLessonCard lessonId="library-preview" number={1} minutes={10} locale={scene.locale} titleLines={3} current={false}
-        title={scene.sample === 'long' ? (zh ? '学习如何用完整的主题句介绍自己的观点和原因' : 'Writing a convincing topic sentence for a detailed opinion paragraph') : (zh ? '主题句' : 'Topic sentences')}
-        state={cardState} onEnter={() => setNotice(zh ? '收到课程操作。组件示例不会进入学习记录。' : 'Lesson action received. This example does not write learner progress.')} />
-      {scene.composition==='terrace'&&<LandscapeTerrace/>}</div>{output}</div>;
+    const isCurrent=state==='current';
+    const cardState=(state==='default'||isCurrent?'start':state) as StairLessonState;
+    const card=<StairLessonCard lessonId="library-preview" number={1} minutes={10} locale={scene.locale} titleLines={3} current={isCurrent}
+      title={scene.sample === 'long' ? (zh ? '学习如何用完整的主题句介绍自己的观点和原因' : 'Writing a convincing topic sentence for a detailed opinion paragraph') : (zh ? '主题句' : 'Topic sentences')}
+      state={cardState} onEnter={() => setNotice(zh ? '收到课程操作。组件示例不会进入学习记录。' : 'Lesson action received. This example does not write learner progress.')} />;
+    return <div className="preview-example preview-example--center preview-example--solar">
+      <div className={scene.composition==='terrace'?'lesson-composition':'lesson-alone'}>
+        {isCurrent
+          ? <SolarLessonPreview motionEnabled={scene.motion==='system'} params={{
+              rayIntensity:scene.solarRayIntensity,rayLength:scene.solarRayLength,
+              rayCount:scene.solarRayCount,bokeh:scene.solarBokeh,rimBoost:scene.solarRimBoost,
+              glowSpread:scene.solarGlowSpread,brightness:scene.solarBrightness,
+            }}>{card}</SolarLessonPreview>
+          : card}
+        {scene.composition==='terrace'&&<LandscapeTerrace/>}
+      </div>
+      {isCurrent?<p className="review04-caption">{zh?'Current 是 Enterable 的强调视觉。Solar 仅在组件库中预览，未接入阶梯页。':'Current is a visual emphasis of Enterable. Solar is a library-only preview, not integrated into Staircase.'}</p>:null}
+      {output}
+    </div>;
   }
   if (scene.component === 'unit') {
     const goals = zh ? [
@@ -87,6 +104,26 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
       <div data-ba-product="writing" style={{ width: 320, maxWidth: '100%', background:'#a9e3f3', padding:20, boxSizing:'border-box', borderRadius:16 }}>
         <StairUnitCard locale={scene.locale} unit={unit} />
       </div>
+    </div>;
+  }
+  if (scene.component === 'hamburger') {
+    const layers=[
+      {layerId:'top',label:zh?'Top bun · 观点':'Top bun · Opinion',value:zh?'我认为我们的学校应该有一座花园。':'Our school should have a garden.'},
+      {layerId:'fill',label:zh?'Reason · 理由':'Reason',value:scene.sample==='long'?
+        (zh?'花园不仅让我们观察植物，还能与同学合作进行很多有趣的自然科学活动。':'Gardens help students observe plants, collaborate and explore real science outside the classroom.') :
+        (zh?'花园帮助我们学习和合作。':'A garden helps us learn and work together.')},
+      {layerId:'bottom',label:zh?'Bottom bun · 结尾':'Bottom bun · Closing',value:zh?'这就是学校需要花园的原因。':'That is why our school needs a garden.'},
+    ];
+    return <div className="preview-example preview-example--center review04-hamburger-stage">
+      <HamburgerComposition layers={layers}/>
+      <p className="review04-caption">{zh?'设计候选：上下两层宽度为 Reason 的 88%，标题与示例句垂直居中。':'Candidate: buns are 88% of Reason width; title and example are vertically centered.'}</p>
+    </div>;
+  }
+  if (scene.component === 'flag') {
+    return <div className="preview-example preview-example--center review04-flag-stage"
+      style={{'--ba-path-flag-wind':scene.flagWind} as CSSProperties}>
+      <LevelRewardFlag key={scene.flagWind}/>
+      <p className="review04-caption">{zh?'复用原 R2.12 旗帜，风力参数可调；不会改变阶梯页。':'Original R2.12 flag, adjustable wind; no Staircase changes.'}</p>
     </div>;
   }
   if (scene.component === 'words') return <WordPlayground scene={scene} update={update}/>;
