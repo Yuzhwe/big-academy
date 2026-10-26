@@ -1,3 +1,5 @@
+> **HISTORICAL IMPLEMENTATION STAGE — SUPERSEDED on 2026-10-26 by [Review 04 Integrated Library + Writing](./REVIEW_04_INTEGRATED.md).** Its statements that Unit folds, milestones, Solar or Cross Blur remain out of real Writing pages are no longer current. Do not use its Stage A-only URLs, defaults, or pending-integration rules as product authority.
+
 # Big Academy · Review 04 — Stage A R2 delivery (2026-10-26)
 
 **Review type:** latest designer revision of Stage A. **Branch:** `feat/writing-hifi-integration-v1`, PR #52 (Draft). **No Stage B/C integration**, no direct merge to main, no Vercel deployment.
