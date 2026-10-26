@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
 import { CloudShaderSky, autoAllowsShader, cloudParallax } from './CloudShaderSky';
-import { M4_CLEAR, STAIRCASE_SKY, FRAG } from './cloudShaderM4';
+import { M4_CLEAR, STAIRCASE_SKY, FRAG, M4_CLOUD_ONLY_FRAG } from './cloudShaderM4';
 import { defaultScene, readScene, sceneSearch } from '../../../library/src/catalog';
 
 describe('BA-WR-013 · M4 adaptive sky', () => {
@@ -12,6 +12,22 @@ describe('BA-WR-013 · M4 adaptive sky', () => {
     expect(FRAG).toContain('cloudDensity');
     expect(FRAG).toContain('shadeCloud');
     expect(FRAG).toContain('gl_FragColor = vec4(color, 1.0)');
+  });
+  it('keeps original M4 full sky intact but composites only alpha-tracked clouds over current CSS sky', () => {
+    expect(FRAG).toContain('gl_FragColor = vec4(color, 1.0);');
+    expect(FRAG).not.toContain('inout float opacity');
+    expect(M4_CLOUD_ONLY_FRAG).toContain('inout float opacity');
+    expect(M4_CLOUD_ONLY_FRAG).toContain('vec3 baseSky = color;');
+    expect(M4_CLOUD_ONLY_FRAG).toContain('gl_FragColor = vec4(clamp(cloudRGB');
+    expect(M4_CLOUD_ONLY_FRAG.match(/cloudPass\(/g)?.length).toBe(7); // definition + six identical calls
+    expect(M4_CLOUD_ONLY_FRAG).toContain('float d = cloudDensity(p, c, r, seed, t);');
+  });
+  it('lets the workbench simulate WebGL unavailable even when the host supports it', async () => {
+    const { getByTestId, container, unmount } = render(<CloudShaderSky mode="shader" simulateWebGLUnavailable />);
+    await waitFor(() => expect(getByTestId('path-cloud').getAttribute('data-fallback-reason')).toContain('simulated'));
+    expect(container.querySelectorAll('.r2-cloud')).toHaveLength(3);
+    expect(container.querySelectorAll('canvas')).toHaveLength(0);
+    unmount();
   });
   it('uses one absolute camera signal; camera changes never affect drift clock', () => {
     expect(cloudParallax(0,.06,1200)).toBe(0);
