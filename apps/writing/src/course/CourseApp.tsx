@@ -8,7 +8,7 @@ import { UnitMilestone } from '../components/writing/UnitMilestone';
 import { HamburgerLayer } from '../components/writing/HamburgerLayer';
 import { WordGrid } from '../components/writing/WordGrid';
 import { StaircaseScene } from './StaircaseScene';
-import { unitFoldPaths } from './unitFold';
+import { StairUnitCard } from '../components/writing/StairUnitCard';
 import alexHtml from '../../source/alex-original.html?raw';
 import { CourseSession, type ActivityModel } from '../product/courseSession';
 import './course.css';
@@ -79,32 +79,6 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   );
 }
 
-function UnitFold({ id }: { id: string }) {
-  const face = `course-unit-fold-face-${id}`;
-  const paths = unitFoldPaths();
-  return (
-    <svg className="course-unit__fold" viewBox="0 0 32 32" data-testid="unit-fold" aria-hidden="true">
-      <defs>
-        <linearGradient id={face} x1="32" y1="0" x2="0" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="var(--ba-writing-unit-fold-face-light, #fffdf9)" />
-          <stop offset="100%" stopColor="var(--ba-writing-unit-fold-face-dark, #e7d6c9)" />
-        </linearGradient>
-      </defs>
-      <path className="course-unit__fold-under" d={paths.under} />
-      <path
-        className="course-unit__fold-edge"
-        d={paths.edge}
-        fill="none"
-        stroke="var(--ba-writing-unit-paper-border, #dcc3ab)"
-        strokeWidth="0.5"
-        vectorEffect="non-scaling-stroke"
-      />
-      <path className="course-unit__fold-flap" d={paths.flap} fill={`url(#${face})`} />
-      <path className="course-unit__fold-seam" d={`M 0 0 L 32 32`} fill="none" stroke="var(--ba-writing-unit-paper-border, #dcc3ab)" strokeWidth="0.7" vectorEffect="non-scaling-stroke"/>
-    </svg>
-  );
-}
-
 function PathView({ session }: { session: CourseSession }) {
   const zh = session.zh;
   const level = session.level();
@@ -164,21 +138,7 @@ function PathView({ session }: { session: CourseSession }) {
             if (node.kind === 'unit' && node.unit) {
               return (
                 <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
-                  <section className="course-unit" data-testid="unit" data-unit={node.unit.id}>
-                    <UnitFold id={node.unit.id} />
-                    <p className="course-kicker">
-                      {zh ? `第 ${node.unit.index} 单元` : `Unit ${node.unit.index}`}
-                    </p>
-                    <h2>{node.unit.title}</h2>
-                    <p className="course-unit__meta">{node.unit.meta}</p>
-                    {node.unit.goals.length ? (
-                      <div className="course-unit__goals">
-                        {node.unit.goals.map((goal) => (
-                          <p key={goal} className="course-unit__goal">{goal}</p>
-                        ))}
-                      </div>
-                    ) : null}
-                  </section>
+                  <StairUnitCard unit={node.unit} locale={session.locale} />
                 </li>
               );
             }
