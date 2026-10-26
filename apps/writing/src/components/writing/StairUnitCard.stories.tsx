@@ -36,3 +36,9 @@ export const LongTitle: Story = { args: {
 export const MinimalInformation: Story = { args: {
   unit: { ...unit, id: 'G0-W', index: 2, title: 'First Sentences', meta: '5 lessons', goals: [] },
 }};
+
+
+export const TransparentCutoutCandidate:Story={
+  args:{corner:'cutout'},
+  parameters:{ba:{contractId:'BA-WR-007',status:'candidate-pending-designer-review',note:'Actual transparent clipped triangle; no painted fold patch. Existing Staircase still uses folded.'}},
+};
