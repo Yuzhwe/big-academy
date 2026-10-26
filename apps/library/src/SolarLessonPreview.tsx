@@ -109,7 +109,7 @@ function SolarBorderCanvas({params,enabled,onRuntime}:{
       if(import.meta.env.DEV)console.warn('[Solar Border] using static fallback',error);
       return;
     }
-    const gpu=gl,linked=program;
+    const gpu=gl as WebGLRenderingContext,linked=program as WebGLProgram;
     const u=(name:string)=>gpu.getUniformLocation(linked,name);
     const uniforms={
       time:u('uTime'),resolution:u('uResolution'),cardSize:u('uCardSize'),
