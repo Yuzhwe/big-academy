@@ -37,8 +37,8 @@ jobs:
         run: npx vitest run apps/writing/src/course/CloudShaderSky.test.tsx apps/writing/src/contracts/registry.test.tsx
       - name: Production and Storybook build
         run: npm run build
-      - name: Chromium for Playwright
-        run: npx playwright install --with-deps chromium
+      - name: Verify preinstalled Chrome (no apt/browser download)
+        run: google-chrome --version
       - name: Browser integration regression
         run: npm run test:integration
       - name: Report real M4 renderer used by Chromium
