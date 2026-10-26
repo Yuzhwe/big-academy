@@ -1041,7 +1041,7 @@ export class CourseSession {
     const task = this.task(screen.task);
     const key = this.taskKey(screen);
     const answer = this.state.tasks[key];
-    if (task.type === 'pick') return (answer?.picked?.length ?? 0) >= (task.multi ? (task.answers?.length ?? 1) : 1);
+    if (task.type === 'pick') return (answer?.picked?.length ?? 0) === (task.multi ? (task.answers?.length ?? 1) : 1);
     if (task.type === 'tapword' && task.need !== 'all') return answer?.sel != null;
     if (task.type === 'build') return false; // automatically checked as word cards complete the sentence
     if (task.frameFill) {
