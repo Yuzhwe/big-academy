@@ -20,14 +20,14 @@ Original HTML attribution: Aceternity UI Cloud Shader, https://ui.aceternity.com
 | Count | 5 | 5 |
 | Drift | 0.8 | 0.8 |
 
-The existing formally styled background is `linear-gradient(135deg,#85DBF9,#F8F4ED)`; the original fragment Shader uses vertically interpolated color, haze and sun. Supplying the current color endpoints does not make the full Shader render mathematically identical to the approved 135° gradient. **Designer must visually approve this candidate before release.** The CSS gradient remains as the original behind the renderer and still applies to lightweight/failure mode.
+The existing formal background is `linear-gradient(135deg,#85DBF9,#F8F4ED)`. **The original 4,599-character M4 fragment source is untouched** (length/FNV1a verified against uploaded HTML: `0xd1e1ef50`, vertex `0x29cf13d3`). Original Clear uses this original FULL sky shader. For the live Staircase, `deriveM4CloudOnly(FRAG)` tracks the opacity of exactly the same six M4 cloud passes and cirrus to emit transparent RGBA only; it composites over the **existing approved 135° CSS gradient**, without overwriting sky color/haze/sun. Cloud geometry, density, shadows and drift remain those of M4; the transparency/compositing derivative is a **candidate** requiring actual WebGL and designer QA. Lightweight/failure uses the same CSS backdrop.
 
 ## 3. One real component, two consumers
 
-- `apps/writing/src/course/CloudShaderSky.tsx`: authoritative renderer and lifecycle for both student Staircase and designer preview.
+- `apps/writing/src/course/CloudShaderSky.tsx`: authoritative renderer and lifecycle for both student Staircase and designer preview. `preset=clear` compiles the original full-sky M4 GLSL; `preset=staircase` compiles the derived transparent-cloud output so the original CSS sky is never repainted.
 - `apps/writing/src/course/CloudShaderSky.css`: unmodified-style R2.12 three-cloud silhouettes plus Shader canvas layer.
 - `apps/writing/src/course/StaircaseScene.tsx`: swaps **only** the previous cloud layer with `<CloudShaderSky mode="auto" preset="staircase" cameraX={boundedX} cameraMaxTravel={maxX} parallaxStrength={scenic.cloud}/>`.
-- `apps/library/src/{Preview,CloudControls,catalog}.tsx`: live sample with Auto / Shader / Lightweight, original/current palette, count, speed, colors, parallax, camera simulation and pause.
+- `apps/library/src/{Preview,CloudControls,catalog}.tsx`: live sample with Auto / Shader / Lightweight, original/current palette, count, speed, colors, parallax, camera simulation, pause and `cloudSimulateUnavailable` for QA only.
 - `CloudShaderSky.stories.tsx`: original vs current, forced modes, reduced motion and scroll.
 - Registry ID: `BA-WR-013`, not reused.
 - No editor controls are mounted on the student page.
@@ -44,7 +44,7 @@ Camera data source: `boundedX`, `maxX` and `scenic.cloud` computed once in Stair
 
 ## 5. Current evidence and open gates
 
-Static GitHub file/registry checks were performed during implementation. Added Vitest tests cover original params/GLSL signatures, parallax math, low-end auto rules, three-cloud mode, WebGL-null fallback, and designer URL round-trip. **These tests have NOT been executed in a current repository checkout.**
+Static GitHub file/registry checks were performed during implementation. The exact original GLSL vertex and fragment sources match the uploaded HTML by length and FNV-1a: vertex 179 / 0x29cf13d3 and fragment 4599 / 0xd1e1ef50. The transparent derivative has not been WebGL-compiled in a browser. Added Vitest tests cover original params/GLSL signatures, parallax math, low-end auto rules, three-cloud mode, WebGL-null fallback, and designer URL round-trip. **These tests have NOT been executed in a current repository checkout.**
 
 Live browser test, GL compilation on Chrome/Safari, TypeScript, Vite/library/Storybook builds, Playwright, screenshots, drifting video, real performance telemetry, resize/touch/keyboard/long-run and WCAG checks remain **NOT VERIFIED** because this chat's container cannot clone GitHub (DNS inaccessible) or access the user's localhost. Attempts to capture original file HTML in headless Chromium timed out; no fabricated screenshots included.
 
@@ -63,11 +63,11 @@ npm run dev:library
 npm run storybook
 ```
 
-Visual QA capture at 1440×900, 1024×768, 834×1112 and 390×844. Open `http://127.0.0.1:5173` (use actual Vite output port), designer `http://127.0.0.1:5173/?view=components&component=cloud` only if served by library dev command (use actual port), Storybook on the actual printed port. Verify real shader drift and scroll in Chrome/Safari, WebGL failure and scene continuity, observe system preference changes, and confirm other card assets and controls are unchanged. Do not treat URL examples as hosted previews.
+Visual QA capture at 1440×900, 1024×768, 834×1112 and 390×844. Open `http://127.0.0.1:5173` (use actual Vite output port), designer `http://127.0.0.1:5173/?view=components&component=cloud` only if served by library dev command (use actual port), Storybook on the actual printed port. Writing and the designer library are **separate** Vite apps with independently reported ports (Writing usually 5173/5174; library commonly 6007). Verify real shader drift and scroll in Chrome/Safari, WebGL failure and scene continuity, observe system preference changes, and confirm other card assets and controls are unchanged. Do not treat URL examples as hosted previews.
 
 ## 6. Designer decisions
 
-1. Original M4 full-sky Clear versus current-palette Shader candidate (vertical GLSL interpolation/haze/sun may change perceived approved backdrop).
+1. Original M4 full-sky Clear versus current-palette **transparent M4 clouds** over the approved CSS sky; inspect gradients, shadow edges, opacity and any seams on Chrome/Safari before accepting the adaptation.
 2. Cloud `parallaxStrength` default comes from `scenic.cloud`; review motion visually.
 3. WebGL budget/auto detection thresholds and whether Shader is enabled by default for students after field performance QA.
 4. Source licensing confirmation for public redistribution.
