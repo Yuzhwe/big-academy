@@ -1,3 +1,5 @@
+> **HISTORICAL STAGE A RECORD — superseded by [Review 04 Stage A R2](./REVIEW_04_STAGEA_R2.md) on 2026-10-26.** The Slanted Tabs and transparent Unit cutout documented below were rejected by the designer. Current review defaults: original Rounded Connected Tabs with seam fix, four-rounded-corner Unit candidate, user-supplied new gold PNG and Custom Solar #FFA82E. Do not use the older URLs or parameters as the current design specification.
+
 # Big Academy · R2 Design Review 04 — Stage A (2026-10-26)
 
 **Implementation status:** committed to PR #52, `feat/writing-hifi-integration-v1`. **Visual approval and runtime/browser testing pending.**
