@@ -1,6 +1,7 @@
 import { BAButton, BAIcon, type BALocale } from '@big-academy/design-system';
 import './StairLessonCard.css';
 
+// Internal action states are retained for course progress; the card has three visual roles.
 export type StairLessonState = 'start' | 'continue' | 'review' | 'locked' | 'skipped';
 
 export interface StairLessonCardProps {
@@ -19,8 +20,8 @@ export interface StairLessonCardProps {
 }
 
 const actionLabel: Record<BALocale, Record<StairLessonState, string>> = {
-  en: { start: 'Start', continue: 'Continue', review: 'Review', locked: 'Locked', skipped: 'Review' },
-  zh: { start: '开始', continue: '继续', review: '复习', locked: '未解锁', skipped: '复习' },
+  en: { start: 'Enter', continue: 'Enter', review: 'Review', locked: 'Locked', skipped: 'Review' },
+  zh: { start: '进入', continue: '进入', review: '复习', locked: '未解锁', skipped: '复习' },
 };
 
 const statusLabel: Record<BALocale, Record<StairLessonState, string>> = {
@@ -38,6 +39,7 @@ export function StairLessonCard({
 }: StairLessonCardProps) {
   const locked = state === 'locked';
   const complete = state === 'review' || state === 'skipped';
+  const visualState = locked ? 'locked' : complete ? 'completed' : 'enterable';
   const label = actionLabel[locale][state];
   const stateText = statusLabel[locale][state];
   return (
@@ -45,6 +47,7 @@ export function StairLessonCard({
       className="stair-lesson-card"
       data-component="BA-WR-005"
       data-state={state}
+      data-visual-state={visualState}
       data-current={current ?? state === 'continue'}
       data-title-lines={titleLines}
       data-lesson-id={lessonId}
@@ -57,11 +60,9 @@ export function StairLessonCard({
     >
       <div className="stair-lesson-card__seal" aria-hidden="true">
         <span className="stair-lesson-card__number">{number}</span>
-        {state !== 'start' ? (
+        {(locked || complete) ? (
           <span className="stair-lesson-card__symbol">
-            {locked ? <BAIcon name="lock" size={14} strokeWidth={2} /> :
-              complete ? <BAIcon name="check" size={15} strokeWidth={2.4} /> :
-              <span className="stair-lesson-card__current-dot" />}
+            {locked ? <BAIcon name="lock" size={14} strokeWidth={2} /> : <BAIcon name="check" size={15} strokeWidth={2.4} />}
           </span>
         ) : null}
       </div>
@@ -72,9 +73,6 @@ export function StairLessonCard({
             <span className="stair-lesson-card__duration-number">{minutes}</span> {locale === 'zh' ? '分钟' : 'min'}
           </p>
         ) : detail ? <p className="stair-lesson-card__duration">{detail}</p> : null}
-        {state === 'skipped' ? (
-          <p className="stair-lesson-card__skip">{locale === 'zh' ? '已掌握 · 跳过' : 'Mastered · skipped'}</p>
-        ) : null}
       </div>
       <BAButton
         className="stair-lesson-card__action"
