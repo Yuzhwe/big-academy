@@ -629,3 +629,29 @@
 }
 .course-app[lang='zh-CN'] .course-unit .course-kicker,
 .course-app[lang='zh-CN'] .course-unit h2 {font-family:var(--ba-font-zh-title);}
+
+
+/* Review 04 approved full-page integration. The 50px existing BAButton keeps
+ * all press/focus behavior; only the Writing surface and glyph are themed. */
+.course-activity__heading .course-listen .ba-button__assembly {
+  background:var(--ba-color-writing-7,#b25415);
+  color:#fff;
+  border-color:var(--ba-color-writing-7,#b25415);
+}
+.course-activity__heading .course-listen .ba-icon {color:#fff;}
+.course-learn-two-column {
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  align-items:start;gap:24px;min-width:0;
+}
+.course-learn-two-column > .course-examples {min-width:0;}
+.course-learn-two-column .hamburger-composition {min-width:0;}
+@media(max-width:740px) {
+  .course-learn-two-column {grid-template-columns:minmax(0,1fr);gap:20px;}
+}
+/* Preserve WordGrid docking in the writable page while guaranteeing a
+ * full 24px visual separation below the flexible paper textarea. */
+.course-activity[data-writing='true'] > .word-grid {
+ margin-top:auto; padding-top:24px;
+}
+/* Cross Blur stays local to rendered page content, not confetti overlays. */
+.course-app > .ba-page-transition {min-width:0;}
