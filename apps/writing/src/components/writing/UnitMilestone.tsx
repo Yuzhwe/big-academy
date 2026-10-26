@@ -16,6 +16,8 @@ export interface UnitMilestoneProps {
    */
   celebrationEligible: boolean;
   onCelebrate?: (unitId: string) => void;
+  /** Review 04 candidate: off by default until high-fidelity page approval. */
+  previewAppearance?: 'existing' | 'gold-shine';
 }
 
 /**
@@ -30,11 +32,12 @@ export function UnitMilestone({
   celebrationEligible,
   locale = 'en',
   onCelebrate,
+  previewAppearance = 'existing',
 }: UnitMilestoneProps) {
   const phase = !completed ? 'upcoming' : celebrationEligible ? 'newly-completed' : 'completed';
   const zh = locale === 'zh';
   return (
-    <div className="unit-milestone" data-component="BA-WR-006" data-state={phase} data-unit={unitId}>
+    <div className="unit-milestone" data-component="BA-WR-006" data-state={phase} data-unit={unitId} data-preview-appearance={previewAppearance}>
       <p className="unit-milestone__kicker" hidden>
         {completed ? (zh ? '已完成的里程碑' : 'Milestone reached') : zh ? '里程碑' : 'Milestone'}
       </p>
@@ -43,6 +46,7 @@ export function UnitMilestone({
         className="unit-milestone__action"
         data-testid="milestone"
         data-done={completed ? '1' : '0'}
+        data-shine={completed && previewAppearance==='gold-shine' ? 'true' : undefined}
         isDisabled={!completed}
         aria-label={title + (completed ? (zh ? ' · 再看一次' : ' · Play again') : (zh ? ' · 未解锁' : ' · Locked'))}
         onPointerMove={(event) => {
