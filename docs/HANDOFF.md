@@ -1,3 +1,13 @@
+## Current handoff · Review 04 integrated Writing + library (2026-10-26)
+
+**PR #52 Draft, branch `feat/writing-hifi-integration-v1`.** New authoritative deliverable: [docs/REVIEW_04_INTEGRATED.md](REVIEW_04_INTEGRATED.md). Previous Stage A and Stage A R2-only previews are superseded historical documents. Implementation now includes *both* live Writing and designer library: one-line topbar, fixed StairLessonCard interior, shared no-fold Unit (18px brown UNIT/ brown full `9 lessons · 170 min` pill), hamburger shadows and real Activity1 layout, dual-depth gold/silver Milestones, convex WordGrid, P7 spacing, 50px brown Speaker, Solar Current, Cross Blur and Canvas wave flag.
+
+**Flag artwork blocker:** User said the final flag image would be supplied later. Current Canvas demo uses temporary R2.12 SVG; standalone library supports client-only image upload. Do not label this final flag artwork. Algorithm is exact amplitude4px, waves6×PI, period1.6s, source yarden Stack Overflow 78383275, CC BY-SA 4.0, adapted to browser Canvas.
+
+**Runtime QA blocker:** Remote GitHub source changes are committed but npm/TypeScript/Vitest/Playwright/browser screenshot evidence is not available. The attached localhost on the user's Mac is not accessible from this connector. PR remains Draft, never merged to main and no Vercel deployment. Prior historical check passes do not validate integrated implementation.
+
+---
+
 # Big Academy — HANDOFF (current)
 
 **Baseline:** v0.1 · 2026-10-20
