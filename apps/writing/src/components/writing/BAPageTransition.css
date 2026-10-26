@@ -1,0 +1,20 @@
+/* Cross blur candidate: localized transition only, not body-wide blur or
+ * a second router. The learner's current page and controls are caller-owned. */
+.ba-page-transition { position:relative; width:100%; min-width:0; }
+.ba-page-transition__content {
+  filter:blur(0);
+  opacity:1;
+  transition:filter var(--ba-cross-blur-half,250ms) ease-in-out,
+    opacity var(--ba-cross-blur-half,250ms) ease-in-out;
+  will-change:filter,opacity;
+}
+.ba-page-transition[data-phase='out'] .ba-page-transition__content {
+  filter:blur(var(--ba-cross-blur-amount,12px));
+  opacity:.72;
+}
+.ba-page-transition[data-phase='in'] .ba-page-transition__content {
+  filter:blur(0);opacity:1;
+}
+@media(prefers-reduced-motion:reduce){
+  .ba-page-transition__content { transition:none;filter:none!important;opacity:1!important;will-change:auto; }
+}
