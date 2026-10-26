@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode, type CSSProperties } from 'react';
 import './SolarLessonPreview.css';
 
 /** Preview-only extracted Solar GLSL aura.
@@ -9,10 +9,13 @@ import './SolarLessonPreview.css';
 export type SolarParameters = {
   rayIntensity:number; rayLength:number; rayCount:number; bokeh:number;
   rimBoost:number; glowSpread:number; brightness:number;
+  /** Color presets apply to both the card outline and shader light. */
+  borderColor:string; glowColor:string;
 };
 export const SOLAR_DEFAULTS:SolarParameters = {
   rayIntensity:0.6, rayLength:0.45, rayCount:64, bokeh:0.16,
   rimBoost:1.66, glowSpread:18, brightness:1,
+  borderColor:'#B25415',glowColor:'#E89B55',
 };
 export type SolarRuntime = 'active'|'paused'|'fallback';
 const vertex = [
@@ -25,6 +28,7 @@ const fragment = [
   'varying vec2 vUv;',
   'uniform float uTime,uRayIntensity,uRayLength,uRayCount,uBokehAmt,uRimBoost,uGlowSpread,uBrightness;',
   'uniform vec2 uResolution,uCardSize;',
+  'uniform vec3 uBaseColor,uGlowColor;',
   'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
   'float roundBox(vec2 p,vec2 halfSize,float r){vec2 q=abs(p)-halfSize+vec2(r);return length(max(q,0.0))+min(max(q.x,q.y),0.0)-r;}',
   'void main(){',
@@ -61,11 +65,16 @@ const fragment = [
   '}',
   'bokeh*=max(uBokehAmt,0.0);',
   'float glow=(rim*0.65+halo*(0.20+0.30*rays+0.16*bokeh))*outer*max(uRimBoost,0.0)*max(uBrightness,0.0);',
-  'vec3 gold=vec3(1.0,0.78,0.35),peach=vec3(1.0,0.55,0.28),hot=vec3(1.0,0.95,0.75);',
-  'vec3 col=mix(peach,gold,clamp(rays,0.0,1.0))*0.73+hot*clamp(rim+bokeh*0.45,0.0,1.0)*0.30;',
+  'vec3 col=mix(uBaseColor,uGlowColor,clamp(.45+rays*.42+bokeh*.08,0.0,1.0));',
+  'col+=uGlowColor*clamp(rim+bokeh*0.45,0.0,1.0)*0.18;',
   'gl_FragColor=vec4(col,clamp(glow,0.0,0.94));',
   '}',
 ].join('\n');
+
+function rgb(hex:string):[number,number,number]{
+  const cleaned=/^#[0-9a-f]{6}$/i.test(hex)?hex:'#B25415';
+  return [1,3,5].map(i=>parseInt(cleaned.slice(i,i+2),16)/255) as [number,number,number];
+}
 
 function shader(gl:WebGLRenderingContext,type:number,src:string){
   const handle=gl.createShader(type);
@@ -117,6 +126,7 @@ function SolarBorderCanvas({params,enabled,onRuntime}:{
       time:u('uTime'),resolution:u('uResolution'),cardSize:u('uCardSize'),
       rayIntensity:u('uRayIntensity'),rayLength:u('uRayLength'),rayCount:u('uRayCount'),
       bokeh:u('uBokehAmt'),rimBoost:u('uRimBoost'),glowSpread:u('uGlowSpread'),brightness:u('uBrightness'),
+      baseColor:u('uBaseColor'),glowColor:u('uGlowColor'),
     };
     const resize=()=>{
       const rect=canvas.getBoundingClientRect();
@@ -155,6 +165,8 @@ function SolarBorderCanvas({params,enabled,onRuntime}:{
       gpu.uniform1f(uniforms.rimBoost,p.rimBoost);
       gpu.uniform1f(uniforms.glowSpread,p.glowSpread);
       gpu.uniform1f(uniforms.brightness,p.brightness);
+      gpu.uniform3fv(uniforms.baseColor,new Float32Array(rgb(p.borderColor)));
+      gpu.uniform3fv(uniforms.glowColor,new Float32Array(rgb(p.glowColor)));
       gpu.drawArrays(gpu.TRIANGLE_STRIP,0,4);
     };
     handle=requestAnimationFrame(draw);
@@ -185,6 +197,7 @@ export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled
   },[]);
   const enabled=motionEnabled&&!systemReduced&&runtime!=='fallback';
   return <div className="solar-lesson-preview" data-current="true"
+    style={{'--ba-solar-border-color':params.borderColor} as CSSProperties}
     data-solar-status={runtime==='active'&&enabled?'active':'fallback'}
     data-shine={enabled?'on':'off'}>
       {children}
