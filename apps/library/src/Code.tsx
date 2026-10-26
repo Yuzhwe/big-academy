@@ -7,10 +7,11 @@ import solarSource from './SolarLessonPreview.tsx?raw';
 import hamburgerSource from '../../writing/src/components/writing/HamburgerComposition.tsx?raw';
 import flagSource from '../../writing/src/course/LevelRewardFlag.tsx?raw';
 import wordsSource from '../../writing/src/components/writing/WordGrid.tsx?raw';
+import unitSource from '../../writing/src/components/writing/StairUnitCard.tsx?raw';
 import { choiceOptions, type Scene, type Entry } from './catalog';
 const sources = { button: buttonSource, choice: choiceSource, tabs: tabsSource, topbar: topbarSource,
   lesson: lessonSource + '\n\n/* Candidate Current Solar overlay (not used in Writing page): */\n' + solarSource,
-  unit: '', hamburger: hamburgerSource, flag: flagSource, words: wordsSource };
+  unit: unitSource, hamburger: hamburgerSource, flag: flagSource, words: wordsSource };
 export function Code({ scene, entry }: { scene: Scene; entry: Entry }) {
   const props = scene.component === 'choice' ? {
     choiceMode: scene.choice,
