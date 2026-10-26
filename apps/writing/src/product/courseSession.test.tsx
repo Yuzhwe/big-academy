@@ -238,7 +238,7 @@ function reach(course: Session, match: (screen: Session['screens'][number]['scre
   expect(course.inspect().screen).toBe(target);
 }
 
-describe('designer preview seed', () => {
+describe('default L0/L1 display-only completion', () => {
   it('shows Level 0 and Level 1 lessons completed without writing progress or mastery', () => {
     const storage = createMemoryStorage();
     const course = session('', storage);
@@ -440,5 +440,54 @@ describe('Review 02 contextual primary prerequisites', () => {
     expect(course.footer().primaryTestId).toBe('next-question');
     course.pressPrimary();
     expect(course.footer().primaryDisabled).toBe(false);
+  });
+});
+
+
+describe('Review 03: hint-only coaching and one-selection Check', () => {
+  it('never substitutes an answer or consumes a try after the entire hint ladder', () => {
+    for (const id of ['ts1', 'ts4', 'ts3', 'ss.L2-04', 'ts8']) {
+      const course = session();
+      reach(course, s => s.task === id);
+      const screenRef = course.screens[course.inspect().screen].screen;
+      const taskKey = `${screenRef.page}:${screenRef.task}`;
+      const before = JSON.stringify(course.inspect().regions);
+      for (let step = 0; step < 5; step++) course.openHint();
+      const record = course.inspect().tasks[taskKey];
+      expect(record.status, id).toBe('open');
+      expect(record.tries, id).toBe(0);
+      expect(course.activity()?.hintAction, id).toBeNull();
+      expect(course.screenDone(course.inspect().screen), id).toBe(false);
+      expect(JSON.stringify(course.inspect().regions)).toBe(before);
+      expect(record.picked?.length ?? 0).toBe(0);
+      expect(record.sel ?? null).toBeNull();
+    }
+  });
+
+  it('enables P3 multi Check at one option, but still judges against all authored correct options', () => {
+    const course = session();
+    reach(course, s => s.task === 'ts3');
+    expect(course.footer().primaryDisabled).toBe(true);
+    course.pick(1); // one fact, not the required three opinions
+    expect(course.footer().primaryDisabled).toBe(false);
+    course.pressPrimary();
+    const screenRef = course.screens[course.inspect().screen].screen;
+    const record = course.inspect().tasks[`${screenRef.page}:${screenRef.task}`];
+    expect(record.tries).toBe(1);
+    expect(record.status).toBe('open');
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+  });
+
+  it('simplifies every Unit meta while preserving per-unit lesson totals and minutes', () => {
+    const course = session();
+    for (const id of ['L0','L1','L2']) {
+      const units = course.pathNodes(id).filter(node => node.unit).map(node => node.unit!);
+      for (const unit of units) {
+        expect(unit.meta).toMatch(/^\d+ lessons(?: · \d+ mins)?$/);
+        expect(unit.meta).not.toMatch(/about|of|Writing unit/i);
+      }
+    }
+    course.toggleLocale();
+    expect(course.pathNodes('L2').find(node => node.unit)?.unit?.meta).toMatch(/^\d+ 课(?: · \d+ 分钟)?$/);
   });
 });
