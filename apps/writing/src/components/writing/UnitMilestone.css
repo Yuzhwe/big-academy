@@ -65,39 +65,43 @@
 .unit-milestone { flex-direction:column; flex-wrap:nowrap; text-align:center; padding:var(--ba-space-4); }
 .unit-milestone__action { position:relative; width:var(--ba-path-badge-size); height:var(--ba-path-badge-size); border:0; padding:0; background:transparent; perspective:1000px; transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition:transform var(--ba-path-badge-duration); order:-1; }
 .unit-milestone__action img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; }
-.unit-milestone__action img:nth-child(2) { transform:translate3d(var(--shift-2x,0px),var(--shift-2y,0px),var(--ba-path-badge-depth)); filter:drop-shadow(var(--ba-path-badge-shadow)); }
+.unit-milestone__action img:nth-child(1) {
+  transform:translate3d(var(--shift-1x,0px),var(--shift-1y,0px),8px);
+  filter:drop-shadow(0 3px 6px rgba(78,48,20,.12));
+  transition:transform var(--ba-path-badge-duration);
+}
+.unit-milestone__action img:nth-child(2) {
+  transform:translate3d(var(--shift-2x,0px),var(--shift-2y,0px),var(--ba-path-badge-depth));
+  filter:drop-shadow(var(--ba-path-badge-shadow));
+  transition:transform var(--ba-path-badge-duration);
+}
 .unit-milestone__action[data-disabled] { filter:grayscale(.16); opacity:.65; }
 .course-sr { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 @media(prefers-reduced-motion:reduce) { .unit-milestone__action { transform:none; transition:none; } }
 
 
-/* R04 Stage A preview-only: preserve gold two-layer image and original parallax,
- * fully desaturate UPCOMING; never colorize the disabled badge with a sweep. */
-.unit-milestone[data-preview-appearance='gold-shine'][data-state='upcoming'] .unit-milestone__action {
-  filter:grayscale(1);
-  opacity:.72;
+/* R04 approved: silver upcoming is the SAME two-piece sculpture in grayscale.
+   Both layers move at different offsets, no celebratory highlight on locked. */
+.unit-milestone[data-state='upcoming'] .unit-milestone__action {
+ filter:grayscale(1);opacity:.76;
 }
-.unit-milestone[data-preview-appearance='gold-shine']:not([data-state='upcoming']) .unit-milestone__action {
-  filter:saturate(1.25);
+.unit-milestone:not([data-state='upcoming']) .unit-milestone__action {
+ filter:saturate(1.2);
 }
-.unit-milestone[data-preview-appearance='gold-shine'] .unit-milestone__action[data-shine='true']::after {
-  content:'';
-  position:absolute;
-  z-index:2;
-  inset:0;
-  pointer-events:none;
-  border-radius:50%;
-  background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.02) 44%,rgba(255,255,241,.68) 50%,rgba(255,255,255,.02) 56%,transparent 62%);
-  background-size:240% 100%;
-  background-position:180% center;
-  mask-image:radial-gradient(circle,black 61%,transparent 72%);
-  animation:ba-milestone-shine 7s linear infinite;
+.unit-milestone__action[data-shine='true']::after {
+ content:'';position:absolute;z-index:2;inset:0;pointer-events:none;
+ border-radius:50%;
+ background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.02) 44%,rgba(255,255,241,.68) 50%,rgba(255,255,255,.02) 56%,transparent 62%);
+ background-size:240% 100%;background-position:180% center;
+ mask-image:radial-gradient(circle,black 61%,transparent 72%);
+ animation:ba-milestone-shine 7s linear infinite;
 }
 @keyframes ba-milestone-shine {
-  0%,3%{background-position:180% center;}
-  17%{background-position:-90% center;}
-  17.01%,100%{background-position:-90% center;}
+ 0%,3%{background-position:180% center;}
+ 17%{background-position:-90% center;}
+ 17.01%,100%{background-position:-90% center;}
 }
 @media(prefers-reduced-motion:reduce) {
-  .unit-milestone__action[data-shine='true']::after {display:none;animation:none;}
+ .unit-milestone__action,.unit-milestone__action img {transform:none!important;transition:none!important;}
+ .unit-milestone__action[data-shine='true']::after {display:none;animation:none;}
 }
