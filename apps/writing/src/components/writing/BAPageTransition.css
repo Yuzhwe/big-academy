@@ -32,3 +32,23 @@
 @media(prefers-reduced-motion:reduce) {
   .ba-page-transition__snapshot {display:none;}
 }
+
+/* Two progressive blur phases, rather than revealing the full blur instantly. */
+.ba-page-transition[data-phase='out'] .ba-page-transition__snapshot {
+  animation:ba-cross-blur-out var(--ba-cross-blur-half,250ms) ease-in-out both;
+}
+.ba-page-transition[data-phase='in'] .ba-page-transition__content {
+  animation:ba-cross-blur-in var(--ba-cross-blur-half,250ms) ease-in-out both;
+}
+@keyframes ba-cross-blur-out {
+  from {filter:blur(0);opacity:1;}
+  to {filter:blur(var(--ba-cross-blur-amount,12px));opacity:.72;}
+}
+@keyframes ba-cross-blur-in {
+  from {filter:blur(var(--ba-cross-blur-amount,12px));opacity:.72;}
+  to {filter:blur(0);opacity:1;}
+}
+@media(prefers-reduced-motion:reduce) {
+ .ba-page-transition[data-phase='out'] .ba-page-transition__snapshot,
+ .ba-page-transition[data-phase='in'] .ba-page-transition__content {animation:none;}
+}
