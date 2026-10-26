@@ -468,7 +468,7 @@
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
       "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
       "props": {
-        "lessonTitle": "string, already localized; expands to fill safe left-hand available width and clamps at two lines, preserving accessible full title",
+        "lessonTitle": "Localized string, single visual line for both long and short; ellipsis when overflow, full title accessible via title attribute",
         "lessonNumber": "string, already localized by the caller",
         "tasks": "TaskProgressItem[]",
         "current": "number, lesson-local active index",
@@ -499,10 +499,9 @@
         "Top Back 50x50 shared accessible button, hover/pressed/focus motion; keeps lesson title/meta and centered activity status indicators",
         "Numeric-only ActivityScreenIndicator reused identically within TopBar and full-list navigation; done dark/white, skipped dashed, locked disabled, and selected outer rings preserve each original progress state",
         "No horizontal divider between the lesson TopBar and the lesson content",
-        "Title uses available safe width and wraps to at most two lines; centered progress is independent of title length. At narrow widths, progress may occupy a second centered row.",
-        "50×50 icon-only Back, no visible label; two-line adaptive title; Progress selection is independent of source status. Preserve status, grading, unlocking, and persisted answers.",
         "Whole-bar-centered progress uses BA-UI-006 responsive collapsed rail and one anchored 6-column full-list popover; only layout changes across the two placements, markers must remain identical.",
-        "Completed numeric indicators change to Writing brown while preserving the shared 36px geometry, current-selected outer ring and data-controlled access."
+        "Completed numeric indicators change to Writing brown while preserving the shared 36px geometry, current-selected outer ring and data-controlled access.",
+        "Final: long and short LessonTopBar titles share exact one-line nowrap/text-overflow ellipsis; never wrap or move viewport-centered progress."
       ],
       "requiredStories": [
         "Desktop",
@@ -594,8 +593,7 @@
         "activeGroup": "string",
         "presentation": "docked | overlay",
         "tabs": "auto | show | hide; auto preserves legacy single hidden / multiple shown",
-        "locale": "en | zh",
-        "tabAppearance": "connected (only; R04 Slanted retired). First-not-selected uses pale-peach seam bridge matching inactive first tab"
+        "locale": "en | zh"
       },
       "events": {
         "onGroupChange": "(key) => void",
@@ -625,7 +623,7 @@
         "Used never implies disabled; product explicitly marks consumed ordered-build words disabled. The component never grades.",
         "Sentence cards fill their row and wrap; word/punctuation/emoji keep complete content and touch targets. New selection/evaluation chrome is candidate only.",
         "On P5 Apply Writing, the parent paper layout docks this same WordGrid at the bottom under a flexing Textarea; WordGrid itself does not own height or authoring/grade logic.",
-        "R04-R2 approved direction: Original Connected Rounded Tabs only. When first tab is unselected, a pointer-events-none left 14px underlay matches inactive-tab peach tint to prevent exposed outside background. No visual slant or lift. Full keyboard/touch navigation unchanged."
+        "R04 final: bank panel always has four outward-convex identical 16px corners regardless of selected tab; no inverted radial-gradient corners, no underlay patch, and no Slanted; preserve original peach rounded tabs and grade/insertion logic."
       ],
       "requiredStories": [
         "MultiGroup",
@@ -674,8 +672,8 @@
         "No white nested field",
         "Three Hamburger layers share two typographic roles (title and supporting text), consistent values per layer",
         "Do not invent missing educational copy to populate support tier",
-        "Review 04: the preview-only HamburgerComposition groups three reusable HamburgerLayer instances with top and bottom bun 88% of Reason width, title and example vertically centered, no Writing Activity 1 page changes until review.",
-        "R04-R2 hamburger exact: Top green #E7F6DF radii 28/28/10/10; Reason #F3EFE4 radii 10; Bottom #E7C48A radii 10/10/28/28. Width 88/100/88, layer stack gap 8px."
+        "R04-R2 hamburger exact: Top green #E7F6DF radii 28/28/10/10; Reason #F3EFE4 radii 10; Bottom #E7C48A radii 10/10/28/28. Width 88/100/88, layer stack gap 8px.",
+        "R04 final HamburgerComposition is shared between live first learn activity and library, with three existing HamburgerLayers width 88/100/88, 28/28/10/10, 10, 10/10/28/28 radii, colors unchanged; each layer independent 0 4px 10px rgba(71,44,34,.12) shadow."
       ],
       "requiredStories": [
         "Idle",
@@ -739,7 +737,7 @@
         "CTA fills card inner content width at 70px height. Enterable uses Available base and current-course outline consistently for start and continue; Locked blocks entry. Rendered review still pending.",
         "All enterable cards (available/new/resumed) have the same Writing brown border token; component library surfaces only Enterable, Completed and Locked.",
         "Staircase never overrides the internal numeral alignment, which uses the exact same component as the designer-library preview.",
-        "Review 04 candidate: current is a visual emphasis overlay only in DESIGNER LIBRARY; plain Enterable remains unchanged and the Staircase has not adopted Solar. Solar exterior-only GLSL rays+bokeh, CTA 7s sweep, 3px deep-brown static fallback, no change to card content/geometry."
+        "Designer froze StairLessonCard internal geometry/spacing/colors; Current Enterable receives Solar only from a shared external wrapper in the real Staircase and library. CTA 7s sweep unchanged."
       ],
       "requiredStories": [
         "Enterable",
@@ -772,8 +770,7 @@
       "props": {
         "unitId": "string",
         "completed": "boolean",
-        "celebrationEligible": "boolean",
-        "previewAppearance": "existing (default/live) | gold-shine (Stage A preview-only): 7s sweep on completed, 100% grayscale upcoming"
+        "celebrationEligible": "boolean"
       },
       "events": {
         "onCelebrate": "(unitId) => void"
@@ -790,7 +787,7 @@
         "Click completed to replay",
         "No unlock authority",
         "Default high-fidelity L0/L1 fixture shows completed and allows replay, without mutating saved learner mastery/scores. Reduced Motion suppresses particle animation.",
-        "R04-R2 gold-shine candidate uses exact artwork derived from designer's supplied writing_milestone_1 (check) + writing_milestone_2 (seal) PNGs, optimized for preview. Grayscale Upcoming; 7s sweep Completed only; no extra grading."
+        "R04 final: Submitted PNG derivatives are now canonical two-layer artwork in Storybook AND E-01. Base seal (writing_milestone_2) and check (writing_milestone_1) each get different independent 3D XY motion. Completed gold has 7s sweep and replay, Upcoming silver grayscale no shine/click, reduced-motion static."
       ],
       "requiredStories": [
         "Upcoming",
@@ -961,13 +958,12 @@
       "kind": "writing-product-composite",
       "contractVersion": "0.4.0-r3",
       "status": "implemented",
-      "visualStatus": "R2 Review 02 pending visual signoff · shared Unit/Lesson title typography and continuous folded paper",
+      "visualStatus": "R04 approved shared design direction · runtime/browser QA pending",
       "implementation": "apps/writing/src/components/writing/StairUnitCard.tsx",
       "props": {
         "unit": "PathNode.unit — source-localized index, title, per-Unit total/time label and goal paragraphs; NO hardcoded 9/170 in production",
         "status": "CourseUnitStatus",
-        "locale": "en | zh",
-        "corner": "folded (production Staircase only pending Stage B) | rounded (Stage A R2 preview primary and new target): all four 16px corners"
+        "locale": "en | zh"
       },
       "events": [],
       "states": [
@@ -983,14 +979,12 @@
         "Fold must not cover text and preserve outer body round corners",
         "Unit title matches StairLessonCard heading typography tokens (Dosis 24px 800 / 30px, Chinese uses shared fallback)",
         "Folded corner is mandatory on every unit state",
-        "Unit goals rendered as plain paragraphs, 16px supporting type; all statuses maintain the same folded structure",
         "No Lesson CTA or lesson status-number assembly",
         "Ensure complete card visible at pan terminal bounds",
         "Inner ornamental border masked at 45-degree fold; upper right seam joins rounded body silhouette without detached triangle",
         "R3 tinted informational surface remains distinct from white actionable lessons",
         "Unit top line only UNIT N / 第 N 单元; never add Writing Unit or Unit type label.",
-        "One full-pill warm outline contains actual per-unit lesson total and duration, e.g. 9 lessons · 170 mins. Never show 0 of, about or 约; no fixed 9/170 dummy values.",
-        "R04-R2 rounded candidate: NO fold/cut/triangle. UNIT heading Dosis 800/20px, inline 16px Jost600 full-pill lessons/min, main heading Dosis800/24px; other three paper corners and layout stable. Current Staircase remains folded as temporary legacy pending Stage B integration."
+        "R04 final: one canonical shared component (library+Staircase) with all four 16px rounded corners, ZERO fold/cutout. UNIT N label uses Dosis 800/18px theme brown #B25415, same color for full rounded metadata pill text; e.g. 9 lessons · 170 min, title Dosis800/24px. Preserve actual per-unit count and source duration."
       ],
       "requiredStories": [
         "UnitFoldCornerAt200Zoom",
@@ -1114,12 +1108,16 @@
       "kind": "composite",
       "contractVersion": "0.4.0-r4",
       "status": "implemented",
-      "visualStatus": "Review 04 candidate awaiting designer style approval",
+      "visualStatus": "Canvas algorithm integrated · flag artwork temporary until designer image received",
       "implementation": "apps/writing/src/course/LevelRewardFlag.tsx",
       "story": "apps/writing/src/course/LevelRewardFlag.stories.tsx",
       "props": {
-        "wind": "CSS variable --ba-path-flag-wind, default 0.04; preview wrapper changes value",
-        "artwork": "existing R2.12 SVG asset; unchanged"
+        "period": "seconds, default 1.6",
+        "waves": "6 = 6 * PI across image width => exactly 3 sine periods",
+        "amplitude": "px, default 4",
+        "playing": "boolean, pause or play",
+        "resetKey": "integer; phase=0 when updated",
+        "imageSrc": "optional local image DataURL, not uploaded"
       },
       "events": {},
       "states": [
@@ -1128,9 +1126,11 @@
       ],
       "layoutOwner": "Staircase owns flag scene placement; LevelRewardFlag owns original SVG cloth movement",
       "requirements": [
-        "Library independently previews the exact existing LevelRewardFlag SVG, not a replacement image",
-        "Designer may tune wind from original 4% baseline; maintain reduced-motion behavior",
-        "Do not change the current Staircase goal flag until designer acceptance"
+        "R04 actual Writing+library uses browser Canvas physical-pixel 1px vertical column slicing; only translateY, no scale/perspective/shadow/light; image aspect ratio preserved, slight overlap avoids seams.",
+        "OffsetY=amplitude*sin(x/flagWidth * waves * PI + phase); phase=2PI*elapsedSeconds/period, baseline 4px/6/1.6s. Do not double 6*PI.",
+        "Local designer library supports period/waves/amplitude, pause/play, reset values plus phase, local file replacement (FileReader only). Actual Staircase uses confirmed defaults.",
+        "Original Flutter sample yarden, https://stackoverflow.com/a/78383275, retrieved 2026-10-26, CC BY-SA 4.0, adapted to browser Canvas, attribution retained.",
+        "Final designer flag artwork is STILL MISSING; temporary R2.12 flag SVG remains until supplied. No final visual signoff should be inferred."
       ],
       "requiredStories": [
         "Default",
@@ -1146,8 +1146,8 @@
       "name": "BAPageTransition",
       "kind": "composite",
       "contractVersion": "0.4.0-a",
-      "status": "candidate",
-      "visualStatus": "Review 04 Stage A Candidate — not approved",
+      "status": "implemented",
+      "visualStatus": "R04 designer-accepted transition · live navigation integration pending runtime QA",
       "implementation": "apps/writing/src/components/writing/BAPageTransition.tsx",
       "story": "apps/writing/src/components/writing/BAPageTransition.stories.tsx",
       "props": {
@@ -1169,10 +1169,10 @@
       ],
       "layoutOwner": "Transition controls a local visual wrapper, not routes or student data",
       "requirements": [
-        "Stage A component-library and Storybook only; no routes/lesson/Activity integration until explicit design signoff.",
         "Staircase/Lesson starting suggestion 500ms/12px; Activity/Activity 300ms/6px; Reduced Motion instant.",
         "One swap at midpoint, cancellation when target changes, no score/save/unlock side effects.",
-        "Independently implemented generic cross-blur pattern; source must not be copied from license-restricted providers."
+        "Independently implemented generic cross-blur pattern; source must not be copied from license-restricted providers.",
+        "R04 real page integration: 500ms/12px route, 300ms/6px activity. Outgoing inert DOM snapshot prevents blanking after product session changes synchronously; reduced motion skips effects. No new router or learning state."
       ],
       "requiredStories": [
         "StaircaseToLesson",
