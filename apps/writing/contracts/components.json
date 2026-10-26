@@ -401,7 +401,8 @@
         "Keep current screen visible in compact rail; no fixed eight-item data limit",
         "No more than nine rail elements including a 36×36px visible ellipsis. Focused current screen remains in the visible contiguous range. No fixed 8/6/4 breakpoints.",
         "Popup near the trigger with top-left All activity screens / 所有活动页面 heading, top-right Close, 424px max width, 40px radius and padding. Full indices in six fixed, left-aligned columns. A short final row begins at column one.",
-        "Trigger, Close, outside pointer, and Escape dismiss; restore focus or move it safely if the trigger disappears. Locked indicators cannot navigate. Keyboard, touch, focus and selection a11y."
+        "Trigger, Close, outside pointer, and Escape dismiss; restore focus or move it safely if the trigger disappears. Locked indicators cannot navigate. Keyboard, touch, focus and selection a11y.",
+        "R2 Review 03: done and done-selected inner numeric circles use Writing semantic brown (action-primary / #B25415) plus white number in BOTH rail and popover. Do not recolor completed Lesson Card's separate green seal."
       ],
       "requiredStories": [
         "MixedStatus",
@@ -420,7 +421,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/PILOT_RUNTIME.md",
-      "notes": "BA-UI-006 renders a numeric-only marker in every progress state with no separate check, lock or other icon. Stored progress status and selected activity index are independent. Done uses brand-dark fill and white digit; Skipped keeps its dashed border; selected adds an outer ring without overwriting either state. Locked uses disabled colors and cannot navigate. Accessible labels retain status, and any distinction between shown and truly correct completion must come from product data. Same component is used in TopBar and any full-list/popup presentation. PRODUCT.md owns navigation gates and results. R2 Review 02 sizes are strictly 36px visible for both numeral and ellipsis; top max 9 items including trigger, six-column left-aligned full-list popup. 320px/mobile special layout deferred."
+      "notes": "BA-UI-006 renders a numeric-only marker in every progress state with no separate check, lock or other icon. Stored progress status and selected activity index are independent. Done uses Writing-semantic brown fill (#B25415) and white Dosis digit; Skipped keeps its dashed border; selected adds an outer ring without overwriting either state. Locked uses disabled colors and cannot navigate. Accessible labels retain status, and any distinction between shown and truly correct completion must come from product data. Same component is used in TopBar and any full-list/popup presentation. PRODUCT.md owns navigation gates and results. R2 Review 02 sizes are strictly 36px visible for both numeral and ellipsis; top max 9 items including trigger, six-column left-aligned full-list popup. 320px/mobile special layout deferred."
     },
     {
       "id": "BA-UI-007",
@@ -498,7 +499,8 @@
         "No horizontal divider between the lesson TopBar and the lesson content",
         "Title uses available safe width and wraps to at most two lines; centered progress is independent of title length. At narrow widths, progress may occupy a second centered row.",
         "50×50 icon-only Back, no visible label; two-line adaptive title; Progress selection is independent of source status. Preserve status, grading, unlocking, and persisted answers.",
-        "Whole-bar-centered progress uses BA-UI-006 responsive collapsed rail and one anchored 6-column full-list popover; only layout changes across the two placements, markers must remain identical."
+        "Whole-bar-centered progress uses BA-UI-006 responsive collapsed rail and one anchored 6-column full-list popover; only layout changes across the two placements, markers must remain identical.",
+        "Completed numeric indicators change to Writing brown while preserving the shared 36px geometry, current-selected outer ring and data-controlled access."
       ],
       "requiredStories": [
         "Desktop",
@@ -550,7 +552,13 @@
         "One primary separator per content boundary; neutral container borders use quieter token, not for graded/focus borders",
         "Peer container gaps reduce one existing spacing-token step without altering touch targets or typography",
         "On long-form Apply Writing the Textarea fills the remaining white-paper height and scrolls internally without resizing; WordGrid docks at the bottom of the paper content, not the viewport or Coach.",
-        "The Footer contextual primary uses real disabled state until the authored task readiness condition is met. P7 retains its existing ability to navigate blank internal questions and warn once on blank Hand in."
+        "The Footer contextual primary uses real disabled state until the authored task readiness condition is met. P7 retains its existing ability to navigate blank internal questions and warn once on blank Hand in.",
+        "All Coach utterances individually use internal CoachMessage cards: correct Success-1/4/9, wrong Neutral-2/4/8, ordinary and Hint Neutral-1/3/9 (surface/stroke/text). Keep independent Coach scroll and footer.",
+        "P2 Better and Not yet headings share Dosis 800, remove the Better check icon. Activity headings place a 50px Speaker BAButton in a dedicated top-right grid column, leaving the multiline title unobstructed.",
+        "P3 Tapword correct outcome uses solid Success-6 fill, white text, no visible border or check icon. Shown answer without credit remains visually distinct; keyboard focus remains visible.",
+        "P3 multiselect Check activates once one choice is selected (not only after the three authored correct choices), while checking, wrong try counts and shown follow PRODUCT.",
+        "Only P5 Apply Textarea uses low-contrast 36px horizontally lined paper and omits the duplicate visible Write each sentence on a new line tip. P7 remains plain.",
+        "Coach Need a hint/Another hint only reveal authored teaching messages; the final hint never calls finish(shown), auto-fills, grades or consumes a formal attempt."
       ],
       "requiredStories": [
         "Desktop",
@@ -564,11 +572,12 @@
         "FirstScreenDisabledPrevious",
         "P2BetterEmphasis",
         "R3TransparentFooter",
-        "R3ContainerSeparationAndGap"
+        "R3ContainerSeparationAndGap",
+        "CoachMessageStates"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/SLICE_RUNTIME.md",
-      "notes": "Warm Frame + White Canvas. Previous and the primary action sit at the bottom of the Coach rail, at the bottom-right of the lesson, outside the scrolling transcript. The group uses 1:2, an 8px gap, and a 70px height. The P2 Better panel uses a pale green fill and a leading check. Storybook fixture CoachRailNavBottomRight matches that placement. Feedback-card fill and border stay a candidate."
+      "notes": "Warm Frame + White Canvas. Previous and the primary action sit at the bottom of the Coach rail, at the bottom-right of the lesson, outside the scrolling transcript. The group uses 1:2, an 8px gap, and a 70px height. P2 Better retains its pale green pedagogical surface but has no check icon. The internal BA-WR-002 CoachMessage presentation has separate success/neutral tinted cards for each arrival, hint, teaching beat and submitted feedback. CoachMessageStates story provides a visual comparison; no visual signoff has been granted."
     },
     {
       "id": "BA-WR-003",
@@ -766,7 +775,8 @@
         "At every Unit end",
         "Auto once on first return after newly completed",
         "Click completed to replay",
-        "No unlock authority"
+        "No unlock authority",
+        "Default high-fidelity L0/L1 fixture shows completed and allows replay, without mutating saved learner mastery/scores. Reduced Motion suppresses particle animation."
       ],
       "requiredStories": [
         "Upcoming",
@@ -775,7 +785,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
-      "notes": "Candidate Warm Frame. Not validated and not visually approved. Completed state is injected from Alex lesson states. Confetti receipt is UI-only and does not unlock anything. Level Goal formula stays open."
+      "notes": "Candidate Warm Frame. Not validated and not visually approved. Completed state is injected from Alex lesson states. Confetti receipt is UI-only and does not unlock anything. Level Goal formula stays open. R2 Review 03: L0/L1 completed examples are display-only by default without a query parameter. Clicking any completed Unit badge replays existing Confetti once at its center, startCount 50/rate.quantity 0/life.count 1. L2 genuine progress remains authoritative."
     },
     {
       "id": "BA-UI-008",
@@ -787,7 +797,7 @@
       "implementation": "packages/design-system/src/components/ui/BAIcon.tsx",
       "story": "packages/design-system/src/components/ui/BAIcon.stories.tsx",
       "props": {
-        "name": "8 iconoir names (expand after contract review)",
+        "name": "8 iconoir names (expand after contract review); includes speaker",
         "size": "number px, default 20 [E]",
         "strokeWidth": "number, default 1.5 [Iconoir]",
         "decorative": "true by default; aria-hidden",
@@ -804,7 +814,8 @@
       "requirements": [
         "Accessible labels and roles",
         "Responsive/reduced motion",
-        "Semantic tokens from DESIGN.md; visual review required"
+        "Semantic tokens from DESIGN.md; visual review required",
+        "Activity read-aloud control uses BAIcon speaker (rather than the previous book glyph) and retains accessible Play/Stop labels."
       ],
       "requiredStories": [
         "IconoirGallery",
@@ -813,7 +824,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/e2e/design-system-preview.spec.ts",
-      "notes": "8 official Iconoir regular SVG paths, upstream MIT notice in design-system package. Full library not imported. Default icon sizing is exploratory."
+      "notes": "Eight preserved Iconoir regular SVG glyphs plus one lightweight Speaker glyph for the 50px Activity prompt voice control. Existing shapes and a11y behavior retained; exact rendered symbol awaits designer approval."
     },
     {
       "id": "BA-UI-009",
@@ -959,7 +970,9 @@
         "No Lesson CTA or lesson status-number assembly",
         "Ensure complete card visible at pan terminal bounds",
         "Inner ornamental border masked at 45-degree fold; upper right seam joins rounded body silhouette without detached triangle",
-        "R3 tinted informational surface remains distinct from white actionable lessons"
+        "R3 tinted informational surface remains distinct from white actionable lessons",
+        "Unit top line only UNIT N / 第 N 单元; never add Writing Unit or Unit type label.",
+        "One full-pill warm outline contains actual per-unit lesson total and duration, e.g. 9 lessons · 170 mins. Never show 0 of, about or 约; no fixed 9/170 dummy values."
       ],
       "requiredStories": [
         "UnitFoldCornerAt200Zoom",
@@ -967,7 +980,7 @@
         "UnitLongChineseCopy",
         "UnitAllStatuses"
       ],
-      "notes": "Unit card keeps current content and size, uses one continuous top/right triangular folded-paper flap with restrained local contact shading, no floating rounded rectangle. Unit main title shares StairLessonCard typography (Dosis 24px / 800 / 30px; same Chinese heading alias). Goals remain plain paragraphs."
+      "notes": "Unit card keeps current content and size, uses one continuous top/right triangular folded-paper flap with restrained local contact shading, no floating rounded rectangle. Unit main title shares StairLessonCard typography (Dosis 24px / 800 / 30px; same Chinese heading alias). Goals remain plain paragraphs. R2 Review 03: simplified Unit N caption and one warm full-stroke pill for lesson total + exact time in both live and preview levels."
     },
     {
       "id": "BA-WR-008",
