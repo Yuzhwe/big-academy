@@ -51,10 +51,15 @@ export function R2Controls({scene,update}:{scene:Scene;update:(patch:Partial<Sce
       <button type="button" onClick={()=>update({transitionDuration:300,transitionBlur:6})}>Activity / Activity</button>
     </section>}
     {scene.component==='flag'&&
-      <section className="review04-solar-controls" aria-label="Level 旗帜参数">
-        <h3>Level Reward Flag · 布料参数</h3>
-        {range('flagWind','Wind · 风力 (默认 4%)',0,0.12,0.005)}
-        <p>沿用 R2.12 旗帜与布面 SVG，参数只作用于组件库。</p>
+      <section className="review04-solar-controls" aria-label="Level 旗帜 Canvas 参数">
+        <h3>Level Reward Flag · Canvas 逐列波浪</h3>
+        {range('flagAmplitude','Amplitude · 振幅 (px)',0,16,.5)}
+        {range('flagWaves','Waves · 波数 (waves × π)',0,12,1)}
+        {range('flagPeriod','Period · 周期 (s)',.2,5,.1)}
+        <button type="button" onClick={()=>update({flagPlaying:!scene.flagPlaying})}>{scene.flagPlaying?'暂停':'播放'}</button>
+        <button type="button" onClick={()=>update({flagAmplitude:4,flagWaves:6,flagPeriod:1.6,flagReset:scene.flagReset+1})}>恢复默认参数 · 4 / 6 / 1.6 (Phase = 0)</button>
+        <p>每列约 1 个物理像素，仅竖直位移。默认图为旧 R2.12 临时素材，等待设计师旗帜图片。</p>
+        <p>算法来源：yarden · Stack Overflow a/78383275 · CC BY-SA 4.0；已改编为浏览器 Canvas。</p>
       </section>}
     {scene.component==='words'&&<>
       <p className="review04-caption">Rounded Connected Tabs · 左侧局部底色桥接（Slanted 已废弃）</p>
