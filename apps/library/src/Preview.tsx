@@ -19,6 +19,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
   const [notice, setNotice] = useState('');
   const [activity, setActivity] = useState(2);
   const [transitionTarget,setTransitionTarget] = useState('staircase');
+  const [flagLocalImage,setFlagLocalImage]=useState<string|undefined>();
   const zh = scene.locale === 'zh';
   const state = scene.mode === 'state' ? scene.state : 'default';
   const output = notice ? <output className="preview-result" aria-live="polite">{notice}</output> : null;
@@ -149,10 +150,20 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
     </div>;
   }
   if (scene.component === 'flag') {
-    return <div className="preview-example preview-example--center review04-flag-stage"
-      style={{'--ba-path-flag-wind':scene.flagWind} as CSSProperties}>
-      <LevelRewardFlag key={scene.flagWind}/>
-      <p className="review04-caption">{zh?'复用原 R2.12 旗帜，风力参数可调；不会改变阶梯页。':'Original R2.12 flag, adjustable wind; no Staircase changes.'}</p>
+    return <div className="preview-example preview-example--center review04-flag-stage">
+      <LevelRewardFlag amplitude={scene.flagAmplitude} waves={scene.flagWaves}
+        period={scene.flagPeriod} playing={scene.flagPlaying&&scene.motion==='system'}
+        resetKey={scene.flagReset} imageSrc={flagLocalImage}/>
+      <label className="review04-flag-local">替换本地旗帜图片（仅在当前浏览器内使用）
+        <input type="file" accept="image/*" onChange={event=>{
+          const file=event.target.files?.[0];if(!file)return;
+          const reader=new FileReader();
+          reader.onload=()=>setFlagLocalImage(typeof reader.result==='string'?reader.result:undefined);
+          reader.readAsDataURL(file);
+        }}/>
+      </label>
+      <p className="review04-caption">Canvas · Period {scene.flagPeriod}s · Waves {scene.flagWaves} × π · Amplitude {scene.flagAmplitude}px · {scene.flagPlaying?'Playing':'Paused'}</p>
+      <p className="review04-caption">来源 yarden，Stack Overflow answer 78383275，CC BY-SA 4.0。已改编为浏览器 Canvas。当前旧图仅临时演示。</p>
     </div>;
   }
   if (scene.component === 'words') return <WordPlayground scene={scene} update={update}/>;
