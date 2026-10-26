@@ -192,3 +192,17 @@ Compare rendered components and actual pages at 1440/1024/834 widths, long EN/ZH
 - Exact review routes/approval/QA checklist: `docs/REVIEW_04_STAGEA.md`.
 
 **QA truth:** Files committed to the Draft PR; connector read-backs can verify source and contract JSON. No current-turn local Node/TypeScript/Vitest/Playwright execution, browser WebGL/GPU check, screenshots or design signoff has been performed. This is code-complete-for-review, NOT a tested or approved release. Local :5174/:6007 may serve old published built copies; pull PR head and rebuild/run current dev servers for inspection.
+
+## Review 04 · Stage A R2 follow-up — submitted code, pending browser evidence (2026-10-26)
+
+Continues Draft PR #52 on `feat/writing-hifi-integration-v1`. Only Stage A designer-library trials plus approved real `LessonTopBar` popup padding (24px instead of 40px). **Do not merge main or integrate unapproved candidates into Staircase/Activities**.
+
+- WordGrid: retired Slanted, removed its CSS/story controls. Original rounded connected tabs remain. Added first-inactive left seam overlay via same inactive-tab peach color, z-index behind tabs and above bank. Real page selection and insertion are unchanged.
+- HamburgerComposition: Top green `#E7F6DF` 28/28/10/10; Reason `#F3EFE4` 10 all; Bottom `#E7C48A` 10/10/28/28, width 88/100/88.
+- StairUnitCard: Stage A library defaults to `corner=rounded` four 16px corners; 20px Dosis UNIT and 16px Jost full pill on same line, 24px heading below. Live Staircase still folded, explicitly legacy until Stage B.
+- UnitMilestone: new optimized PNGs derived from uploaded `writing_milestone_1.png` gold check and `writing_milestone_2.png` seal are committed under `apps/writing/src/assets/review04`, imported in the preview-only gold-shine appearance. Completed 7s sweep; upcoming gray only. Live page still retains original assets until Stage B.
+- Solar: user-confirmed Custom #FFA82E/#FFA82E, parameters 1.80/1.26/64/1.12/0.74/10/1.34, with restore action. A/B/C selectable. Source license still unresolved.
+- LessonTopBar popup padding reduced to 24px, keep completed digits brown, original radius, hit regions, focus/escape.
+- CTA sweep, Cross Blur, Level reward flag untouched.
+
+**Pending:** run Node/Vitest/Playwright and render screenshots; test actual WordGrid left seam across tabs & 834/1024/1440, Unit long titles, PNG image layering & reduced motion, Solar WebGL color, popup spacing. No build/browser run verified by this GitHub connector-only operation. See `docs/REVIEW_04_STAGEA_R2.md`.
