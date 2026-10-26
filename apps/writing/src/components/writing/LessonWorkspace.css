@@ -106,3 +106,28 @@
     grid-row: 2;
   }
 }
+
+/* Review 03: every Coach utterance has its own neutral or semantic message card.
+ * Readable success/neutral contrast comes from the existing design token scales. */
+.lesson-workspace__message {
+  box-sizing: border-box;
+  margin: 0 0 12px;
+  padding: var(--ba-writing-coach-message-padding, 12px);
+  border: 1px solid var(--ba-color-neutral-3, #eeeeee);
+  border-radius: var(--ba-writing-coach-message-radius, 12px);
+  background: var(--ba-color-neutral-1, #fafafa);
+  color: var(--ba-color-neutral-9, #363636);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.lesson-workspace__message[data-tone='wrong'] {
+  background: var(--ba-color-neutral-2, #f5f5f5);
+  border-color: var(--ba-color-neutral-4, #d4d4d4);
+  color: var(--ba-color-neutral-8, #4c4c4c);
+}
+.lesson-workspace__message[data-tone='correct'] {
+  background: var(--ba-color-success-1, #f0fbf4);
+  border-color: var(--ba-color-success-4, #98e3b3);
+  color: var(--ba-color-success-9, #0a502c);
+}
+.lesson-workspace__message:last-child { margin-bottom: 0; }
