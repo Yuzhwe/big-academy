@@ -1,3 +1,6 @@
+> **Review 04 combined integration (2026-10-26):** `docs/REVIEW_04_INTEGRATED.md` is the current implementation boundary and supersedes earlier staged-only integration freezes. The approved design changes have been applied to BOTH the component library and real Writing page on Draft PR #52: 1-line ellipsized LessonTopBar; unchanged interior StairLessonCard; no-fold 16px rounded Unit card with `UNIT 1` 18px brown and brown full label `9 lessons · 170 min`; hamburger/exemplar side-by-side; gold/silver two-layer milestone 3D; four-convex-corner WordGrid; 24px P7 editor-to-WordGrid gap; brown 50px Speaker; visually external Solar Current and Cross Blur transitions. Learning permission, evaluation, saving, replay eligibility, and progression still come ONLY from CourseSession. The final flag *image* is still missing, so the Canvas formula runs using the temporary R2.12 art. Actual builds/browser screenshots and designer visual QA are still pending and must not be treated as complete.
+>
+
 # Big Academy — Writing PRODUCT.md
 
 **Edition:** Canonical product specification v1 · 2026-10-21
