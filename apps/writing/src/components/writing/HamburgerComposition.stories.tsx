@@ -17,3 +17,8 @@ export default meta;
 type Story=StoryObj<typeof meta>;
 export const AllThreeLayers:Story={};
 export const LongExample:Story={args:{layers:layers.map((layer,i)=>({...layer,value:i===1?layer.value+' It gives students a quiet place to study outdoors and share interesting discoveries.':layer.value}))}};
+
+
+export const ExactHighFidelityColors:Story={
+  parameters:{ba:{contractId:'BA-WR-004',status:'candidate-pending-designer-review',note:'Top green #E7F6DF / Reason #F3EFE4 / Bottom #E7C48A; 88:100:88 widths'}},
+};
