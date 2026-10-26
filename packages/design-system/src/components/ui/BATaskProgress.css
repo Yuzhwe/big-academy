@@ -126,7 +126,7 @@
   box-sizing:border-box;
   max-height:calc(100dvh - 24px);
   overflow:hidden;
-  padding:40px;
+  padding:24px;
   border:var(--ba-border-weight, 0.5px) solid var(--ba-color-border-default, #d9cbb8);
   border-radius:40px;
   background:var(--ba-color-surface-canvas, #fff);
