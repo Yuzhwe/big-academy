@@ -6,7 +6,7 @@ export const catalog = [
   { key: 'tabs', id: 'BA-UI-002', name: '标签导航', en: 'BATabs', category: '基础交互', description: '在相关内容之间切换，始终知道自己所在的位置。', anatomy: 'TabList → Tab → 对应 TabPanel。方向键切换焦点与选中项。', states: ['default', 'hover', 'pressed', 'focus', 'disabled'], story: 'primitives-batabs--level-navigation' },
   { key: 'topbar', id: 'BA-WR-001', name: '课程顶栏', en: 'LessonTopBar', category: 'Writing', description: '把课程身份、当前进度与返回路径放在一个清晰的框架中。', anatomy: '左侧返回与课程标题；居中 Activity Screen 进度；右侧留空。', states: ['default', 'long', 'done', 'locked', 'skipped'], story: 'writing-shell-lessontopbar--desktop' },
   { key: 'lesson', id: 'BA-WR-005', name: '课程卡片', en: 'StairLessonCard', category: 'Writing', description: '学习路径卡片统一为可进入、已完成和未解锁三种视觉状态。', anatomy: '课号印章 → 标题与时长 → 共享 BAButton。解锁与课程数据由产品提供。', states: ['start', 'current', 'review', 'locked'], story: 'writing-path-stairlessoncard--enterable' },
-  { key: 'unit', id: 'BA-WR-007', name: '单元卡片', en: 'StairUnitCard', category: 'Writing', description: '同一纸张折角、标题和全圆角课程信息标签，在组件库与阶梯页共用。', anatomy: 'UNIT 编号 → 标题 → 课时信息 Pill → 目标段落 → 连续纸张折角。', states: ['default','long'], story: 'writing-path-stairunitcard--default' },
+  { key: 'unit', id: 'BA-WR-007', name: '单元卡片', en: 'StairUnitCard', category: 'Writing', description: '统一四角 16px，UNIT 18px、全圆角课时标签，与高保真阶梯页共用。', anatomy: 'UNIT 编号与课时 Pill 同行 → 标题 → 目标段落。', states: ['default','long'], story: 'writing-path-stairunitcard--default' },
   { key: 'hamburger', id: 'BA-WR-004', name: '汉堡包组合', en: 'HamburgerComposition', category: 'Writing', description: '三层教学示意，可独立调整文字与宽度；Top / Bottom bun 窄于中间 Reason。', anatomy: 'Top bun → Reason → Bottom bun；每层标题与示例句子垂直居中。', states: ['default', 'long'], story: 'writing-activities-hamburgercomposition--all-three-layers' },
   { key: 'flag', id: 'BA-WR-011', name: 'Level 奖励旗帜', en: 'LevelRewardFlag', category: 'Writing', description: '复用 R2.12 旗帜 SVG 与 4% 风力动画，供设计师独立调整。', anatomy: 'SVG 旗杆 + 布料 + 柔和布面高光；风力参数仅控制布面动态。', states: ['default'], story: 'writing-path-levelrewardflag--default' },
   { key: 'milestone', id: 'BA-WR-006', name: 'Unit 里程碑', en: 'UnitMilestone', category: 'Writing', description: '金色完成和灰色未完成的两层徽章，扫光仅完成状态启用。', anatomy: '徽章 + 对勾 + 7 秒扫光 + 点击重播。', states: ['upcoming','completed'], story: 'writing-path-unitmilestone--first-return' },
@@ -50,7 +50,7 @@ export type Scene = {
   solarRayIntensity:number; solarRayLength:number; solarRayCount:number; solarBokeh:number;
   solarRimBoost:number; solarGlowSpread:number; solarBrightness:number; flagWind:number;
   solarPreset:'A'|'B'|'C'|'custom';solarBorderColor:string;solarGlowColor:string;
-  wordTabAppearance:'connected';unitCorner:'folded'|'rounded';
+  wordTabAppearance:'connected';
   transitionDuration:number;transitionBlur:number;transitionPage:'staircase'|'lesson';
 };
 export const defaultScene: Scene = {
@@ -60,7 +60,7 @@ export const defaultScene: Scene = {
   wordScenario:'A',wordContent:'word',wordTabs:'auto',wordCount:'1',wordSelection:'default',wordEvaluation:'neutral',wordInteraction:'enabled',wordSelected:[],wordAnswer:[],wordGroup:'g0',wordResult:'neutral',
   solarRayIntensity:1.80,solarRayLength:1.26,solarRayCount:64,solarBokeh:1.12,solarRimBoost:0.74,solarGlowSpread:10,solarBrightness:1.34,flagWind:0.04,
   solarPreset:'custom',solarBorderColor:'#FFA82E',solarGlowColor:'#FFA82E',
-  wordTabAppearance:'connected',unitCorner:'rounded',transitionDuration:500,transitionBlur:12,transitionPage:'staircase',
+  wordTabAppearance:'connected',transitionDuration:500,transitionBlur:12,transitionPage:'staircase',
 };
 function oneOf<T extends string>(value: string | null, options: readonly T[], fallback: T): T {
   return options.includes(value as T) ? value as T : fallback;
@@ -113,7 +113,6 @@ export function readScene(search: string): Scene {
     solarBorderColor:color('solarBorderColor','#FFA82E'),
     solarGlowColor:color('solarGlowColor','#FFA82E'),
     wordTabAppearance:'connected',
-    unitCorner:oneOf(p.get('unitCorner'),['folded','rounded'],'rounded'),
     transitionDuration:Math.round(num('transitionDuration',500,0,1200)),
     transitionBlur:num('transitionBlur',12,0,30),
     transitionPage:oneOf(p.get('transitionPage'),['staircase','lesson'],'staircase'),
