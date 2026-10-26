@@ -28,6 +28,9 @@ function splitArtwork() {
   fixed.querySelectorAll('.flag-cloth,.flag-highlight,.flag-emblem').forEach(el=>el.remove());
   const fabric=original.cloneNode(true) as Element;
   fabric.querySelectorAll('ellipse,rect,circle').forEach(el=>el.remove());
+  /* Explicit intrinsic SVG pixel size prevents browser 300×150 fallback from
+   * stretching the original 200×160 art when Canvas samples columns. */
+  fabric.setAttribute('width','200');fabric.setAttribute('height','160');
   const serialize=new XMLSerializer();
   return {cloth:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(serialize.serializeToString(fabric)),
     staticSvg:serialize.serializeToString(fixed)};
