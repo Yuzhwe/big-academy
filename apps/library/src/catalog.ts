@@ -11,7 +11,7 @@ export const catalog = [
   { key: 'flag', id: 'BA-WR-011', name: 'Level 奖励旗帜', en: 'LevelRewardFlag', category: 'Writing', description: '复用 R2.12 旗帜 SVG 与 4% 风力动画，供设计师独立调整。', anatomy: 'SVG 旗杆 + 布料 + 柔和布面高光；风力参数仅控制布面动态。', states: ['default'], story: 'writing-path-levelrewardflag--default' },
   { key: 'milestone', id: 'BA-WR-006', name: 'Unit 里程碑', en: 'UnitMilestone', category: 'Writing', description: '金色完成和灰色未完成的两层徽章，扫光仅完成状态启用。', anatomy: '徽章 + 对勾 + 7 秒扫光 + 点击重播。', states: ['upcoming','completed'], story: 'writing-path-unitmilestone--first-return' },
   { key: 'transition', id: 'BA-WR-012', name: '页面转场', en: 'BAPageTransition', category: 'Writing', description: 'Cross Blur 页面切换候选，两种速度与模糊强度可调整。', anatomy: '旧画面模糊 → 中点切换 → 新画面清晰。', states: ['default'], story: 'writing-transitions-bapagetransition--staircase-to-lesson' },
-  { key: 'words', id: 'BA-WR-003', name: '词卡面板', en: 'WordGrid', category: 'Writing', description: '按类别找到表达所需的词，让写作一步一步展开。', anatomy: '连接式分类标签 → 词卡区域。切换类别不执行插入，点击词卡才发出插入事件。', states: ['default', 'slanted', 'selected', 'used', 'disabled', 'correct', 'incorrect', 'hint', 'shown', 'hover', 'pressed', 'focus'], story: 'writing-activities-wordgrid--multi-group' },
+  { key: 'words', id: 'BA-WR-003', name: '词卡面板', en: 'WordGrid', category: 'Writing', description: '按类别找到表达所需的词，让写作一步一步展开。', anatomy: '连接式分类标签 → 词卡区域。切换类别不执行插入，点击词卡才发出插入事件。', states: ['default', 'selected', 'used', 'disabled', 'correct', 'incorrect', 'hint', 'shown', 'hover', 'pressed', 'focus'], story: 'writing-activities-wordgrid--multi-group' },
 ] as const;
 export type Entry = typeof catalog[number];
 export type ComponentKey = Entry['key'];
@@ -35,7 +35,7 @@ export const stateNames: Record<string, string> = {
   wrong: '错误', dim: '变淡', disabled: '禁用', busy: '等待中', start: 'Enterable · 可进入',
   continue: 'Enterable · 可进入', current:'Current · Solar 强调候选', review: 'Completed · 已完成', locked: '未解锁', skipped: '已跳过',
   long: '长标题', single: '单组词卡', used: '词卡已使用',
-  cutout:'透明缺角 · 候选', slanted:'斜切标签 · 候选', upcoming:'未完成 · 灰色', completed:'已完成 · 金色',
+  cutout:'透明缺角 · 候选', upcoming:'未完成 · 灰色', completed:'已完成 · 金色',
 };
 export type Scene = {
   component: ComponentKey; view: 'components' | 'overview' | 'foundations' | 'review';
@@ -50,7 +50,7 @@ export type Scene = {
   solarRayIntensity:number; solarRayLength:number; solarRayCount:number; solarBokeh:number;
   solarRimBoost:number; solarGlowSpread:number; solarBrightness:number; flagWind:number;
   solarPreset:'A'|'B'|'C'|'custom';solarBorderColor:string;solarGlowColor:string;
-  wordTabAppearance:'connected'|'slanted';unitCorner:'folded'|'cutout';
+  wordTabAppearance:'connected';unitCorner:'folded'|'cutout';
   transitionDuration:number;transitionBlur:number;transitionPage:'staircase'|'lesson';
 };
 export const defaultScene: Scene = {
@@ -112,7 +112,7 @@ export function readScene(search: string): Scene {
     solarPreset:oneOf(p.get('solarPreset'),['A','B','C','custom'],'custom'),
     solarBorderColor:color('solarBorderColor','#FFA82E'),
     solarGlowColor:color('solarGlowColor','#FFA82E'),
-    wordTabAppearance:oneOf(p.get('wordTabAppearance'),['connected','slanted'],'connected'),
+    wordTabAppearance:'connected',
     unitCorner:oneOf(p.get('unitCorner'),['folded','cutout'],'folded'),
     transitionDuration:Math.round(num('transitionDuration',500,0,1200)),
     transitionBlur:num('transitionBlur',12,0,30),
