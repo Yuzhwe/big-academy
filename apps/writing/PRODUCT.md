@@ -631,3 +631,12 @@ The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribb
 - Level Goal stays the next-level label. A scored Level Goal formula is not part of this product.
 - Live-screen visual sign-off (spacing, type, focus rings, screenshots) remains with the designer. Behavior in this document does not wait on that sign-off.
 
+
+
+## R2 Design Review 04 · Stage A product boundary (2026-10-26)
+
+R04 Stage A defines **preview-only design candidates**. It does not change the authoritative eight Activity Screen tasks, graders, available WordGrid groups, Coach, retry/shown, progress persistence, P7 assessment, Page/Screen navigation, real Milestone state, or unlocks. The only intentional actual Writing UI change is the previously approved **completed LessonTopBar numeral fill to Writing brown `#B25415`**, including the full-index popover. That is presentation only.
+
+The following opt-in props are **not active in Writing high-fidelity pages yet**: WordGrid `tabAppearance=slanted` (live default `connected`), StairUnitCard `corner=cutout` (live default `folded`), UnitMilestone `previewAppearance=gold-shine` (live default `existing`), designer-library Solar Current outline, and BAPageTransition Cross Blur navigation. These require visual signoff and Stage B/C work. The real Staircase missing gold Completed Unit Milestone, Activity 1 new layout, Activity 7 new Tab styling/spacing and speaker brown button remain Stage B tasks. Cross Blur and Solar only enter the real page with an explicit Stage C signoff.
+
+Actual learner progress, evaluation and Back/Next must never be inferred or changed by rendering these previews. See `docs/REVIEW_04_STAGEA.md` for preview URLs and remaining testing.
