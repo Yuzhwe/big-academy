@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import './BAPageTransition.css';
 
 /** BA-WR-012 — Review 04 Stage A candidate only. Independently implemented
@@ -22,6 +22,11 @@ export function BAPageTransition({
 }: BAPageTransitionProps) {
   const [visibleKey, setVisibleKey] = useState(viewKey);
   const [phase, setPhase] = useState<'idle' | 'out' | 'in'>('idle');
+  const contentRef=useRef<HTMLDivElement>(null);
+  const latestMarkup=useRef('');
+  const latestHeight=useRef(0);
+  const [outgoing,setOutgoing]=useState('');
+  const [outgoingHeight,setOutgoingHeight]=useState(0);
   const [systemReduced, setSystemReduced] = useState(() =>
     typeof window !== 'undefined' && typeof window.matchMedia === 'function'
       ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false);
@@ -35,18 +40,31 @@ export function BAPageTransition({
   }, []);
 
   const immediate = reducedMotion || systemReduced || duration <= 0;
+  /* Freeze the previously painted view. The caller may mutate its product
+   * session synchronously when navigating, so mounting that old view again
+   * is not a valid outgoing visual. This snapshot is inert and aria-hidden. */
+  useLayoutEffect(()=>{
+    if(phase==='idle' && visibleKey===viewKey && contentRef.current){
+      latestMarkup.current=contentRef.current.innerHTML;
+      latestHeight.current=contentRef.current.getBoundingClientRect().height;
+    }
+  });
   useEffect(() => {
     if (immediate) {
       setVisibleKey(viewKey);
       setPhase('idle');
+      setOutgoing('');
       onSettled?.(viewKey);
       return;
     }
     if (viewKey === visibleKey) return;
     const half = Math.max(1, Math.floor(duration / 2));
+    setOutgoing(latestMarkup.current);
+    setOutgoingHeight(latestHeight.current);
     setPhase('out');
     const switchId = window.setTimeout(() => {
       setVisibleKey(viewKey);
+      setOutgoing('');
       setPhase('in');
     }, half);
     const doneId = window.setTimeout(() => {
@@ -68,7 +86,9 @@ export function BAPageTransition({
   } as CSSProperties;
   return <div className={['ba-page-transition', className].filter(Boolean).join(' ')}
     data-component="BA-WR-012" data-phase={phase}
-    aria-busy={phase !== 'idle'} style={style}>
-    <div className="ba-page-transition__content">{renderView(visibleKey)}</div>
+    aria-busy={phase !== 'idle'} style={{...style,minHeight:outgoing&&phase==='out'?outgoingHeight:undefined}}>
+    <div ref={contentRef} className="ba-page-transition__content">{renderView(visibleKey)}</div>
+    {phase==='out'&&outgoing?<div aria-hidden="true" className="ba-page-transition__snapshot"
+       dangerouslySetInnerHTML={{__html:outgoing}}/>:null}
   </div>;
 }
