@@ -2,27 +2,20 @@
   box-sizing: border-box;
   display: flex;
   justify-content: center;
-  width: max-content;
+  width: 100%;
   max-width: 100%;
   min-width: 0;
   color: var(--ba-color-content-primary, #133547);
   font-family: var(--ba-font-sans, sans-serif);
 }
 
-.ba-task-progress__rail {
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
-}
-
 .ba-task-progress__list {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  justify-content: center;
   gap: var(--ba-spacing-progress-items-gap, 4px);
   margin: 0;
-  padding: 2px;
+  padding: 2px 0;
   list-style: none;
 }
 
@@ -120,3 +113,42 @@
     animation: none;
   }
 }
+
+/* R2 Design Review 02: all visible markers, overflow button, and popover
+ * indicators share the exact same 36px circle + 44px minimum hit target. */
+.ba-task-progress__button { min-width:44px; width:44px; min-height:44px; height:44px; padding:4px; }
+.ba-task-progress__marker { flex:none; width:36px; height:36px; }
+.ba-task-progress__more .ba-task-progress__marker { font-size:22px; letter-spacing:0; line-height:0.7; font-weight:800; }
+.ba-task-progress__more[data-hovered] .ba-task-progress__marker { text-decoration:none; }
+.ba-task-progress__popover {
+  position:fixed;
+  z-index:1000;
+  box-sizing:border-box;
+  max-height:calc(100dvh - 24px);
+  overflow:hidden;
+  padding:40px;
+  border:var(--ba-border-weight, 0.5px) solid var(--ba-color-border-default, #d9cbb8);
+  border-radius:40px;
+  background:var(--ba-color-surface-canvas, #fff);
+  color:var(--ba-color-content-primary, #133547);
+  box-shadow:0 18px 55px rgba(19,53,71,.17);
+  font-family:var(--ba-font-body-en, "Jost", sans-serif);
+}
+.ba-task-progress__popover-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:22px; }
+.ba-task-progress__popover-header h2 { margin:0; font:800 21px/1.25 var(--ba-font-heading-en, "Dosis", sans-serif); }
+.ba-task-progress__close { flex:none; width:36px; height:36px; border:0; border-radius:50%; background:var(--ba-color-neutral-2, #f7f4ef); color:inherit; font:28px/1 var(--ba-font-body-en, sans-serif); cursor:pointer; }
+.ba-task-progress__close[data-focus-visible] { outline:2px solid var(--ba-color-focus); outline-offset:2px; }
+.ba-task-progress__popover-grid {
+  display:grid;
+  grid-template-columns:repeat(6,44px);
+  gap:4px;
+  justify-content:start;
+  align-content:start;
+  margin:0;
+  padding:2px 0 4px;
+  list-style:none;
+  max-height:calc(100dvh - 170px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.ba-task-progress__popover-grid > li { width:44px; height:44px; }
