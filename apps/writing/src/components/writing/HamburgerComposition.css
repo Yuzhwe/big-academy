@@ -24,3 +24,17 @@
 }
 .hamburger-composition .hamburger-layer__title { margin:0; }
 .hamburger-composition .hamburger-layer__support { max-width:100%;overflow-wrap:anywhere; }
+
+
+/* Review 04 preview: top bun is always the existing pedagogical green,
+ * with the exact existing asymmetrical Layer radii. No page-level override. */
+.hamburger-composition > .hamburger-layer[data-layer='top']:not([data-emphasis='true']) {
+  background:#e7f6df;
+  border-radius:18px 18px 10px 10px;
+}
+.hamburger-composition > .hamburger-layer[data-layer='fill'] {
+  background:#f3efe4; border-radius:8px;
+}
+.hamburger-composition > .hamburger-layer[data-layer='bottom'] {
+  background:#e7c48a; border-radius:10px 10px 18px 18px;
+}
