@@ -14,18 +14,18 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  transform: translate3d(calc(-1 * var(--m4-shift, 0px)),0,0);
+  transform: translate3d(var(--m4-negative-shift, 0px),0,0);
   will-change: transform;
 }
 .m4-cloud-canvas {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: calc(-1 * var(--m4-overscan, 0px));
-  width: calc(100% + 2 * var(--m4-overscan, 0px));
+  left: var(--m4-negative-overscan, 0px);
+  width: calc(100% + var(--m4-extra-width, 0px));
   height: 100%;
   display: block;
-  transform: translate3d(calc(-1 * var(--m4-shift, 0px)),0,0);
+  transform: translate3d(var(--m4-negative-shift, 0px),0,0);
   will-change: transform;
 }
 /* Exact legacy R2.12 CSS cloud silhouettes, colors and drift. */
