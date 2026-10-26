@@ -298,7 +298,7 @@ function LessonView({ session }: { session: CourseSession }) {
               </BAButton>
             ) : null}
             {activity.feedback ? (
-              <CoachMessage tone={activity.feedbackTone} role="status" data-testid="feedback">{activity.feedback}</CoachMessage>
+              <CoachMessage tone={activity.feedbackTone} role="status" data-testid="feedback" data-outcome={activity.feedbackTone}>{activity.feedback}</CoachMessage>
             ) : null}
           </div>
         }
