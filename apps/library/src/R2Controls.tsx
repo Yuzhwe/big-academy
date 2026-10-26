@@ -10,7 +10,7 @@ export function R2Controls({scene,update}:{scene:Scene;update:(patch:Partial<Sce
     {scene.component==='button'&&<>{field('buttonContent','内容组合',[['text','纯文字'],['icon','纯图标'],['leading','图标在前'],['trailing','图标在后']])}{field('layout','按钮宽度',[['hug','内容自适应'],['fixed','固定 240px'],['full','Fill Container']])}</>}
     {scene.component==='tabs'&&field('tabCount','标签数量',[['1','1 个'],['2','2 个'],['4','4 个'],['10','10 个']])}
     {scene.component==='choice'&&field('material','内容语言',[['en','英文学习材料'],['zh','中文排版样例']])}
-    {scene.component==='lesson'&&<>{field('composition','展示组合',[['card','独立卡片'],['terrace','现有阶梯底座']])}{scene.state==='currentStart'&&field('currentAction','当前课程进度',[['start','尚未开始 → Start'],['continue','已有进度 → Continue']])}</>}
+    {scene.component==='lesson'&&field('composition','展示组合',[['card','独立卡片'],['terrace','现有云朵底座']])}
     {scene.component==='words'&&<>
       <Select label="使用情景" value={scene.wordScenario} items={scenarios.map(([id,name])=>[id,`${id} · ${name}`])} onChange={v=>update(scenarioPatch(v as Scene['wordScenario']))}/>
       {field('wordContent','词卡内容',[['word','Word · 单词'],['punctuation','Punctuation · 标点'],['emoji','Emoji'],['sentence','Sentence · 句子'],['mixed','Mixed · 混合']])}
