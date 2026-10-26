@@ -59,12 +59,21 @@ export function LevelRewardFlag({
       context.clearRect(0,0,w,h+2*pad);
       if(ready){
         const one=1/deviceScale;
-        // Each slice spans one physical drawing pixel; tiny overlap avoids
-        // antialiasing seams, never re-scales or skews the source image.
-        for(let i=0;i<element.width;i++){
+        /* Contain the supplied image without changing its aspect ratio.
+         * Sample one device pixel worth of its source width per column. */
+        const scale=Math.min(w/image.naturalWidth,h/image.naturalHeight);
+        const fitW=image.naturalWidth*scale,fitH=image.naturalHeight*scale;
+        const left=(w-fitW)/2,top=pad+(h-fitH)/2;
+        const count=Math.ceil(fitW*deviceScale);
+        for(let i=0;i<count;i++){
           const x=i/deviceScale;
-          const offset=amplitude*Math.sin((x/w)*waves*Math.PI+(reduced?0:phaseRef.current));
-          context.drawImage(image,x,0,one,h,x,pad+offset,one+.35/deviceScale,h);
+          const width=Math.min(one,fitW-x);
+          if(width<=0)continue;
+          const offset=amplitude*Math.sin((x/fitW)*waves*Math.PI+(reduced?0:phaseRef.current));
+          const sourceX=(x/fitW)*image.naturalWidth;
+          const sourceWidth=(width/fitW)*image.naturalWidth;
+          context.drawImage(image,sourceX,0,sourceWidth,image.naturalHeight,
+            left+x,top+offset,width+.35/deviceScale,fitH);
         }
       }
       if(playing&&!reduced)frame=requestAnimationFrame(draw);
@@ -78,7 +87,7 @@ export function LevelRewardFlag({
     return()=>{disposed=true;cancelAnimationFrame(frame);media?.removeEventListener?.('change',wake);image.onload=null;image.onerror=null;previousTick.current=null;};
   },[amplitude,waves,period,playing,imageSrc,cloth,resetKey]);
   return <span className="course-goal__flag ba-flag" role="img" aria-label="Level reward flag">
-    <span className="ba-flag__fixed" aria-hidden="true" dangerouslySetInnerHTML={{__html:staticSvg}}/>
+    <span className="ba-flag__fixed" aria-hidden="true" style={{display:imageSrc?'none':undefined}} dangerouslySetInnerHTML={{__html:staticSvg}}/>
     <canvas ref={canvas} className="ba-flag__canvas" aria-hidden="true"/>
   </span>;
 }
