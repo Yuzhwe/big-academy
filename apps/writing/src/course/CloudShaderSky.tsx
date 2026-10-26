@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { FRAG, M4_CLEAR, M4_CLOUD_ONLY_FRAG, STAIRCASE_SKY, VERT } from './cloudShaderM4';
 import './CloudShaderSky.css';
 
@@ -197,13 +197,9 @@ export function CloudShaderSky({
   }, []);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
-  const previousPreset = useRef(preset);
-  if (previousPreset.current !== preset) {
-    previousPreset.current = preset;
-    // Replacing the GLSL on palette change must show lightweight until first GL draw.
-    // This ref guard prevents revealing a not-yet-painted transparent canvas.
-    if (ready) queueMicrotask(() => setReady(false));
-  }
+  // Switching to the full M4 sky from the transparent M4 clouds recompiles GLSL.
+  // Hide the newly mounted canvas until its first valid GL paint.
+  useLayoutEffect(() => { setReady(false); }, [preset]);
   const [reason, setReason] = useState('');
   const callbackRef = useRef(onRendererChange);
   callbackRef.current = onRendererChange;
