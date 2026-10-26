@@ -160,6 +160,8 @@
   position: absolute;
   z-index: -1;
   inset: 0;
+  width:auto;
+  height:auto;
   border-radius: 14px 0 0 0;
   background: color-mix(in srgb, var(--word-tab) 55%, white);
   clip-path: polygon(0 0, calc(100% - var(--slant)) 0, 100% 100%, 0 100%);
