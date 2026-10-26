@@ -59,10 +59,9 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
     {['hover','pressed','focus'].includes(state)&&<p>{zh?'悬停、按住或用方向键切换，观察真实交互。':'Hover, hold or use arrow keys to explore the actual interactions.'}</p>}</div>;
   }
   if (scene.component === 'lesson') {
-    const current=state==='currentStart'||state==='continue';
-    const cardState=(state==='default'?'start':state==='currentStart'?scene.currentAction:state) as StairLessonState;
+    const cardState=(state==='default'?'start':state) as StairLessonState;
     return <div className="preview-example preview-example--center"><div className={scene.composition==='terrace'?'lesson-composition':'lesson-alone'}>
-      <StairLessonCard lessonId="library-preview" number={1} minutes={10} locale={scene.locale} titleLines={3} current={current}
+      <StairLessonCard lessonId="library-preview" number={1} minutes={10} locale={scene.locale} titleLines={3} current={false}
         title={scene.sample === 'long' ? (zh ? '学习如何用完整的主题句介绍自己的观点和原因' : 'Writing a convincing topic sentence for a detailed opinion paragraph') : (zh ? '主题句' : 'Topic sentences')}
         state={cardState} onEnter={() => setNotice(zh ? '收到课程操作。组件示例不会进入学习记录。' : 'Lesson action received. This example does not write learner progress.')} />
       {scene.composition==='terrace'&&<LandscapeTerrace/>}</div>{output}</div>;
