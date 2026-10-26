@@ -361,7 +361,6 @@ export class CourseSession {
   private returnTo: { unitId: string; number: number } | null = null;
   private shakeCard: string | null = null;
   /** Designer query only. Never copied into the learner record. */
-  private previewSeed = false;
   caret = { start: Number.MAX_SAFE_INTEGER, end: Number.MAX_SAFE_INTEGER };
   private pasted = false;
   private saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -382,7 +381,6 @@ export class CourseSession {
     if (!loaded.fromStorage && new URLSearchParams(options.search ?? '').get('locale') === 'zh') {
       this.state.zh = true;
     }
-    this.previewSeed = new URLSearchParams(options.search ?? '').get('demo') === 'preview-seed';
     this.applySkillQuery(options.search ?? '');
     if (!this.canOpen(this.state.screen)) this.state.screen = this.firstOpen();
     this.state.page = this.pageIndex(this.screens[this.state.screen]?.screen.page ?? '');
@@ -612,7 +610,6 @@ export class CourseSession {
         : live
           ? this.lessonStates(unit)
           : unit.lessons.map(() => 'view' as const);
-      const doneCount = states.filter((state) => state === 'done' || state === 'skipped').length;
       nodes.push({
         kind: 'unit',
         id: unit.id,
@@ -621,13 +618,9 @@ export class CourseSession {
           index: unitIndex + 1,
           typeLabel: this.unitTypeLabel(unit),
           title: this.shortTitle(unit.title),
-          meta: live
-            ? this.zh
-              ? `${doneCount} / ${unit.lessons.length} 课 · 约 ${unit.min ?? ''} 分钟`
-              : `${doneCount} of ${unit.lessons.length} lessons · about ${unit.min ?? ''} min`
-            : this.zh
-              ? `${unit.lessons.length} 课 · 约 ${unit.min ?? ''} 分钟`
-              : `${unit.lessons.length} lessons · about ${unit.min ?? ''} min`,
+          meta: this.zh
+            ? `${unit.lessons.length} 课${unit.min == null ? '' : ` · ${unit.min} 分钟`}`
+            : `${unit.lessons.length} lessons${unit.min == null ? '' : ` · ${unit.min} mins`}`,
           goals: unit.playable ? (this.config.unit_goals ?? []).map((goal) => this.text(goal)) : [],
         },
       });
@@ -850,7 +843,9 @@ export class CourseSession {
   }
 
   private showsPreviewSeed(levelId: string): boolean {
-    return this.previewSeed && (levelId === 'L0' || levelId === 'L1');
+    // High-fidelity path preview: L0/L1 are visually complete by default.
+    // This does not mutate saved learner grades, mastered skills or L2 gates.
+    return levelId === 'L0' || levelId === 'L1';
   }
 
   topBar(): TopBarModel | null {
@@ -1041,7 +1036,7 @@ export class CourseSession {
     const task = this.task(screen.task);
     const key = this.taskKey(screen);
     const answer = this.state.tasks[key];
-    if (task.type === 'pick') return (answer?.picked?.length ?? 0) === (task.multi ? (task.answers?.length ?? 1) : 1);
+    if (task.type === 'pick') return (answer?.picked?.length ?? 0) >= 1; // readiness is not correctness
     if (task.type === 'tapword' && task.need !== 'all') return answer?.sel != null;
     if (task.type === 'build') return false; // automatically checked as word cards complete the sentence
     if (task.frameFill) {
@@ -1243,7 +1238,9 @@ export class CourseSession {
       this.emit();
       return;
     }
-    this.finish(task, this.taskKey(screen), 'shown');
+    // Hint controls never submit, grade or reveal an answer.
+    // Existing formal wrong-attempt rules remain responsible for shown.
+    return;
   }
 
   showAnother(): void {
@@ -2443,7 +2440,7 @@ export class CourseSession {
     const level = taskState.hintLv ?? 0;
     if (level === 0) return 'hint';
     if (level < hints.length) return 'another';
-    return 'reveal';
+    return null;
   }
 
   private skipOffer(step: StepTag, screen: AlexScreen): SkipOffer | null {
