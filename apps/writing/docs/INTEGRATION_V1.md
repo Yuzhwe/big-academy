@@ -93,3 +93,16 @@ This follow-up corrects four designer-confirmed discrepancies in the integration
 4. WordGrid cards display only authored learning content. Selection/evaluation/disabled meanings remain in accessible labels and data attributes, and the existing graders/hints/shown-answer behavior is untouched.
 
 Stories, component contract and targeted regression assertions were updated. **The original 83 Vitest / 24 Playwright pass counts predate these new commits; do not treat them as post-fix test results.** Re-run `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build` and `npm run test:integration` in the authenticated local checkout. Visual sign-off is still pending, and PR #52 remains a Draft.
+
+
+## LessonTopBar correction · R2 Design Review 01 (2026-10-26)
+
+A focused review correction updates the shared `BA-UI-006` marker and `BA-WR-001` layout:
+- 50×50 icon-only Back and two-line clamped lesson name that uses the available safe left-hand width;
+- indicator rail centered against the full header; on narrow **component containers** it occupies its own centered row;
+- numeric-only progress markers with no attached check/lock icons, independent source status and selected index;
+- Done = dark fill with white numeral; Done+Selected retains the fill and adds outer ring;
+- Locked = disabled colors; Skipped = inner dashed border; Skipped+Selected = dashed inner border and outer ring.
+- No scoring, unlocking, navigation entitlement or persistence logic changed.
+
+`DESIGN.md`, canonical `apps/writing/PRODUCT.md` sections 13–15, the component registry, preview stories and targeted unit tests were synchronized. This is code and documentation delivery, **not new visual approval**. Previous 83 unit/24 browser passing figures **precede** this follow-up; no current-chat post-change test run or rendered QA has occurred. Refresh the local development checkout and rerun all checks. For the fixed localhost sites, remember their built snapshots do not auto-update from Git; rebuild and run `npm run local-sites:install`.
