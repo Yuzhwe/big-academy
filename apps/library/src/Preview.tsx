@@ -106,7 +106,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
     };
     return <div className="preview-example preview-example--center">
       <div data-ba-product="writing" style={{ width: 320, maxWidth: '100%', background:'#a9e3f3', padding:20, boxSizing:'border-box', borderRadius:16 }}>
-        <StairUnitCard locale={scene.locale} unit={unit} corner={state==='cutout'||scene.unitCorner==='cutout'?'cutout':'folded'} />
+        <StairUnitCard locale={scene.locale} unit={unit} corner={scene.unitCorner} />
       </div>
     </div>;
   }
