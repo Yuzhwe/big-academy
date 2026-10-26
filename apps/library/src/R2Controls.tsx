@@ -58,7 +58,7 @@ export function R2Controls({scene,update}:{scene:Scene;update:(patch:Partial<Sce
         <p>沿用 R2.12 旗帜与布面 SVG，参数只作用于组件库。</p>
       </section>}
     {scene.component==='words'&&<>
-      {field('wordTabAppearance','Tab 视觉方案',[['connected','原有反向圆角（实际页面）'],['slanted','Slanted · 斜切层叠候选']])}
+      <p className="review04-caption">Rounded Connected Tabs · 左侧局部底色桥接（Slanted 已废弃）</p>
       <Select label="使用情景" value={scene.wordScenario} items={scenarios.map(([id,name])=>[id,`${id} · ${name}`])} onChange={v=>update(scenarioPatch(v as Scene['wordScenario']))}/>
       {field('wordContent','词卡内容',[['word','Word · 单词'],['punctuation','Punctuation · 标点'],['emoji','Emoji'],['sentence','Sentence · 句子'],['mixed','Mixed · 混合']])}
       {field('wordCount','词组数量',[['1','1 组'],['4','4 组'],['10','10 组']])}{field('wordTabs','标签栏',[['auto','自动'],['show','显示（包括单 Tab）'],['hide','隐藏（显示当前组）']])}
