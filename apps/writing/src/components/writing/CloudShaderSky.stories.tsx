@@ -34,3 +34,5 @@ export const CurrentPalette: Story = { args: { mode:'shader', preset:'staircase'
 export const Lightweight: Story = { args: { mode:'lightweight', preset:'staircase' } };
 export const ReducedMotion: Story = { args: { reducedMotion:true, mode:'auto' } };
 export const Scrolled: Story = { args: { cameraX:800, mode:'shader' } };
+
+export const WebGLUnavailable: Story = { args: { mode:'shader', simulateWebGLUnavailable:true } };
