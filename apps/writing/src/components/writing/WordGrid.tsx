@@ -53,7 +53,6 @@ export function WordGrid({ groups, activeGroup, presentation='docked', tabs='aut
         onMouseDown={event=>event.preventDefault()}
         onPress={()=>{ if(onWordAction) onWordAction(word,current.id); else onInsert?.(word.text); }}>
         <span className="word-grid__text">{word.text}</span>
-        {extended && status && <span className="word-grid__state-label" lang={locale==='zh'?'zh-CN':'en'} aria-hidden="true">{status}</span>}
       </Button>;
     }) : <p className="word-grid__empty">{locale==='zh'?'这里还没有词。':'Nothing here yet.'}</p>}
   </div>;
