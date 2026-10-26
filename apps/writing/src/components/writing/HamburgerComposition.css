@@ -1,0 +1,26 @@
+/* Only the composition owns width and vertical centering; the existing
+ * HamburgerLayer remains unchanged wherever it is used by Writing. */
+.hamburger-composition {
+  display:grid;
+  justify-items:center;
+  align-content:center;
+  gap:8px;
+  width:100%;
+  min-width:0;
+}
+.hamburger-composition > .hamburger-layer {
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  width:100%;
+  min-height:100px;
+  padding:14px 18px;
+}
+.hamburger-composition > .hamburger-layer:is([data-layer='top'],[data-layer='bottom']) {
+  width:88%;
+}
+.hamburger-composition .hamburger-layer__title { margin:0; }
+.hamburger-composition .hamburger-layer__support { max-width:100%;overflow-wrap:anywhere; }
