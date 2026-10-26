@@ -25,14 +25,23 @@ jobs:
         run: npm run check:docs
       - name: TypeScript workspaces
         run: npm run typecheck
-      - name: Unit regressions
+      - name: Full unit baseline (continue collecting evidence on failures)
+        id: full_unit
+        continue-on-error: true
         run: npm test
+      - name: Cloud M4 and registry regression (required)
+        run: npx vitest run apps/writing/src/course/CloudShaderSky.test.tsx apps/writing/src/contracts/registry.test.tsx
       - name: Production and Storybook build
         run: npm run build
       - name: Chromium for Playwright
         run: npx playwright install --with-deps chromium
       - name: Browser integration regression
         run: npm run test:integration
+      - name: Preserve full-suite failure as final QA gate
+        if: always() && steps.full_unit.outcome == 'failure'
+        run: |
+          echo "::error::Full unit suite has failures; do not mark overall QA complete."
+          exit 1
       - name: Upload real browser QA evidence and videos
         if: always()
         uses: actions/upload-artifact@v4
