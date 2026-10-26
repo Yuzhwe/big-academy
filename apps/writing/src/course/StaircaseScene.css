@@ -109,7 +109,6 @@
   padding: 20px;
 }
 .staircase-rail .stair-lesson-card__body { flex: 1; min-width: 0; }
-.staircase-rail .stair-lesson-card__number { align-self: flex-start; }
 .staircase-rail .stair-lesson-card__action { align-self: stretch; }
 .staircase-rail .course-unit h2 { overflow-wrap: anywhere; }
 .staircase-rail :is(.course-intro, .course-unit, .course-goal, .unit-milestone, .stair-lesson-card) { position: relative; z-index: 2; }
@@ -216,7 +215,6 @@
 .r2-sun { position:absolute; right:10%; top:13%; width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,var(--ba-path-sun-fill),transparent 71%); pointer-events:none; }
 .path-controls { position:absolute; z-index:5; left:50%; bottom:var(--ba-space-6,24px); transform:translateX(-50%); display:flex; gap:var(--ba-space-6,24px); }
 .path-controls .ba-button { width:var(--ba-path-arrow-size); height:var(--ba-path-arrow-size); }
-.staircase-viewport .stair-lesson-card[data-current='true'] { box-shadow:var(--ba-lesson-current-shadow); border-color:var(--ba-color-action-primary); }
 .staircase-viewport .unit-milestone { background:transparent; border:0; }
 .staircase-viewport .course-goal { background:transparent; border:0; text-align:center; }
 .course-goal__flag { display:block; width:190px; height:158px; margin:auto; }
