@@ -218,6 +218,7 @@
   --ba-activity-indicator-number-weight: 800;
   --ba-activity-indicator-border: var(--ba-color-content-primary);
   --ba-activity-indicator-selected-bg: var(--ba-color-content-primary);
+  --ba-activity-indicator-done-bg: var(--ba-color-action-primary); /* [A] Review 03 Writing brown in Writing shell */
   --ba-activity-indicator-selected-text: #ffffff;
   --ba-activity-indicator-incomplete-bg: var(--ba-color-surface-canvas);
   --ba-activity-indicator-locked-bg: var(--ba-color-neutral-6);
@@ -286,11 +287,11 @@
   --ba-writing-grid-tab-height: 60px; /* [E] */
   --ba-writing-coach-message-radius: 12px; /* [E] */
   --ba-writing-coach-message-padding: 12px; /* [E] */
-  --ba-writing-coach-surface-orientation: var(--ba-color-warm-2); /* [E] */
-  --ba-writing-coach-surface-hint: var(--ba-color-warning-1); /* [E] */
+  --ba-writing-coach-surface-orientation: var(--ba-color-neutral-1); /* [A] Review 03 */
+  --ba-writing-coach-surface-hint: var(--ba-color-neutral-1); /* [A] Review 03 */
   --ba-writing-coach-surface-correct: var(--ba-color-success-1); /* [E] */
-  --ba-writing-coach-surface-incorrect: var(--ba-color-danger-1); /* [E] */
-  --ba-writing-coach-surface-revealed: var(--ba-color-info-1); /* [E] */
+  --ba-writing-coach-surface-incorrect: var(--ba-color-neutral-2); /* [A] Review 03 */
+  --ba-writing-coach-surface-revealed: var(--ba-color-neutral-1); /* [A] Review 03; presented answers are not earned correctness */
   --ba-writing-lesson-title-max-lines: 2; /* [A] */
   --ba-writing-lesson-title-line-height: 30px; /* [E] */
   --ba-writing-lesson-title-slot-height: 60px; /* [E] */
@@ -302,6 +303,7 @@
   --ba-writing-unit-fold-face-light: #fffdf9; /* [E] */
   --ba-writing-unit-fold-face-dark: #e7d6c9; /* [E] */
   --ba-writing-p2-better-surface: #eaf7ef; /* [E] */
+  --ba-writing-editor-ruled-line: #eaedeb; /* [E] subtle Activity 7 only */
   --ba-writing-p2-better-border: #12ad5c; /* [E] */
   --ba-writing-p2-weak-border: #d7c7bd; /* [E] */
   --ba-writing-hamburger-title-size: 20px; /* [E] */
