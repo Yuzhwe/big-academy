@@ -315,7 +315,7 @@ function LessonView({ session }: { session: CourseSession }) {
               <BAButton size={70} variant="secondary" locale={session.locale} onPress={() => session.leaveLesson('path')}>
                 {session.zh ? '回到我的学习路径' : 'Back to my path'}
               </BAButton>
-              <BAButton size={70} variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+              <BAButton size={70} variant="primary" locale={session.locale} disabled={footer.primaryDisabled} onPress={() => session.pressPrimary()}>
                 <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
               </BAButton>
             </>
@@ -324,7 +324,7 @@ function LessonView({ session }: { session: CourseSession }) {
               <BAButton size={70} variant="secondary" locale={session.locale} disabled={footer.backDisabled} onPress={() => session.pressBack()}>
                 {footer.backLabel}
               </BAButton>
-              <BAButton size={70} variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+              <BAButton size={70} variant="primary" locale={session.locale} disabled={footer.primaryDisabled} onPress={() => session.pressPrimary()}>
                 <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
               </BAButton>
             </>
@@ -364,7 +364,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
     !!activity.pick?.locked ||
     !!activity.pick?.options.some((option) => option.state === 'correct' || option.state === 'correctUnselected' || option.state === 'dim');
   return (
-    <article className="course-activity" data-template={activity.template} data-kind={activity.kind}>
+    <article className="course-activity" data-template={activity.template} data-kind={activity.kind} data-writing={activity.canvas ? 'true' : undefined}>
       {activity.check?.phase !== 'results' ? <BAButton className="course-listen" iconOnly size={50} variant="ghost" aria-label={speaking ? (session.zh ? '停止朗读' : 'Stop listening') : (session.zh ? '朗读题目' : 'Listen to the prompt')} onPress={listen}><BAIcon name="book" /></BAButton> : null}
       {activity.check && activity.check.phase !== 'results' ? (
         <div className="course-check">
