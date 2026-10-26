@@ -11,7 +11,7 @@ async function start(p:Page){await p.goto('/');await p.locator('[data-lesson-foc
 async function forward(p:Page){await primary(p).click();}
 async function resume(p:Page){await p.reload();await p.locator('[data-lesson-focus="G2-O:1"]').click();}
 async function practices(p:Page,wrong=false){
- await forward(p);await forward(p); // Learn, then unanswered Check guard
+ await forward(p);await expect(primary(p)).toBeDisabled(); // Learn, then unanswered Check guard
  expect(Object.values((await state(p)).tasks).some((t:any)=>t.tries)).toBe(false);
  await options(p).nth(wrong?0:1).click();await forward(p);
  if(wrong){
@@ -21,7 +21,7 @@ async function practices(p:Page,wrong=false){
  }
  await shot(p,'screen-02-'+(wrong?'shown':'correct'));await forward(p);await p.getByRole('button',{name:wrong?'class':'believe',exact:true}).click();await forward(p);
  if(wrong){await p.getByRole('button',{name:'fish.',exact:true}).click();await forward(p);await shot(p,'tapword-shown');}
- await shot(p,'screen-03-'+(wrong?'shown':'correct'));await forward(p);for(const i of (wrong?[1]:[0,2,4]))await options(p).nth(i).click();await forward(p);
+ await shot(p,'screen-03-'+(wrong?'shown':'correct'));await forward(p);for(const i of (wrong?[1,2,4]:[0,2,4]))await options(p).nth(i).click();await forward(p);
  if(wrong){await options(p).nth(3).click();await forward(p);await shot(p,'multi-shown');}
  await shot(p,'screen-04-'+(wrong?'shown':'correct'));await forward(p);
  if(wrong){
@@ -62,8 +62,11 @@ test('wrong twice, shown, move-on, failed sets, optional Review retry',async({pa
  await page.getByRole('button',{name:'Try a new set',exact:true}).click();expect((await state(page)).checks['L2-04.check'].attempt).toBe(2);expect((await state(page)).done['L2-04.check']).toBe(true);
 });
 test('P7 blank warning, question navigation and recovery',async({page})=>{
- await start(page);await practices(page);await options(page).nth(1).click();await forward(page);await page.getByRole('button',{name:'Question 1',exact:true}).click();await expect(options(page).nth(1)).toBeChecked();await page.getByRole('button',{name:'Question 4',exact:true}).click();await forward(page);
- await expect(page.getByTestId('feedback')).toContainText('2, 3, 4');expect((await state(page)).checks['L2-04.check'].history).toHaveLength(0);await resume(page);await expect(primary(page)).toContainText('Hand in anyway');await forward(page);expect((await state(page)).checks['L2-04.check'].history).toHaveLength(1);
+ await start(page);await practices(page);await options(page).nth(1).click();await forward(page);await page.getByRole('button',{name:'Question 1',exact:true}).click();await expect(options(page).nth(1)).toBeChecked();await page.getByRole('button',{name:'Question 4',exact:true}).click();
+ await expect(primary(page)).toBeDisabled();
+ await page.getByTestId('writing-canvas').fill('pets');
+ await forward(page);
+ await expect(page.getByTestId('feedback')).toContainText('2, 3');expect((await state(page)).checks['L2-04.check'].history).toHaveLength(0);await resume(page);await expect(primary(page)).toContainText('Hand in anyway');await forward(page);expect((await state(page)).checks['L2-04.check'].history).toHaveLength(1);
 });
 test('Chinese path, keyboard, touch, reduced motion and 200 percent layout',async({page,browser})=>{
  for(const width of [1440,1024,834,390]){
