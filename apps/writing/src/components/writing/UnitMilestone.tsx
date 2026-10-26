@@ -3,6 +3,9 @@ import type { BALocale } from '@big-academy/design-system';
 import './UnitMilestone.css';
 import badgeSeal from '../../assets/r2.12/badge-seal.webp';
 import badgeCheck from '../../assets/r2.12/badge-check.webp';
+/* Review 04 R2: optimized PNG derivatives of designer-uploaded 1024px originals. */
+import goldCheck from '../../assets/review04/writing_milestone_1.png';
+import goldSeal from '../../assets/review04/writing_milestone_2.png';
 
 export interface UnitMilestoneProps {
   unitId: string;
@@ -64,7 +67,7 @@ export function UnitMilestone({
           if (completed) onCelebrate?.(unitId);
         }}
       >
-        <img src={badgeSeal} alt="" draggable={false} /><img src={badgeCheck} alt="" draggable={false} />
+        <img src={previewAppearance==='gold-shine'?goldSeal:badgeSeal} alt="" draggable={false} /><img src={previewAppearance==='gold-shine'?goldCheck:badgeCheck} alt="" draggable={false} />
         <span className="course-sr">{completed ? (zh ? '再看一次' : 'Play again') : zh ? '还没到' : 'Not yet'}</span>
       </Button>
     </div>
