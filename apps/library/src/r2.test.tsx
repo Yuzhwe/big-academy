@@ -61,3 +61,27 @@ it('uses real pointer and keyboard states rather than painted hover/press fixtur
   await user.tab();await user.tab();await user.keyboard('{Enter}');expect(onPress).toHaveBeenCalledTimes(2);
   await user.pointer([{keys:'[TouchA>]',target:button},{keys:'[/TouchA]',target:button}]);expect(onPress).toHaveBeenCalledTimes(3);
 });
+
+it('unifies fresh and resumed lesson visuals and CTA without changing the underlying action',async()=>{
+  const onEnter=vi.fn(); const user=userEvent.setup();
+  const props={lessonId:'G2-O:1',number:1,title:'Topic sentences',onEnter};
+  const {rerender,container}=render(<StairLessonCard {...props} state="start" locale="en"/>);
+  expect(container.querySelector('.stair-lesson-card')).toHaveAttribute('data-visual-state','enterable');
+  await user.click(screen.getByRole('button',{name:'Enter'}));
+  rerender(<StairLessonCard {...props} state="continue" locale="en" current/>);
+  expect(container.querySelector('.stair-lesson-card')).toHaveAttribute('data-visual-state','enterable');
+  expect(container.querySelector('.stair-lesson-card__current-dot')).toBeNull();
+  await user.click(screen.getByRole('button',{name:'Enter'}));
+  expect(onEnter).toHaveBeenCalledTimes(2);
+  rerender(<StairLessonCard {...props} state="start" locale="zh"/>);
+  expect(screen.getByRole('button',{name:'进入'})).toBeVisible();
+});
+it('gives completed and skipped the same visual role, with no visible Skipped label',()=>{
+  const props={lessonId:'G2-O:1',number:1,title:'Topic sentences',locale:'en' as const};
+  const {rerender,container}=render(<StairLessonCard {...props} state="review"/>);
+  expect(container.querySelector('.stair-lesson-card')).toHaveAttribute('data-visual-state','completed');
+  rerender(<StairLessonCard {...props} state="skipped"/>);
+  expect(container.querySelector('.stair-lesson-card')).toHaveAttribute('data-visual-state','completed');
+  expect(screen.queryByText('Mastered · skipped')).toBeNull();
+  expect(screen.getByRole('button',{name:'Review'})).toBeEnabled();
+});
