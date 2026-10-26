@@ -25,7 +25,7 @@ export type CloudShaderSkyProps = {
   className?: string;
 };
 
-type Params = Required<Pick<CloudShaderSkyProps, 'skyTop' | 'skyBottom' | 'cloudColor' | 'cloudCount' | 'driftSpeed' | 'paused' | 'reducedMotion'> & { cloudOnly: boolean>>;
+type Params = Required<Pick<CloudShaderSkyProps, 'skyTop' | 'skyBottom' | 'cloudColor' | 'cloudCount' | 'driftSpeed' | 'paused' | 'reducedMotion'>> & { cloudOnly: boolean };
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, Number.isFinite(n) ? n : min));
 /** Scroll displacement is absolute, not incremental: never double-apply movement. */
 export function cloudParallax(cameraX: number, strength: number, travel: number) {
