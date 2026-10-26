@@ -28,7 +28,7 @@
 
 /* Review 04 preview: top bun is always the existing pedagogical green,
  * with the exact existing asymmetrical Layer radii. No page-level override. */
-.hamburger-composition > .hamburger-layer[data-layer='top']:not([data-emphasis='true']) {
+.hamburger-composition > .hamburger-layer[data-layer='top'] {
   background:#e7f6df;
   border-radius:28px 28px 10px 10px;
 }
