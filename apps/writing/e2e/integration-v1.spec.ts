@@ -135,3 +135,76 @@ test('R2 Review 02 overflow uses current-first 36px markers and fixed left-align
  await expect(pop).toHaveCount(0);
  await expect(overflow).toBeFocused();
 });
+
+
+test('Review 03 Coach messages, Speaker placement and non-grading hints',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await start(page);
+ const head=page.locator('.course-activity__heading').first();
+ await expect(head.locator('.course-listen svg[data-icon-name="speaker"]')).toBeVisible();
+ const headingBox=await head.locator('.course-title').boundingBox();
+ const speakerBox=await head.locator('.course-listen').boundingBox();
+ expect(speakerBox!.x).toBeGreaterThanOrEqual(headingBox!.x+headingBox!.width);
+ await expect(page.getByTestId('better-panel').locator('.ba-icon')).toHaveCount(0);
+ await expect(page.locator('.course-examples__label').first()).toHaveCSS('font-family',/Dosis/);
+ await expect(page.getByTestId('coach').locator('.lesson-workspace__message').first()).toBeVisible();
+ await forward(page); // P3 single pick
+ const hintButton=page.getByRole('button',{name:'Need a hint?'});
+ await expect(hintButton).toBeEnabled();
+ await hintButton.click();
+ await page.getByRole('button',{name:'Another hint'}).click();
+ await expect(page.getByTestId('hint')).toHaveCount(2);
+ await expect(page.getByRole('button',{name:'Show me the answer'})).toHaveCount(0);
+ await expect(primary(page)).toBeDisabled();
+ await expect(page.getByTestId('feedback')).toHaveCount(0);
+ await options(page).nth(1).click();await forward(page);
+ const greenFeedback=page.getByTestId('feedback');
+ await expect(greenFeedback).toHaveAttribute('data-tone','correct');
+ await expect(greenFeedback).toHaveCSS('background-color','rgb(240, 251, 244)');
+ await forward(page);
+ await page.getByRole('button',{name:'believe',exact:true}).click();await forward(page);
+ const correctWord=page.locator('.course-word[data-correct="true"]').first();
+ await expect(correctWord).toHaveCSS('background-color','rgb(20, 174, 92)');
+ await expect(correctWord.locator('svg')).toHaveCount(0);
+ await forward(page); // P3 multi
+ await expect(primary(page)).toBeDisabled();
+ await options(page).nth(1).click();
+ await expect(primary(page)).toBeEnabled();
+ await forward(page);
+ await expect(page.getByTestId('feedback')).toHaveAttribute('data-tone','wrong');
+ await expect(page.getByTestId('feedback')).toHaveCSS('background-color','rgb(245, 245, 245)');
+});
+
+test('Review 03 default L0/L1 completion fixtures are independent from real L2 records',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto('/');
+ const initial=await state(page);
+ for(const levelId of ['L0','L1']){
+  await page.locator('.ba-tabs__option').filter({hasText:levelId}).click();
+  const cards=page.locator('[data-node-kind="lesson"] .stair-lesson-card');
+  expect(await cards.count()).toBeGreaterThan(0);
+  expect(await cards.filter({has:page.locator('[data-visual-state="enterable"]')}).count()).toBe(0);
+  const kinds=await cards.evaluateAll(elements=>elements.map(e=>e.getAttribute('data-visual-state')));
+  expect(kinds.every(kind=>kind==='completed')).toBe(true);
+  const milestones=page.locator('[data-node-kind="milestone"] [data-testid="milestone"]');
+  expect(await milestones.count()).toBeGreaterThan(0);
+  expect(await milestones.evaluateAll(els=>els.every(el=>el.getAttribute('data-done')==='1'))).toBe(true);
+  const pill=page.locator('.course-unit__meta').first();
+  await expect(pill).toContainText(/lessons/);
+  await expect(pill).not.toContainText(/about| of /);
+ }
+ await page.locator('.ba-tabs__option').filter({hasText:'L2'}).click();
+ expect((await state(page)).done).toEqual(initial.done);
+ expect((await state(page)).tasks).toEqual(initial.tasks);
+ await expect(page.locator('[data-lesson-id="G2-O:1"]')).toHaveAttribute('data-visual-state','enterable');
+});
+
+test('Review 03 P5 lined editor only, without redundant tip',async({page})=>{
+ await start(page);await practices(page);
+ await page.getByTestId('lesson-footer').getByRole('button',{name:'Back',exact:true}).click();
+ const editor=page.getByTestId('writing-canvas');
+ await expect(editor).toHaveCSS('resize','none');
+ await expect(editor).toHaveCSS('background-image',/repeating-linear-gradient/);
+ await expect(page.getByText('Write each sentence on a new line.')).toHaveCount(0);
+ await expect(page.locator('.course-activity[data-kind="apply"] .word-grid')).toBeVisible();
+});
