@@ -108,8 +108,12 @@
   font-size: 28px;
 }
 
-.course-app:not([lang='zh-CN']) .course-unit h2 {
-  line-height: 1.15;
+/* Unit and Lesson share the same typography scale, not separate hardcoded sizes. */
+.course-unit h2 {
+  font-family: var(--ba-font-heading-en, "Dosis", sans-serif);
+  font-size: var(--ba-writing-lesson-card-title-size, 24px);
+  font-weight: 800;
+  line-height: var(--ba-writing-lesson-title-line-height, 30px);
 }
 
 /* BA-WR-007 folded sheet. Seam is the F×F diagonal. Decorative only. */
@@ -121,6 +125,7 @@
   border-color: var(--ba-writing-unit-paper-border, #dcc3ab);
   border-radius: var(--unit-radius);
   padding-right: var(--unit-fold);
+  isolation: isolate;
 }
 .course-unit__fold {
   position: absolute;
@@ -128,14 +133,16 @@
   right: calc(var(--ba-border-weight, 0.5px) * -1);
   width: calc(var(--unit-fold) + var(--ba-border-weight, 0.5px));
   height: calc(var(--unit-fold) + var(--ba-border-weight, 0.5px));
-  overflow: visible;
+  overflow: hidden;
+  border-top-right-radius: var(--unit-radius);
   pointer-events: none;
 }
 .course-unit__fold-under {
   fill: var(--ba-writing-unit-fold-under, #f8f1ea);
 }
 .course-unit__fold-flap {
-  filter: drop-shadow(var(--ba-writing-unit-fold-shadow, 0 2px 4px rgba(71, 44, 34, 0.12)));
+  /* Local fold-contact shadow only: do not turn the upper-right paper triangle into a floating sticker. */
+  filter: drop-shadow(0 1px 1px rgba(71, 44, 34, .10));
 }
 .course-unit__meta,
 .course-unit__goal {
