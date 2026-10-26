@@ -112,42 +112,32 @@
 /* Preserve legacy approved used-word presentation in existing Writing callers. */
 .word-grid__card[data-used='true']:not([data-extended]) { background:var(--ba-paper); color:var(--ba-brand-dark); box-shadow:none; opacity:.45; cursor:default; }
 
-/* The selected tab joins the bank. Reverse curves close both tab shoulders. */
-.word-grid__tabs { margin:0; gap:var(--ba-wordgrid-tab-gap); overflow:visible; padding-inline:0; }
-.word-grid__tab { border-radius:var(--ba-wordgrid-tab-radius) var(--ba-wordgrid-tab-radius) 0 0; }
-.word-grid__tab[data-selected] { isolation:isolate; margin-bottom:0; }
-.word-grid__tab[data-selected]::before,.word-grid__tab[data-selected]::after {
-  content:''; position:absolute; bottom:0; width:var(--ba-wordgrid-tab-radius); height:var(--ba-wordgrid-tab-radius); pointer-events:none;
+/* R04 definitive WordGrid: the PEACH BANK itself always owns four
+ * outward 16px corners. Tabs do not alter its radii. No reversed/concave
+ * gradients, fake seam wedges, or first-tab background patches. */
+.word-grid__tabs {
+  margin:0 8px;
+  gap:var(--ba-wordgrid-tab-gap,6px);
+  overflow-x:auto;
+  padding-inline:0;
+  position:relative;
+  z-index:1;
 }
-.word-grid__tab[data-selected]::before { right:100%; background:radial-gradient(circle at 0 0,transparent 70%,var(--word-tab) 72%); }
-.word-grid__tab[data-selected]::after { left:100%; background:radial-gradient(circle at 100% 0,transparent 70%,var(--word-tab) 72%); }
-.word-grid__tab:first-child[data-selected]::before { display:none; }
-.word-grid__panel { border-radius:var(--ba-wordgrid-radius); }
-.word-grid[data-first-active='true'] .word-grid__panel { border-start-start-radius:0; }
-@media(max-width:600px) { .word-grid__tabs { overflow-x:auto; } .word-grid__tab { padding-inline:var(--ba-space-2); } }
-
-
-/* Review 04 R2: preserve the approved rounded connected tabs; patch only
- * the small upper-left bank seam when the FIRST tab is not selected.
- * This layer lives behind the tab surface, has no layout footprint and uses
- * the exact unselected-tab tint rather than the white page background. */
-.word-grid__tabs { position:relative; z-index:2; }
-.word-grid__panel { position:relative; z-index:1; }
-.word-grid[data-first-active='false'] .word-grid__tabs::before {
-  content:'';
-  position:absolute;
-  left:0;
-  bottom:calc(-1 * var(--ba-wordgrid-tab-radius,14px));
-  width:var(--ba-wordgrid-tab-radius,14px);
-  height:var(--ba-wordgrid-tab-radius,14px);
-  background:color-mix(in srgb,var(--word-tab) 55%,white);
-  border-bottom-right-radius:var(--ba-wordgrid-tab-radius,14px);
-  pointer-events:none;
-  z-index:-1;
+.word-grid__tab {
+  border-radius:var(--ba-wordgrid-tab-radius,14px) var(--ba-wordgrid-tab-radius,14px) 0 0;
+  transition:background-color 180ms ease;
 }
-.word-grid[data-first-active='true'] .word-grid__tabs::before { display:none; }
-.word-grid__tab { transition:background-color 180ms ease; }
-.word-grid__tab[data-selected] { z-index:3; }
-@media (prefers-reduced-motion:reduce) {
-  .word-grid__tab { transition:none; }
+.word-grid__tab[data-selected] {
+  margin-bottom:-1px;
+  background:var(--word-tab);
+  z-index:2;
 }
+.word-grid__panel {
+  position:relative;
+  background:var(--word-tab);
+  border-radius:var(--ba-wordgrid-radius,16px) !important;
+  z-index:0;
+  isolation:isolate;
+}
+@media(max-width:600px){.word-grid__tab{padding-inline:var(--ba-space-2);}}
+@media(prefers-reduced-motion:reduce){.word-grid__tab{transition:none;}}
