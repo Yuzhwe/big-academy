@@ -5,6 +5,10 @@ on:
       - feat/writing-cloud-shader-m4-adaptive
   workflow_dispatch:
 
+concurrency:
+  group: cloud-m4-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
