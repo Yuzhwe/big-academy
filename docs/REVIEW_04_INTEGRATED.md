@@ -35,7 +35,7 @@ The user-supplied `elemental-solar.zip` contains the original shader but no clea
 To view **updated** content, pull PR #52 on the actual machine and run the repo's supported commands. Port 6007 can display a **stale built snapshot** if not updated.
 
 - Designer library: `npm run dev:library`, usually `http://127.0.0.1:6007/?view=components&component=unit`; variants also `component=words`, `hamburger`, `milestone`, `lesson&mode=state&state=current`, `transition`, `flag`, `topbar`.
-- Live Writing app: `npm run dev:writing` (check terminal for actual port; local server never started in this connector session).
+- Live Writing app: `npm run dev` (check terminal for actual port; local server never started in this connector session).
 - Technical QA commands: `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build:library`, `npm run build`, `npm run test:integration` (check available script list and adjust).
 - Browser QA: Desktop 1440 and Tablet 1024/834, EN/ZH, long title 1-line overflow, Unit label/metadata brown, 4 exact rounded bank corners for all tabs, hamburger shadow and columns, gold/silver 3D on both layers, 7s sweep, Solar overlay/non-WebGL fallbacks, Cross Blur no blank and focus returned after navigation, updated flag canvas animation and interactive controls, local image replacement and reduced-motion.
 
