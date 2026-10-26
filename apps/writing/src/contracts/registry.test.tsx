@@ -28,7 +28,7 @@ describe('component registry', () => {
     expect(byId['BA-UI-003']?.visualStatus).toContain('in-review');
     const implemented = new Set([
       'BA-UI-001', 'BA-UI-002', 'BA-UI-003', 'BA-UI-006', 'BA-UI-008', 'BA-UI-009', 'BA-UI-010', 'BA-UI-011',
-      'BA-WR-001', 'BA-WR-002', 'BA-WR-003', 'BA-WR-004', 'BA-WR-005', 'BA-WR-006', 'BA-WR-007', 'BA-WR-009', 'BA-WR-010', 'BA-WR-013',
+      'BA-WR-001', 'BA-WR-002', 'BA-WR-003', 'BA-WR-004', 'BA-WR-005', 'BA-WR-006', 'BA-WR-007', 'BA-WR-009', 'BA-WR-010', 'BA-WR-011', 'BA-WR-012', 'BA-WR-013',
     ]);
     for (const component of registry.components) {
       if (component.id === 'BA-WR-010') expect(component.status).toBe('implemented-interim-scene-and-story-decoration');
