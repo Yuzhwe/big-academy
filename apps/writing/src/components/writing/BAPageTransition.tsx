@@ -49,7 +49,7 @@ export function BAPageTransition({
       latestHeight.current=contentRef.current.getBoundingClientRect().height;
     }
   });
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (immediate) {
       setVisibleKey(viewKey);
       setPhase('idle');
