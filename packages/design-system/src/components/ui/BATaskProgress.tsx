@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { Button } from 'react-aria-components';
-import { BAIcon } from './BAIcon';
 import type { BALocale, TaskProgressItem } from '../../types/task';
 import { taskChrome, taskMayNavigate } from '../../i18n/chrome';
 import './BATaskProgress.css';
@@ -15,22 +14,9 @@ export interface BATaskProgressProps {
   label?: string;
 }
 
-function Marker({ status, number }: { status: TaskProgressItem['status']; number: number }) {
-  return (
-    <>
-      <span className="ba-task-progress__digit">{number}</span>
-      {status === 'done' ? (
-        <span className="ba-task-progress__badge" data-badge="check">
-          <BAIcon name="check" size={12} className="ba-task-progress__icon" />
-        </span>
-      ) : null}
-      {status === 'locked' ? (
-        <span className="ba-task-progress__badge" data-badge="lock">
-          <BAIcon name="lock" size={12} className="ba-task-progress__icon" />
-        </span>
-      ) : null}
-    </>
-  );
+/** Visual-only marker. Progress and selection stay separate; aria-label owns status. */
+function Marker({ number }: { number: number }) {
+  return <span className="ba-task-progress__digit">{number}</span>;
 }
 
 /**
@@ -67,6 +53,7 @@ export function BATaskProgress({
                 <Button
                   className="ba-task-progress__button"
                   data-state={task.status}
+                  data-selected={isCurrent ? 'true' : 'false'}
                   data-task-index={index}
                   isDisabled={!openable}
                   aria-current={isCurrent ? 'step' : undefined}
@@ -76,11 +63,8 @@ export function BATaskProgress({
                   }}
                 >
                   <span className="ba-task-progress__marker" aria-hidden="true">
-                    <Marker status={task.status} number={number} />
+                    <Marker number={number} />
                   </span>
-                  {task.status === 'skipped' ? (
-                    <span className="ba-task-progress__caption">{statusWord}</span>
-                  ) : null}
                 </Button>
               </li>
             );
