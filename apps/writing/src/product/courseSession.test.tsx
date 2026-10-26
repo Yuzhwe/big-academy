@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { CourseApp } from '../course/CourseApp';
@@ -188,20 +188,21 @@ describe('course slice UI', () => {
 
     expect(screen.getByRole('heading', { name: /Level 2/ })).toBeInTheDocument();
     expect(screen.getByTestId('level-goal')).toHaveAttribute('data-formula', 'open');
-    expect(document.querySelector('[data-testid="unit-fold"]')).toBeTruthy();
+    expect(document.querySelector('[data-testid="unit-fold"]')).toBeNull();
+    expect(document.querySelector('.course-unit__identity')).toBeTruthy();
     expect(document.querySelector('.course-unit ul, .course-unit li')).toBeNull();
     expect(document.querySelector('.course-unit__goal')?.tagName).toBe('P');
     await user.click(document.querySelector('[data-lesson-focus="G2-O:1"]') as HTMLElement);
 
     expect(screen.getByRole('heading', { name: /Topic sentences/ })).toBeInTheDocument();
     expect(screen.getByTestId('better-panel')).toHaveAttribute('data-cue', 'pedagogical');
-    expect(screen.getByTestId('better-panel').querySelector('[data-icon-name="check"]')).toBeTruthy();
+    expect(screen.getByTestId('better-panel').querySelector('[data-icon-name="check"]')).toBeNull();
     expect(screen.getAllByText(/top bun/i).length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: 'Show me another' })).toHaveAttribute('data-kind', 'secondary');
     expect(screen.getByTestId('lesson-footer')).toHaveAttribute('data-layout', 'pair');
     expect(screen.getByRole('button', { name: 'Next' })).toHaveAttribute('data-size', '70');
     await user.click(screen.getByRole('button', { name: 'Next' }));
-    await user.click(screen.getByRole('radio', { name: /Our school should have a garden/ }));
+    await user.click(await screen.findByRole('radio', { name: /Our school should have a garden/ }));
     await user.click(screen.getByRole('button', { name: 'Check' }));
     expect(screen.getByTestId('feedback')).toHaveTextContent(/Right\. You chose B/);
     expect(screen.getByTestId('feedback')).toHaveAttribute('data-outcome', 'correct');
@@ -209,6 +210,7 @@ describe('course slice UI', () => {
     expect(screen.getByTestId('practice-burst')).toHaveAttribute('data-lesson', 'false');
 
     await user.click(screen.getByRole('button', { name: 'Back to my path' }));
+    await waitFor(() => expect(document.querySelector('[data-lesson-id="G2-O:1"]')).not.toBeNull());
     const lessonOne = document.querySelector('[data-lesson-id="G2-O:1"]');
     expect(lessonOne).toHaveAttribute('data-state', 'continue');
     expect(lessonOne?.querySelector('[data-testid="lesson-row"]')).toHaveTextContent('Enter');
@@ -323,8 +325,9 @@ describe('Lesson 1 screens 5–8', () => {
     reach(course, (screen) => screen.kind === 'apply' && screen.page === 'L2-04.apply');
     expect(course.activity()?.wordGrid?.groups.map((group) => group.label)).toEqual(['Opinion', 'Nouns', 'Adjectives', 'Marks']);
     course.setCanvas('Hi');
+    expect(course.footer().primaryDisabled).toBe(true);
     course.pressPrimary();
-    expect(course.feedback).toMatch(/Write a little first/);
+    expect(course.feedback).toBe(''); // disabled primary cannot submit or create feedback
     expect(course.inspect().applies['L2-04']?.tries ?? 0).toBe(0);
     course.setCanvas('Hello there friend');
     course.pressPrimary();

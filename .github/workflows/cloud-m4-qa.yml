@@ -39,6 +39,8 @@ jobs:
         run: npm run build
       - name: Verify preinstalled Chrome (no apt/browser download)
         run: google-chrome --version
+      - name: Install video encoder for authentic animation evidence
+        run: npx playwright install ffmpeg
       - name: Browser integration regression
         run: npm run test:integration
       - name: Report real M4 renderer used by Chromium
@@ -65,5 +67,6 @@ jobs:
             apps/writing/test-results/
             apps/writing/docs/evidence/cloud-m4/
             apps/writing/docs/evidence/integration-v1/
+            apps/writing/public/path/v2-terraces/
           retention-days: 7
           if-no-files-found: ignore
