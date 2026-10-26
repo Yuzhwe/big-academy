@@ -613,8 +613,8 @@
     to bottom,
     transparent 0,
     transparent 35px,
-    #eaedeb 35px,
-    #eaedeb 36px
+    var(--ba-writing-editor-ruled-line, #eaedeb) 35px,
+    var(--ba-writing-editor-ruled-line, #eaedeb) 36px
   );
   background-position: 0 12px;
   background-attachment: local;
