@@ -5,7 +5,7 @@ export const catalog = [
   { key: 'button', id: 'BA-UI-001', name: '按钮', en: 'BAButton', category: '基础交互', description: '让下一步清晰可见。统一主要操作、次要操作与等待反馈。', anatomy: '固定命中区域 → 可缩放视觉层 → 图标与标签。等待中保留可访问名称。', states: ['default', 'hover', 'pressed', 'focus', 'disabled', 'busy'], story: 'primitives-babutton--default' },
   { key: 'tabs', id: 'BA-UI-002', name: '标签导航', en: 'BATabs', category: '基础交互', description: '在相关内容之间切换，始终知道自己所在的位置。', anatomy: 'TabList → Tab → 对应 TabPanel。方向键切换焦点与选中项。', states: ['default', 'hover', 'pressed', 'focus', 'disabled'], story: 'primitives-batabs--level-navigation' },
   { key: 'topbar', id: 'BA-WR-001', name: '课程顶栏', en: 'LessonTopBar', category: 'Writing', description: '把课程身份、当前进度与返回路径放在一个清晰的框架中。', anatomy: '左侧返回与课程标题；居中 Activity Screen 进度；右侧留空。', states: ['default', 'long', 'done', 'locked', 'skipped'], story: 'writing-shell-lessontopbar--desktop' },
-  { key: 'lesson', id: 'BA-WR-005', name: '课程卡片', en: 'StairLessonCard', category: 'Writing', description: '在学习路径上，区分开始、继续、复习与未解锁的课程。', anatomy: '课号印章 → 标题与时长 → 共享 BAButton。解锁与课程数据由产品提供。', states: ['start', 'currentStart', 'continue', 'review', 'locked', 'skipped'], story: 'writing-path-stairlessoncard--start' },
+  { key: 'lesson', id: 'BA-WR-005', name: '课程卡片', en: 'StairLessonCard', category: 'Writing', description: '学习路径卡片统一为可进入、已完成和未解锁三种视觉状态。', anatomy: '课号印章 → 标题与时长 → 共享 BAButton。解锁与课程数据由产品提供。', states: ['start', 'review', 'locked'], story: 'writing-path-stairlessoncard--start' },
   { key: 'words', id: 'BA-WR-003', name: '词卡面板', en: 'WordGrid', category: 'Writing', description: '按类别找到表达所需的词，让写作一步一步展开。', anatomy: '连接式分类标签 → 词卡区域。切换类别不执行插入，点击词卡才发出插入事件。', states: ['default', 'selected', 'used', 'disabled', 'correct', 'incorrect', 'hint', 'shown', 'hover', 'pressed', 'focus'], story: 'writing-activities-wordgrid--multi-group' },
 ] as const;
 export type Entry = typeof catalog[number];
@@ -25,10 +25,10 @@ export function statusFor(entry: Entry) {
   return { approved: visual === 'Approved', label: visual === 'Approved' ? '基线视觉已批准' : '待视觉评审', source: visual || '未记录' };
 }
 export const stateNames: Record<string, string> = {
-  hover:'悬停（实际操作）', pressed:'按下（实际操作）', focus:'键盘焦点（实际操作）', currentStart:'当前 · 未开始', incorrect:'错误', hint:'提示', shown:'系统展示答案',
+  hover:'悬停（实际操作）', pressed:'按下（实际操作）', focus:'键盘焦点（实际操作）', incorrect:'错误', hint:'提示', shown:'系统展示答案',
   default: '默认', selected: '已选中', correct: '正确 · 已选', correctUnselected: '正确 · 未选',
-  wrong: '错误', dim: '变淡', disabled: '禁用', busy: '等待中', start: 'Available · 可进入',
-  continue: 'Current · 继续', review: 'Completed · 已完成', locked: '未解锁', skipped: '已跳过',
+  wrong: '错误', dim: '变淡', disabled: '禁用', busy: '等待中', start: 'Enterable · 可进入',
+  continue: 'Enterable · 可进入', review: 'Completed · 已完成', locked: '未解锁', skipped: '已跳过',
   long: '长标题', single: '单组词卡', used: '词卡已使用',
 };
 export type Scene = {
