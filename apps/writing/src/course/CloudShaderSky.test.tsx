@@ -40,8 +40,9 @@ describe('BA-WR-013 · M4 adaptive sky', () => {
   });
   it('rejects low-end/reduced-motion auto Shader, not just the absence of WebGL', () => {
     expect(autoAllowsShader({webgl:false,cores:8,reducedMotion:false})).toBe(false);
-    expect(autoAllowsShader({webgl:true,cores:4,reducedMotion:false})).toBe(false);
-    expect(autoAllowsShader({webgl:true,cores:8,memory:4,reducedMotion:false})).toBe(false);
+    expect(autoAllowsShader({webgl:true,cores:2,reducedMotion:false})).toBe(false);
+    expect(autoAllowsShader({webgl:true,cores:4,memory:4,reducedMotion:false})).toBe(true);
+    expect(autoAllowsShader({webgl:true,cores:8,memory:2,reducedMotion:false})).toBe(false);
     expect(autoAllowsShader({webgl:true,cores:8,memory:8,reducedMotion:true})).toBe(false);
     expect(autoAllowsShader({webgl:true,cores:8,memory:8,reducedMotion:false})).toBe(true);
   });
