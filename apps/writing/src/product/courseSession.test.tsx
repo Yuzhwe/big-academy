@@ -388,3 +388,55 @@ describe('integration v1 authored hints and tapword feedback',()=>{
   const course=session();reach(course,s=>s.task==='ts4');course.tapWord(1);course.pressPrimary();expect(course.activity()?.tapword?.locked).toBe(true);expect(course.activity()?.tapword?.words[1].correct).toBe(true);course.backToPath();course.openLesson('G2-O',1);expect(course.activity()?.tapword?.words[1].correct).toBe(true);
  });
 });
+
+
+describe('Review 02 contextual primary prerequisites', () => {
+  it('disables an untouched single pick without grading, then enables Check after a choice', () => {
+    const course = session();
+    course.openLesson('G2-O', 1);
+    expect(course.primaryReady()).toBe(true); // P2 Learn has no required answer
+    course.pressPrimary();
+    expect(course.primaryReady()).toBe(false);
+    expect(course.footer().primaryDisabled).toBe(true);
+    const before = JSON.stringify(course.inspect().tasks);
+    course.pressPrimary();
+    expect(JSON.stringify(course.inspect().tasks)).toBe(before);
+    course.pick(1);
+    expect(course.primaryReady()).toBe(true);
+    expect(course.footer().primaryDisabled).toBe(false);
+    course.pressPrimary();
+    expect(course.footer().primaryDisabled).toBe(false); // ready to advance after grading
+  });
+
+  it('enables multi-select Check at exactly the authored number of selected options', () => {
+    const course = session();
+    course.openLesson('G2-O', 1);
+    const multiple = course.liveIdx(0)[3];
+    const screen = course.screens[multiple].screen;
+    const taskId = screen.task!;
+    const authored = course.config.tasks[taskId];
+    expect(authored.multi).toBe(true);
+    const need = authored.answers.length;
+    expect(need).toBe(3);
+    course.inspect().screen = multiple;
+    const key = `${screen.page}:${taskId}`;
+    const selected = Array.from({length:need-1},(_,i)=>i);
+    course.inspect().tasks[key] = {tries:0,status:'open',picked:selected};
+    expect(course.footer().primaryDisabled).toBe(true);
+    selected.push(need-1);
+    expect(course.footer().primaryDisabled).toBe(false);
+    selected.push(need);
+    expect(course.footer().primaryDisabled).toBe(true);
+  });
+
+  it('preserves the authored blank-question navigation and first Hand in warning on P7', () => {
+    const course = session();
+    course.openLesson('G2-O', 1);
+    course.inspect().screen = course.liveIdx(0)[7];
+    expect(course.primaryReady()).toBe(true);
+    expect(course.footer().primaryDisabled).toBe(false);
+    expect(course.footer().primaryTestId).toBe('next-question');
+    course.pressPrimary();
+    expect(course.footer().primaryDisabled).toBe(false);
+  });
+});
