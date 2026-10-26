@@ -208,3 +208,26 @@ test('Review 03 P5 lined editor only, without redundant tip',async({page})=>{
  await expect(page.getByText('Write each sentence on a new line.')).toHaveCount(0);
  await expect(page.locator('.course-activity[data-kind="apply"] .word-grid')).toBeVisible();
 });
+
+
+test('R04 bug fix: completed topbar and portal numbers use the exact Writing brown',async({page})=>{
+  await page.setViewportSize({width:1024,height:768});
+  await start(page);
+  await forward(page); // finish the non-answer Learn screen
+  await options(page).nth(1).click();
+  await forward(page); // check the authored single-choice answer
+  await forward(page); // navigate to next screen so first two are Done
+  const done=page.locator('.lesson-topbar .ba-task-progress__button[data-state="done"] .ba-task-progress__marker');
+  await expect(done.first()).toBeVisible();
+  await expect(done.first()).toHaveCSS('background-color','rgb(178, 84, 21)');
+  await page.locator('.lesson-topbar__center').evaluate(el=>{
+    (el as HTMLElement).style.width='228px';
+    (el as HTMLElement).style.maxWidth='228px';
+  });
+  const overflow=page.locator('.lesson-topbar').getByRole('button',{name:'All activity screens'});
+  await overflow.click();
+  const popup=page.getByRole('dialog',{name:'All activity screens'});
+  await expect(popup.locator('.ba-task-progress__button[data-state="done"] .ba-task-progress__marker').first())
+    .toHaveCSS('background-color','rgb(178, 84, 21)');
+  await page.keyboard.press('Escape');
+});
