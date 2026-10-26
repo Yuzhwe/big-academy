@@ -5,7 +5,7 @@ import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { CoachMessage, LessonWorkspace } from '../components/writing/LessonWorkspace';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
-import { HamburgerLayer } from '../components/writing/HamburgerLayer';
+import { HamburgerComposition } from '../components/writing/HamburgerComposition';
 import { WordGrid } from '../components/writing/WordGrid';
 import { StaircaseScene } from './StaircaseScene';
 import { StairUnitCard } from '../components/writing/StairUnitCard';
@@ -13,6 +13,8 @@ import alexHtml from '../../source/alex-original.html?raw';
 import { CourseSession, type ActivityModel } from '../product/courseSession';
 import './course.css';
 import { LevelRewardFlag } from './LevelRewardFlag';
+import { SolarLessonPreview } from '../components/writing/SolarLessonPreview';
+import { BAPageTransition } from '../components/writing/BAPageTransition';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 
@@ -70,9 +72,9 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
       <a className="course-skip" href="#course-main">
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
-      {session.view === 'path' ? <PathView session={session} /> : null}
-      {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
-      {session.view === 'preview' ? <PreviewView session={session} /> : null}
+      <BAPageTransition viewKey={session.view === 'lessonEnd' ? 'lesson' : session.view}
+        duration={500} maxBlur={12}
+        renderView={key=>key==='path'?<PathView session={session}/>:key==='lesson'?<LessonView session={session}/>:<PreviewView session={session}/>}/>
       {session.celebration ? <Celebration session={session} /> : null}
       {session.practiceBurst ? <PracticeBurst session={session} /> : null}
     </div>
@@ -146,7 +148,8 @@ function PathView({ session }: { session: CourseSession }) {
               const lesson = node.lesson;
               return (
                 <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
-                  <StairLessonCard
+                  {lesson.courseState === 'current'
+                    ? <SolarLessonPreview><StairLessonCard
                     lessonId={lesson.lessonId}
                     number={lesson.number}
                     title={lesson.title}
@@ -157,7 +160,13 @@ function PathView({ session }: { session: CourseSession }) {
                     locale={session.locale}
                     onEnter={() => session.openLesson(lesson.unitId, lesson.number)}
                     onBlocked={() => session.openLesson(lesson.unitId, lesson.number)}
-                  />
+                  /></SolarLessonPreview>
+                    : <StairLessonCard lessonId={lesson.lessonId} number={lesson.number} title={lesson.title}
+                      minutes={lesson.minutes} current={false}
+                      state={cardState(lesson.courseState,lesson.action)} detail={lesson.detail}
+                      locale={session.locale}
+                      onEnter={()=>session.openLesson(lesson.unitId,lesson.number)}
+                      onBlocked={()=>session.openLesson(lesson.unitId,lesson.number)}/> }
                 </li>
               );
             }
@@ -234,7 +243,8 @@ function LessonView({ session }: { session: CourseSession }) {
       />
       <LessonWorkspace
         navigationLayout={lessonEnd ? 'end' : 'pair'}
-        activity={<ActivityBody session={session} activity={activity} />}
+        activity={<BAPageTransition viewKey={String(bar.current)} duration={300} maxBlur={6}
+          renderView={()=> <ActivityBody session={session} activity={activity}/>}/> }
         coach={
           <div>
             {activity.coach.map((line, index) => (
@@ -371,6 +381,8 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
           <ActivityHeading title={activity.learn.heading || activity.title} speaker={speaker} />
           {activity.learn.teach ? <p className="course-teach">{activity.learn.teach}</p> : null}
           {activity.learn.weak || activity.learn.strong ? (
+            <div className={activity.layers?.length ? 'course-learn-two-column' : undefined}>
+              {activity.layers?.length ? <HamburgerComposition layers={activity.layers.map(layer=>({layerId:layer.id,label:layer.label,value:layer.value,emphasis:layer.emphasis}))}/> : null}
             <div className="course-examples">
               {activity.learn.weak ? (
                 <p lang="en">
@@ -385,15 +397,14 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
                 </p>
               ) : null}
             </div>
+            </div>
           ) : null}
           {activity.learn.nextUp ? <p>{activity.learn.nextUp}</p> : null}
         </>
       ) : null}
-      {activity.layers?.length ? (
+      {activity.layers?.length && !activity.learn ? (
         <div className="hamburger-stack" data-testid="hamburger">
-          {activity.layers.map((layer) => (
-            <HamburgerLayer key={layer.id} layerId={layer.id} label={layer.label} value={layer.value} emphasis={layer.emphasis} />
-          ))}
+          <HamburgerComposition layers={activity.layers.map(layer=>({layerId:layer.id,label:layer.label,value:layer.value,emphasis:layer.emphasis}))}/>
         </div>
       ) : null}
       {activity.pick && activity.check?.phase !== 'results' ? (
