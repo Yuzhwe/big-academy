@@ -26,7 +26,7 @@ This is the sole active Writing PRODUCT.md. Chapters describe the current system
 ```text
 Writing → Level → Unit → Lesson → Activity Screen → optional internal Task/Question
 E-01 Staircase
-  └─ Lesson entry (Start / Continue / Review; Locked cannot enter)
+  └─ Lesson entry (Enterable / Completed / Locked visually; underlying start/continue/review and saved progress preserved)
        ├─ 01 Learn [P2]
        ├─ 02 Topic sentence — single pick [P3]
        ├─ 03 Opinion word — tapword [P3]
