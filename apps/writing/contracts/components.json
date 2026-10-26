@@ -668,14 +668,17 @@
         "Underline editing focus",
         "No white nested field",
         "Three Hamburger layers share two typographic roles (title and supporting text), consistent values per layer",
-        "Do not invent missing educational copy to populate support tier"
+        "Do not invent missing educational copy to populate support tier",
+        "Review 04: the preview-only HamburgerComposition groups three reusable HamburgerLayer instances with top and bottom bun 88% of Reason width, title and example vertically centered, no Writing Activity 1 page changes until review."
       ],
       "requiredStories": [
         "Idle",
         "Focused",
         "ReadOnly",
         "LongContent",
-        "AllThreeLayersTwoTextLevels"
+        "AllThreeLayersTwoTextLevels",
+        "AllThreeLayers",
+        "LongExample"
       ],
       "figma": null,
       "runtimeEvidence": null,
@@ -728,7 +731,8 @@
         "Preserve card bottom and camera anchor with the R2.12 cloud-image platform, not the old green CSS terrace",
         "CTA fills card inner content width at 70px height. Enterable uses Available base and current-course outline consistently for start and continue; Locked blocks entry. Rendered review still pending.",
         "All enterable cards (available/new/resumed) have the same Writing brown border token; component library surfaces only Enterable, Completed and Locked.",
-        "Staircase never overrides the internal numeral alignment, which uses the exact same component as the designer-library preview."
+        "Staircase never overrides the internal numeral alignment, which uses the exact same component as the designer-library preview.",
+        "Review 04 candidate: current is a visual emphasis overlay only in DESIGNER LIBRARY; plain Enterable remains unchanged and the Staircase has not adopted Solar. Solar exterior-only GLSL rays+bokeh, CTA 7s sweep, 3px deep-brown static fallback, no change to card content/geometry."
       ],
       "requiredStories": [
         "Enterable",
@@ -739,11 +743,12 @@
         "InteractiveAllStates",
         "LongTitle",
         "Chinese",
-        "KeyboardFocus"
+        "KeyboardFocus",
+        "CurrentSolarCandidate"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
-      "notes": "Three visual roles: Enterable / Completed / Locked (designer approval pending). Internal action/status inputs remain start/continue/review/locked/skipped for session compatibility. Start and Continue share Enter / 进入 and the same Available-plus-outline appearance. Review and Skipped share Completed appearance without a separate Skipped card label, while the session retains skip semantics. Completed numeral uses existing success-fill with white digit and no border. Three title lines default in library and Writing. No visual styling grades or unlocks lessons. R2 Review 02 uses Writing brown border for Enterable; CardOnly and Staircase scenes share internals, and the designer library does not duplicate new/resumed visual samples.",
+      "notes": "Three visual roles: Enterable / Completed / Locked (designer approval pending). Internal action/status inputs remain start/continue/review/locked/skipped for session compatibility. Start and Continue share Enter / 进入 and the same Available-plus-outline appearance. Review and Skipped share Completed appearance without a separate Skipped card label, while the session retains skip semantics. Completed numeral uses existing success-fill with white digit and no border. Three title lines default in library and Writing. No visual styling grades or unlocks lessons. R2 Review 02 uses Writing brown border for Enterable; CardOnly and Staircase scenes share internals, and the designer library does not duplicate new/resumed visual samples. Review 04: prototype-only SolarLessonPreview wrapper in apps/library (true WebGL shader from user ZIP, provenance/license pending). No modifications to StairLessonCard runtime implementation, no page integration before designer acceptance.",
       "reviewStatus": "Ready for Visual Review",
       "reviewEntry": "Writing/Path/StairLessonCard",
       "r2VisualStatus": "R2 Design Review 01 follow-up: Enterable/Completed/Locked, unified Enter, green completed numeral, three-line default / Pending Visual Approval; product gates unchanged"
@@ -1088,6 +1093,39 @@
       "reviewEntry": "Writing/Path/StairLessonCard",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx (FullComposition)",
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md"
+    },
+    {
+      "id": "BA-WR-011",
+      "name": "LevelRewardFlag",
+      "kind": "composite",
+      "contractVersion": "0.4.0-r4",
+      "status": "implemented",
+      "visualStatus": "Review 04 candidate awaiting designer style approval",
+      "implementation": "apps/writing/src/course/LevelRewardFlag.tsx",
+      "story": "apps/writing/src/course/LevelRewardFlag.stories.tsx",
+      "props": {
+        "wind": "CSS variable --ba-path-flag-wind, default 0.04; preview wrapper changes value",
+        "artwork": "existing R2.12 SVG asset; unchanged"
+      },
+      "events": {},
+      "states": [
+        "default",
+        "reduced-motion"
+      ],
+      "layoutOwner": "Staircase owns flag scene placement; LevelRewardFlag owns original SVG cloth movement",
+      "requirements": [
+        "Library independently previews the exact existing LevelRewardFlag SVG, not a replacement image",
+        "Designer may tune wind from original 4% baseline; maintain reduced-motion behavior",
+        "Do not change the current Staircase goal flag until designer acceptance"
+      ],
+      "requiredStories": [
+        "Default",
+        "ReducedMotion"
+      ],
+      "figma": null,
+      "runtimeEvidence": null,
+      "reviewStatus": "Pending Designer Review",
+      "notes": "The R2.12 level reward SVG is reused from apps/writing/src/assets/r2.12/level-flag.svg as-is, with existing cloth/shimmer layering and RAFrame wind. The designer library can adjust CSS --ba-path-flag-wind without changing production placement."
     }
   ],
   "currentDirection": {
