@@ -4,6 +4,7 @@ import './StaircaseScene.css';
 import hillMid from '../assets/r2.12/hill-mid.svg';
 import hillFront from '../assets/r2.12/hill-front.svg';
 import { BAButton, BAIcon } from '@big-academy/design-system';
+import { CloudShaderSky } from './CloudShaderSky';
 
 const STEP_GAP = 290;
 const CARD_WIDTH = 260;
@@ -403,12 +404,6 @@ export function StaircaseScene({
     left: -scenic[layer] * boundedX,
     bottom: 0,
   });
-  const cloudStyle: CSSProperties = {
-    width: view.width,
-    height: view.height,
-    top: 0,
-    left: -scenic.cloud * boundedX,
-  };
 
   return (
     <div
@@ -435,9 +430,8 @@ export function StaircaseScene({
       onKeyDown={keyDown}
     >
       <div className="path-sky" data-testid="path-sky" data-parallax={speedAttr(scenic.sky)} aria-hidden="true" />
-      <div className="path-layer path-cloud" data-testid="path-cloud" data-parallax={speedAttr(scenic.cloud)} style={cloudStyle} aria-hidden="true">
-        <span className="r2-cloud r2-cloud--a" /><span className="r2-cloud r2-cloud--b" /><span className="r2-cloud r2-cloud--c" />
-      </div>
+      <CloudShaderSky mode="auto" preset="staircase" cameraX={boundedX}
+        cameraY={cameraY} cameraMaxTravel={maxX} parallaxStrength={scenic.cloud} />
       <div className="path-layer path-hill path-hill-2" data-testid="path-hill-2" data-parallax={speedAttr(scenic.hill2)} style={hillLayer('hill2')} aria-hidden="true">
         <img src={hillMid} alt="" width={HILL_WIDTH} height={HILL_HEIGHT} />
       </div>
