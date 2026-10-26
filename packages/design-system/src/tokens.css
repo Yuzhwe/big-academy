@@ -218,7 +218,7 @@
   --ba-activity-indicator-number-weight: 800;
   --ba-activity-indicator-border: var(--ba-color-content-primary);
   --ba-activity-indicator-selected-bg: var(--ba-color-content-primary);
-  --ba-activity-indicator-done-bg: var(--ba-color-action-primary); /* [A] Review 03 Writing brown in Writing shell */
+  --ba-activity-indicator-done-bg: var(--ba-color-writing-7); /* [A] Writing completed numbers in header AND portaled popup */
   --ba-activity-indicator-selected-text: #ffffff;
   --ba-activity-indicator-incomplete-bg: var(--ba-color-surface-canvas);
   --ba-activity-indicator-locked-bg: var(--ba-color-neutral-6);
