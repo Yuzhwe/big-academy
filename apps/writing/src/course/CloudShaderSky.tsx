@@ -137,7 +137,7 @@ function M4Canvas({ params, onFirstFrame, onFailure, paused }: {
       context.uniform3fv(loc.skyBottom, color3(p.skyBottom));
       context.drawArrays(context.TRIANGLES, 0, 3);
       paints++;
-      if (paints % 20 === 0 && context.getError() !== context.NO_ERROR) { fail('WebGL drawing error'); return; }
+      if ((paints === 1 || paints % 20 === 0) && context.getError() !== context.NO_ERROR) { fail('WebGL drawing error'); return; }
       if (paints === 1) firstFrameRef.current();
       if (!still) raf = requestAnimationFrame(draw);
     };
@@ -197,6 +197,13 @@ export function CloudShaderSky({
   }, []);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
+  const previousPreset = useRef(preset);
+  if (previousPreset.current !== preset) {
+    previousPreset.current = preset;
+    // Replacing the GLSL on palette change must show lightweight until first GL draw.
+    // This ref guard prevents revealing a not-yet-painted transparent canvas.
+    if (ready) queueMicrotask(() => setReady(false));
+  }
   const [reason, setReason] = useState('');
   const callbackRef = useRef(onRendererChange);
   callbackRef.current = onRendererChange;
