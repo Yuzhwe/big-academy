@@ -4,7 +4,7 @@ import './LessonWorkspace.css';
 export type CoachMessageTone = 'orientation' | 'hint' | 'correct' | 'wrong';
 
 export function CoachMessage({ children, tone = 'orientation', ...props }: {
-  children: ReactNode; tone?: CoachMessageTone; role?: 'status'; 'data-testid'?: string;
+  children: ReactNode; tone?: CoachMessageTone; role?: 'status'; 'data-testid'?: string; 'data-outcome'?: string;
 }) {
   return <p className="lesson-workspace__message" data-tone={tone} {...props}>{children}</p>;
 }
