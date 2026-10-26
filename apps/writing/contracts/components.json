@@ -402,7 +402,8 @@
         "No more than nine rail elements including a 36×36px visible ellipsis. Focused current screen remains in the visible contiguous range. No fixed 8/6/4 breakpoints.",
         "Popup near the trigger with top-left All activity screens / 所有活动页面 heading, top-right Close, 424px max width, 40px radius and padding. Full indices in six fixed, left-aligned columns. A short final row begins at column one.",
         "Trigger, Close, outside pointer, and Escape dismiss; restore focus or move it safely if the trigger disappears. Locked indicators cannot navigate. Keyboard, touch, focus and selection a11y.",
-        "R2 Review 03: done and done-selected inner numeric circles use Writing semantic brown (action-primary / #B25415) plus white number in BOTH rail and popover. Do not recolor completed Lesson Card's separate green seal."
+        "R2 Review 03: done and done-selected inner numeric circles use Writing semantic brown (action-primary / #B25415) plus white number in BOTH rail and popover. Do not recolor completed Lesson Card's separate green seal.",
+        "R04 explicit fix: Done numbers in LessonTopBar and its portaled full-index popover must use primitive --ba-color-writing-7 (#B25415), not generic action-primary that resolves to blue-green outside Writing theme."
       ],
       "requiredStories": [
         "MixedStatus",
@@ -592,7 +593,8 @@
         "activeGroup": "string",
         "presentation": "docked | overlay",
         "tabs": "auto | show | hide; auto preserves legacy single hidden / multiple shown",
-        "locale": "en | zh"
+        "locale": "en | zh",
+        "tabAppearance": "connected (default and live page) | slanted (Review 04 Stage A library/Storybook candidate)"
       },
       "events": {
         "onGroupChange": "(key) => void",
@@ -621,7 +623,8 @@
         "Ordered-build bench underlines are the writing-area line. The WordGrid panel is the word-card palette. Each remaining blank is an underline, one horizontal line per word still to place. Screen controls are the word cards and the Coach-rail button group. A placed word stays in the line",
         "Used never implies disabled; product explicitly marks consumed ordered-build words disabled. The component never grades.",
         "Sentence cards fill their row and wrap; word/punctuation/emoji keep complete content and touch targets. New selection/evaluation chrome is candidate only.",
-        "On P5 Apply Writing, the parent paper layout docks this same WordGrid at the bottom under a flexing Textarea; WordGrid itself does not own height or authoring/grade logic."
+        "On P5 Apply Writing, the parent paper layout docks this same WordGrid at the bottom under a flexing Textarea; WordGrid itself does not own height or authoring/grade logic.",
+        "R04 Stage A Slanted candidate: left vertical + softly rounded top-left, outward right 27px slope; selected tab z-index above adjacent unselected; 2px lift/200ms, content 150ms fade. No reverse-corner pseudo fill, reduced-motion static. Writing page defaults remain connected until approval."
       ],
       "requiredStories": [
         "MultiGroup",
@@ -630,7 +633,8 @@
         "Chinese",
         "OneGroupNoTab",
         "MultipleStickyTabs",
-        "WordWrapTablet"
+        "WordWrapTablet",
+        "SlantedTabsCandidate"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
@@ -669,7 +673,8 @@
         "No white nested field",
         "Three Hamburger layers share two typographic roles (title and supporting text), consistent values per layer",
         "Do not invent missing educational copy to populate support tier",
-        "Review 04: the preview-only HamburgerComposition groups three reusable HamburgerLayer instances with top and bottom bun 88% of Reason width, title and example vertically centered, no Writing Activity 1 page changes until review."
+        "Review 04: the preview-only HamburgerComposition groups three reusable HamburgerLayer instances with top and bottom bun 88% of Reason width, title and example vertically centered, no Writing Activity 1 page changes until review.",
+        "R04 Stage A HamburgerComposition: Top green #E7F6DF with 18/18/10/10px radius, Reason #F3EFE4 8px radius, Bottom #E7C48A 10/10/18/18px radius. Width 88/100/88%. Existing Layer and Activity 1 remain unchanged."
       ],
       "requiredStories": [
         "Idle",
@@ -678,7 +683,8 @@
         "LongContent",
         "AllThreeLayersTwoTextLevels",
         "AllThreeLayers",
-        "LongExample"
+        "LongExample",
+        "ExactHighFidelityColors"
       ],
       "figma": null,
       "runtimeEvidence": null,
@@ -765,7 +771,8 @@
       "props": {
         "unitId": "string",
         "completed": "boolean",
-        "celebrationEligible": "boolean"
+        "celebrationEligible": "boolean",
+        "previewAppearance": "existing (default/live) | gold-shine (Stage A preview-only): 7s sweep on completed, 100% grayscale upcoming"
       },
       "events": {
         "onCelebrate": "(unitId) => void"
@@ -781,12 +788,15 @@
         "Auto once on first return after newly completed",
         "Click completed to replay",
         "No unlock authority",
-        "Default high-fidelity L0/L1 fixture shows completed and allows replay, without mutating saved learner mastery/scores. Reduced Motion suppresses particle animation."
+        "Default high-fidelity L0/L1 fixture shows completed and allows replay, without mutating saved learner mastery/scores. Reduced Motion suppresses particle animation.",
+        "R04 Stage A gold-shine preview retains original two-layer gold artwork on completion and fully gray on upcoming; completed only can emit replay event. The actual Staircase still uses existing style until Stage B approval."
       ],
       "requiredStories": [
         "Upcoming",
         "FirstReturn",
-        "ManualReplay"
+        "ManualReplay",
+        "GoldSweepCandidate",
+        "GrayUpcomingCandidate"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
@@ -955,7 +965,8 @@
       "props": {
         "unit": "PathNode.unit — source-localized index, title, per-Unit total/time label and goal paragraphs; NO hardcoded 9/170 in production",
         "status": "CourseUnitStatus",
-        "locale": "en | zh"
+        "locale": "en | zh",
+        "corner": "folded (default/live staircase) | cutout (transparent 32px triangle; Stage A library candidate only)"
       },
       "events": [],
       "states": [
@@ -977,7 +988,8 @@
         "Inner ornamental border masked at 45-degree fold; upper right seam joins rounded body silhouette without detached triangle",
         "R3 tinted informational surface remains distinct from white actionable lessons",
         "Unit top line only UNIT N / 第 N 单元; never add Writing Unit or Unit type label.",
-        "One full-pill warm outline contains actual per-unit lesson total and duration, e.g. 9 lessons · 170 mins. Never show 0 of, about or 约; no fixed 9/170 dummy values."
+        "One full-pill warm outline contains actual per-unit lesson total and duration, e.g. 9 lessons · 170 mins. Never show 0 of, about or 约; no fixed 9/170 dummy values.",
+        "R04 Stage A cutout is actual clip-path transparency showing the backdrop. Top-right triangle MUST remain unfilled; preserve paper content, Unit metadata pill, other radii and clouds."
       ],
       "requiredStories": [
         "UnitFoldCornerAt200Zoom",
@@ -987,7 +999,8 @@
         "Default",
         "Chinese",
         "LongTitle",
-        "MinimalInformation"
+        "MinimalInformation",
+        "TransparentCutoutCandidate"
       ],
       "notes": "Unit card keeps current content and size, uses one continuous top/right triangular folded-paper flap with restrained local contact shading, no floating rounded rectangle. Unit main title shares StairLessonCard typography (Dosis 24px / 800 / 30px; same Chinese heading alias). Goals remain plain paragraphs. R2 Review 03: simplified Unit N caption and one warm full-stroke pill for lesson total + exact time in both live and preview levels. Reusable BA-WR-007 implementation now supplies the exact Unit card in both Staircase and designer library; code/demo stories are provisional until visual signoff.",
       "story": "apps/writing/src/components/writing/StairUnitCard.stories.tsx",
@@ -1126,6 +1139,47 @@
       "runtimeEvidence": null,
       "reviewStatus": "Pending Designer Review",
       "notes": "The R2.12 level reward SVG is reused from apps/writing/src/assets/r2.12/level-flag.svg as-is, with existing cloth/shimmer layering and RAFrame wind. The designer library can adjust CSS --ba-path-flag-wind without changing production placement."
+    },
+    {
+      "id": "BA-WR-012",
+      "name": "BAPageTransition",
+      "kind": "composite",
+      "contractVersion": "0.4.0-a",
+      "status": "candidate",
+      "visualStatus": "Review 04 Stage A Candidate — not approved",
+      "implementation": "apps/writing/src/components/writing/BAPageTransition.tsx",
+      "story": "apps/writing/src/components/writing/BAPageTransition.stories.tsx",
+      "props": {
+        "viewKey": "Caller-owned current route/page key",
+        "renderView": "(key:string)=>ReactNode; caller supplies both page layouts",
+        "duration": "milliseconds, default 500",
+        "maxBlur": "px, default 12",
+        "reducedMotion": "boolean, bypass animations",
+        "onSettled": "optional callback after transition"
+      },
+      "events": {
+        "onSettled": "A visual animation event, not learning progression"
+      },
+      "states": [
+        "idle",
+        "out",
+        "in",
+        "reduced"
+      ],
+      "layoutOwner": "Transition controls a local visual wrapper, not routes or student data",
+      "requirements": [
+        "Stage A component-library and Storybook only; no routes/lesson/Activity integration until explicit design signoff.",
+        "Staircase/Lesson starting suggestion 500ms/12px; Activity/Activity 300ms/6px; Reduced Motion instant.",
+        "One swap at midpoint, cancellation when target changes, no score/save/unlock side effects.",
+        "Independently implemented generic cross-blur pattern; source must not be copied from license-restricted providers."
+      ],
+      "requiredStories": [
+        "StaircaseToLesson",
+        "ActivityToActivity",
+        "NoMotion"
+      ],
+      "runtimeEvidence": "apps/writing/src/components/writing/BAPageTransition.test.tsx",
+      "notes": "Cross Blur inspired by Great UI pattern. Not an imported third-party component, no motion package dependency. Candidate approval only."
     }
   ],
   "currentDirection": {
