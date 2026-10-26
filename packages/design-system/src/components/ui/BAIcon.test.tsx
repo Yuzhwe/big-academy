@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BAIcon, baIconPaths } from './BAIcon';
 
-describe('BA-UI-ICON · official Iconoir subset', () => {
+describe('BA-UI-008 · shared SVG symbols including Speaker', () => {
   it('offers the shared icon names including the speaker with non-empty source paths', () => {
     expect(Object.keys(baIconPaths)).toHaveLength(9);
     for (const list of Object.values(baIconPaths)) expect(list.length).toBeGreaterThan(0);
