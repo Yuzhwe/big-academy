@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { FRAG, M4_CLEAR, STAIRCASE_SKY, VERT } from './cloudShaderM4';
+import { FRAG, M4_CLEAR, M4_CLOUD_ONLY_FRAG, STAIRCASE_SKY, VERT } from './cloudShaderM4';
 import './CloudShaderSky.css';
 
 export type CloudRenderMode = 'auto' | 'shader' | 'lightweight';
@@ -25,7 +25,7 @@ export type CloudShaderSkyProps = {
   className?: string;
 };
 
-type Params = Required<Pick<CloudShaderSkyProps, 'skyTop' | 'skyBottom' | 'cloudColor' | 'cloudCount' | 'driftSpeed' | 'paused' | 'reducedMotion'>>;
+type Params = Required<Pick<CloudShaderSkyProps, 'skyTop' | 'skyBottom' | 'cloudColor' | 'cloudCount' | 'driftSpeed' | 'paused' | 'reducedMotion'> & { cloudOnly: boolean>>;
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, Number.isFinite(n) ? n : min));
 /** Scroll displacement is absolute, not incremental: never double-apply movement. */
 export function cloudParallax(cameraX: number, strength: number, travel: number) {
@@ -79,10 +79,10 @@ function M4Canvas({ params, onFirstFrame, onFailure, paused }: {
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     const fail = (reason: string) => { if (!done) { done = true; cancelAnimationFrame(raf); failRef.current(reason); } };
     try {
-      gl = canvas.getContext('webgl', { alpha: false, antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'low-power' });
+      gl = canvas.getContext('webgl', { alpha: paramsRef.current.cloudOnly, antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'low-power' });
       if (!gl) throw Error('WebGL unavailable');
       vs = makeShader(gl, gl.VERTEX_SHADER, VERT);
-      fs = makeShader(gl, gl.FRAGMENT_SHADER, FRAG);
+      fs = makeShader(gl, gl.FRAGMENT_SHADER, paramsRef.current.cloudOnly ? M4_CLOUD_ONLY_FRAG : FRAG);
       program = gl.createProgram();
       if (!program) throw Error('Cannot create program');
       gl.attachShader(program, vs); gl.attachShader(program, fs);
@@ -183,7 +183,7 @@ export function CloudShaderSky({
     skyTop: overrides.skyTop ?? defaults.skyTop, skyBottom: overrides.skyBottom ?? defaults.skyBottom,
     cloudColor: overrides.cloudColor ?? defaults.cloudColor,
     cloudCount: overrides.cloudCount ?? defaults.cloudCount,
-    driftSpeed: overrides.driftSpeed ?? defaults.driftSpeed, paused, reducedMotion,
+    driftSpeed: overrides.driftSpeed ?? defaults.driftSpeed, paused, reducedMotion, cloudOnly: preset === 'staircase',
   };
   const [eligible, setEligible] = useState(false);
   const [systemReduced, setSystemReduced] = useState(false);
@@ -219,7 +219,7 @@ export function CloudShaderSky({
     {!ready || !wantsShader ? <div className="path-layer path-cloud m4-lightweight-cloud" data-testid="path-lightweight-cloud">
       <span className="r2-cloud r2-cloud--a"/><span className="r2-cloud r2-cloud--b"/><span className="r2-cloud r2-cloud--c"/>
     </div> : null}
-    {wantsShader && <M4Canvas params={params} paused={paused} onFirstFrame={() => setReady(true)}
+    {wantsShader && <M4Canvas key={preset} params={params} paused={paused} onFirstFrame={() => setReady(true)}
       onFailure={message => { setReason(message); setFailed(true); setReady(false); }}/>}
   </div>;
 }
