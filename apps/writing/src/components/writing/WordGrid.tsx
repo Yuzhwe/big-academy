@@ -64,6 +64,6 @@ export function WordGrid({ groups, activeGroup, presentation='docked', tabs='aut
     selectedKey={active} onSelectionChange={key=>onGroupChange?.(String(key))}>
     <TabList className="word-grid__tabs" aria-label={locale==='zh'?'词表分类':'Word groups'}>
       {groups.map(group=><Tab key={group.id} id={group.id} className="word-grid__tab">{group.label}</Tab>)}
-    </TabList><TabPanel key={tabAppearance==='slanted'?active:undefined} id={active} className="word-grid__panel">{cards}</TabPanel>
+    </TabList><TabPanel id={active} className="word-grid__panel">{cards}</TabPanel>
   </Tabs>;
 }
