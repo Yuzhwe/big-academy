@@ -10,7 +10,7 @@ export const catalog = [
   { key: 'hamburger', id: 'BA-WR-004', name: '汉堡包组合', en: 'HamburgerComposition', category: 'Writing', description: '三层教学示意，可独立调整文字与宽度；Top / Bottom bun 窄于中间 Reason。', anatomy: 'Top bun → Reason → Bottom bun；每层标题与示例句子垂直居中。', states: ['default', 'long'], story: 'writing-activities-hamburgercomposition--all-three-layers' },
   { key: 'flag', id: 'BA-WR-011', name: 'Level 奖励旗帜', en: 'LevelRewardFlag', category: 'Writing', description: '使用逐列 Canvas 竖向正弦波；默认 1.6s、6 波数、4px 振幅，本地可替换图片。', anatomy: '静态旗杆 + Canvas 图像布料；逐物理像素切片，竖直位移，不添加透视与光照。', states: ['default'], story: 'writing-path-levelrewardflag--default' },
   { key: 'milestone', id: 'BA-WR-006', name: 'Unit 里程碑', en: 'UnitMilestone', category: 'Writing', description: '金色完成和灰色未完成的两层徽章，扫光仅完成状态启用。', anatomy: '徽章 + 对勾 + 7 秒扫光 + 点击重播。', states: ['upcoming','completed'], story: 'writing-path-unitmilestone--first-return' },
-  { key: 'transition', id: 'BA-WR-012', name: '页面转场', en: 'BAPageTransition', category: 'Writing', description: 'Cross Blur 页面切换候选，两种速度与模糊强度可调整。', anatomy: '旧画面模糊 → 中点切换 → 新画面清晰。', states: ['default'], story: 'writing-transitions-bapagetransition--staircase-to-lesson' },
+  { key: 'transition', id: 'BA-WR-012', name: '页面转场', en: 'BAPageTransition', category: 'Writing', description: 'Cross Blur 已在 Writing 路由与活动页接入，两种速度与模糊强度可调整。', anatomy: '旧画面模糊 → 中点切换 → 新画面清晰。', states: ['default'], story: 'writing-transitions-bapagetransition--staircase-to-lesson' },
   { key: 'words', id: 'BA-WR-003', name: '词卡面板', en: 'WordGrid', category: 'Writing', description: '按类别找到表达所需的词，让写作一步一步展开。', anatomy: '连接式分类标签 → 词卡区域。切换类别不执行插入，点击词卡才发出插入事件。', states: ['default', 'selected', 'used', 'disabled', 'correct', 'incorrect', 'hint', 'shown', 'hover', 'pressed', 'focus'], story: 'writing-activities-wordgrid--multi-group' },
 ] as const;
 export type Entry = typeof catalog[number];
@@ -33,7 +33,7 @@ export const stateNames: Record<string, string> = {
   hover:'悬停（实际操作）', pressed:'按下（实际操作）', focus:'键盘焦点（实际操作）', incorrect:'错误', hint:'提示', shown:'系统展示答案',
   default: '默认', selected: '已选中', correct: '正确 · 已选', correctUnselected: '正确 · 未选',
   wrong: '错误', dim: '变淡', disabled: '禁用', busy: '等待中', start: 'Enterable · 可进入',
-  continue: 'Enterable · 可进入', current:'Current · Solar 强调候选', review: 'Completed · 已完成', locked: '未解锁', skipped: '已跳过',
+  continue: 'Enterable · 可进入', current:'Current · Solar 强调（已接入待验收）', review: 'Completed · 已完成', locked: '未解锁', skipped: '已跳过',
   long: '长标题', single: '单组词卡', used: '词卡已使用',
   upcoming:'未完成 · 灰色', completed:'已完成 · 金色',
 };
