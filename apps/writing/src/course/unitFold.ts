@@ -19,7 +19,7 @@ export function unitFoldPaths(fold = 32, bodyRadius = 16, tipRadius = 4, seamRad
     [
       { x: 0, y: 0 },
       { x: fold, y: fold },
-      { x: 0, y: fold },
+      { x: fold, y: 0 },
     ],
     [seamRadius, seamRadius, tipRadius],
   );

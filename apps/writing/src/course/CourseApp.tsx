@@ -1,17 +1,20 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useState, useRef, type CSSProperties, type ReactNode } from 'react';
 import { useSyncExternalStore } from 'react';
 import { BAButton, BAChoice, BAIcon, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
-import { LessonWorkspace } from '../components/writing/LessonWorkspace';
+import { CoachMessage, LessonWorkspace } from '../components/writing/LessonWorkspace';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
-import { HamburgerLayer } from '../components/writing/HamburgerLayer';
+import { HamburgerComposition } from '../components/writing/HamburgerComposition';
 import { WordGrid } from '../components/writing/WordGrid';
 import { StaircaseScene } from './StaircaseScene';
-import { unitFoldPaths } from './unitFold';
+import { StairUnitCard } from '../components/writing/StairUnitCard';
 import alexHtml from '../../source/alex-original.html?raw';
 import { CourseSession, type ActivityModel } from '../product/courseSession';
 import './course.css';
+import { LevelRewardFlag } from './LevelRewardFlag';
+import { SolarLessonPreview } from '../components/writing/SolarLessonPreview';
+import { BAPageTransition } from '../components/writing/BAPageTransition';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 
@@ -30,6 +33,14 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
   const locale = session.locale;
   const zh = locale === 'zh';
+  useEffect(() => {
+    const flush = () => session.flush();
+    const visibility = () => { if (document.visibilityState === 'hidden') flush(); };
+    window.addEventListener('pagehide', flush);
+    window.addEventListener('beforeunload', flush);
+    document.addEventListener('visibilitychange', visibility);
+    return () => { flush(); window.removeEventListener('pagehide', flush); window.removeEventListener('beforeunload', flush); document.removeEventListener('visibilitychange', visibility); };
+  }, [session]);
   const gallery = new URLSearchParams(window.location.search).get('gallery') === 'choice';
 
   useEffect(() => {
@@ -40,19 +51,19 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
     if (session.view === 'path') session.observePath();
   }, [session, revision]);
 
-  useEffect(() => {
-    if (session.view !== 'path' || !session.returnFocus) return;
-    const focus = session.returnFocus;
-    const frame = window.requestAnimationFrame(() => {
-      document
-        .querySelector<HTMLElement>(`[data-lesson-focus="${focus.unitId}:${focus.number}"]`)
-        ?.focus();
-      if (session.returnFocus?.unitId === focus.unitId && session.returnFocus.number === focus.number) {
-        session.returnFocus = null;
+  /* Navigation is now visually deferred by Cross Blur. Restore lesson card
+   * focus only AFTER the new path DOM has actually mounted and settled. */
+  const restorePathFocus=()=>{
+    if(session.view!=='path'||!session.returnFocus)return;
+    const focus=session.returnFocus;
+    window.requestAnimationFrame(()=>{
+      const target=document.querySelector<HTMLElement>(`[data-lesson-focus="${focus.unitId}:${focus.number}"]`);
+      if(target) {
+        target.focus();
+        if(session.returnFocus?.unitId===focus.unitId&&session.returnFocus.number===focus.number)session.returnFocus=null;
       }
     });
-    return () => window.cancelAnimationFrame(frame);
-  }, [session, revision]);
+  };
 
   if (gallery) return <ChoiceGallery zh={zh} />;
 
@@ -61,37 +72,13 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
       <a className="course-skip" href="#course-main">
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
-      {session.view === 'path' ? <PathView session={session} /> : null}
-      {session.view === 'lesson' || session.view === 'lessonEnd' ? <LessonView session={session} /> : null}
-      {session.view === 'preview' ? <PreviewView session={session} /> : null}
+      <BAPageTransition viewKey={session.view === 'lessonEnd' ? 'lesson' : session.view}
+        duration={500} maxBlur={12}
+        onSettled={target=>{if(target==='path')restorePathFocus();}}
+        renderView={key=>key==='path'?<PathView session={session}/>:key==='lesson'?<LessonView session={session}/>:<PreviewView session={session}/>}/>
       {session.celebration ? <Celebration session={session} /> : null}
       {session.practiceBurst ? <PracticeBurst session={session} /> : null}
     </div>
-  );
-}
-
-function UnitFold({ id }: { id: string }) {
-  const face = `course-unit-fold-face-${id}`;
-  const paths = unitFoldPaths();
-  return (
-    <svg className="course-unit__fold" viewBox="0 0 32 32" data-testid="unit-fold" aria-hidden="true">
-      <defs>
-        <linearGradient id={face} x1="32" y1="0" x2="0" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="var(--ba-writing-unit-fold-face-light, #fffdf9)" />
-          <stop offset="100%" stopColor="var(--ba-writing-unit-fold-face-dark, #e7d6c9)" />
-        </linearGradient>
-      </defs>
-      <path className="course-unit__fold-under" d={paths.under} />
-      <path
-        className="course-unit__fold-edge"
-        d={paths.edge}
-        fill="none"
-        stroke="var(--ba-writing-unit-paper-border, #dcc3ab)"
-        strokeWidth="0.5"
-        vectorEffect="non-scaling-stroke"
-      />
-      <path className="course-unit__fold-flap" d={paths.flap} fill={`url(#${face})`} />
-    </svg>
   );
 }
 
@@ -107,13 +94,12 @@ function PathView({ session }: { session: CourseSession }) {
       <BATabs className="course-level-tabs" selectedKey={session.levelId} onSelectionChange={(key) => session.switchLevel(key)}>
         <header className="course-path__bar course-path__header">
           <div className="course-path__header-title">
-            <p className="course-kicker">{zh ? '写作路径' : 'Writing path'}</p>
             <h1 className="course-title" title={session.text(level.name)}>
               {zh ? '第 ' + level.id.slice(1) + ' 级' : 'Level ' + level.id.slice(1)} {session.text(level.name)}
             </h1>
           </div>
           <BATabList className="course-level-tablist" size={36} radius="full" emphasis="strong" distribution="hug"
-            selectedKey={session.levelId} aria-label={zh ? '切换级别' : 'Choose level'}
+            selectedKey={session.levelId} appearance="glass" aria-label={zh ? '切换级别' : 'Choose level'}
             options={session.levelPath.levels.map(item => ({
               id: item.id, label: item.id, accessibleLabel: session.text(item.name)
             }))}/>
@@ -145,7 +131,7 @@ function PathView({ session }: { session: CourseSession }) {
           {nodes.map((node, index) => {
             if (node.kind === 'intro') {
               return (
-                <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
+                <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
                   <p className="course-intro" data-testid="level-intro">
                     {node.intro}
                   </p>
@@ -154,46 +140,40 @@ function PathView({ session }: { session: CourseSession }) {
             }
             if (node.kind === 'unit' && node.unit) {
               return (
-                <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
-                  <section className="course-unit" data-testid="unit" data-unit={node.unit.id}>
-                    <UnitFold id={node.unit.id} />
-                    <p className="course-kicker">
-                      {zh ? `第 ${node.unit.index} 单元` : `Unit ${node.unit.index}`} · {node.unit.typeLabel}
-                    </p>
-                    <h2>{node.unit.title}</h2>
-                    <p className="course-unit__meta">{node.unit.meta}</p>
-                    {node.unit.goals.length ? (
-                      <div className="course-unit__goals">
-                        {node.unit.goals.map((goal) => (
-                          <p key={goal} className="course-unit__goal">{goal}</p>
-                        ))}
-                      </div>
-                    ) : null}
-                  </section>
+                <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
+                  <StairUnitCard unit={node.unit} locale={session.locale} />
                 </li>
               );
             }
             if (node.kind === 'lesson' && node.lesson) {
               const lesson = node.lesson;
               return (
-                <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
-                  <StairLessonCard
+                <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
+                  {lesson.courseState === 'current'
+                    ? <SolarLessonPreview><StairLessonCard
                     lessonId={lesson.lessonId}
                     number={lesson.number}
                     title={lesson.title}
                     minutes={lesson.minutes}
+                    current={lesson.courseState === 'current'}
                     state={cardState(lesson.courseState, lesson.action)}
                     detail={lesson.detail}
                     locale={session.locale}
                     onEnter={() => session.openLesson(lesson.unitId, lesson.number)}
                     onBlocked={() => session.openLesson(lesson.unitId, lesson.number)}
-                  />
+                  /></SolarLessonPreview>
+                    : <StairLessonCard lessonId={lesson.lessonId} number={lesson.number} title={lesson.title}
+                      minutes={lesson.minutes} current={false}
+                      state={cardState(lesson.courseState,lesson.action)} detail={lesson.detail}
+                      locale={session.locale}
+                      onEnter={()=>session.openLesson(lesson.unitId,lesson.number)}
+                      onBlocked={()=>session.openLesson(lesson.unitId,lesson.number)}/> }
                 </li>
               );
             }
             if (node.kind === 'milestone' && node.milestone) {
               return (
-                <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
+                <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
                   <UnitMilestone
                     unitId={node.milestone.unitId}
                     title={node.milestone.title}
@@ -207,15 +187,11 @@ function PathView({ session }: { session: CourseSession }) {
             }
             if (node.kind === 'goal' && node.goal) {
               return (
-                <li key={node.id} style={{ '--step-index': index } as CSSProperties}>
+                <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
                   <section className="course-goal" data-testid="level-goal" data-formula="open">
                     <p className="course-kicker">{node.goal.title}</p>
                     <h2>{node.goal.detail}</h2>
-                    <p>
-                      {zh
-                        ? '完成公式仍未决定（Q-M06）。这里只保留位置，不记完成。'
-                        : 'The completion formula is still open (Q-M06). This marker is not scored.'}
-                    </p>
+                    <LevelRewardFlag />
                   </section>
                 </li>
               );
@@ -250,11 +226,7 @@ function LessonView({ session }: { session: CourseSession }) {
         ? session.zh
           ? '再来一个提示'
           : 'Another hint'
-        : activity.hintAction === 'reveal'
-          ? session.zh
-            ? '看答案'
-            : 'Show me the answer'
-          : null;
+        : null;
   const lessonEnd = session.view === 'lessonEnd';
 
   return (
@@ -272,16 +244,15 @@ function LessonView({ session }: { session: CourseSession }) {
       />
       <LessonWorkspace
         navigationLayout={lessonEnd ? 'end' : 'pair'}
-        activity={<ActivityBody session={session} activity={activity} />}
+        activity={<BAPageTransition viewKey={String(bar.current)} duration={300} maxBlur={6}
+          renderView={()=> <ActivityBody session={session} activity={activity}/>}/> }
         coach={
           <div>
-            {activity.coach.map((line) => (
-              <p key={line}>{line}</p>
+            {activity.coach.map((line, index) => (
+              <CoachMessage key={index} tone="orientation">{line}</CoachMessage>
             ))}
-            {activity.hints.map((hint) => (
-              <p key={hint} data-testid="hint">
-                {hint}
-              </p>
+            {activity.hints.map((hint, index) => (
+              <CoachMessage key={index} tone="hint" data-testid="hint">{hint}</CoachMessage>
             ))}
             {activity.coachMore ? (
               <BAButton variant="secondary" locale={session.locale} onPress={() => session.showAnother()}>
@@ -294,9 +265,7 @@ function LessonView({ session }: { session: CourseSession }) {
               </BAButton>
             ) : null}
             {activity.feedback ? (
-              <p className="course-feedback" role="status" data-testid="feedback" data-outcome={activity.feedbackTone}>
-                {activity.feedback}
-              </p>
+              <CoachMessage tone={activity.feedbackTone} role="status" data-testid="feedback" data-outcome={activity.feedbackTone}>{activity.feedback}</CoachMessage>
             ) : null}
           </div>
         }
@@ -309,7 +278,7 @@ function LessonView({ session }: { session: CourseSession }) {
               <BAButton size={70} variant="secondary" locale={session.locale} onPress={() => session.leaveLesson('path')}>
                 {session.zh ? '回到我的学习路径' : 'Back to my path'}
               </BAButton>
-              <BAButton size={70} variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+              <BAButton size={70} variant="primary" locale={session.locale} disabled={footer.primaryDisabled} onPress={() => session.pressPrimary()}>
                 <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
               </BAButton>
             </>
@@ -318,7 +287,7 @@ function LessonView({ session }: { session: CourseSession }) {
               <BAButton size={70} variant="secondary" locale={session.locale} disabled={footer.backDisabled} onPress={() => session.pressBack()}>
                 {footer.backLabel}
               </BAButton>
-              <BAButton size={70} variant="primary" locale={session.locale} onPress={() => session.pressPrimary()}>
+              <BAButton size={70} variant="primary" locale={session.locale} disabled={footer.primaryDisabled} onPress={() => session.pressPrimary()}>
                 <span data-testid={footer.primaryTestId}>{footer.primaryLabel}</span>
               </BAButton>
             </>
@@ -329,12 +298,48 @@ function LessonView({ session }: { session: CourseSession }) {
   );
 }
 
+function ActivityHeading({ title, speaker }: { title: string; speaker: ReactNode }) {
+  return <div className="course-activity__heading">
+    <h1 className="course-title">{title}</h1>
+    {speaker}
+  </div>;
+}
+
 function ActivityBody({ session, activity }: { session: CourseSession; activity: ActivityModel }) {
+  const [speaking, setSpeaking] = useState(false);
+  useEffect(() => () => { window.speechSynthesis?.cancel(); }, []);
+  const listen = () => {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    if (speaking) { setSpeaking(false); return; }
+    const text = activity.ask || activity.learn?.teach || activity.title;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = session.zh ? 'zh-CN' : 'en-US';
+    utterance.onend = utterance.onerror = () => setSpeaking(false);
+    setSpeaking(true); window.speechSynthesis.speak(utterance);
+  };
+  const editor = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const rememberCaret = (el: HTMLInputElement | HTMLTextAreaElement) => {
+    editor.current = el;
+    session.setCaret(el.selectionStart ?? el.value.length, el.selectionEnd ?? el.value.length);
+  };
+  const insert = (word: string) => {
+    session.placeCard(word);
+    requestAnimationFrame(() => {
+      const el = editor.current;
+      if (el && el.isConnected) { el.focus(); el.setSelectionRange(session.caret.start, session.caret.end); }
+    });
+  };
+  const speaker = activity.check?.phase === 'results' ? null : (
+    <BAButton className="course-listen" iconOnly size={50} variant="ghost"
+      aria-label={speaking ? (session.zh ? '停止朗读' : 'Stop listening') : (session.zh ? '朗读题目' : 'Listen to the prompt')}
+      onPress={listen}><BAIcon name="speaker" size={24} /></BAButton>
+  );
   const pickLocked =
     !!activity.pick?.locked ||
     !!activity.pick?.options.some((option) => option.state === 'correct' || option.state === 'correctUnselected' || option.state === 'dim');
   return (
-    <article className="course-activity" data-template={activity.template} data-kind={activity.kind}>
+    <article className="course-activity" data-template={activity.template} data-kind={activity.kind} data-writing={activity.canvas ? 'true' : undefined}>
       {activity.check && activity.check.phase !== 'results' ? (
         <div className="course-check">
           <p className="course-check__number" data-testid="check-number">
@@ -374,38 +379,38 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.learn ? (
         <>
-          <h1 className="course-title">{activity.learn.heading || activity.title}</h1>
+          <ActivityHeading title={activity.learn.heading || activity.title} speaker={speaker} />
           {activity.learn.teach ? <p className="course-teach">{activity.learn.teach}</p> : null}
           {activity.learn.weak || activity.learn.strong ? (
+            <div className={activity.layers?.length ? 'course-learn-two-column' : undefined}>
+              {activity.layers?.length ? <HamburgerComposition layers={activity.layers.map(layer=>({layerId:layer.id,label:layer.label,value:layer.value,emphasis:layer.emphasis}))}/> : null}
             <div className="course-examples">
               {activity.learn.weak ? (
                 <p lang="en">
-                  <span>{activity.learn.weakLabel}</span> {activity.learn.weak}
+                  <span className="course-examples__label">{activity.learn.weakLabel}</span> {activity.learn.weak}
                 </p>
               ) : null}
               {activity.learn.strong ? (
                 <p className="course-examples__better" lang="en" data-testid="better-panel" data-cue="pedagogical">
-                  <BAIcon name="check" />
                   <span>
-                    <span>{activity.learn.strongLabel}</span> {activity.learn.strong}
+                    <span className="course-examples__label">{activity.learn.strongLabel}</span> {activity.learn.strong}
                   </span>
                 </p>
               ) : null}
+            </div>
             </div>
           ) : null}
           {activity.learn.nextUp ? <p>{activity.learn.nextUp}</p> : null}
         </>
       ) : null}
-      {activity.layers?.length ? (
+      {activity.layers?.length && !activity.learn ? (
         <div className="hamburger-stack" data-testid="hamburger">
-          {activity.layers.map((layer) => (
-            <HamburgerLayer key={layer.id} layerId={layer.id} label={layer.label} value={layer.value} emphasis={layer.emphasis} />
-          ))}
+          <HamburgerComposition layers={activity.layers.map(layer=>({layerId:layer.id,label:layer.label,value:layer.value,emphasis:layer.emphasis}))}/>
         </div>
       ) : null}
       {activity.pick && activity.check?.phase !== 'results' ? (
         <>
-          <h1 className="course-title">{activity.ask}</h1>
+          <ActivityHeading title={activity.ask} speaker={speaker} />
           {activity.pick.hint ? <p>{activity.pick.hint}</p> : null}
           <BAChoice
             choiceMode={activity.pick.multi ? 'multiple' : 'single'}
@@ -433,7 +438,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.tapword && activity.check?.phase !== 'results' ? (
         <>
-          <h1 className="course-title">{activity.ask}</h1>
+          <ActivityHeading title={activity.ask} speaker={speaker} />
           <p className="course-words" lang="en">
             {activity.tapword.words.map((word) => (
               <button
@@ -444,6 +449,9 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
                 data-selected={word.selected ? 'true' : undefined}
                 data-wrong={word.wrong ? 'true' : undefined}
                 data-revealed={word.revealed ? 'true' : undefined}
+                data-correct={word.correct ? 'true' : undefined}
+                aria-pressed={word.selected}
+                aria-label={word.revealed ? `${word.text} · ${session.zh ? '展示答案' : 'Shown answer'}` : word.correct ? `${word.text} · ${session.zh ? '正确' : 'Correct'}` : undefined}
                 onClick={() => session.tapWord(word.index)}
               >
                 {word.text}
@@ -454,7 +462,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.build ? (
         <>
-          <h1 className="course-title">{activity.ask}</h1>
+          <ActivityHeading title={activity.ask} speaker={speaker} />
           {activity.build.revealed ? (
             <p className="course-revealed" lang="en">
               {activity.build.revealed}
@@ -480,7 +488,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.frame ? (
         <>
-          <h1 className="course-title">{activity.ask}</h1>
+          <ActivityHeading title={activity.ask} speaker={speaker} />
           <p className="course-frame" lang="en" data-testid="frame">
             {activity.frame.parts.map((part, index) => (
               <span key={`${part}-${index}`}>
@@ -489,7 +497,9 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
                   <input
                     aria-label={activity.frame!.blanks[index].label || (session.zh ? `空 ${index + 1}` : `Blank ${index + 1}`)}
                     value={activity.frame!.blanks[index].value}
-                    onFocus={() => session.focusBlank(index)}
+                    readOnly={session.currentTaskClosed()}
+                    onFocus={(event) => { session.focusBlank(index); rememberCaret(event.currentTarget); }}
+                    onSelect={(event) => rememberCaret(event.currentTarget)}
                     onChange={(event) => session.setBlank(index, event.target.value)}
                   />
                 ) : null}
@@ -500,28 +510,34 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.canvas && activity.check?.phase !== 'results' ? (
         <>
-          {activity.check ? null : <h1 className="course-title">{activity.ask}</h1>}
+          <ActivityHeading title={activity.ask} speaker={speaker} />
           <label className="course-canvas">
-            <span>{activity.canvas.label}</span>
+            <span className="course-sr">{activity.canvas.label}</span>
             <textarea
               lang="en"
               data-testid="writing-canvas"
               value={activity.canvas.text}
               readOnly={activity.check?.phase === 'graded'}
+              onFocus={(event) => rememberCaret(event.currentTarget)}
+              onSelect={(event) => rememberCaret(event.currentTarget)}
+              onPaste={() => session.markPaste()}
               onChange={(event) => session.setCanvas(event.target.value)}
             />
           </label>
-          {activity.canvas.tip ? <p>{activity.canvas.tip}</p> : null}
+          {activity.kind !== 'apply' && activity.canvas.tip ? <p>{activity.canvas.tip}</p> : null}
         </>
       ) : null}
       {activity.wordGrid ? (
         <WordGrid
-          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, disabled: word.used })) }))}
+          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, disabled: word.used || session.currentTaskClosed(), evaluation: word.hint ? 'hint' as const : word.shake ? 'incorrect' as const : undefined })) }))}
           activeGroup={activity.wordGrid.active}
           locale={session.locale}
           onGroupChange={(key) => session.selectGrid(key)}
-          onInsert={(word) => session.placeCard(word)}
+          onInsert={insert}
         />
+      ) : null}
+      {activity.check?.phase === 'results' && activity.check.tryNew && session.canNext(session.inspect().screen) ? (
+        <BAButton variant="secondary" locale={session.locale} onPress={() => session.retryCheck()}>{session.zh ? '再做一组' : 'Try a new set'}</BAButton>
       ) : null}
       {activity.applyMoveOn ? (
         <BAButton variant="secondary" locale={session.locale} onPress={() => session.moveOn()}>
@@ -568,6 +584,7 @@ function PreviewView({ session }: { session: CourseSession }) {
 function PracticeBurst({ session }: { session: CourseSession }) {
   const reduced = prefersReducedMotion();
   const lesson = !!session.practiceBurst?.lesson;
+  useEffect(() => { const timeout = window.setTimeout(() => session.dismissPractice(), 2400); return () => window.clearTimeout(timeout); }, [session, session.practiceBurst?.id]);
   const label = lesson
     ? session.zh
       ? '这一课完成了。'

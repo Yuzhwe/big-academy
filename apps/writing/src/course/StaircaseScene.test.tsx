@@ -30,7 +30,7 @@ describe('E-01 diagonal scene shared A/B geometry', () => {
     const speeds = scenicSpeeds(inputs, frame.width);
     const onScreen = viewport / inputs.trackLength;
     const cover = (frame.width - viewport) / inputs.cameraMaxTravel;
-    expect(inputs.trackLength).toBe((count - 1) * 290 + 260);
+    expect(inputs.trackLength).toBe((count - 1) * 290 + 340);
     expect(inputs.cameraMaxTravel).toBe(inputs.trackLength - viewport);
     expect(speeds.cards).toBe(1);
     expect(speeds.sky).toBe(0);
@@ -91,6 +91,6 @@ describe('E-01 diagonal scene shared A/B geometry', () => {
   it('positions first and last steps within pan limits', () => {
     expect(cameraForStep(0, 1024, 20)).toBe(0);
     expect(cameraForStep(19, 1024, 20)).toBeGreaterThan(0);
-    expect(cameraForStep(19, 1024, 20)).toBeLessThanOrEqual(19 * 290 + 260 - 1024);
+    expect(cameraForStep(19, 1024, 20)).toBeLessThanOrEqual(19 * 290 + 340 - 1024);
   });
 });

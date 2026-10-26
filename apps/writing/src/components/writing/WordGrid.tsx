@@ -23,6 +23,8 @@ export interface WordGridProps {
   activeGroup: string;
   presentation?: 'docked' | 'overlay';
   tabs?: 'auto' | 'show' | 'hide';
+  /** R04 seam repair keeps the approved rounded tabs; previous slanted trial retired. */
+  tabAppearance?: 'connected';
   locale?: BALocale;
   onGroupChange?: (key: string) => void;
   onInsert?: (word: string) => void;
@@ -33,7 +35,7 @@ const labels = {
   zh: { selected:'已选择', used:'已使用', correct:'正确', incorrect:'错误', hint:'提示', shown:'系统展示答案', disabled:'不可操作' },
 };
 /** Approved neutral bank. R2 selection/evaluation extensions are candidates; the caller owns all grading. */
-export function WordGrid({ groups, activeGroup, presentation='docked', tabs='auto', locale='en', onGroupChange, onInsert, onWordAction }: WordGridProps) {
+export function WordGrid({ groups, activeGroup, presentation='docked', tabs='auto', tabAppearance='connected', locale='en', onGroupChange, onInsert, onWordAction }: WordGridProps) {
   if (!groups.length) return null;
   const active = groups.some(g=>g.id===activeGroup) ? activeGroup : groups[0].id;
   const current = groups.find(g=>g.id===active)!;
@@ -53,13 +55,12 @@ export function WordGrid({ groups, activeGroup, presentation='docked', tabs='aut
         onMouseDown={event=>event.preventDefault()}
         onPress={()=>{ if(onWordAction) onWordAction(word,current.id); else onInsert?.(word.text); }}>
         <span className="word-grid__text">{word.text}</span>
-        {extended && status && <span className="word-grid__state-label" lang={locale==='zh'?'zh-CN':'en'} aria-hidden="true">{status}</span>}
       </Button>;
     }) : <p className="word-grid__empty">{locale==='zh'?'这里还没有词。':'Nothing here yet.'}</p>}
   </div>;
   const review = groups.some(g=>g.words.some(w=>w.selection || w.evaluation || w.kind==='sentence')) ? 'candidate' : 'approved';
   if(!showTabs) return <div className="word-grid" data-component="BA-WR-003" data-presentation={presentation} data-visual={review} data-tabs="off">{cards}</div>;
-  return <Tabs className="word-grid" data-component="BA-WR-003" data-presentation={presentation} data-visual={review}
+  return <Tabs className="word-grid" data-component="BA-WR-003" data-presentation={presentation} data-visual={review} data-first-active={active === groups[0].id ? 'true' : 'false'} data-tab-appearance={tabAppearance}
     selectedKey={active} onSelectionChange={key=>onGroupChange?.(String(key))}>
     <TabList className="word-grid__tabs" aria-label={locale==='zh'?'词表分类':'Word groups'}>
       {groups.map(group=><Tab key={group.id} id={group.id} className="word-grid__tab">{group.label}</Tab>)}

@@ -31,3 +31,10 @@
 .ba-tabs__wrapper[data-appearance='dark'] .ba-tabs__option[data-selected] { color:var(--ba-color-content-primary); }
 .ba-tabs__wrapper[data-appearance='dark'] .ba-tabs__option[data-focus-visible] .ba-segmented__content { outline-color:var(--ba-color-info-5); }
 @media(prefers-reduced-motion:reduce) { .ba-tabs__option .ba-segmented__content { transform:none !important; } }
+
+/* Glass is an opt-in R2 candidate; interaction and keyboard ownership stay in React Aria. */
+.ba-tabs__wrapper[data-appearance='glass'] .ba-tabs__tablist {
+  background:var(--ba-tabs-glass-surface); border-color:var(--ba-tabs-glass-border);
+  backdrop-filter:blur(var(--ba-tabs-glass-blur));
+  -webkit-backdrop-filter:blur(var(--ba-tabs-glass-blur));
+}

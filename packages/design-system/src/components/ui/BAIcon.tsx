@@ -1,7 +1,8 @@
-/** BA-UI-008 · small official Iconoir regular SVG subset (MIT).
- * Source: github.com/iconoir-icons/iconoir, Copyright (c) 2021 Luca Burgio.
- * See packages/design-system/THIRD_PARTY_NOTICES.md.
- * Existing official SVG path geometry is preserved. Default sizing [E].
+/** BA-UI-008 · lightweight shared SVG icons.
+ * The original Iconoir subset is MIT: github.com/iconoir-icons/iconoir
+ * (Copyright Luca Burgio; see design-system/THIRD_PARTY_NOTICES.md).
+ * Its path geometry is preserved; Review 03 adds a distinct simple Speaker
+ * symbol for accessible read-aloud. Default sizing remains [E].
  */
 import type { CSSProperties } from 'react';
 import './BAIcon.css';
@@ -34,6 +35,11 @@ export const baIconPaths = {
     "M6 21L20 21",
     "M6 21C4.89543 21 4 20.1046 4 19C4 17.8954 4.89543 17 6 17",
     "M9 7L15 7"
+  ],
+  "speaker": [
+    "M4 10H7L12 6V18L7 14H4V10Z",
+    "M16 8C17.3 9 18 10.4 18 12C18 13.6 17.3 15 16 16",
+    "M18.5 5.5C20.6 7.2 22 9.5 22 12C22 14.5 20.6 16.8 18.5 18.5"
   ],
   "warning-circle": [
     "M12 7L12 13",

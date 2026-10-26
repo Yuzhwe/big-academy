@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { LessonWorkspace } from './LessonWorkspace';
+import { CoachMessage, LessonWorkspace } from './LessonWorkspace';
 
 const meta = {
   title: 'Writing/Shell/LessonWorkspace',
@@ -47,4 +47,21 @@ export const CoachOverflow: Story = {
 export const CoachRailNavBottomRight: Story = {
   args: { activity: 'Paper', coach: 'Coach', navigation: 'Footer' },
   render: () => <Frame coach="Previous and the primary action sit under the coach" />,
+};
+
+/** All Coach answers are cards; correct, wrong and hint retain separate semantic palettes. */
+export const CoachMessageStates: Story = {
+  args: { activity: 'Paper', coach: 'Coach', navigation: 'Footer' },
+  render: () => <div style={{ height: 620 }}>
+    <LessonWorkspace
+      activity={<p>A learning activity and its answer controls.</p>}
+      coach={<div>
+        <CoachMessage tone="orientation">Read the question and choose what you think is right.</CoachMessage>
+        <CoachMessage tone="hint" data-testid="hint">Look for a word that tells you the writer's opinion.</CoachMessage>
+        <CoachMessage tone="wrong">Not quite. Look again for an opinion.</CoachMessage>
+        <CoachMessage tone="correct" role="status">Great! You found the topic sentence.</CoachMessage>
+      </div>}
+      navigation={<><button type="button">Previous</button><button type="button">Next</button></>}
+    />
+  </div>,
 };

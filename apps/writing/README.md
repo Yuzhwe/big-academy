@@ -1,12 +1,9 @@
-# Writing · first product pilot
+# Big Academy Writing
 
-- [PRODUCT.md](PRODUCT.md) — **one Writing product file including shared product rules plus E-01 and later feature-specific page Specifications** (draft; Alex is original logic authority).
-- [Global DESIGN.md](../../DESIGN.md) — the only design spec; typography/Color Themes/Iconoir/shared component principles, not a duplicate page description.
-- [Component Registry](contracts/components.json) — component contracts/IDs; implementation and visual approval are separate.
-- [Alex original source](source/alex-original.html) — source-backed scoring/progression; never modify silently.
-- [E-01 runtime](docs/SLICE_RUNTIME.md) — partial lesson flow (not all nine lessons/52 screens).
-- [Original reference prompts](source/) — historical layout ideas, not independent product or visual authority.
+Canonical product: [PRODUCT.md](PRODUCT.md), Canonical v1 · 2026-10-21. Visual authority: root [DESIGN.md](../../DESIGN.md). Stable interfaces: [component contracts](contracts/components.json).
 
-Launch Writing: `npm run dev` from repository root. Run `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run test:layout`, and relevant Storybook/browser checks for review.
+The integrated learner journey is L2 / G2-O / Lesson 1, eight Activity Screens, E-01 and Lesson End. Other curriculum stays on its existing locked/preview behavior.
 
-E-01 uses separate platforms on the v2-terraces landscape. Artwork is in `public/path/v2-terraces/`. High-fidelity browser visual sign-off remains pending.
+Double-click `Start Big Academy.command` at the repository root, or run `npm run dev -w @big-academy/writing -- --port 5174 --strictPort`.
+
+[Integration delivery, checks, screenshots and limitations](docs/INTEGRATION_V1.md). The R2.12 artwork lives in `src/assets/r2.12/`. Visual acceptance remains with the designer.

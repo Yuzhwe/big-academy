@@ -9,3 +9,6 @@ coverage/
 *.log
 playwright-report/
 test-results/
+
+/.local
+/node_modules

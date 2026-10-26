@@ -211,7 +211,7 @@ describe('course slice UI', () => {
     await user.click(screen.getByRole('button', { name: 'Back to my path' }));
     const lessonOne = document.querySelector('[data-lesson-id="G2-O:1"]');
     expect(lessonOne).toHaveAttribute('data-state', 'continue');
-    expect(lessonOne?.querySelector('[data-testid="lesson-row"]')).toHaveTextContent('Continue');
+    expect(lessonOne?.querySelector('[data-testid="lesson-row"]')).toHaveTextContent('Enter');
 
     await user.click(document.querySelector('[data-lesson-focus="G2-O:2"]') as HTMLElement);
     expect(screen.getByTestId('locked-note')).toHaveTextContent(/Lesson 1/);
@@ -238,10 +238,10 @@ function reach(course: Session, match: (screen: Session['screens'][number]['scre
   expect(course.inspect().screen).toBe(target);
 }
 
-describe('designer preview seed', () => {
+describe('default L0/L1 display-only completion', () => {
   it('shows Level 0 and Level 1 lessons completed without writing progress or mastery', () => {
     const storage = createMemoryStorage();
-    const course = session('?demo=preview-seed', storage);
+    const course = session('', storage);
     const record = storage.getItem(ALEX_STATE_KEY);
     const saved = JSON.parse(record ?? '{}') as { done: Record<string, boolean>; tasks: Record<string, unknown>; checks: Record<string, unknown>; skills?: Record<string, string> };
     expect(saved.done).toEqual({});
@@ -296,19 +296,17 @@ describe('Lesson 1 screens 5–8', () => {
     reach(course, (screen) => screen.task === 'ss.L2-04');
     render(<CourseApp session={course} />);
     expect(screen.queryByRole('button', { name: /Start again|重新开始/ })).not.toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: '本题词块' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: '观点' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: '标点' })).toBeInTheDocument();
+    expect(screen.queryByRole('tablist')).not.toBeInTheDocument(); // PRODUCT §12.1: one authored build group
     expect(screen.getByTestId('lesson-footer')).toHaveAttribute('data-span', 'rail');
     expect(screen.getByTestId('build-bench').textContent).not.toMatch(/…|\.{3}/);
     expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
     expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
-    const garden = screen.getByRole('button', { name: 'garden' });
+    const garden = screen.getByRole('button', { name: /^garden(?: ·.*)?$/ });
     await user.click(garden);
-    expect(screen.getByRole('button', { name: 'garden' })).not.toHaveAttribute('data-hint', 'true');
+    expect(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ })).not.toHaveAttribute('data-hint', 'true');
     expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
-    await user.click(screen.getByRole('button', { name: 'garden' }));
-    expect(screen.getByRole('button', { name: 'garden' })).toHaveAttribute('data-hint', 'true');
+    await user.click(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ }));
+    expect(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ })).toHaveAttribute('data-hint', 'true');
     expect(screen.getByRole('button', { name: 'school' })).not.toHaveAttribute('data-hint', 'true');
     expect(screen.getByTestId('feedback')).toHaveAttribute('data-outcome', 'wrong');
     await user.click(screen.getByRole('button', { name: 'our' }));
@@ -358,5 +356,138 @@ describe('Lesson 1 screens 5–8', () => {
     expect(course.screenDone(course.inspect().screen)).toBe(true);
     expect(course.inspect().checks['L2-04.check']?.passed).toBe(false);
     expect(JSON.stringify(course.inspect())).not.toContain('celebrated');
+  });
+});
+
+describe('integration v1 recovery and assessment boundaries',()=>{
+ it('persists wrong-attempt feedback without regrading on reload',()=>{
+  const storage=createMemoryStorage();const course=session('',storage);course.openLesson('G2-O',1);course.pressPrimary();course.pick(0);course.pressPrimary();const feedback=course.feedback;
+  const restored=session('',storage);restored.openLesson('G2-O',1);expect(restored.activity()?.feedback).toBe(feedback);expect(restored.inspect().tasks['L2-04.skill:ts1'].tries).toBe(1);
+ });
+ it('inserts in a focused frame blank at the caret',()=>{
+  const course=session();reach(course,s=>s.task==='ts8');course.setBlank(1,'kids play');course.focusBlank(1);course.setCaret(5,5);course.placeCard('need');expect(course.activity()?.frame?.blanks[1].value).toBe('kids need play');
+ });
+ it('preserves pasted and word-grid source spans while typing elsewhere',()=>{
+  const course=session();reach(course,s=>s.kind==='apply');course.markPaste();course.setCanvas('Our garden.');course.setCaret(4,4);course.placeCard('school');course.setCanvas('Our school garden. More');
+  const spans=course.inspect().regions['L2-04.apply'];expect(spans.some(s=>s.s==='paste')).toBe(true);expect(spans.some(s=>s.s==='grid')).toBe(true);expect(spans.at(-1)?.s).toBe('typed');
+ });
+ it('requires writing plus at least two auto answers and preserves attempt-specific responses',()=>{
+  const course=session();reach(course,s=>s.kind==='check');
+  const answer=(picks:number[],writing:string)=>{course.pick(picks[0]);course.pressPrimary();course.pick(picks[1]);course.pressPrimary();if(course.activity()?.tapword)course.tapWord(2);else course.pick(picks[2]);course.pressPrimary();course.setCanvas(writing);course.pressPrimary();};
+  answer([1,2,0],'pets');expect(course.inspect().checks['L2-04.check'].passed).toBe(false);course.pressPrimary();
+  answer([2,2,2],'I believe kids should have pets at home.');expect(course.inspect().checks['L2-04.check'].passed).toBe(false);expect(course.screenDone(course.inspect().screen)).toBe(true);
+  course.retryCheck();expect(course.inspect().checks['L2-04.check'].attempt).toBe(2);expect(course.inspect().regions['L2-04.check:a0:L2-04.mw']).toBeDefined();expect(course.inspect().regions['L2-04.check:a1:L2-04.mw']).toBeDefined();
+ });
+});
+
+describe('integration v1 authored hints and tapword feedback',()=>{
+ it('offers Apply hints without revealing, grading, or using an attempt',()=>{
+  const course=session();reach(course,s=>s.kind==='apply');course.openHint();course.openHint();course.openHint();expect(course.activity()?.hints).toHaveLength(2);expect(course.activity()?.hintAction).toBeNull();expect(course.inspect().applies['L2-04'].tries).toBe(0);expect(course.screenDone(course.inspect().screen)).toBe(false);
+ });
+ it('locks a correctly checked tapword and keeps its correct mark on return',()=>{
+  const course=session();reach(course,s=>s.task==='ts4');course.tapWord(1);course.pressPrimary();expect(course.activity()?.tapword?.locked).toBe(true);expect(course.activity()?.tapword?.words[1].correct).toBe(true);course.backToPath();course.openLesson('G2-O',1);expect(course.activity()?.tapword?.words[1].correct).toBe(true);
+ });
+});
+
+
+describe('Review 02 contextual primary prerequisites', () => {
+  it('disables an untouched single pick without grading, then enables Check after a choice', () => {
+    const course = session();
+    course.openLesson('G2-O', 1);
+    expect(course.primaryReady()).toBe(true); // P2 Learn has no required answer
+    course.pressPrimary();
+    expect(course.primaryReady()).toBe(false);
+    expect(course.footer().primaryDisabled).toBe(true);
+    const before = JSON.stringify(course.inspect().tasks);
+    course.pressPrimary();
+    expect(JSON.stringify(course.inspect().tasks)).toBe(before);
+    course.pick(1);
+    expect(course.primaryReady()).toBe(true);
+    expect(course.footer().primaryDisabled).toBe(false);
+    course.pressPrimary();
+    expect(course.footer().primaryDisabled).toBe(false); // ready to advance after grading
+  });
+
+  it('enables multi-select Check after the first selection without treating it as correct', () => {
+    const course = session();
+    course.openLesson('G2-O', 1);
+    const multiple = course.liveIdx(0)[3];
+    const screen = course.screens[multiple].screen;
+    const taskId = screen.task!;
+    const authored = course.config.tasks.find(item => item.id === taskId)!;
+    expect(authored.multi).toBe(true);
+    const need = authored.answers?.length ?? 0;
+    expect(need).toBe(3);
+    course.inspect().screen = multiple;
+    const key = `${screen.page}:${taskId}`;
+    const selected = Array.from({length:need-1},(_,i)=>i);
+    course.inspect().tasks[key] = {tries:0,status:'open',picked:selected};
+    expect(course.footer().primaryDisabled).toBe(false);
+    selected.push(need-1);
+    expect(course.footer().primaryDisabled).toBe(false);
+    selected.push(need);
+    expect(course.footer().primaryDisabled).toBe(false);
+    selected.splice(0, selected.length);
+    expect(course.footer().primaryDisabled).toBe(true);
+  });
+
+  it('preserves the authored blank-question navigation and first Hand in warning on P7', () => {
+    const course = session();
+    course.openLesson('G2-O', 1);
+    course.inspect().screen = course.liveIdx(0)[7];
+    expect(course.primaryReady()).toBe(true);
+    expect(course.footer().primaryDisabled).toBe(false);
+    expect(course.footer().primaryTestId).toBe('next-question');
+    course.pressPrimary();
+    expect(course.footer().primaryDisabled).toBe(false);
+  });
+});
+
+
+describe('Review 03: hint-only coaching and one-selection Check', () => {
+  it('never substitutes an answer or consumes a try after the entire hint ladder', () => {
+    for (const id of ['ts1', 'ts4', 'ts3', 'ss.L2-04', 'ts8']) {
+      const course = session();
+      reach(course, s => s.task === id);
+      const screenRef = course.screens[course.inspect().screen].screen;
+      const taskKey = `${screenRef.page}:${screenRef.task}`;
+      const before = JSON.stringify(course.inspect().regions);
+      for (let step = 0; step < 5; step++) course.openHint();
+      const record = course.inspect().tasks[taskKey];
+      expect(record.status, id).toBe('open');
+      expect(record.tries, id).toBe(0);
+      expect(course.activity()?.hintAction, id).toBeNull();
+      expect(course.screenDone(course.inspect().screen), id).toBe(false);
+      expect(JSON.stringify(course.inspect().regions)).toBe(before);
+      expect(record.picked?.length ?? 0).toBe(0);
+      expect(record.sel ?? null).toBeNull();
+    }
+  });
+
+  it('enables P3 multi Check at one option, but still judges against all authored correct options', () => {
+    const course = session();
+    reach(course, s => s.task === 'ts3');
+    expect(course.footer().primaryDisabled).toBe(true);
+    course.pick(1); // one fact, not the required three opinions
+    expect(course.footer().primaryDisabled).toBe(false);
+    course.pressPrimary();
+    const screenRef = course.screens[course.inspect().screen].screen;
+    const record = course.inspect().tasks[`${screenRef.page}:${screenRef.task}`];
+    expect(record.tries).toBe(1);
+    expect(record.status).toBe('open');
+    expect(course.screenDone(course.inspect().screen)).toBe(false);
+  });
+
+  it('simplifies every Unit meta while preserving per-unit lesson totals and minutes', () => {
+    const course = session();
+    for (const id of ['L0','L1','L2']) {
+      const units = course.pathNodes(id).filter(node => node.unit).map(node => node.unit!);
+      for (const unit of units) {
+        expect(unit.meta).toMatch(/^\d+ lessons(?: · \d+ mins)?$/);
+        expect(unit.meta).not.toMatch(/about|of|Writing unit/i);
+      }
+    }
+    course.toggleLocale();
+    expect(course.pathNodes('L2').find(node => node.unit)?.unit?.meta).toMatch(/^\d+ 课(?: · \d+ 分钟)?$/);
   });
 });

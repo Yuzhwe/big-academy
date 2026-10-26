@@ -26,3 +26,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Supplied Staircase R2.12 reference attribution
+
+The designer-supplied HTML credits “GooeyNav source © Rare UI” at https://rareui.com. That attribution is retained here with the reference provenance. The integrated navigation uses the existing Big Academy BATabs / React Aria implementation rather than copying the reference's navigation engine. The supplied flag-path wind animation is described in the reference as original SVG animation, not ProDesigner's proprietary engine.

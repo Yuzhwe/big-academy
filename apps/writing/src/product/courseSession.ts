@@ -88,6 +88,7 @@ export interface CheckRecord {
 
 export interface AlexState {
   v: 4;
+  feedbackByScreen?: Record<string, { text: string; tone: 'correct' | 'wrong'; locale: 'en' | 'zh' }>;
   screen: number;
   page: number;
   seen: Record<string, boolean>;
@@ -196,7 +197,7 @@ export interface ActivityModel {
     locked?: boolean;
   };
   tapword?: {
-    words: { index: number; text: string; selected: boolean; wrong: boolean; revealed?: boolean }[];
+    words: { index: number; text: string; selected: boolean; wrong: boolean; correct?: boolean; revealed?: boolean }[];
     locked?: boolean;
   };
   build?: {
@@ -231,7 +232,7 @@ export interface ActivityModel {
   unsupportedReason?: string;
   skip: SkipOffer | null;
   hints: string[];
-  hintAction: 'hint' | 'another' | 'reveal' | null;
+  hintAction: 'hint' | 'another' | null;
   coach: string[];
   coachMore: boolean;
   feedback: string;
@@ -243,6 +244,7 @@ export interface FooterModel {
   backDisabled?: boolean;
   primaryLabel: string;
   primaryTestId: string;
+  primaryDisabled?: boolean;
 }
 
 export interface TopBarModel {
@@ -359,7 +361,9 @@ export class CourseSession {
   private returnTo: { unitId: string; number: number } | null = null;
   private shakeCard: string | null = null;
   /** Designer query only. Never copied into the learner record. */
-  private previewSeed = false;
+  caret = { start: Number.MAX_SAFE_INTEGER, end: Number.MAX_SAFE_INTEGER };
+  private pasted = false;
+  private saveTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor(options: CourseSessionOptions) {
     const source = loadAlexSource(options.html);
@@ -377,7 +381,6 @@ export class CourseSession {
     if (!loaded.fromStorage && new URLSearchParams(options.search ?? '').get('locale') === 'zh') {
       this.state.zh = true;
     }
-    this.previewSeed = new URLSearchParams(options.search ?? '').get('demo') === 'preview-seed';
     this.applySkillQuery(options.search ?? '');
     if (!this.canOpen(this.state.screen)) this.state.screen = this.firstOpen();
     this.state.page = this.pageIndex(this.screens[this.state.screen]?.screen.page ?? '');
@@ -607,7 +610,6 @@ export class CourseSession {
         : live
           ? this.lessonStates(unit)
           : unit.lessons.map(() => 'view' as const);
-      const doneCount = states.filter((state) => state === 'done' || state === 'skipped').length;
       nodes.push({
         kind: 'unit',
         id: unit.id,
@@ -616,13 +618,9 @@ export class CourseSession {
           index: unitIndex + 1,
           typeLabel: this.unitTypeLabel(unit),
           title: this.shortTitle(unit.title),
-          meta: live
-            ? this.zh
-              ? `${doneCount} / ${unit.lessons.length} 课 · 约 ${unit.min ?? ''} 分钟`
-              : `${doneCount} of ${unit.lessons.length} lessons · about ${unit.min ?? ''} min`
-            : this.zh
-              ? `${unit.lessons.length} 课 · 约 ${unit.min ?? ''} 分钟`
-              : `${unit.lessons.length} lessons · about ${unit.min ?? ''} min`,
+          meta: this.zh
+            ? `${unit.lessons.length} 课${unit.min == null ? '' : ` · ${unit.min} 分钟`}`
+            : `${unit.lessons.length} lessons${unit.min == null ? '' : ` · ${unit.min} mins`}`,
           goals: unit.playable ? (this.config.unit_goals ?? []).map((goal) => this.text(goal)) : [],
         },
       });
@@ -696,7 +694,7 @@ export class CourseSession {
         return false;
       }
       let target =
-        lessonIndex === this.curLesson()
+        courseState === 'done' ? indexes[0] : lessonIndex === this.curLesson()
           ? this.state.screen
           : (indexes.find((index) => !this.screenDone(index) && !this.stepSkipped(this.screens[index].step)) ??
             indexes[0]);
@@ -845,7 +843,9 @@ export class CourseSession {
   }
 
   private showsPreviewSeed(levelId: string): boolean {
-    return this.previewSeed && (levelId === 'L0' || levelId === 'L1');
+    // High-fidelity path preview: L0/L1 are visually complete by default.
+    // This does not mutate saved learner grades, mastered skills or L2 gates.
+    return levelId === 'L0' || levelId === 'L1';
   }
 
   topBar(): TopBarModel | null {
@@ -918,8 +918,8 @@ export class CourseSession {
       hintAction: null as ActivityModel['hintAction'],
       coach,
       coachMore: this.coachHasMore(screen),
-      feedback: this.feedback,
-      feedbackTone: this.feedback ? this.feedbackTone : 'wrong',
+      feedback: this.feedback || (this.state.feedbackByScreen?.[screen.id]?.locale === this.locale ? this.state.feedbackByScreen[screen.id].text : ''),
+      feedbackTone: this.feedback ? this.feedbackTone : this.state.feedbackByScreen?.[screen.id]?.tone ?? 'wrong',
     };
 
     if (screen.kind === 'learn' && screen.template === 'P2') {
@@ -983,11 +983,13 @@ export class CourseSession {
           hints,
           hintAction,
           tapword: {
+            locked: taskState.status !== 'open',
             words: tokens.map((token, index) => ({
               index,
               text: token.w,
-              selected: taskState.sel === index && taskState.status === 'open',
-              wrong: taskState.bad === index,
+              selected: taskState.sel === index && taskState.status !== 'shown',
+              correct: taskState.status === 'done' && taskState.sel === index,
+              wrong: taskState.status !== 'done' && taskState.bad === index,
               revealed: taskState.status === 'shown' && (task.targets ?? []).some((target) => this.engine.locate(task.text ?? '', target) === index),
             })),
           },
@@ -1014,6 +1016,38 @@ export class CourseSession {
     };
   }
 
+  /** Presentation-only readiness follows authored task checks; this never grades or changes records. */
+  primaryReady(index = this.state.screen): boolean {
+    if (this.view === 'lessonEnd' || this.view === 'preview') return true;
+    const screen = this.screens[index]?.screen;
+    if (!screen) return false;
+    if (screen.kind === 'check') {
+      // P7 explicitly allows blank internal questions and has an authored one-time
+      // blank warning on Hand in. Never turn that workflow into a mandatory answer gate.
+      return true;
+    }
+    if (this.canNext(index)) return true;
+    if (screen.kind === 'apply') {
+      const text = this.engine.stripPictures(regionText(this.state.regions[screen.page])).trim();
+      return this.analyzer.wordCount(text) >= 3;
+    }
+    if (screen.kind !== 'task' && screen.kind !== 'model_task') return false;
+    if (!screen.task) return false;
+    const task = this.task(screen.task);
+    const key = this.taskKey(screen);
+    const answer = this.state.tasks[key];
+    if (task.type === 'pick') return (answer?.picked?.length ?? 0) >= 1; // readiness is not correctness
+    if (task.type === 'tapword' && task.need !== 'all') return answer?.sel != null;
+    if (task.type === 'build') return false; // automatically checked as word cards complete the sentence
+    if (task.frameFill) {
+      const blanks = answer?.blanks ?? [];
+      const count = task.frameFill.frame.split('___').length - 1;
+      return count > 0 && blanks.slice(0, count).length === count && blanks.slice(0, count).every(v => !!v.trim());
+    }
+    if (task.type === 'write') return !!regionText(this.state.regions[key]).trim();
+    return false;
+  }
+
   footer(): FooterModel {
     if (this.view === 'lessonEnd') {
       return {
@@ -1033,7 +1067,7 @@ export class CourseSession {
     const screen = this.screens[index]?.screen;
     const backLabel = this.zh ? '上一页' : 'Previous';
     const backDisabled = index === 0;
-    if (screen?.kind === 'check') return this.checkFooter(screen, backLabel, backDisabled);
+    if (screen?.kind === 'check') return { ...this.checkFooter(screen, backLabel, backDisabled), primaryDisabled: !this.primaryReady(index) };
     if (screen?.kind === 'apply' && !this.canNext(index)) {
       const record = this.applyRecord(screen);
       return {
@@ -1041,6 +1075,7 @@ export class CourseSession {
         backDisabled,
         primaryLabel: record.tries ? (this.zh ? '再检查一次' : 'Check again') : this.zh ? '检查我的写作' : 'Check my writing',
         primaryTestId: 'check-writing',
+        primaryDisabled: !this.primaryReady(index),
       };
     }
     if (!this.canNext(index)) {
@@ -1049,6 +1084,7 @@ export class CourseSession {
         backDisabled,
         primaryLabel: this.blockedLabel(index),
         primaryTestId: 'check',
+        primaryDisabled: !this.primaryReady(index),
       };
     }
     return {
@@ -1056,6 +1092,7 @@ export class CourseSession {
       backDisabled,
       primaryLabel: this.nextLabel(index),
       primaryTestId: 'next',
+      primaryDisabled: !this.primaryReady(index),
     };
   }
 
@@ -1094,6 +1131,7 @@ export class CourseSession {
   }
 
   pressPrimary(): void {
+    if (!this.primaryReady()) return;
     if (this.view === 'preview') {
       this.backToPath();
       return;
@@ -1164,7 +1202,7 @@ export class CourseSession {
       const taskState = this.taskState(item.key);
       taskState.sel = taskState.sel === index ? null : index;
       taskState.bad = null;
-      this.save();
+      this.save(true);
       this.emit();
       return;
     }
@@ -1175,12 +1213,18 @@ export class CourseSession {
     if (taskState.status !== 'open') return;
     taskState.sel = taskState.sel === index ? null : index;
     taskState.bad = null;
-    this.save();
+    this.save(true);
     this.emit();
   }
 
   openHint(): void {
     const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind === 'apply') {
+      const task = this.task(this.pageOf(screen.page)?.task ?? '');
+      const record = this.taskState(screen.page + ':hints');
+      record.hintLv = Math.min((record.hintLv ?? 0) + 1, task.coach?.hints?.length ?? 0);
+      this.save(); this.emit(); return;
+    }
     if (!screen?.task) return;
     const task = this.task(screen.task);
     const taskState = this.taskState(this.taskKey(screen));
@@ -1194,7 +1238,9 @@ export class CourseSession {
       this.emit();
       return;
     }
-    this.finish(task, this.taskKey(screen), 'shown');
+    // Hint controls never submit, grade or reveal an answer.
+    // Existing formal wrong-attempt rules remain responsible for shown.
+    return;
   }
 
   showAnother(): void {
@@ -1280,7 +1326,7 @@ export class CourseSession {
     blanks[index] = value;
     taskState.blanks = blanks;
     taskState.focusBlank = index;
-    this.save();
+    this.save(true);
     this.emit();
   }
 
@@ -1296,8 +1342,14 @@ export class CourseSession {
     if (!screen) return;
     const key = this.canvasKey(screen);
     if (!key) return;
-    this.state.regions[key] = value ? [{ t: value, s: 'typed' }] : [];
-    this.save();
+    const old = regionText(this.state.regions[key]);
+    let prefix = 0;
+    while (prefix < old.length && prefix < value.length && old[prefix] === value[prefix]) prefix++;
+    let suffix = 0;
+    while (suffix < old.length - prefix && suffix < value.length - prefix && old[old.length - 1 - suffix] === value[value.length - 1 - suffix]) suffix++;
+    this.replaceRegion(key, prefix, old.length - suffix, value.slice(prefix, value.length - suffix), this.pasted ? 'paste' : 'typed');
+    this.pasted = false;
+    this.save(true);
     this.emit();
   }
 
@@ -1305,7 +1357,7 @@ export class CourseSession {
     const screen = this.screens[this.state.screen]?.screen;
     if (!screen) return;
     this.state.grid.tab[this.gridKey(screen)] = groupId;
-    this.save();
+    this.save(true);
     this.emit();
   }
 
@@ -1343,6 +1395,29 @@ export class CourseSession {
     this.emit();
   }
 
+  retryCheck(): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind !== 'check') return;
+    const record = this.checkRecord(screen);
+    if (!record.finished || record.passed) return;
+    record.attempt += 1;
+    record.finished = false;
+    record.q = 0;
+    record.view = null;
+    record.blankAsk = false;
+    this.say('');
+    this.save();
+    this.emit();
+  }
+
+  currentTaskClosed(): boolean {
+    const screen = this.screens[this.state.screen]?.screen;
+    return !!screen?.task && this.taskState(this.taskKey(screen)).status !== 'open';
+  }
+
+  setCaret(start: number, end: number): void { this.caret = { start, end }; }
+  markPaste(): void { this.pasted = true; }
+
   dismissPractice(): void {
     this.practiceBurst = null;
     this.emit();
@@ -1360,7 +1435,7 @@ export class CourseSession {
       taskState.picked = [index];
     }
     this.log('pick', { task: task.id });
-    this.save();
+    this.save(true);
     this.emit();
   }
 
@@ -1413,9 +1488,6 @@ export class CourseSession {
         used.splice(found, 1);
       }
     }
-    const screen = this.screens[this.state.screen]?.screen;
-    const page = screen ? this.pageOf(screen.page) : null;
-    const level = page?.grid?.level && page.grid.level !== 'off' ? page.grid.level : 'chunks';
     const taskWords = cards.map((card, index) => ({
       id: `${card.text}-${index}`,
       text: card.text,
@@ -1431,12 +1503,10 @@ export class CourseSession {
         revealed: taskState.status === 'shown' ? task.answer_text : undefined,
         cards,
       },
-      wordGrid: task.in_order
-        ? this.trioGrid(screen ? this.gridKey(screen) : task.id, taskWords, level, task)
-        : {
-            groups: [{ id: 'set', label: this.zh ? '句组' : 'Sentence set', words: taskWords }],
-            active: 'set',
-          },
+      wordGrid: {
+        groups: [{ id: 'set', label: this.zh ? '本题词块' : 'Sentence set', words: taskWords }],
+        active: 'set',
+      },
     };
   }
 
@@ -1464,7 +1534,7 @@ export class CourseSession {
     };
   }
 
-  private applyModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'canvas' | 'wordGrid' | 'applyMoveOn' | 'feedback' | 'feedbackTone'> {
+  private applyModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'canvas' | 'wordGrid' | 'applyMoveOn' | 'feedback' | 'feedbackTone' | 'hints' | 'hintAction'> {
     const page = this.pageOf(screen.page);
     const task = page?.task ? this.task(page.task) : null;
     const record = this.applyRecord(screen);
@@ -1486,6 +1556,8 @@ export class CourseSession {
       : this.feedback;
     return {
       ask: this.text(task?.ask),
+      hints: (task?.coach?.hints ?? []).slice(0, this.state.tasks[screen.page + ':hints']?.hintLv ?? 0).map(hint => this.text(hint)),
+      hintAction: (this.state.tasks[screen.page + ':hints']?.hintLv ?? 0) < (task?.coach?.hints?.length ?? 0) ? (this.state.tasks[screen.page + ':hints']?.hintLv ? 'another' : 'hint') : null,
       feedback: remembered,
       feedbackTone: record.result ? (record.passed && !record.safety ? 'correct' : 'wrong') : this.feedbackTone,
       canvas: {
@@ -1498,7 +1570,7 @@ export class CourseSession {
     };
   }
 
-  private checkModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'pick' | 'tapword' | 'canvas' | 'check'> {
+  private checkModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'pick' | 'tapword' | 'canvas' | 'check'> & Partial<Pick<ActivityModel, 'feedback' | 'feedbackTone'>> {
     const page = this.pageOf(screen.page);
     if (!page) return { ask: '', check: { phase: 'answer', number: 1, total: 0, dots: [] } };
     const record = this.checkRecord(screen);
@@ -1533,6 +1605,7 @@ export class CourseSession {
     return {
       ask: task ? this.text(task.ask) : '',
       ...body,
+      ...(graded ? { feedback: this.zh ? graded.zh || graded.explanation || '' : graded.explanation || '', feedbackTone: graded.correct ? 'correct' as const : 'wrong' as const } : {}),
       check: {
         phase: graded ? 'graded' : 'answer',
         number: index + 1,
@@ -1841,8 +1914,8 @@ export class CourseSession {
         const hinted = taps[cellText] >= 2;
         const why = this.text(task.why);
         this.say(
-          hinted && why
-            ? why
+          hinted && (task.coach?.words?.[cellText] || why)
+            ? this.text(task.coach?.words?.[cellText]) || why
             : this.zh
               ? '这个词还不是下一个。'
               : 'That word does not come next.',
@@ -1889,8 +1962,10 @@ export class CourseSession {
       const index = taskState.focusBlank ?? 0;
       const blanks = taskState.blanks ?? [];
       const current = blanks[index] ?? '';
-      const gap = current && !current.endsWith(' ') && !/^[.,!?]/.test(text) ? ' ' : '';
-      blanks[index] = `${current}${gap}${text}`;
+      const from = Math.min(this.caret.start, current.length), to = Math.min(this.caret.end, current.length);
+      const inserted = this.engine.smartInsert(current, from, to, text, 'grid');
+      blanks[index] = inserted.value;
+      this.caret = { start: inserted.caret, end: inserted.caret };
       taskState.blanks = blanks;
       this.save();
       this.emit();
@@ -1900,13 +1975,27 @@ export class CourseSession {
     if (!key) return;
     const current = regionText(this.state.regions[key]);
     const kind = /^[.,!?]$/.test(text) ? 'mark' : /\s/.test(text) ? 'chunk' : 'grid';
-    const next = this.engine.smartInsert(current, current.length, current.length, text, kind).value;
-    const added = next.slice(current.length);
-    const segs = this.state.regions[key] ? [...this.state.regions[key]] : [];
-    if (added) segs.push({ t: added, s: kind === 'chunk' ? 'chunk' : 'grid' });
-    this.state.regions[key] = segs;
+    const from = Math.min(this.caret.start, current.length), to = Math.min(this.caret.end, current.length);
+    const next = this.engine.smartInsert(current, from, to, text, kind);
+    const tailLength = current.length - to;
+    const inserted = next.value.slice(from, next.value.length - tailLength);
+    this.replaceRegion(key, from, to, inserted, kind === 'chunk' ? 'chunk' : 'grid');
+    this.caret = { start: next.caret, end: next.caret };
     this.save();
     this.emit();
+  }
+
+  private replaceRegion(key: string, start: number, end: number, inserted: string, source: string): void {
+    const segments = this.state.regions[key] ?? [];
+    const slice = (from: number, to: number) => {
+      let offset = 0;
+      return segments.flatMap(segment => {
+        const a = Math.max(0, from - offset), b = Math.min(segment.t.length, to - offset);
+        offset += segment.t.length;
+        return b > a ? [{ t: segment.t.slice(a, b), s: segment.s }] : [];
+      });
+    };
+    this.state.regions[key] = [...slice(0, start), ...(inserted ? [{ t: inserted, s: source }] : []), ...slice(end, Number.MAX_SAFE_INTEGER)];
   }
 
   private canvasKey(screen: AlexScreen): string | null {
@@ -2315,6 +2404,12 @@ export class CourseSession {
   private say(text: string, tone: 'correct' | 'wrong' = 'wrong'): void {
     this.feedback = text;
     this.feedbackTone = tone;
+    const id = this.screens[this.state.screen]?.screen.id;
+    if (text && id) {
+      this.state.feedbackByScreen ??= {};
+      this.state.feedbackByScreen[id] = { text, tone, locale: this.locale };
+      this.save();
+    }
   }
 
   private affirm(text: string): string {
@@ -2345,7 +2440,7 @@ export class CourseSession {
     const level = taskState.hintLv ?? 0;
     if (level === 0) return 'hint';
     if (level < hints.length) return 'another';
-    return 'reveal';
+    return null;
   }
 
   private skipOffer(step: StepTag, screen: AlexScreen): SkipOffer | null {
@@ -2635,7 +2730,12 @@ export class CourseSession {
     this.storage.setItem(CELEBRATION_KEY, JSON.stringify(this.receipt));
   }
 
-  private save(): void {
+  flush(): void { this.save(); }
+
+  private save(debounce = false): void {
+    if (this.saveTimer) clearTimeout(this.saveTimer);
+    this.saveTimer = undefined;
+    if (debounce) { this.saveTimer = setTimeout(() => this.save(), 250); return; }
     const stored = { ...this.state, unlockAll: false };
     this.storage.setItem(ALEX_STATE_KEY, JSON.stringify(stored));
   }

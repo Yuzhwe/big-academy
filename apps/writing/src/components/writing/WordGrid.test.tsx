@@ -30,3 +30,18 @@ it.each([
   expect(button).toBeEnabled(); expect(button).toHaveAttribute('aria-pressed',selection==='selected'?'true':'false');
   if(evaluation==='shown') expect(button).toHaveAccessibleName(/Shown answer/);
 });
+
+it('keeps usage and evaluation accessible without printing their labels inside word cards',()=>{
+  const props={groups:[{id:'g',label:'Words',words:[
+    {id:'s',text:'garden',selection:'selected' as const,evaluation:'hint' as const},
+    {id:'u',text:'school',selection:'used' as const},
+    {id:'d',text:'reasons',disabled:true,selection:'default' as const},
+    {id:'a',text:'believe',evaluation:'shown' as const},
+  ]}],activeGroup:'g'};
+  const {container}=render(<WordGrid {...props}/>);
+  expect(container.querySelector('.word-grid__state-label')).toBeNull();
+  expect(screen.getByRole('button',{name:'garden · Selected · Hint'})).toHaveTextContent(/^garden$/);
+  expect(screen.getByRole('button',{name:'school · Used'})).toHaveTextContent(/^school$/);
+  expect(screen.getByRole('button',{name:'reasons · Unavailable'})).toHaveTextContent(/^reasons$/);
+  expect(screen.getByRole('button',{name:'believe · Shown answer'})).toHaveTextContent(/^believe$/);
+});

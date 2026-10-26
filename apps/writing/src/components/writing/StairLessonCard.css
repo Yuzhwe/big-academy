@@ -50,20 +50,15 @@
   background: var(--ba-success, #14ae5c);
   color: #fff;
 }
-.stair-lesson-card__current-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
+/* Available, current/start and current/continue share one Enterable appearance. */
+.stair-lesson-card[data-visual-state='enterable'] {
+  border-color: var(--ba-writing-accent, #b25415);
+  box-shadow: 0 0 0 2px var(--ba-writing-accent, #b25415);
 }
-.stair-lesson-card[data-state='continue'] .stair-lesson-card__seal {
-  background: var(--ba-color-brand-10, #133547);
-  color: #fff;
-  border-color: var(--ba-color-brand-10, #133547);
-}
-.stair-lesson-card[data-state='continue'] .stair-lesson-card__symbol {
-  background: #fff;
-  color: var(--ba-color-brand-10, #133547);
+.stair-lesson-card[data-visual-state='completed'] .stair-lesson-card__seal {
+  background: var(--ba-color-success-fill);
+  color: var(--ba-color-surface-canvas);
+  border: 0;
 }
 .stair-lesson-card[data-state='locked'] {
   background: var(--ba-surface-warm, #fef9ef);
@@ -88,26 +83,22 @@
   overflow-wrap: anywhere;
   margin: 0;
   height: 60px;
-  font: 800 24px/30px var(--ba-font-heading-en, "Dosis", "Arial Narrow", sans-serif);
+  font: 800 var(--ba-writing-lesson-card-title-size, 24px)/var(--ba-writing-lesson-title-line-height, 30px) var(--ba-font-heading-en, "Dosis", "Arial Narrow", sans-serif);
 }
 .stair-lesson-card:lang(zh-CN) .stair-lesson-card__title {
   font-family: var(--ba-font-heading-zh, "Douyin Sans", "Noto Sans SC", sans-serif);
   font-weight: 700;
 }
-.stair-lesson-card__duration, .stair-lesson-card__skip {
+.stair-lesson-card__duration {
   margin: 6px 0 0;
   font: 500 16px/20px var(--ba-font-body-en, "Jost", sans-serif);
 }
-.stair-lesson-card:lang(zh-CN) .stair-lesson-card__duration,
-.stair-lesson-card:lang(zh-CN) .stair-lesson-card__skip {
+.stair-lesson-card:lang(zh-CN) .stair-lesson-card__duration {
   font-family: var(--ba-font-body-zh, "Noto Sans SC", sans-serif);
 }
 .stair-lesson-card__duration-number {
   font-family: var(--ba-font-digit, "Dosis", sans-serif);
   font-weight: 800;
-}
-.stair-lesson-card__skip {
-  font-size: 12px;
 }
 .stair-lesson-card__action.ba-button {
   display: block;
@@ -125,6 +116,6 @@
 .stair-lesson-card { max-width:100%; }
 .stair-lesson-card[data-title-lines='3'] { min-height:310px; }
 .stair-lesson-card[data-title-lines='3'] .stair-lesson-card__title { -webkit-line-clamp:var(--ba-lesson-r2-title-lines); line-clamp:var(--ba-lesson-r2-title-lines); height:calc(var(--ba-writing-lesson-title-line-height) * var(--ba-lesson-r2-title-lines)); }
-.stair-lesson-card[data-current='true'][data-title-lines='3'] { border-color:var(--ba-color-action-primary); box-shadow:0 0 0 2px var(--ba-color-action-primary); }
-.stair-lesson-card[data-current='true'] .stair-lesson-card__seal { background:var(--ba-color-brand-10); color:var(--ba-color-surface-canvas); }
 .stair-lesson-card[data-state='locked'][data-title-lines='3'] { background:var(--ba-color-disabled-surface); color:var(--ba-color-disabled-content); border-color:var(--ba-color-disabled-border); }
+
+/* Three visual roles only. Skipped remains in saved learning state, not as a visual card variant. */

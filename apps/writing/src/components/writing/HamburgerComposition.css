@@ -1,0 +1,43 @@
+/* Only the composition owns width and vertical centering; the existing
+ * HamburgerLayer remains unchanged wherever it is used by Writing. */
+.hamburger-composition {
+  display:grid;
+  justify-items:center;
+  align-content:center;
+  gap:8px;
+  width:100%;
+  min-width:0;
+}
+.hamburger-composition > .hamburger-layer {
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  width:100%;
+  min-height:100px;
+  padding:14px 18px;
+}
+.hamburger-composition > .hamburger-layer:is([data-layer='top'],[data-layer='bottom']) {
+  width:88%;
+}
+.hamburger-composition .hamburger-layer__title { margin:0; }
+.hamburger-composition .hamburger-layer__support { max-width:100%;overflow-wrap:anywhere; }
+
+
+/* Review 04 preview: top bun is always the existing pedagogical green,
+ * with the exact existing asymmetrical Layer radii. No page-level override. */
+.hamburger-composition > .hamburger-layer[data-layer='top'] {
+  background:#e7f6df;
+  border-radius:28px 28px 10px 10px;
+}
+.hamburger-composition > .hamburger-layer[data-layer='fill'] {
+  background:#f3efe4; border-radius:10px;
+}
+.hamburger-composition > .hamburger-layer[data-layer='bottom'] {
+  background:#e7c48a; border-radius:10px 10px 28px 28px;
+}
+
+/* Shared composition layers cast a separate soft shadow; never a rectangular container shadow. */
+.hamburger-composition > .hamburger-layer {box-shadow:0 4px 10px rgba(71,44,34,.12);}

@@ -23,7 +23,7 @@ test('E-01 to lesson 1 check and back', async ({ page }) => {
   await shot('lesson-learn-1440');
 
   await page.getByRole('button', { name: 'Next' }).click();
-  await page.locator('.course-choice', { hasText: 'Our school should have a garden' }).click();
+  await page.locator('.ba-choice__option', { hasText: 'Our school should have a garden' }).click();
   await expect(page.getByRole('radio', { name: /Our school should have a garden/ })).toBeChecked();
   await page.getByTestId('lesson-footer').getByRole('button', { name: 'Check' }).click();
   await expect(page.getByTestId('feedback')).toContainText(/Right\. You chose B/);
@@ -33,7 +33,7 @@ test('E-01 to lesson 1 check and back', async ({ page }) => {
   await expect(page.locator('[data-lesson-id="G2-O:1"]')).toHaveAttribute('data-state', 'continue');
   await shot('path-continue-1440');
 
-  await page.locator('[data-lesson-focus="G2-O:2"]').click();
+  await page.locator('[data-lesson-id="G2-O:2"] .stair-lesson-card__title').click();
   await expect(page.getByTestId('locked-note')).toContainText(/Lesson 1/);
   await shot('path-locked-1440');
 

@@ -1,3 +1,13 @@
+## Current handoff · Review 04 integrated Writing + library (2026-10-26)
+
+**PR #52 Draft, branch `feat/writing-hifi-integration-v1`.** New authoritative deliverable: [docs/REVIEW_04_INTEGRATED.md](REVIEW_04_INTEGRATED.md). Previous Stage A and Stage A R2-only previews are superseded historical documents. Implementation now includes *both* live Writing and designer library: one-line topbar, fixed StairLessonCard interior, shared no-fold Unit (18px brown UNIT/ brown full `9 lessons · 170 min` pill), hamburger shadows and real Activity1 layout, dual-depth gold/silver Milestones, convex WordGrid, P7 spacing, 50px brown Speaker, Solar Current, Cross Blur and Canvas wave flag.
+
+**Flag artwork blocker:** User said the final flag image would be supplied later. Current Canvas demo uses temporary R2.12 SVG; standalone library supports client-only image upload. Do not label this final flag artwork. Algorithm is exact amplitude4px, waves6×PI, period1.6s, source yarden Stack Overflow 78383275, CC BY-SA 4.0, adapted to browser Canvas.
+
+**Runtime QA blocker:** Remote GitHub source changes are committed but npm/TypeScript/Vitest/Playwright/browser screenshot evidence is not available. The attached localhost on the user's Mac is not accessible from this connector. PR remains Draft, never merged to main and no Vercel deployment. Prior historical check passes do not validate integrated implementation.
+
+---
+
 # Big Academy — HANDOFF (current)
 
 **Baseline:** v0.1 · 2026-10-20
@@ -75,3 +85,155 @@ Branch: \`feat/component-workbench-pilot-20261024\` (unmerged). UI status: **Rea
 - Version delivery uses `feat/component-library-r2` from the byte-verified current `feat/component-workbench-pilot-20261024` baseline (efa38def), per this task's explicit current-baseline instruction. This supplied directory has no .git; the GitHub connector is used for commit/PR. Neither main nor Vercel is changed. Technical verification is not designer approval.
 
 - Review screenshots remain local-only by user decision on 2026-10-26. The review branch includes source and the text report, not image artifacts. Other checkouts show a local-evidence notice instead of requesting absent screenshots.
+
+## Writing Hi-Fi Integration v1.0 · 2026-10-26
+
+Implemented on an isolated branch from byte-verified PR #51/e2886bab, with the remote delivery commit retaining that actual parent. The local supplied workspace had no Git metadata; the isolated local snapshot history is documented in `apps/writing/docs/INTEGRATION_V1.md`.
+
+Shared component updates, R2.12 cloud/scenery/badge/flag migration, canonical Lesson 1's eight screens, first/second assessment sets, distinct mastery/non-mastery outcomes, Lesson End/Review, feedback and caret/provenance recovery are integrated. Edit writes debounce 250ms; navigation, grading and page exit flush immediately. No additional course content, main merge or Vercel deployment. Git deployments disabled in this review branch.
+
+Mac entry: `Start Big Academy.command`. Local Writing: http://127.0.0.1:5174/. Component library and Storybook remain independent. Local screenshots/gallery and detailed validation/known issues are linked in `apps/writing/docs/INTEGRATION_V1.md`; final check counts are recorded there after the last run.
+
+Visual status is in-review. Do not merge before designer acceptance. The complete R2 Design Review 01 and the exact `(1)`-suffixed HTML were unavailable; explicit current-request review items and the located R2.12 reference are implemented. Douyin asset, physical-device/screen-reader/native-menu-zoom tests, source localization gaps and PRODUCT §19 owner decisions remain as documented limitations.
+
+Final delivery: Draft PR https://github.com/Yuzhwe/big-academy/pull/52, branch `feat/writing-hifi-integration-v1`, targeting `feat/component-library-r2`. Final checks: docs/typecheck passed; 83 unit tests and 24 browser tests passed; all four build outputs passed; 3 axe scenarios reported no violations. Forty screenshots remain local with a gallery. The Mac launcher was actually executed against the running site and opened it successfully. Full Review 01 source parity and visual acceptance remain pending as described above.
+
+## Fixed local review URLs · 2026-10-26
+
+The component library and Writing review website now have separate per-user macOS background services: http://localhost:6007/ and http://localhost:5174/. They serve built review snapshots from `~/Library/Application Support/Big Academy/sites/`, with a copied Node runtime outside Documents so login startup does not depend on Terminal or access to the source folder. Two LaunchAgents run at login and restart after an unexpected exit. Both IPv4 and IPv6 loopback are supported; the existing 127.0.0.1 aliases still work.
+
+Rebuild the desired app, then run `npm run local-sites:install` from the integration folder to refresh the same URLs. No UI, curriculum or learning-state rules changed. Site snapshots do not update automatically when source files are edited. The services run while this Mac is awake and the user is logged in; they do not prevent sleep. This is local hosting only, with no main merge or external deployment.
+
+Local-service verification: both sites returned HTTP 200 through localhost, IPv4 and IPv6; both processes automatically recovered after a controlled SIGTERM; browser checks loaded the component library and entered Lesson 1 with no page errors or broken images. Script syntax, documentation checks and whitespace checks passed. Existing curriculum/type/build suites were not repeated for this local-serving-only change; the previously verified build artifacts are served unchanged.
+
+
+## LessonTopBar R2 Design Review 01 follow-up · 2026-10-26
+
+PR #52 now includes targeted work on `BA-WR-001` and shared `BA-UI-006`. The Back remains an icon-only 50×50 button; the left identity flexes into the available safe width with a two-line title clamp. The progress rail stays centered against the entire header, or a separate centered row when the **component container** is narrow, including designer-library previews.
+
+Progress status and active selection remain separate: dark fill/white number for Done; dark fill/white number **plus outer ring** for Done+Selected; disabled colors without icon for Locked; dashed inner outline for Skipped, plus outer ring for Skipped+Selected. All markers are numeric-only. Source course state, `canOpen`, attempts, mastery and saved progress are unchanged. Targeted unit tests and preview stories were added. The approved direction was synced to root `DESIGN.md`, Writing `PRODUCT.md` (§§13–15), and `apps/writing/contracts/components.json`; no other product/content/scoring rules were reauthored.
+
+**Verification:** code and doc consistency checked against remote blobs. No current-chat local Node/Vitest/Playwright/browser execution has been performed for these commits. Re-run `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build` and `npm run test:integration` before designer acceptance. Previously reported passing test counts were for the earlier PR head. Draft status and no-main-merge remain unchanged. **Local LaunchAgent review URLs serve built snapshots**, so a Git pull alone does not refresh http://localhost:5174/ or :6007/; rebuild and use `npm run local-sites:install` or use the development-server launcher for the updated source.
+
+
+## R2 Design Review 02 · implementation submitted for review (2026-10-26)
+
+**Target:** draft PR #52, `feat/writing-hifi-integration-v1`. Nine requests DR02-01–DR02-09, code and docs updated on that branch only; no changes to main or Vercel.
+
+- **DR02-01/02 – StairLessonCard:** the designer library surfaces only Enterable, Completed, Locked; saved start/continue still map to Enter with the **same Writing brown outline**, and Completed retains its green-white seal. Scene-specific card geometry, border, current override and number alignment styles were removed, so the library component is authoritative in the staircase.
+- **DR02-03/04/05 – Staircase Unit:** removed visible Writing path kicker; Unit heading shares the Lesson heading design tokens; top-right Unit paper-fold triangle and shadow were reworked to join the main sheet without floating-square treatment. R2.12 scenery, camera, clouds and Level navigation remain as found.
+- **DR02-07 – BA-UI-006 LessonTopBar:** one row max 9 slots, including overflow; measured 44px targets and 36px shared numeric/ellipsis circles, current-first contiguous visible window. The same Indicator renders in rail and portal popover. Anchored popover has 424px max width, 40px radius/inset, six fixed left-aligned columns, internal scroll and Escape/outside/Close/focus semantics. The 50px Back and two-line title constraints remain. 320px Mobile custom layout deferred.
+- **DR02-08 – Apply editor:** textarea is not user-resizable, occupies remaining writing-paper height with internal scroll; same WordGrid docks under the tip at the bottom while preserving stored caret/insertion.
+- **DR02-09 – Footer:** contextual primary truly receives Disabled from original task progress/answer data. Single selection needs one, multi needs exactly authored three, tapword needs a selected token, FrameFill all blanks, Apply at least three words. P2 Learn remains actionable; Build auto-grading remains unchanged. **P7 blank internal questions and one-time Hand in warning / Hand in anyway are explicitly preserved**, as required by the original product; enabling a CTA never implies correctness or mastery.
+
+Updated `DESIGN.md`, `apps/writing/PRODUCT.md`, `apps/writing/contracts/components.json`, designer-library catalog/controls/preview, Storybook stories, Vitest tests, and the Writing Playwright integration specification. After review of CSS specificity, all Staircase overrides of the inner StairLessonCard styles were removed.
+
+**Verification is pending**: Files were updated and re-read via authenticated GitHub contents API, and the contract is valid JSON; **no post-change TypeScript/build/Vitest/Playwright/a11y tests or screenshot comparison has been executed** in this chat environment. Former PR test counts belong to an earlier branch head and must not be used as evidence for Review 02. Use `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:integration` on the updated local branch. Inspect keyboard/popover placement at 1440/1024/834 and the original fold and numeric positioning reference; the designer has final visual approval.
+
+**Local snapshot caveat:** fixed `http://localhost:5174/` and `http://localhost:6007/` services serve published built copies. Merely pulling this GitHub branch does **not** update the sites. Rebuild and run `npm run local-sites:install` to refresh them, or run the local dev server / launcher. Do not merge or announce release solely on a GitHub commit.
+
+
+## R2 Design Review 03 · 14 changes implemented for design/runtime review (2026-10-26)
+
+**Repository/branch:** `Yuzhwe/big-academy`, `feat/writing-hifi-integration-v1`, Draft PR #52. No main merge or Vercel deployment. R03 adds nine Activity changes + five Staircase changes to the existing R02 integration.
+
+### Activity changes / shared components
+
+1. `BA-UI-006 / BATaskProgress`: done number fill is Writing-brown (action semantic token / #B25415), white Dosis numeral. Existing done+selected outer ring, skipped, locked and 36px / popover rules stay intact.
+2. `BA-WR-002 / CoachMessage`: shared internal Coach card for **every** arrived, expanded, hinted or submitted message. Correct: Success 1/4/9 surface/stroke/ink; wrong: Neutral 2/4/8; ordinary/Hint: Neutral 1/3/9. Every utterance has its own rounded border and background, while Coach scroll stays independent.
+3. Activity title owns a two-column layout with the real 50×50 Speaker BAIcon+BAButton at upper right. Long titles wrap without overlapping; original speech synthesis, stop, cleanup and accessible naming are preserved.
+4. P2 `Better` / `Not yet` example labels share Dosis ExtraBold, with the redundant Better check icon removed.
+5. P3 Tapword correctly selected word has solid Success-6 #14AE5C, white text and **no attached check or visible border**, while `shown` (unearned reveal) stays visually distinct.
+6. P3 multiple select Check is enabled with **one or more** choices, disabled at zero. Grading still requires the original three true answers and incorrect tries/shown rules still apply. This explicitly supersedes R02's erroneous exactly-three *button enabling* rule.
+7. P5 writing canvas hides the redundant `Write each sentence on a new line.` line. Only P5 (not P7) has subtle #EAEDEB paper lines at ~36px pitch; the long editor still fills spare height, scrolls internally and keeps WordGrid docked.
+8. `CourseSession.openHint` and `hintAction`: user-invoked Need a hint/Another hint **only display authored hints**, no auto-answer, no try, no state `shown`, no credit. After all hints, the control disappears. P4 wrong-tile local hints and formal Check failures remain separate; P7 retains the no-hint assessment.
+9. Correct/incorrect Coach status and tones remain testable without changing the underlying answers/grades. Existing `data-testid=feedback` and `data-outcome` are retained for browser tests.
+
+### Staircase changes / canonical Unit Card
+
+10. L0 and L1 always render every Lesson as Completed / Review by default. The existing `preview-seed` flag is optional compatibility only. This is a display fixture in `pathNodes`; learner saved `done`, `tasks`, `skills`, L2 unlocks and Mastery remain untouched.
+11. Every completed Unit Milestone can replay the **existing one-shot tsParticles Confetti from its badge center** (50 start, no emission rate, one lifetime); reduced motion suppresses animation. No duplicate celebration library was introduced.
+12. The Unit top caption displays only `UNIT N` / `第 N 单元`, no `Writing Unit` type suffix.
+13. Unit metadata contains only the real per-Unit lesson count and optional exact duration, e.g. `9 lessons · 170 mins` / `9 课 · 170 分钟`; no `0 of`, `about`, `约` or hardcoded shared data values.
+14. Metadata has one thin warm-border full-rounded pill using existing paper tokens.
+
+`BA-WR-007 StairUnitCard` was extracted with no redesign from CourseApp into a single code component reused by **Staircase, designer-library preview and Storybook**. The existing folded-paper SVG, typography, goals and cloud platform are retained.
+
+### Files and verification
+
+Changed runtime: CourseApp, course styles, CourseSession, LessonWorkspace/CoachMessage, BATaskProgress CSS, BAIcon, Tokens. Added StairUnitCard + Storybook fixtures, designer library catalogue/preview, regression cases for Unit Card/Coach/Hint/multi Check/L0-L1 fixture and Playwright exercises. Updated `DESIGN.md`, `apps/writing/PRODUCT.md`, component contracts, this handoff and the PR body.
+
+**Static evidence only:** GitHub commits have been read back, the contract was parsed as JSON, and targeted source/invariant checks were performed. **No post-R03 npm TypeScript/build, Vitest, Playwright, accessibility or real browser visual run has completed in this environment.** Do not promote any prior PR test totals as R03 validation. Tests and design approval remain pending.
+
+**Next verification on the updated local branch:**
+`npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:integration`.
+Compare rendered components and actual pages at 1440/1024/834 widths, long EN/ZH titles, Coach/Hint/graded states, P5 editor scrolling/WordGrid, L0/L1 fixture, Confetti replay and true L2 progression. In particular check new StairUnitCard's paper-fold alignment against the user screenshot; P5 ruled lines under scrolling; popup complete number color; 50px speaker right alignment and focus.
+
+**Local built site caveat:** pulling this branch doesn't update the previous static `localhost:5174` or `:6007` copies until rebuilt and published with `npm run local-sites:install`, or run local development sites. Do not merge main/deploy Vercel. Designer final visual acceptance is still required.
+
+
+## Review 04 · Stage 1 · library-only implementation (2026-10-26)
+
+**Scope is strictly limited to designer-library trials.** This follows the user's explicit order: Solar/current Lesson and CTA 7-second sweep must receive visual approval **before** integration in the Writing Staircase. The previously approved product screens, StairLessonCard runtime source and R03 learning logic have not been modified in Stage 1.
+
+- Existing `StairLessonCard` is rendered inside a new **preview-only** `apps/library/src/SolarLessonPreview.tsx` wrapper when the designer chooses `Current`. It is a visual emphasis of Enterable, not a new business state; ordinary Enterable, Completed and Locked remain intact. The source's 64-ray gold Solar GLSL aura has been adapted to an exterior-only 55px-radius mask, with small per-card transparent WebGL canvas (30 fps cap; 1x resolution; offscreen draw pause); 3px dark-brown fallback if motion is reduced, WebGL fails, or sustained slow frames occur. The CTA uses a clipped 7s repeating shine *only in the wrapper*; the original BAButton and card content/size remain unchanged.
+- `apps/library/src/catalog.ts`, `Preview.tsx`, `R2Controls.tsx`, `Code.tsx`, `Showcase.tsx` and library CSS now expose a Current variant and adjustable Ray Intensity, Ray Length, Ray Count, Bokeh, Rim Boost, Glow Spread and Brightness. Uploaded Solar defaults 0.6/0.45/64/0.16/1.66 are retained, and the query-string scene serializes values.
+- `BA-WR-004` uses a new non-page `HamburgerComposition` preview and Storybook fixture; three existing HamburgerLayer instances, narrower top/bottom buns, vertical title and example centering. No Activity 1 page change.
+- `BA-WR-011` registers the **existing** R2.12 `LevelRewardFlag` as a designer-library and Storybook component, with adjustable 4% default wind. No flag implementation or Staircase page change.
+- Stage-1 source license caveat: the user-supplied Solar ZIP did **not** contain a clear license. The adapted shader is **prototype/review-only** until origin/right-to-use are cleared. It introduces no `three` or other runtime dependency.
+- More detail and preview links: `docs/REVIEW_04_STAGE1.md`.
+
+**Evidence pending:** post-Stage-1 TypeScript, build, browser screenshots, WebGL/reduced-motion performance, keyboard, cloud stacking and visual acceptance have not been executed in this conversation environment. The local historical port :6007 is a built snapshot; refresh from the latest PR branch and rebuild/run `npm run dev:library` (or rebuild/reinstall local sites) before reviewing. No main merge or Vercel deployment.
+
+
+## R2 Design Review 04 · Stage A completed code submission, pending runtime/visual QA (2026-10-26)
+
+**PR #52 independent branch:** `feat/writing-hifi-integration-v1`. Scope strictly Stage A designer-library/Storybook **plus** approved LessonTopBar completed-digit color fix. No main merge, Vercel deployment or page-level Solar/Cross Blur integration.
+
+- WordGrid gained opt-in `tabAppearance='slanted'` with 27px right-leaning shoulder, selected z-index/lift and subtle panel fade. The old `connected` layout remains the runtime default and the Activity 7 page uses it until designer signoff.
+- HamburgerComposition now applies the exact approved **green** #E7F6DF top, #F3EFE4 reason, #E7C48A bottom with 88/100/88 widths and asymmetric layer radii, using the existing reusable HamburgerLayer children.
+- StairUnitCard gained opt-in `corner='cutout'`, real transparent corner clipping with diagonal stroke; production defaults `folded`. Unit card source still shared between library and Staircase.
+- UnitMilestone gained opt-in `previewAppearance='gold-shine'`: gold/gray two-layer states with 7s sheen on gold only. Production defaults `existing` and missing gold in the actual high-fidelity Staircase remains an explicit Stage B defect.
+- Solar palette A/B/C and custom color inputs are exposed in the designer controls and drive the actual shader uniforms plus border color; original numeric controls, 7s CTA sweep and deep brown static fallback retained. Shader source license/provenance still pending clearance.
+- `BA-WR-012` standalone Cross Blur transition (no new router or Motion dependency) added to library and Storybook with editable duration/blur and Reduced Motion. It does not own learning state or change the actual Writing routes.
+- Existing BA-WR-011 LevelRewardFlag standalone SVG/wind preview remains intact.
+- **Real LessonTopBar fix:** Completed numerals inside BOTH rail and portaled popup now directly use global Writing primitive `--ba-color-writing-7` (#B25415), no leakage from generic action-primary blue-green.
+- Storybook candidate stories, component contracts, unit regression tests, and a targeted Playwright real-page completed-color assertion have been added.
+- Exact review routes/approval/QA checklist: `docs/REVIEW_04_STAGEA.md`.
+
+**QA truth:** Files committed to the Draft PR; connector read-backs can verify source and contract JSON. No current-turn local Node/TypeScript/Vitest/Playwright execution, browser WebGL/GPU check, screenshots or design signoff has been performed. This is code-complete-for-review, NOT a tested or approved release. Local :5174/:6007 may serve old published built copies; pull PR head and rebuild/run current dev servers for inspection.
+
+## Review 04 · Stage A R2 follow-up — submitted code, pending browser evidence (2026-10-26)
+
+Continues Draft PR #52 on `feat/writing-hifi-integration-v1`. Only Stage A designer-library trials plus approved real `LessonTopBar` popup padding (24px instead of 40px). **Do not merge main or integrate unapproved candidates into Staircase/Activities**.
+
+- WordGrid: retired Slanted, removed its CSS/story controls. Original rounded connected tabs remain. Added first-inactive left seam overlay via same inactive-tab peach color, z-index behind tabs and above bank. Real page selection and insertion are unchanged.
+- HamburgerComposition: Top green `#E7F6DF` 28/28/10/10; Reason `#F3EFE4` 10 all; Bottom `#E7C48A` 10/10/28/28, width 88/100/88.
+- StairUnitCard: Stage A library defaults to `corner=rounded` four 16px corners; 20px Dosis UNIT and 16px Jost full pill on same line, 24px heading below. Live Staircase still folded, explicitly legacy until Stage B.
+- UnitMilestone: new optimized PNGs derived from uploaded `writing_milestone_1.png` gold check and `writing_milestone_2.png` seal are committed under `apps/writing/src/assets/review04`, imported in the preview-only gold-shine appearance. Completed 7s sweep; upcoming gray only. Live page still retains original assets until Stage B.
+- Solar: user-confirmed Custom #FFA82E/#FFA82E, parameters 1.80/1.26/64/1.12/0.74/10/1.34, with restore action. A/B/C selectable. Source license still unresolved.
+- LessonTopBar popup padding reduced to 24px, keep completed digits brown, original radius, hit regions, focus/escape.
+- CTA sweep, Cross Blur, Level reward flag untouched.
+
+**Pending:** run Node/Vitest/Playwright and render screenshots; test actual WordGrid left seam across tabs & 834/1024/1440, Unit long titles, PNG image layering & reduced motion, Solar WebGL color, popup spacing. No build/browser run verified by this GitHub connector-only operation. See `docs/REVIEW_04_STAGEA_R2.md`.
+
+
+## R04 final combined library + Writing-page construction: complete-label confirmation (2026-10-26)
+
+The designer explicitly selected **A · 完整** for the Unit metadata wording: **`9 lessons · 170 min`**, retaining the full word `lessons` (not `Lsn`, `L`, or an icon-only abbreviation), while shortening only `mins` to `min`. The canonical `StairUnitCard` applies this when locale is English to the actual unit-provided metadata; no fabricated hard-coded lesson totals. `UNIT 1` remains Dosis 800 at **18px** in Writing brown `#B25415`; the metadata pill text uses the same brown and the paper/background/border remain unchanged. The **24px** main Unit title stays visually primary.
+
+Current branch source inspection confirms the combined shared implementation is wired into both the Designer Library and actual Writing Staircase/Activity pages: one `StairUnitCard`, shared `WordGrid`, original `StairLessonCard` unchanged, `UnitMilestone` new dual-layer PNG and 3D depth, `HamburgerComposition` soft shadows, `LessonTopBar` single-line ellipsis, 24px popover, and shared page transition. `LevelRewardFlag` uses the requested Canvas 1-device-pixel-per-strip sine algorithm with 1.6s / 6π / 4px defaults and retains **temporary R2.12 SVG artwork** until the designer supplies the final flag image. Do not mark the flag artwork approved.
+
+A new R04 regression test asserts full `lessons` text, English `min`, Chinese unchanged, and absence of legacy fold. Visual correctness (WordGrid corners, 3D parallax, Canvas seams), runtime builds and browser screenshots remain **PENDING** until run; source inspection and a committed test are not a test-pass result. No main merge or Vercel deployment.
+
+
+## Review 04 · Additional designer-uploaded visual assets / state mapping (2026-10-26)
+
+The designer supplied **three new source images in the chat**. They have been visually inspected but are **not yet checked into this GitHub branch or wired into runtime**; do not claim those components updated until the image bytes are actually committed and tested.
+
+1. **UnitMilestone completed (BA-WR-006):** new top-of-stack photo asset **`writing_milestone_1.1.webp`** (1024×1024, transparent, GREEN seal with gold rim) replaces the completed badge's **BOTTOM** artwork, while the existing gold-check PNG stays as the foreground layer. Both badge base and check must retain independent 3D depth/XY responses. Do not affect saved lesson state or completed-only replay. Upcoming silver/gray behavior remains unless separately approved.
+2. **Final Level endpoint artwork:** new gold/yellow **`image(20261026-085354).png`** (1600×1200) is the completed appearance; gray **`image(20261026-085542).png`** (1600×1200) is the not-completed appearance. These are FULL opaque compositions including diagonal pattern, a check symbol and the baked-in words "Level Completed!" and should not be treated as a transparent flag-cloth image. Do not crop, stretch, add a second title, or apply the Canvas flag wave algorithm to the whole poster. Completion state must originate from actual Level/Unit product data, with L0/L1 fixture status preserved.
+3. **Potential semantic issue for designer review:** the gray "not completed" source also literally says **"Level Completed!"**. Do not silently edit the image's text or fake a different source. Flag whether the accepted gray art should be used verbatim despite this language mismatch.
+4. **LevelRewardFlag distinction:** the existing Canvas column-slice prototype retains its source credit and current temporary R2.12 SVG until a **flag-cloth-specific** image is confirmed, or until the designer explicitly directs that the full Level endpoint art replaces the whole flag experience.
+
+Repository/source status: requirements logged; new source image bytes only available in the user's conversation attachments in this session, not yet integrated into the canonical repository. Screenshots and end-to-end verification pending.

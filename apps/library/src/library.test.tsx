@@ -49,7 +49,7 @@ describe('designer task flow', () => {
     await user.click(screen.getByRole('button', { name: '重置场景' }));
     expect(readScene(window.location.search)).toEqual(defaultScene);
     expect(statusFor(catalog[0]).approved).toBe(false);
-    expect(statusFor(catalog[5]).approved).toBe(true);
+    expect(statusFor(catalog[5]).approved).toBe(false); // Integrated curves/feedback await rendered review.
   });
 
   it('finds components by stable ID and navigates directly to a preview', async () => {

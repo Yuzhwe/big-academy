@@ -1,0 +1,54 @@
+/* Cross blur candidate: localized transition only, not body-wide blur or
+ * a second router. The learner's current page and controls are caller-owned. */
+.ba-page-transition { position:relative; width:100%; min-width:0; }
+.ba-page-transition__content {
+  filter:blur(0);
+  opacity:1;
+  transition:filter var(--ba-cross-blur-half,250ms) ease-in-out,
+    opacity var(--ba-cross-blur-half,250ms) ease-in-out;
+  will-change:filter,opacity;
+}
+.ba-page-transition[data-phase='out'] .ba-page-transition__content {
+  filter:blur(var(--ba-cross-blur-amount,12px));
+  opacity:.72;
+}
+.ba-page-transition[data-phase='in'] .ba-page-transition__content {
+  filter:blur(0);opacity:1;
+}
+@media(prefers-reduced-motion:reduce){
+  .ba-page-transition__content { transition:none;filter:none!important;opacity:1!important;will-change:auto; }
+}
+
+/* Render inert outgoing screenshot while navigation has already changed its
+ * business state; prevents a flash of an empty old Lesson screen. */
+.ba-page-transition__snapshot {
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;user-select:none;
+  filter:blur(var(--ba-cross-blur-amount,12px));opacity:.72;
+  transition:filter var(--ba-cross-blur-half,250ms) ease-in-out,
+             opacity var(--ba-cross-blur-half,250ms) ease-in-out;
+}
+.ba-page-transition[data-phase='out'] .ba-page-transition__content {visibility:hidden;}
+.ba-page-transition[data-phase='out'] {pointer-events:none;}
+@media(prefers-reduced-motion:reduce) {
+  .ba-page-transition__snapshot {display:none;}
+}
+
+/* Two progressive blur phases, rather than revealing the full blur instantly. */
+.ba-page-transition[data-phase='out'] .ba-page-transition__snapshot {
+  animation:ba-cross-blur-out var(--ba-cross-blur-half,250ms) ease-in-out both;
+}
+.ba-page-transition[data-phase='in'] .ba-page-transition__content {
+  animation:ba-cross-blur-in var(--ba-cross-blur-half,250ms) ease-in-out both;
+}
+@keyframes ba-cross-blur-out {
+  from {filter:blur(0);opacity:1;}
+  to {filter:blur(var(--ba-cross-blur-amount,12px));opacity:.72;}
+}
+@keyframes ba-cross-blur-in {
+  from {filter:blur(var(--ba-cross-blur-amount,12px));opacity:.72;}
+  to {filter:blur(0);opacity:1;}
+}
+@media(prefers-reduced-motion:reduce) {
+ .ba-page-transition[data-phase='out'] .ba-page-transition__snapshot,
+ .ba-page-transition[data-phase='in'] .ba-page-transition__content {animation:none;}
+}

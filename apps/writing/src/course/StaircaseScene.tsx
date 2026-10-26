@@ -1,6 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type KeyboardEvent, type ReactNode, type CSSProperties } from 'react';
 import type { BALocale } from '@big-academy/design-system';
 import './StaircaseScene.css';
+import hillMid from '../assets/r2.12/hill-mid.svg';
+import hillFront from '../assets/r2.12/hill-front.svg';
+import { BAButton, BAIcon } from '@big-academy/design-system';
 
 const STEP_GAP = 290;
 const CARD_WIDTH = 260;
@@ -9,8 +12,8 @@ export const ANCHOR_BASE_Y = 356; // Absolute bottom/pedestal datum, never measu
 const MAX_RISE = 120;
 const MIN_RISE = 48;
 /** Terrace box in StaircaseScene.css, plus the 6px drop-shadow under that box. */
-const PLATFORM_HEIGHT = 64;
-const PLATFORM_SHADOW = 6;
+const PLATFORM_HEIGHT = 45;
+const PLATFORM_SHADOW = 8;
 export const PLATFORM_EXTENT = PLATFORM_HEIGHT + PLATFORM_SHADOW;
 
 function clamp(value: number, lower: number, upper: number) {
@@ -33,8 +36,8 @@ export function pedestalAnchorY(index: number, count: number, rise: number): num
 }
 
 export function cameraForStep(index: number, viewportWidth: number, count: number): number {
-  const maxX = Math.max(0, (count - 1) * STEP_GAP + CARD_WIDTH - viewportWidth);
-  return clamp(index * STEP_GAP + CARD_WIDTH / 2 - viewportWidth / 2, 0, maxX);
+  const maxX = Math.max(0, (count - 1) * STEP_GAP + CARD_WIDTH + 2 * INSET - viewportWidth);
+  return clamp(INSET + index * STEP_GAP + CARD_WIDTH / 2 - viewportWidth / 2, 0, maxX);
 }
 
 const HILL_WIDTH = 1568;
@@ -47,7 +50,7 @@ const HILL1_RIDGE_Y = 379;
 const SKY = 'linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)';
 
 export function trackLength(count: number): number {
-  return Math.max(0, (count - 1) * STEP_GAP + CARD_WIDTH);
+  return Math.max(0, (count - 1) * STEP_GAP + CARD_WIDTH + 2 * INSET);
 }
 
 export function cameraMaxTravel(count: number, viewportWidth: number): number {
@@ -127,7 +130,7 @@ export function cameraYBounds(
   let min = 0;
   let max = Number.POSITIVE_INFINITY;
   for (let index = 0; index < count; index += 1) {
-    const left = index * STEP_GAP;
+    const left = INSET + index * STEP_GAP;
     const right = left + CARD_WIDTH;
     if (right <= cameraX || left >= cameraX + viewportWidth) continue;
     const pedestal = pedestalAnchorY(index, count, rise);
@@ -150,7 +153,7 @@ export function terracesFit(
   const maxX = cameraMaxTravel(count, viewportWidth);
   const events = new Set<number>([0, maxX]);
   for (let index = 0; index < count; index += 1) {
-    const left = index * STEP_GAP;
+    const left = INSET + index * STEP_GAP;
     const enter = left - viewportWidth;
     const exit = left + CARD_WIDTH;
     if (enter > 0 && enter < maxX) events.add(enter);
@@ -207,7 +210,7 @@ export function diagonalCameraY(cameraX: number, yAtZero: number, rise: number):
 
 /** The resting diagonal at camera X = 0. Same follow line the drag used before the per-card clamp. */
 export function preferredDiagonalY0(count: number, rise: number, viewportWidth: number, viewportHeight: number): number {
-  const visibleAtZero = (viewportWidth / 2 - CARD_WIDTH / 2) / STEP_GAP;
+  const visibleAtZero = (viewportWidth / 2 - CARD_WIDTH / 2 - INSET) / STEP_GAP;
   return ANCHOR_BASE_Y + (count - 1 - visibleAtZero) * rise - viewportHeight * 0.7;
 }
 
@@ -228,7 +231,7 @@ export function diagonalFraming(
   const maxX = cameraMaxTravel(count, viewportWidth);
   const events = new Set<number>([0, maxX]);
   for (let index = 0; index < count; index += 1) {
-    const left = index * STEP_GAP;
+    const left = INSET + index * STEP_GAP;
     const enter = left - viewportWidth;
     const exit = left + CARD_WIDTH;
     if (enter > 0 && enter < maxX) events.add(enter);
@@ -291,7 +294,7 @@ export function StaircaseScene({
   const preferredRise = stepRise(view.width, view.height);
   const rise = riseThatFits(count, view.width, view.height, cardHeights, preferredRise);
   const slope = rise / STEP_GAP;
-  const maxX = Math.max(0, (count - 1) * STEP_GAP + CARD_WIDTH - view.width);
+  const maxX = Math.max(0, trackLength(count) - view.width);
   const boundedX = clamp(cameraX, 0, maxX);
   // One slope for the whole pan: camera Y tracks camera X. It does not step when a card enters.
   const railHeight = Math.max(460, pedestalAnchorY(0, count, rise) + 120);
@@ -343,7 +346,7 @@ export function StaircaseScene({
 
   const snap = () => {
     const { width, count: total } = metricsRef.current;
-    const centered = (cameraXRef.current + width / 2 - CARD_WIDTH / 2) / STEP_GAP;
+    const centered = (cameraXRef.current + width / 2 - CARD_WIDTH / 2 - INSET) / STEP_GAP;
     setCameraX(cameraForStep(clamp(Math.round(centered), 0, total - 1), width, total));
   };
 
@@ -374,7 +377,7 @@ export function StaircaseScene({
   const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
     let target: number | null = null;
-    const centered = Math.round((cameraXRef.current + view.width / 2 - CARD_WIDTH / 2) / STEP_GAP);
+    const centered = Math.round((cameraXRef.current + view.width / 2 - CARD_WIDTH / 2 - INSET) / STEP_GAP);
     if (event.key === 'ArrowRight' || event.key === 'ArrowUp') target = centered + 1;
     if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') target = centered - 1;
     if (event.key === 'Home') target = 0;
@@ -389,11 +392,11 @@ export function StaircaseScene({
     '--step-rise': String(rise) + 'px',
     '--anchor-base-y': String(ANCHOR_BASE_Y) + 'px',
     '--rail-height': String(railHeight) + 'px',
+    '--path-edge': INSET + 'px',
     transform: 'translate3d(' + (-boundedX) + 'px, ' + (-cameraY) + 'px, 0)',
   } as CSSProperties;
   const frame = sharedHillFrame(view.height);
   const scenic = scenicSpeeds(parallaxInputs(count, view.width), frame.width);
-  const cloudBox = cloudPlacement(view.height, view.width, Math.max(0, view.height - frame.height), frame.height);
   const hillLayer = (layer: 'hill1' | 'hill2'): CSSProperties => ({
     width: frame.width,
     height: frame.height,
@@ -401,10 +404,10 @@ export function StaircaseScene({
     bottom: 0,
   });
   const cloudStyle: CSSProperties = {
-    width: cloudBox.size,
-    height: cloudBox.size,
-    top: cloudBox.top,
-    left: cloudBox.left - scenic.cloud * boundedX,
+    width: view.width,
+    height: view.height,
+    top: 0,
+    left: -scenic.cloud * boundedX,
   };
 
   return (
@@ -433,17 +436,22 @@ export function StaircaseScene({
     >
       <div className="path-sky" data-testid="path-sky" data-parallax={speedAttr(scenic.sky)} aria-hidden="true" />
       <div className="path-layer path-cloud" data-testid="path-cloud" data-parallax={speedAttr(scenic.cloud)} style={cloudStyle} aria-hidden="true">
-        <img src="/path/v2-terraces/cloud.png" alt="" width={1024} height={1024} />
+        <span className="r2-cloud r2-cloud--a" /><span className="r2-cloud r2-cloud--b" /><span className="r2-cloud r2-cloud--c" />
       </div>
       <div className="path-layer path-hill path-hill-2" data-testid="path-hill-2" data-parallax={speedAttr(scenic.hill2)} style={hillLayer('hill2')} aria-hidden="true">
-        <img src="/path/v2-terraces/hill-2-mid.png" alt="" width={HILL_WIDTH} height={HILL_HEIGHT} />
+        <img src={hillMid} alt="" width={HILL_WIDTH} height={HILL_HEIGHT} />
       </div>
       <div className="path-layer path-hill path-hill-1" data-testid="path-hill-1" data-parallax={speedAttr(scenic.hill1)} style={hillLayer('hill1')} aria-hidden="true">
-        <img src="/path/v2-terraces/hill-1-foreground.png" alt="" width={HILL_WIDTH} height={HILL_HEIGHT} />
+        <img src={hillFront} alt="" width={HILL_WIDTH} height={HILL_HEIGHT} />
       </div>
+      <div className="r2-sun" aria-hidden="true" />
       <div className="staircase-rail" data-parallax="1" style={style}>
         {children}
       </div>
+      <nav className="path-controls" aria-label={locale === 'zh' ? '浏览学习路径' : 'Browse learning path'}>
+        <BAButton iconOnly size={50} variant="secondary" disabled={boundedX <= 0} aria-label={locale === 'zh' ? '上一个台阶' : 'Previous step'} onPress={() => setCameraX(Math.max(0, boundedX - STEP_GAP))}><BAIcon name="arrow-left" /></BAButton>
+        <BAButton iconOnly size={50} variant="secondary" disabled={boundedX >= maxX} aria-label={locale === 'zh' ? '下一个台阶' : 'Next step'} onPress={() => setCameraX(Math.min(maxX, boundedX + STEP_GAP))}><BAIcon name="arrow-left" style={{ transform: 'rotate(180deg)' }} /></BAButton>
+      </nav>
     </div>
   );
 }

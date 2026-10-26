@@ -2,27 +2,20 @@
   box-sizing: border-box;
   display: flex;
   justify-content: center;
-  width: max-content;
+  width: 100%;
   max-width: 100%;
   min-width: 0;
   color: var(--ba-color-content-primary, #133547);
   font-family: var(--ba-font-sans, sans-serif);
 }
 
-.ba-task-progress__rail {
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
-}
-
 .ba-task-progress__list {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  justify-content: center;
   gap: var(--ba-spacing-progress-items-gap, 4px);
   margin: 0;
-  padding: 2px;
+  padding: 2px 0;
   list-style: none;
 }
 
@@ -70,40 +63,38 @@
   line-height: 1;
 }
 
-.ba-task-progress__caption {
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: 0;
-  white-space: nowrap;
-}
-
+/* The learner's progress status is the INNER treatment; current navigation
+ * is an independent OUTER ring. Never erase Done or Skipped on selection. */
 .ba-task-progress__button[data-state='done'] .ba-task-progress__marker {
-  background: var(--ba-color-surface-canvas, #ffffff);
-}
-
-.ba-task-progress__button[data-state='current'] .ba-task-progress__marker {
-  background: var(--ba-color-action-primary, #133547);
-  border-color: var(--ba-color-action-primary, #133547);
-  color: var(--ba-color-surface-canvas, #ffffff);
-  box-shadow: 0 0 0 2px var(--ba-color-surface-canvas, #ffffff), 0 0 0 4px var(--ba-color-action-primary, #133547);
-}
-
-.ba-task-progress__button[data-state='available'] .ba-task-progress__marker {
-  background: var(--ba-color-surface-canvas, #ffffff);
+  background: var(--ba-color-writing-7, #b25415);
+  border-color: var(--ba-color-writing-7, #b25415);
+  color: var(--ba-color-surface-canvas, #fff);
 }
 
 .ba-task-progress__button[data-state='locked'] .ba-task-progress__marker {
   background: var(--ba-color-disabled-surface, #f4f1ea);
-  border-style: solid;
+  border-color: var(--ba-color-disabled-surface, #f4f1ea);
   color: var(--ba-color-disabled-content, #4a5963);
 }
 
 .ba-task-progress__button[data-state='skipped'] .ba-task-progress__marker {
-  border-style: dashed;
-  border-width: 2px;
-  background: var(--ba-color-surface-canvas, #ffffff);
+  border: 2px dashed var(--ba-color-content-primary, #133547);
+  background: var(--ba-color-surface-canvas, #fff);
 }
+
+.ba-task-progress__button[data-selected='true']:not([data-state='locked']) .ba-task-progress__marker {
+  box-shadow:
+    0 0 0 2px var(--ba-color-surface-canvas, #fff),
+    0 0 0 4px var(--ba-color-action-primary, #133547);
+}
+
+.ba-task-progress__button[data-selected='true'][data-state='current'] .ba-task-progress__marker,
+.ba-task-progress__button[data-selected='true'][data-state='available'] .ba-task-progress__marker {
+  border-color: var(--ba-color-action-primary, #133547);
+}
+
+/* A selected skipped item keeps its inner dashed outline. A selected completed
+ * item keeps its dark fill and white digit, visually unlike incomplete selected. */
 
 .ba-task-progress__button[data-hovered='true']:not([data-disabled='true']) .ba-task-progress__marker {
   text-decoration: underline;
@@ -115,31 +106,6 @@
   outline-offset: 2px;
 }
 
-.ba-task-progress__badge {
-  position: absolute;
-  left: 50%;
-  bottom: -1px;
-  display: grid;
-  place-items: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--ba-color-surface-canvas, #ffffff);
-  color: var(--ba-color-content-primary, #133547);
-  box-shadow: 0 0 0 1px var(--ba-control-border, #133547);
-  transform: translateX(-50%);
-}
-
-.ba-task-progress__button[data-state='done'] .ba-task-progress__badge {
-  color: var(--ba-success, #14ae5c);
-}
-
-.ba-task-progress__icon {
-  width: 12px;
-  height: 12px;
-  display: block;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .ba-task-progress__button,
   .ba-task-progress__marker {
@@ -147,3 +113,42 @@
     animation: none;
   }
 }
+
+/* R2 Design Review 02: all visible markers, overflow button, and popover
+ * indicators share the exact same 36px circle + 44px minimum hit target. */
+.ba-task-progress__button { min-width:44px; width:44px; min-height:44px; height:44px; padding:4px; }
+.ba-task-progress__marker { flex:none; width:36px; height:36px; }
+.ba-task-progress__more .ba-task-progress__marker { font-size:22px; letter-spacing:0; line-height:0.7; font-weight:800; }
+.ba-task-progress__more[data-hovered] .ba-task-progress__marker { text-decoration:none; }
+.ba-task-progress__popover {
+  position:fixed;
+  z-index:1000;
+  box-sizing:border-box;
+  max-height:calc(100dvh - 24px);
+  overflow:hidden;
+  padding:24px;
+  border:var(--ba-border-weight, 0.5px) solid var(--ba-color-border-default, #d9cbb8);
+  border-radius:40px;
+  background:var(--ba-color-surface-canvas, #fff);
+  color:var(--ba-color-content-primary, #133547);
+  box-shadow:0 18px 55px rgba(19,53,71,.17);
+  font-family:var(--ba-font-body-en, "Jost", sans-serif);
+}
+.ba-task-progress__popover-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:22px; }
+.ba-task-progress__popover-header h2 { margin:0; font:800 21px/1.25 var(--ba-font-heading-en, "Dosis", sans-serif); }
+.ba-task-progress__close { flex:none; width:36px; height:36px; border:0; border-radius:50%; background:var(--ba-color-neutral-2, #f7f4ef); color:inherit; font:28px/1 var(--ba-font-body-en, sans-serif); cursor:pointer; }
+.ba-task-progress__close[data-focus-visible] { outline:2px solid var(--ba-color-focus); outline-offset:2px; }
+.ba-task-progress__popover-grid {
+  display:grid;
+  grid-template-columns:repeat(6,44px);
+  gap:4px;
+  justify-content:start;
+  align-content:start;
+  margin:0;
+  padding:2px 0 4px;
+  list-style:none;
+  max-height:calc(100dvh - 170px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.ba-task-progress__popover-grid > li { width:44px; height:44px; }
