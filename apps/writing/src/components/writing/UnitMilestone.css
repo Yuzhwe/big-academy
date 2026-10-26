@@ -69,3 +69,35 @@
 .unit-milestone__action[data-disabled] { filter:grayscale(.16); opacity:.65; }
 .course-sr { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 @media(prefers-reduced-motion:reduce) { .unit-milestone__action { transform:none; transition:none; } }
+
+
+/* R04 Stage A preview-only: preserve gold two-layer image and original parallax,
+ * fully desaturate UPCOMING; never colorize the disabled badge with a sweep. */
+.unit-milestone[data-preview-appearance='gold-shine'][data-state='upcoming'] .unit-milestone__action {
+  filter:grayscale(1);
+  opacity:.72;
+}
+.unit-milestone[data-preview-appearance='gold-shine']:not([data-state='upcoming']) .unit-milestone__action {
+  filter:saturate(1.25);
+}
+.unit-milestone[data-preview-appearance='gold-shine'] .unit-milestone__action[data-shine='true']::after {
+  content:'';
+  position:absolute;
+  z-index:2;
+  inset:0;
+  pointer-events:none;
+  border-radius:50%;
+  background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.02) 44%,rgba(255,255,241,.68) 50%,rgba(255,255,255,.02) 56%,transparent 62%);
+  background-size:240% 100%;
+  background-position:180% center;
+  mask-image:radial-gradient(circle,black 61%,transparent 72%);
+  animation:ba-milestone-shine 7s linear infinite;
+}
+@keyframes ba-milestone-shine {
+  0%,3%{background-position:180% center;}
+  17%{background-position:-90% center;}
+  17.01%,100%{background-position:-90% center;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .unit-milestone__action[data-shine='true']::after {display:none;animation:none;}
+}
