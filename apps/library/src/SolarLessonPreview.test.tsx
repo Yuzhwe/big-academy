@@ -21,7 +21,7 @@ describe('Review 04 · library-only Current Solar trial', () => {
     expect(container.querySelector('.solar-border-canvas')).toHaveAttribute('aria-hidden', 'true');
   });
 
-  it('retains the supplied Solar defaults in reproducible designer scene links', () => {
+  it('retains the designer-confirmed Solar R04-R2 defaults in reproducible scene links', () => {
     const scene = readScene(sceneSearch({ ...defaultScene,
       component:'lesson', mode:'state', state:'current',
       solarRayIntensity:SOLAR_DEFAULTS.rayIntensity,
@@ -31,10 +31,15 @@ describe('Review 04 · library-only Current Solar trial', () => {
       solarRimBoost:SOLAR_DEFAULTS.rimBoost,
     }));
     expect(scene.state).toBe('current');
-    expect(scene.solarRayIntensity).toBe(0.6);
-    expect(scene.solarRayLength).toBe(0.45);
+    expect(scene.solarRayIntensity).toBe(1.8);
+    expect(scene.solarRayLength).toBe(1.26);
     expect(scene.solarRayCount).toBe(64);
-    expect(scene.solarBokeh).toBe(0.16);
-    expect(scene.solarRimBoost).toBe(1.66);
+    expect(scene.solarBokeh).toBe(1.12);
+    expect(scene.solarRimBoost).toBe(0.74);
+    expect(scene.solarGlowSpread).toBe(10);
+    expect(scene.solarBrightness).toBe(1.34);
+    expect(scene.solarPreset).toBe('custom');
+    expect(scene.solarBorderColor.toUpperCase()).toBe('#FFA82E');
+    expect(scene.solarGlowColor.toUpperCase()).toBe('#FFA82E');
   });
 });
