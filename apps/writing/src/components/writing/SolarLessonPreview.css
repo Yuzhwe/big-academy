@@ -1,0 +1,64 @@
+/* Review 04 · shared Current Lesson Solar and CTA shine candidate.
+ * The original StairLessonCard DOM/size/typography is not modified.
+ * Aura is outside the card and above the cloud platform, never interactive. */
+.solar-lesson-preview {
+  position: relative;
+  display: block;
+  width: 260px;
+  max-width: 100%;
+  z-index: 5;
+  isolation: isolate;
+  overflow: visible;
+}
+.solar-lesson-preview .stair-lesson-card {
+  position: relative;
+  z-index: 1;
+  /* Default for unavailable WebGL, explicit low-performance or reduced motion. */
+  border-color: #743c1e;
+  box-shadow: 0 0 0 3px #743c1e;
+  /* Never change geometry, padding, title, number, surface or button. */
+}
+.solar-border-canvas {
+  position: absolute;
+  inset: -40px;
+  width: calc(100% + 80px);
+  height: calc(100% + 80px);
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+  background: transparent;
+  display: block;
+}
+.solar-lesson-preview[data-solar-status='active'] .stair-lesson-card {
+  border-color: var(--ba-solar-border-color, #b25415);
+  box-shadow: 0 0 0 2px var(--ba-solar-border-color, #b25415);
+}
+.solar-lesson-preview[data-solar-status='fallback'] .solar-border-canvas {
+  visibility: hidden;
+}
+/* Preserve BAButton's native size/hover/press/focus; only add a clipped, inert
+ * top-surface light strip that slides once during each seven-second cycle. */
+.solar-lesson-preview[data-shine='on'] .stair-lesson-card__action .ba-button__assembly {
+  overflow: hidden;
+}
+.solar-lesson-preview[data-shine='on'] .stair-lesson-card__action .ba-button__assembly::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 33%, rgba(255,244,210,.08) 42%, rgba(255,255,255,.57) 50%, rgba(255,242,204,.08) 58%, transparent 67%);
+  transform: translateX(-155%);
+  animation: ba-current-cta-shine 7s linear infinite;
+}
+@keyframes ba-current-cta-shine {
+  0%, 4% { transform: translateX(-155%); }
+  17% { transform: translateX(155%); }
+  17.01%, 100% { transform: translateX(155%); }
+}
+@media(prefers-reduced-motion: reduce){
+  .solar-border-canvas { display:none; }
+  .solar-lesson-preview .stair-lesson-card { border-color:#743c1e;box-shadow:0 0 0 3px #743c1e; }
+  .solar-lesson-preview .stair-lesson-card__action .ba-button__assembly::after { display:none;animation:none; }
+}
