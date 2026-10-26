@@ -619,3 +619,30 @@
   background-position: 0 12px;
   background-attachment: local;
 }
+
+
+/* Review 04 approval candidate only. Staircase still renders corner="folded".
+ * clip-path removes the actual upper-right paper triangle; the landscape behind
+ * remains visible, never filled by a fake painted patch. */
+.course-unit[data-corner='cutout'] {
+  --unit-cutout:var(--ba-writing-unit-fold-size,32px);
+  clip-path:polygon(
+    0 0,
+    calc(100% - var(--unit-cutout)) 0,
+    100% var(--unit-cutout),
+    100% 100%,
+    0 100%
+  );
+  /* The real diagonal edge has its own line. The other three rounded
+   * corners keep the current 16px geometry. */
+  border-top-right-radius:0;
+}
+.course-unit[data-corner='cutout'] .course-unit__cutout-edge {
+  position:absolute;
+  width:var(--unit-cutout);
+  height:var(--unit-cutout);
+  top:-1px;
+  right:-1px;
+  overflow:visible;
+  pointer-events:none;
+}
