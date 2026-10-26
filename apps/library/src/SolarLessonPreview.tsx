@@ -13,9 +13,9 @@ export type SolarParameters = {
   borderColor:string; glowColor:string;
 };
 export const SOLAR_DEFAULTS:SolarParameters = {
-  rayIntensity:0.6, rayLength:0.45, rayCount:64, bokeh:0.16,
-  rimBoost:1.66, glowSpread:18, brightness:1,
-  borderColor:'#B25415',glowColor:'#E89B55',
+  rayIntensity:1.80, rayLength:1.26, rayCount:64, bokeh:1.12,
+  rimBoost:0.74, glowSpread:10, brightness:1.34,
+  borderColor:'#FFA82E',glowColor:'#FFA82E',
 };
 export const SOLAR_COLOR_PRESETS = {
   A:{border:'#B25415',glow:'#E89B55',label:'A · Writing 铜棕'},
