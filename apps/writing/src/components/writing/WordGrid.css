@@ -127,83 +127,27 @@
 @media(max-width:600px) { .word-grid__tabs { overflow-x:auto; } .word-grid__tab { padding-inline:var(--ba-space-2); } }
 
 
-/* Review 04 opt-in Slanted Tabs — nothing below applies to current Writing pages.
- * Left vertical, steep outward right shoulder. Selected tab always above its
- * right neighbor; never render reverse-corner radial fills in this mode. */
-.word-grid[data-tab-appearance='slanted'] .word-grid__tabs {
-  margin: 0;
-  padding: 4px 0 0;
-  gap: 0;
-  overflow: visible;
-  position: relative;
-  align-items: flex-end;
-}
-.word-grid[data-tab-appearance='slanted'] .word-grid__tab {
-  --slant: 27px;
-  position: relative;
-  flex: 0 0 auto;
-  isolation: isolate;
-  overflow: visible;
-  z-index: 1;
-  margin-right: -13px;
-  min-height: 48px;
-  min-width: 0;
-  padding: 10px calc(14px + var(--slant)) 10px 14px;
-  background: transparent;
-  border-radius: 0;
-  color: var(--ba-brand-dark,#133547);
-  transform: translateY(0);
-  transition: transform 200ms cubic-bezier(.2,0,0,1), color 200ms ease;
-}
-.word-grid[data-tab-appearance='slanted'] .word-grid__tab::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  width:auto;
-  height:auto;
-  border-radius: 14px 0 0 0;
-  background: color-mix(in srgb, var(--word-tab) 55%, white);
-  clip-path: polygon(0 0, calc(100% - var(--slant)) 0, 100% 100%, 0 100%);
-  transition: background-color 200ms ease;
-}
-.word-grid[data-tab-appearance='slanted'] .word-grid__tab:last-child { margin-right:0; }
-.word-grid[data-tab-appearance='slanted'] .word-grid__tab[data-selected] {
-  z-index: 10;
-  margin-bottom: 0;
-  transform: translateY(-2px);
-  background:transparent;
-}
-.word-grid[data-tab-appearance='slanted'] .word-grid__tab[data-selected]::before {
-  background:var(--word-tab);
-}
-.word-grid[data-tab-appearance='slanted'] .word-grid__tab[data-selected]::after {
+/* Review 04 R2: preserve the approved rounded connected tabs; patch only
+ * the small upper-left bank seam when the FIRST tab is not selected.
+ * This layer lives behind the tab surface, has no layout footprint and uses
+ * the exact unselected-tab tint rather than the white page background. */
+.word-grid__tabs { position:relative; z-index:2; }
+.word-grid__panel { position:relative; z-index:1; }
+.word-grid[data-first-active='false'] .word-grid__tabs::before {
   content:'';
   position:absolute;
   left:0;
-  bottom:-3px;
-  width:calc(100% - 14px);
-  height:5px;
-  background:var(--word-tab);
+  bottom:calc(-1 * var(--ba-wordgrid-tab-radius,14px));
+  width:var(--ba-wordgrid-tab-radius,14px);
+  height:var(--ba-wordgrid-tab-radius,14px);
+  background:color-mix(in srgb,var(--word-tab) 55%,white);
+  border-bottom-right-radius:var(--ba-wordgrid-tab-radius,14px);
   pointer-events:none;
+  z-index:-1;
 }
-.word-grid[data-tab-appearance='slanted'] .word-grid__panel {
-  position:relative;
-  z-index:0;
-  border-radius:0 16px 16px 16px;
-  animation:ba-wordgrid-fade-in 150ms ease-out both;
-}
-.word-grid[data-tab-appearance='slanted'][data-first-active='true'] .word-grid__panel {
-  border-start-start-radius:0;
-}
-@keyframes ba-wordgrid-fade-in {
-  from { opacity:.35; }
-  to { opacity:1; }
-}
+.word-grid[data-first-active='true'] .word-grid__tabs::before { display:none; }
+.word-grid__tab { transition:background-color 180ms ease; }
+.word-grid__tab[data-selected] { z-index:3; }
 @media (prefers-reduced-motion:reduce) {
-  .word-grid[data-tab-appearance='slanted'] .word-grid__tab,
-  .word-grid[data-tab-appearance='slanted'] .word-grid__tab::before,
-  .word-grid[data-tab-appearance='slanted'] .word-grid__panel {
-    transition:none;animation:none;
-  }
+  .word-grid__tab { transition:none; }
 }
