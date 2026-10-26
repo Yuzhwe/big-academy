@@ -19,6 +19,7 @@ function Demo({ duration = 500, maxBlur = 12 }: {duration?:number;maxBlur?:numbe
 const meta={
   title:'Writing/Transitions/BAPageTransition',
   component:BAPageTransition,
+  args:{viewKey:'staircase',renderView:(key:string)=><div>{key}</div>},
   parameters:{ba:{contractId:'BA-WR-012',status:'candidate-pending-designer-review',purpose:'Self-contained Cross Blur prototype; not connected to Writing routing.'}},
 } satisfies Meta<typeof BAPageTransition>;
 export default meta;
