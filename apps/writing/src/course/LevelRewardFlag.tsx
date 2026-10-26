@@ -10,6 +10,12 @@ import './LevelRewardFlag.css';
  * Final user-supplied flag image has NOT arrived: R2.12 SVG is TEMPORARY art.
  */
 export const FLAG_DEFAULTS={period:1.6,waves:6,amplitude:4} as const;
+export function flagPhase(elapsedSeconds:number,period:number){
+  return 2*Math.PI*elapsedSeconds/Math.max(.1,period);
+}
+export function flagOffsetY(x:number,width:number,waves:number,amplitude:number,phase:number){
+  return amplitude*Math.sin((x/width)*waves*Math.PI+phase);
+}
 export interface LevelRewardFlagProps {
   period?:number; waves?:number; amplitude?:number;
   playing?:boolean;resetKey?:number;imageSrc?:string;
@@ -69,7 +75,7 @@ export function LevelRewardFlag({
           const x=i/deviceScale;
           const width=Math.min(one,fitW-x);
           if(width<=0)continue;
-          const offset=amplitude*Math.sin((x/fitW)*waves*Math.PI+(reduced?0:phaseRef.current));
+          const offset=flagOffsetY(x,fitW,waves,amplitude,reduced?0:phaseRef.current);
           const sourceX=(x/fitW)*image.naturalWidth;
           const sourceWidth=(width/fitW)*image.naturalWidth;
           context.drawImage(image,sourceX,0,sourceWidth,image.naturalHeight,
