@@ -61,7 +61,7 @@ export function LevelRewardFlag({
     const draw=(now:number)=>{
       if(disposed)return;
       if(previousTick.current===null)previousTick.current=now;
-      const delta=Math.min(Math.max(0,(now-previousTick.current)/1000),.25);
+      const delta=Math.max(0,(now-previousTick.current)/1000);
       previousTick.current=now;
       const reduced=media?.matches??false;
       if(playing&&!reduced)phaseRef.current+=2*Math.PI*delta/Math.max(.1,period);
