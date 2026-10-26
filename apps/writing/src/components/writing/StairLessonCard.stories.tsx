@@ -6,13 +6,13 @@ import { LandscapeTerrace } from './LandscapeTerrace';
 const meta = {
   title: 'Writing/Path/StairLessonCard',
   component: StairLessonCard,
-  parameters: { ba: { contractId: 'BA-WR-005', status: 'ready-for-visual-review', owner: 'Writing', purpose: 'Lesson entry, continue, review and locked states' }, layout: 'centered' },
+  parameters: { ba: { contractId: 'BA-WR-005', status: 'ready-for-visual-review', owner: 'Writing', purpose: 'Enterable, Completed and Locked visual roles; progress remains external' }, layout: 'centered' },
   args: {
     lessonId: 'G2-O:1', number: 1, title: 'Topic sentences',
     state: 'start', minutes: 10, locale: 'en',
   },
   argTypes: {
-    state: { control: 'select', options: ['start', 'continue', 'review', 'locked', 'skipped'] },
+    state: { control: 'select', options: ['start', 'continue', 'review', 'locked'] },
     locale: { control: 'radio', options: ['en', 'zh'] },
   },
 } satisfies Meta<typeof StairLessonCard>;
@@ -23,7 +23,6 @@ export const Start: Story = {};
 export const Continue: Story = { args: { state: 'continue' } };
 export const Review: Story = { args: { state: 'review' } };
 export const Locked: Story = { args: { state: 'locked', number: 2 } };
-export const Skipped: Story = { args: { state: 'skipped' } };
 export const LongTitle: Story = { args: { title: 'Writing a convincing topic sentence for a detailed opinion paragraph with evidence', minutes: 15 } };
 export const Chinese: Story = { args: { locale: 'zh', title: '学习如何用完整的主题句介绍自己的观点和原因', minutes: 12 } };
 
@@ -34,7 +33,7 @@ export const InteractiveAllStates: Story = {
       const [presses, setPresses] = useState(0);
       return <div style={{ display: 'grid', gap: 16 }}>
         <label>Card state <select value={state} onChange={e => setState(e.target.value as StairLessonState)}>
-          {(['start','continue','review','locked','skipped'] as const).map(s => <option key={s}>{s}</option>)}
+          {(['start','continue','review','locked'] as const).map(s => <option key={s}>{s}</option>)}
         </select></label>
         <StairLessonCard {...args} state={state} onEnter={() => setPresses(p => p + 1)} />
         <output aria-live="polite">CTA pressed: {presses}</output>
