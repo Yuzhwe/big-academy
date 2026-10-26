@@ -64,7 +64,8 @@
 
 .unit-milestone { flex-direction:column; flex-wrap:nowrap; text-align:center; padding:var(--ba-space-4); }
 .unit-milestone__action { position:relative; width:var(--ba-path-badge-size); height:var(--ba-path-badge-size); border:0; padding:0; background:transparent; perspective:1000px; transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition:transform var(--ba-path-badge-duration); order:-1; }
-.unit-milestone__action img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; }
+.unit-milestone__action img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; backface-visibility:hidden; will-change:transform; }
+.unit-milestone__action {transform-style:preserve-3d;}
 .unit-milestone__action img:nth-child(1) {
   transform:translate3d(var(--shift-1x,0px),var(--shift-1y,0px),8px);
   filter:drop-shadow(0 3px 6px rgba(78,48,20,.12));
