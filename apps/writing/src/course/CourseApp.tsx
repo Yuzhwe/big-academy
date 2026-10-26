@@ -51,19 +51,19 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
     if (session.view === 'path') session.observePath();
   }, [session, revision]);
 
-  useEffect(() => {
-    if (session.view !== 'path' || !session.returnFocus) return;
-    const focus = session.returnFocus;
-    const frame = window.requestAnimationFrame(() => {
-      document
-        .querySelector<HTMLElement>(`[data-lesson-focus="${focus.unitId}:${focus.number}"]`)
-        ?.focus();
-      if (session.returnFocus?.unitId === focus.unitId && session.returnFocus.number === focus.number) {
-        session.returnFocus = null;
+  /* Navigation is now visually deferred by Cross Blur. Restore lesson card
+   * focus only AFTER the new path DOM has actually mounted and settled. */
+  const restorePathFocus=()=>{
+    if(session.view!=='path'||!session.returnFocus)return;
+    const focus=session.returnFocus;
+    window.requestAnimationFrame(()=>{
+      const target=document.querySelector<HTMLElement>(`[data-lesson-focus="${focus.unitId}:${focus.number}"]`);
+      if(target) {
+        target.focus();
+        if(session.returnFocus?.unitId===focus.unitId&&session.returnFocus.number===focus.number)session.returnFocus=null;
       }
     });
-    return () => window.cancelAnimationFrame(frame);
-  }, [session, revision]);
+  };
 
   if (gallery) return <ChoiceGallery zh={zh} />;
 
@@ -74,6 +74,7 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
       </a>
       <BAPageTransition viewKey={session.view === 'lessonEnd' ? 'lesson' : session.view}
         duration={500} maxBlur={12}
+        onSettled={target=>{if(target==='path')restorePathFocus();}}
         renderView={key=>key==='path'?<PathView session={session}/>:key==='lesson'?<LessonView session={session}/>:<PreviewView session={session}/>}/>
       {session.celebration ? <Celebration session={session} /> : null}
       {session.practiceBurst ? <PracticeBurst session={session} /> : null}
