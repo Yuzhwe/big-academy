@@ -41,6 +41,14 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Browser integration regression
         run: npm run test:integration
+      - name: Report real M4 renderer used by Chromium
+        if: always()
+        run: |
+          if [ -f apps/writing/docs/evidence/cloud-m4/browser-renderer-observations.json ]; then
+            cat apps/writing/docs/evidence/cloud-m4/browser-renderer-observations.json
+          else
+            echo "Cloud M4 browser renderer observations were not produced."
+          fi
       - name: Preserve full-suite failure as final QA gate
         if: always() && steps.full_unit.outcome == 'failure'
         run: |
