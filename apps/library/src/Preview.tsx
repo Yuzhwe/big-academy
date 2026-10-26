@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BAButton, BAIcon, BAChoice, BATabs, BATabList, BATabPanel, type ChoiceVisualState, type TaskProgressItem } from '@big-academy/design-system';
 import { LessonTopBar } from '../../writing/src/components/writing/LessonTopBar';
 import { StairLessonCard, type StairLessonState } from '../../writing/src/components/writing/StairLessonCard';
+import { StairUnitCard } from '../../writing/src/components/writing/StairUnitCard';
 import { LandscapeTerrace } from '../../writing/src/components/writing/LandscapeTerrace';
 import { WordPlayground } from './WordPlayground';
 import { choiceOptions, type Scene } from './catalog';
@@ -65,6 +66,28 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
         title={scene.sample === 'long' ? (zh ? '学习如何用完整的主题句介绍自己的观点和原因' : 'Writing a convincing topic sentence for a detailed opinion paragraph') : (zh ? '主题句' : 'Topic sentences')}
         state={cardState} onEnter={() => setNotice(zh ? '收到课程操作。组件示例不会进入学习记录。' : 'Lesson action received. This example does not write learner progress.')} />
       {scene.composition==='terrace'&&<LandscapeTerrace/>}</div>{output}</div>;
+  }
+  if (scene.component === 'unit') {
+    const goals = zh ? [
+      '写出一句清楚表达自己想法的主题句',
+      '用两个理由和具体例子说明观点',
+      '通过连接词让段落更连贯',
+    ] : [
+      'write a topic sentence that tells what you think',
+      'give two reasons, each with an example, and a closing',
+      'help your reader follow you with linking words',
+    ];
+    const unit = {
+      id: 'lib-unit', index: 1, typeLabel: '', title: (scene.sample === 'long' || state === 'long')
+        ? (zh ? '写出有说服力的观点段落并给出恰当的理由和证据' : 'Writing Convincing Opinion Paragraphs and Evidence')
+        : (zh ? '观点段落' : 'Opinion Paragraph'),
+      meta: zh ? '9 课 · 170 分钟' : '9 lessons · 170 mins', goals,
+    };
+    return <div className="preview-example preview-example--center">
+      <div data-ba-product="writing" style={{ width: 320, maxWidth: '100%', background:'#a9e3f3', padding:20, boxSizing:'border-box', borderRadius:16 }}>
+        <StairUnitCard locale={scene.locale} unit={unit} />
+      </div>
+    </div>;
   }
   if (scene.component === 'words') return <WordPlayground scene={scene} update={update}/>;
   const tasks: TaskProgressItem[] = Array.from({ length: 8 }, (_, i) => ({
