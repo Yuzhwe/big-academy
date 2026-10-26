@@ -211,7 +211,7 @@ describe('course slice UI', () => {
     await user.click(screen.getByRole('button', { name: 'Back to my path' }));
     const lessonOne = document.querySelector('[data-lesson-id="G2-O:1"]');
     expect(lessonOne).toHaveAttribute('data-state', 'continue');
-    expect(lessonOne?.querySelector('[data-testid="lesson-row"]')).toHaveTextContent('Continue');
+    expect(lessonOne?.querySelector('[data-testid="lesson-row"]')).toHaveTextContent('Enter');
 
     await user.click(document.querySelector('[data-lesson-focus="G2-O:2"]') as HTMLElement);
     expect(screen.getByTestId('locked-note')).toHaveTextContent(/Lesson 1/);
