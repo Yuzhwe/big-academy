@@ -1,0 +1,47 @@
+name: Cloud M4 regression (draft only)
+on:
+  push:
+    branches:
+      - feat/writing-cloud-shader-m4-adaptive
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Check docs / types / unit / builds / browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Documentation references
+        run: npm run check:docs
+      - name: TypeScript workspaces
+        run: npm run typecheck
+      - name: Unit regressions
+        run: npm test
+      - name: Production and Storybook build
+        run: npm run build
+      - name: Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Browser integration regression
+        run: npm run test:integration
+      - name: Report Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-m4-playwright-failures
+          path: |
+            apps/writing/playwright-report/
+            apps/writing/test-results/
+            apps/writing/docs/evidence/cloud-m4/
+            apps/writing/docs/evidence/integration-v1/
+          retention-days: 7
+          if-no-files-found: ignore
