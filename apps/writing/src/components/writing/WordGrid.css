@@ -97,7 +97,6 @@
 .word-grid__text { min-width:0; }
 .word-grid__card[data-kind='sentence'] { flex-basis:100%; width:100%; height:auto; border-radius:var(--ba-radius-24); text-align:left; justify-content:flex-start; line-height:1.5; }
 .word-grid__card:lang(zh-CN) { font-family:var(--ba-font-body-zh); }
-.word-grid__state-label { display:block; flex-basis:100%; font-size:var(--ba-type-caption-size); line-height:1.4; }
 .word-grid__card[data-selection='selected'] { box-shadow:inset 0 0 0 2px var(--ba-color-action-primary); }
 .word-grid__card[data-selection='used'] { background:var(--ba-color-neutral-2); }
 .word-grid__card[data-evaluation='correct'] { background:var(--ba-color-success-surface); color:var(--ba-color-success-text); box-shadow:inset 0 0 0 2px var(--ba-color-success-fill); }
