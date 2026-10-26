@@ -1,7 +1,7 @@
 /* Canvas textile waves only; fixed pole is a separate static SVG layer.
  * Canvas overdraw has 12px upper/lower headroom for ±4px displacement. */
 .ba-flag {position:relative;display:inline-block;width:200px;height:200px;max-width:100%;overflow:visible;}
-.ba-flag__fixed {position:absolute;inset:12px 0 12px;display:block;width:100%;height:160px;pointer-events:none;}
+.ba-flag__fixed {position:absolute;inset:20px 0 20px;display:block;width:100%;height:160px;pointer-events:none;}
 .ba-flag__fixed svg {display:block;width:100%;height:100%;overflow:visible;}
 .ba-flag__canvas {position:absolute;inset:0;width:100%;height:184px;pointer-events:none;display:block;}
 @media(prefers-reduced-motion:reduce){.ba-flag__canvas {animation:none!important;}}
