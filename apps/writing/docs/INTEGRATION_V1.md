@@ -82,3 +82,14 @@ GitHub delivery: [Draft PR #52](https://github.com/Yuzhwe/big-academy/pull/52), 
 On this Mac, the library is http://localhost:6007/ and Writing is http://localhost:5174/. Both now run as independent user LaunchAgents, survive closing Terminal and restart at login. The existing 127.0.0.1 aliases remain available, including for progress saved under that origin. Browser storage stays origin-specific; this setup does not migrate learner records between localhost and 127.0.0.1.
 
 Built snapshots and the runtime are installed under `~/Library/Application Support/Big Academy/`. To publish a new local review version, rebuild the apps then run `npm run local-sites:install`. No source-watching server is required. Logs are in that directory's `logs/` folder. Stop/remove a service with `launchctl bootout gui/$(id -u)/com.bigacademy.local.library` (or `.writing`) and remove its corresponding `~/Library/LaunchAgents/com.bigacademy.local.<site>.plist` file. Ordinary login then no longer starts that service.
+
+## R2 Design Review 01 · four-item consistency follow-up
+
+This follow-up corrects four designer-confirmed discrepancies in the integration branch, without altering product scoring, saving, unlocking or assessment behavior.
+
+1. StairLessonCard accepts the original session states `start` and `continue`, but both use the same `enterable` presentation and localized `Enter / 进入` CTA. Resume behavior remains owned by the session.
+2. `review` (and source `skipped`, when applicable) use the `completed` visual role. The lesson-number seal uses existing `--ba-color-success-fill` with a white number and no badge border.
+3. Skipped is no longer a separately displayed card role or Storybook state. Skip remains a distinct **learning-record** state; its persistence, skip-revocation and LessonTopBar rules are untouched. The card no longer shows a visible `Mastered · skipped` note.
+4. WordGrid cards display only authored learning content. Selection/evaluation/disabled meanings remain in accessible labels and data attributes, and the existing graders/hints/shown-answer behavior is untouched.
+
+Stories, component contract and targeted regression assertions were updated. **The original 83 Vitest / 24 Playwright pass counts predate these new commits; do not treat them as post-fix test results.** Re-run `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build` and `npm run test:integration` in the authenticated local checkout. Visual sign-off is still pending, and PR #52 remains a Draft.
