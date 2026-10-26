@@ -1181,6 +1181,49 @@
       ],
       "runtimeEvidence": "apps/writing/src/components/writing/BAPageTransition.test.tsx",
       "notes": "Cross Blur inspired by Great UI pattern. Not an imported third-party component, no motion package dependency. Candidate approval only."
+    },
+    {
+      "id": "BA-WR-013",
+      "name": "CloudShaderSky",
+      "kind": "scenic",
+      "contractVersion": "0.1.0-m4",
+      "status": "implemented-pending-runtime-verification",
+      "visualStatus": "Pending designer approval; original Clear and current sky compared separately",
+      "implementation": "apps/writing/src/course/CloudShaderSky.tsx",
+      "story": "apps/writing/src/components/writing/CloudShaderSky.stories.tsx",
+      "props": {
+        "mode": "auto | shader | lightweight (default auto)",
+        "preset": "clear | staircase (default staircase)",
+        "skyTop": "6-digit hex, optional; override preset",
+        "skyBottom": "6-digit hex, optional; override preset",
+        "cloudColor": "6-digit hex, optional; default #FBF8F2",
+        "cloudCount": "1..6, default 5",
+        "driftSpeed": "0..2, original M4 default 0.8",
+        "parallaxStrength": "0..0.5; caller supplies Staircase scenicSpeeds.cloud",
+        "cameraX": "number; existing StaircaseScene boundedX; absolute value, never accumulated",
+        "cameraY": "number; accepted for camera contract, no independent camera",
+        "cameraMaxTravel": "number; camera clamp/overscan bound",
+        "paused": "boolean",
+        "reducedMotion": "boolean override; system matchMedia is also respected",
+        "onRendererChange": "(renderer: shader | lightweight, reason?: string) => void"
+      },
+      "events": {
+        "onRendererChange": "Renderer status only; no grading, unlock or navigation mutations"
+      },
+      "states": ["auto", "shader", "lightweight", "fallback", "reduced", "paused"],
+      "layoutOwner": "Viewport sky layer, behind hills; clouds never attached to course rail; all pointer events pass through",
+      "requirements": [
+        "WebGL copies the exact GLSL cloud shape/noise/shading from user-supplied M4 HTML. No new cloud algorithm.",
+        "Original Clear is reproducible without replacing the approved stage gradient. Current palette Shader is a visual candidate.",
+        "Lightweight is the existing R2.12 three-CSS-cloud implementation; no second cloud animation in steady shader mode.",
+        "Both renderers use bounded cameraX and scenicSpeeds.cloud; drift time does not reset on scroll.",
+        "WebGL startup/compile/link/draw failure and lost context fall back safely; low-end devices prefer lightweight.",
+        "Scroll does not recompile shaders; resource disposal, tab visibility, IntersectionObserver, resize and reduced motion must be validated.",
+        "No parameter controls or product logic changes in the student Staircase."
+      ],
+      "requiredStories": ["Adaptive", "OriginalM4Clear", "CurrentPalette", "Lightweight", "ReducedMotion", "Scrolled"],
+      "runtimeEvidence": null,
+      "notes": "M4 source provenance Aceternity UI Cloud Shader (original HTML preserved as separately supplied archive); licensing verification and actual cross-browser visual QA remain open."
     }
   ],
   "currentDirection": {
