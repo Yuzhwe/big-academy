@@ -141,20 +141,20 @@ export function deriveM4CloudOnly(fragment: string): string {
     'return shadeCloud(color, sky, p, vec2(cx, cy), r, seed, t, dist, opacity);');
   shader = exact(shader,
     'return mix(color, cloudCol, alpha);',
-    'opacity = 1.0 - (1.0 - opacity) * (1.0 - alpha);\\n          return mix(color, cloudCol, alpha);');
+    'opacity = 1.0 - (1.0 - opacity) * (1.0 - alpha);\n          return mix(color, cloudCol, alpha);');
   shader = exact(shader,
     'float cirrusBand = smoothstep(',
-    'vec3 baseSky = color;\\n          float opacity = 0.0;\\n          float cirrusBand = smoothstep(');
+    'vec3 baseSky = color;\n          float opacity = 0.0;\n          float cirrusBand = smoothstep(');
   shader = exact(shader,
     'color = mix(color, u_cloud * 0.98, wisp * 0.35);',
-    'color = mix(color, u_cloud * 0.98, wisp * 0.35);\\n            opacity = 1.0 - (1.0 - opacity) * (1.0 - wisp * 0.35);');
-  const occurrences = (shader.match(/color = cloudPass\\([^;]+\\);/g) ?? []).length;
+    'color = mix(color, u_cloud * 0.98, wisp * 0.35);\n            opacity = 1.0 - (1.0 - opacity) * (1.0 - wisp * 0.35);');
+  const occurrences = (shader.match(/color = cloudPass\([^;]+\);/g) ?? []).length;
   if (occurrences !== 6) throw new Error('M4 cloud-pass count changed: ' + occurrences);
-  shader = shader.replace(/color = cloudPass\\(([^;]+)\\);/g,
+  shader = shader.replace(/color = cloudPass\(([^;]+)\);/g,
     (_whole, args: string) => 'color = cloudPass(' + args + ', opacity);');
   shader = exact(shader,
     'gl_FragColor = vec4(color, 1.0);',
-    'vec3 cloudRGB = (color - baseSky * (1.0 - opacity)) / max(opacity, 0.0001);\\n          gl_FragColor = vec4(clamp(cloudRGB, 0.0, 1.0), clamp(opacity, 0.0, 1.0));');
+    'vec3 cloudRGB = (color - baseSky * (1.0 - opacity)) / max(opacity, 0.0001);\n          gl_FragColor = vec4(clamp(cloudRGB, 0.0, 1.0), clamp(opacity, 0.0, 1.0));');
   return shader;
 }
 export const M4_CLOUD_ONLY_FRAG = deriveM4CloudOnly(FRAG);
