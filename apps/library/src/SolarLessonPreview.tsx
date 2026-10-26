@@ -17,6 +17,11 @@ export const SOLAR_DEFAULTS:SolarParameters = {
   rimBoost:1.66, glowSpread:18, brightness:1,
   borderColor:'#B25415',glowColor:'#E89B55',
 };
+export const SOLAR_COLOR_PRESETS = {
+  A:{border:'#B25415',glow:'#E89B55',label:'A · Writing 铜棕'},
+  B:{border:'#874319',glow:'#D79553',label:'B · 深焦糖棕'},
+  C:{border:'#C26824',glow:'#F3B46A',label:'C · 暖杏橙'},
+} as const;
 export type SolarRuntime = 'active'|'paused'|'fallback';
 const vertex = [
   'attribute vec2 aPosition;',
