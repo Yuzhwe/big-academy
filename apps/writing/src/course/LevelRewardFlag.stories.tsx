@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { CSSProperties } from 'react';
 import { LevelRewardFlag } from './LevelRewardFlag';
 import './StaircaseScene.css';
 
@@ -9,7 +10,7 @@ const meta={
   component:LevelRewardFlag,
   parameters:{ba:{contractId:'BA-WR-011',status:'candidate-pending-designer-review',owner:'Writing',purpose:'R2.12 SVG with existing 4% cloth wind and reduced-motion fallback'}},
   decorators:[(Story)=><div data-ba-product="writing" style={{padding:48,background:'linear-gradient(135deg,#9fdcf0,#f6e6a8)',borderRadius:22,width:320}}>
-    <div style={{'--ba-path-flag-wind':0.04} as React.CSSProperties}><Story/></div>
+    <div style={{'--ba-path-flag-wind':0.04} as CSSProperties}><Story/></div>
   </div>],
 } satisfies Meta<typeof LevelRewardFlag>;
 export default meta;
