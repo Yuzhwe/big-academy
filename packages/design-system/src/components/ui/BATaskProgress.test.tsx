@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { TaskProgressItem } from '../../types/task';
@@ -85,7 +85,7 @@ describe('BATaskProgress', () => {
     expect(onNavigate.mock.calls.map((call) => call[0])).toEqual([0, 1]);
   });
 
-  it('keeps a long activity title in the accessible name across many tasks', () => {
+  it('keeps a long activity title accessible through the overflow popover', async () => {
     const long = 'Try it in your own writing about the lunch menu and why it should change';
     const rows: TaskProgressItem[] = Array.from({ length: 18 }, (_, index) => ({
       id: `row-${index}`,
@@ -95,9 +95,14 @@ describe('BATaskProgress', () => {
     render(
       <BATaskProgress tasks={rows} activeIndex={4} canOpen={(index) => index < 9} />,
     );
-    expect(screen.getAllByRole('button')).toHaveLength(18);
-    expect(screen.getByRole('button', { name: `Task 9: ${long}, available` })).toBeEnabled();
-    expect(screen.getByRole('button', { name: 'Task 18: Activity 18, locked' })).toBeDisabled();
+    const nav = screen.getByRole('navigation');
+    expect(within(nav).getAllByRole('button')).toHaveLength(9); // eight numbered slots + one ellipsis
+    const trigger = within(nav).getByRole('button', { name: 'All activity screens' });
+    await userEvent.click(trigger);
+    const popup = screen.getByRole('dialog', { name: 'All activity screens' });
+    expect(within(popup).getAllByRole('button')).toHaveLength(19); // 18 digits + Close
+    expect(within(popup).getByRole('button', { name: `Task 9: ${long}, available` })).toBeEnabled();
+    expect(within(popup).getByRole('button', { name: 'Task 18: Activity 18, locked' })).toBeDisabled();
   });
 });
 
@@ -145,4 +150,21 @@ describe('R2 Design Review 01 numeric-only composite indicators', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Task 2: Task, done' }));
     expect(onNavigate).toHaveBeenCalledWith(1);
   });
+});
+
+it('supports closing the six-column full index with Escape and outside click without navigation', async () => {
+  const rows: TaskProgressItem[] = Array.from({ length: 12 }, (_, i) => ({
+    id: String(i), label: 'Activity '+(i+1), status: i===7?'current':'available',
+  }));
+  const navigate = vi.fn();
+  render(<BATaskProgress tasks={rows} activeIndex={7} canOpen={() => true} onNavigate={navigate}/>);
+  const overflow = screen.getByRole('button', { name: 'All activity screens' });
+  await userEvent.click(overflow);
+  expect(screen.getByRole('dialog', { name: 'All activity screens' })).toBeVisible();
+  await userEvent.keyboard('{Escape}');
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(navigate).not.toHaveBeenCalled();
+  await userEvent.click(overflow);
+  await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+  expect(screen.queryByRole('dialog')).toBeNull();
 });
