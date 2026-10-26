@@ -7,14 +7,14 @@ import { HamburgerComposition } from './HamburgerComposition';
 import { UnitMilestone } from './UnitMilestone';
 
 describe('Review 04 Stage A — opt-in designs only', () => {
-  it('uses real interactive slanted tabs without changing caller grading', async()=>{
+  it('uses real interactive rounded tabs without changing caller grading', async()=>{
     const onChange=vi.fn();
     render(<WordGrid
       groups={[{id:'one',label:'Opinion',words:[{id:'a',text:'think'}]},
         {id:'two',label:'Nouns',words:[{id:'b',text:'garden'}]}]}
-      activeGroup="one" tabAppearance="slanted" onGroupChange={onChange}/>);
+      activeGroup="one" tabAppearance="connected" onGroupChange={onChange}/>);
     const tabs=screen.getByRole('tablist');
-    expect(tabs.closest('.word-grid')).toHaveAttribute('data-tab-appearance','slanted');
+    expect(tabs.closest('.word-grid')).toHaveAttribute('data-tab-appearance','connected');
     await userEvent.click(screen.getByRole('tab',{name:'Nouns'}));
     expect(onChange).toHaveBeenCalledWith('two');
   });
@@ -26,12 +26,13 @@ describe('Review 04 Stage A — opt-in designs only', () => {
     expect(container.querySelector('.word-grid')).toHaveAttribute('data-tab-appearance','connected');
   });
 
-  it('makes a cutout preview while retaining default folded production anatomy',()=>{
+  it('makes a four-rounded-corner preview while retaining default folded production anatomy',()=>{
     const unit={id:'a',index:1,title:'Opinion Paragraph',typeLabel:'',
       meta:'9 lessons · 170 mins',goals:['Write a clear topic sentence']};
-    const {rerender,container}=render(<StairUnitCard unit={unit} corner="cutout"/>);
-    expect(container.querySelector('.course-unit')).toHaveAttribute('data-corner','cutout');
-    expect(container.querySelector('.course-unit__cutout-edge')).toBeInTheDocument();
+    const {rerender,container}=render(<StairUnitCard unit={unit} corner="rounded"/>);
+    expect(container.querySelector('.course-unit')).toHaveAttribute('data-corner','rounded');
+    expect(container.querySelector('.course-unit__identity')).toBeInTheDocument();
+    expect(container.querySelector('.course-unit__meta')).toHaveTextContent('9 lessons · 170 mins');
     expect(container.querySelector('.course-unit__fold-flap')).not.toBeInTheDocument();
     rerender(<StairUnitCard unit={unit}/>);
     expect(container.querySelector('.course-unit')).toHaveAttribute('data-corner','folded');
@@ -63,4 +64,13 @@ describe('Review 04 Stage A — opt-in designs only', () => {
     expect(button).toHaveAttribute('data-shine','true');
     await user.click(button);expect(onCelebrate).toHaveBeenCalledOnce();
   });
+});
+
+it('uses the submitted R04 PNG artwork in the completed milestone candidate only',()=>{
+ const {container}=render(<UnitMilestone unitId="demo" title="Unit completed" completed
+   previewAppearance="gold-shine" celebrationEligible={false}/>);
+ const imgs=[...container.querySelectorAll('.unit-milestone__action img')];
+ expect(imgs).toHaveLength(2);
+ expect(imgs[0].getAttribute('src')).toContain('writing_milestone_2.png');
+ expect(imgs[1].getAttribute('src')).toContain('writing_milestone_1.png');
 });
