@@ -174,3 +174,21 @@ Compare rendered components and actual pages at 1440/1024/834 widths, long EN/ZH
 - More detail and preview links: `docs/REVIEW_04_STAGE1.md`.
 
 **Evidence pending:** post-Stage-1 TypeScript, build, browser screenshots, WebGL/reduced-motion performance, keyboard, cloud stacking and visual acceptance have not been executed in this conversation environment. The local historical port :6007 is a built snapshot; refresh from the latest PR branch and rebuild/run `npm run dev:library` (or rebuild/reinstall local sites) before reviewing. No main merge or Vercel deployment.
+
+
+## R2 Design Review 04 · Stage A completed code submission, pending runtime/visual QA (2026-10-26)
+
+**PR #52 independent branch:** `feat/writing-hifi-integration-v1`. Scope strictly Stage A designer-library/Storybook **plus** approved LessonTopBar completed-digit color fix. No main merge, Vercel deployment or page-level Solar/Cross Blur integration.
+
+- WordGrid gained opt-in `tabAppearance='slanted'` with 27px right-leaning shoulder, selected z-index/lift and subtle panel fade. The old `connected` layout remains the runtime default and the Activity 7 page uses it until designer signoff.
+- HamburgerComposition now applies the exact approved **green** #E7F6DF top, #F3EFE4 reason, #E7C48A bottom with 88/100/88 widths and asymmetric layer radii, using the existing reusable HamburgerLayer children.
+- StairUnitCard gained opt-in `corner='cutout'`, real transparent corner clipping with diagonal stroke; production defaults `folded`. Unit card source still shared between library and Staircase.
+- UnitMilestone gained opt-in `previewAppearance='gold-shine'`: gold/gray two-layer states with 7s sheen on gold only. Production defaults `existing` and missing gold in the actual high-fidelity Staircase remains an explicit Stage B defect.
+- Solar palette A/B/C and custom color inputs are exposed in the designer controls and drive the actual shader uniforms plus border color; original numeric controls, 7s CTA sweep and deep brown static fallback retained. Shader source license/provenance still pending clearance.
+- `BA-WR-012` standalone Cross Blur transition (no new router or Motion dependency) added to library and Storybook with editable duration/blur and Reduced Motion. It does not own learning state or change the actual Writing routes.
+- Existing BA-WR-011 LevelRewardFlag standalone SVG/wind preview remains intact.
+- **Real LessonTopBar fix:** Completed numerals inside BOTH rail and portaled popup now directly use global Writing primitive `--ba-color-writing-7` (#B25415), no leakage from generic action-primary blue-green.
+- Storybook candidate stories, component contracts, unit regression tests, and a targeted Playwright real-page completed-color assertion have been added.
+- Exact review routes/approval/QA checklist: `docs/REVIEW_04_STAGEA.md`.
+
+**QA truth:** Files committed to the Draft PR; connector read-backs can verify source and contract JSON. No current-turn local Node/TypeScript/Vitest/Playwright execution, browser WebGL/GPU check, screenshots or design signoff has been performed. This is code-complete-for-review, NOT a tested or approved release. Local :5174/:6007 may serve old published built copies; pull PR head and rebuild/run current dev servers for inspection.
