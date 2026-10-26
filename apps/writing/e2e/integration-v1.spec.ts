@@ -62,11 +62,8 @@ test('wrong twice, shown, move-on, failed sets, optional Review retry',async({pa
  await page.getByRole('button',{name:'Try a new set',exact:true}).click();expect((await state(page)).checks['L2-04.check'].attempt).toBe(2);expect((await state(page)).done['L2-04.check']).toBe(true);
 });
 test('P7 blank warning, question navigation and recovery',async({page})=>{
- await start(page);await practices(page);await options(page).nth(1).click();await forward(page);await page.getByRole('button',{name:'Question 1',exact:true}).click();await expect(options(page).nth(1)).toBeChecked();await page.getByRole('button',{name:'Question 4',exact:true}).click();
- await expect(primary(page)).toBeDisabled();
- await page.getByTestId('writing-canvas').fill('pets');
- await forward(page);
- await expect(page.getByTestId('feedback')).toContainText('2, 3');expect((await state(page)).checks['L2-04.check'].history).toHaveLength(0);await resume(page);await expect(primary(page)).toContainText('Hand in anyway');await forward(page);expect((await state(page)).checks['L2-04.check'].history).toHaveLength(1);
+ await start(page);await practices(page);await options(page).nth(1).click();await forward(page);await page.getByRole('button',{name:'Question 1',exact:true}).click();await expect(options(page).nth(1)).toBeChecked();await page.getByRole('button',{name:'Question 4',exact:true}).click();await forward(page);
+ await expect(page.getByTestId('feedback')).toContainText('2, 3, 4');expect((await state(page)).checks['L2-04.check'].history).toHaveLength(0);await resume(page);await expect(primary(page)).toContainText('Hand in anyway');await forward(page);expect((await state(page)).checks['L2-04.check'].history).toHaveLength(1);
 });
 test('Chinese path, keyboard, touch, reduced motion and 200 percent layout',async({page,browser})=>{
  for(const width of [1440,1024,834,390]){
