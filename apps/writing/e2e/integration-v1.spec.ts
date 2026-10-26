@@ -22,7 +22,7 @@ async function practices(p:Page,wrong=false){
  await shot(p,'screen-02-'+(wrong?'shown':'correct'));await forward(p);await p.getByRole('button',{name:wrong?'class':'believe',exact:true}).click();await forward(p);
  if(wrong){await p.getByRole('button',{name:'fish.',exact:true}).click();await forward(p);await shot(p,'tapword-shown');}
  await shot(p,'screen-03-'+(wrong?'shown':'correct'));await forward(p);for(const i of (wrong?[1,2,4]:[0,2,4]))await options(p).nth(i).click();await forward(p);
- if(wrong){await options(p).nth(3).click();await forward(p);await shot(p,'multi-shown');}
+ if(wrong){await options(p).nth(2).click();await options(p).nth(3).click();await forward(p);await shot(p,'multi-shown');}
  await shot(p,'screen-04-'+(wrong?'shown':'correct'));await forward(p);
  if(wrong){
   await p.locator('.word-grid__card').filter({hasText:/^garden$/}).click();await p.locator('.word-grid__card').filter({hasText:/^garden/}).click();
