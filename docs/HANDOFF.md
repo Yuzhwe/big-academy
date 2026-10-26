@@ -216,3 +216,12 @@ Continues Draft PR #52 on `feat/writing-hifi-integration-v1`. Only Stage A desig
 - CTA sweep, Cross Blur, Level reward flag untouched.
 
 **Pending:** run Node/Vitest/Playwright and render screenshots; test actual WordGrid left seam across tabs & 834/1024/1440, Unit long titles, PNG image layering & reduced motion, Solar WebGL color, popup spacing. No build/browser run verified by this GitHub connector-only operation. See `docs/REVIEW_04_STAGEA_R2.md`.
+
+
+## R04 final combined library + Writing-page construction: complete-label confirmation (2026-10-26)
+
+The designer explicitly selected **A · 完整** for the Unit metadata wording: **`9 lessons · 170 min`**, retaining the full word `lessons` (not `Lsn`, `L`, or an icon-only abbreviation), while shortening only `mins` to `min`. The canonical `StairUnitCard` applies this when locale is English to the actual unit-provided metadata; no fabricated hard-coded lesson totals. `UNIT 1` remains Dosis 800 at **18px** in Writing brown `#B25415`; the metadata pill text uses the same brown and the paper/background/border remain unchanged. The **24px** main Unit title stays visually primary.
+
+Current branch source inspection confirms the combined shared implementation is wired into both the Designer Library and actual Writing Staircase/Activity pages: one `StairUnitCard`, shared `WordGrid`, original `StairLessonCard` unchanged, `UnitMilestone` new dual-layer PNG and 3D depth, `HamburgerComposition` soft shadows, `LessonTopBar` single-line ellipsis, 24px popover, and shared page transition. `LevelRewardFlag` uses the requested Canvas 1-device-pixel-per-strip sine algorithm with 1.6s / 6π / 4px defaults and retains **temporary R2.12 SVG artwork** until the designer supplies the final flag image. Do not mark the flag artwork approved.
+
+A new R04 regression test asserts full `lessons` text, English `min`, Chinese unchanged, and absence of legacy fold. Visual correctness (WordGrid corners, 3D parallax, Canvas seams), runtime builds and browser screenshots remain **PENDING** until run; source inspection and a committed test are not a test-pass result. No main merge or Vercel deployment.
