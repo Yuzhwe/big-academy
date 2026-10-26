@@ -6,10 +6,12 @@ export const catalog = [
   { key: 'tabs', id: 'BA-UI-002', name: '标签导航', en: 'BATabs', category: '基础交互', description: '在相关内容之间切换，始终知道自己所在的位置。', anatomy: 'TabList → Tab → 对应 TabPanel。方向键切换焦点与选中项。', states: ['default', 'hover', 'pressed', 'focus', 'disabled'], story: 'primitives-batabs--level-navigation' },
   { key: 'topbar', id: 'BA-WR-001', name: '课程顶栏', en: 'LessonTopBar', category: 'Writing', description: '把课程身份、当前进度与返回路径放在一个清晰的框架中。', anatomy: '左侧返回与课程标题；居中 Activity Screen 进度；右侧留空。', states: ['default', 'long', 'done', 'locked', 'skipped'], story: 'writing-shell-lessontopbar--desktop' },
   { key: 'lesson', id: 'BA-WR-005', name: '课程卡片', en: 'StairLessonCard', category: 'Writing', description: '学习路径卡片统一为可进入、已完成和未解锁三种视觉状态。', anatomy: '课号印章 → 标题与时长 → 共享 BAButton。解锁与课程数据由产品提供。', states: ['start', 'current', 'review', 'locked'], story: 'writing-path-stairlessoncard--enterable' },
-  { key: 'unit', id: 'BA-WR-007', name: '单元卡片', en: 'StairUnitCard', category: 'Writing', description: '同一纸张折角、标题和全圆角课程信息标签，在组件库与阶梯页共用。', anatomy: 'UNIT 编号 → 标题 → 课时信息 Pill → 目标段落 → 连续纸张折角。', states: ['default','long'], story: 'writing-path-stairunitcard--default' },
+  { key: 'unit', id: 'BA-WR-007', name: '单元卡片', en: 'StairUnitCard', category: 'Writing', description: '同一纸张折角、标题和全圆角课程信息标签，在组件库与阶梯页共用。', anatomy: 'UNIT 编号 → 标题 → 课时信息 Pill → 目标段落 → 连续纸张折角。', states: ['default','long','cutout'], story: 'writing-path-stairunitcard--default' },
   { key: 'hamburger', id: 'BA-WR-004', name: '汉堡包组合', en: 'HamburgerComposition', category: 'Writing', description: '三层教学示意，可独立调整文字与宽度；Top / Bottom bun 窄于中间 Reason。', anatomy: 'Top bun → Reason → Bottom bun；每层标题与示例句子垂直居中。', states: ['default', 'long'], story: 'writing-activities-hamburgercomposition--all-three-layers' },
   { key: 'flag', id: 'BA-WR-011', name: 'Level 奖励旗帜', en: 'LevelRewardFlag', category: 'Writing', description: '复用 R2.12 旗帜 SVG 与 4% 风力动画，供设计师独立调整。', anatomy: 'SVG 旗杆 + 布料 + 柔和布面高光；风力参数仅控制布面动态。', states: ['default'], story: 'writing-path-levelrewardflag--default' },
-  { key: 'words', id: 'BA-WR-003', name: '词卡面板', en: 'WordGrid', category: 'Writing', description: '按类别找到表达所需的词，让写作一步一步展开。', anatomy: '连接式分类标签 → 词卡区域。切换类别不执行插入，点击词卡才发出插入事件。', states: ['default', 'selected', 'used', 'disabled', 'correct', 'incorrect', 'hint', 'shown', 'hover', 'pressed', 'focus'], story: 'writing-activities-wordgrid--multi-group' },
+  { key: 'milestone', id: 'BA-WR-006', name: 'Unit 里程碑', en: 'UnitMilestone', category: 'Writing', description: '金色完成和灰色未完成的两层徽章，扫光仅完成状态启用。', anatomy: '徽章 + 对勾 + 7 秒扫光 + 点击重播。', states: ['upcoming','completed'], story: 'writing-path-unitmilestone--first-return' },
+  { key: 'transition', id: 'BA-WR-012', name: '页面转场', en: 'BAPageTransition', category: 'Writing', description: 'Cross Blur 页面切换候选，两种速度与模糊强度可调整。', anatomy: '旧画面模糊 → 中点切换 → 新画面清晰。', states: ['default'], story: 'writing-transitions-bapagetransition--staircase-to-lesson' },
+  { key: 'words', id: 'BA-WR-003', name: '词卡面板', en: 'WordGrid', category: 'Writing', description: '按类别找到表达所需的词，让写作一步一步展开。', anatomy: '连接式分类标签 → 词卡区域。切换类别不执行插入，点击词卡才发出插入事件。', states: ['default', 'slanted', 'selected', 'used', 'disabled', 'correct', 'incorrect', 'hint', 'shown', 'hover', 'pressed', 'focus'], story: 'writing-activities-wordgrid--multi-group' },
 ] as const;
 export type Entry = typeof catalog[number];
 export type ComponentKey = Entry['key'];
@@ -33,6 +35,7 @@ export const stateNames: Record<string, string> = {
   wrong: '错误', dim: '变淡', disabled: '禁用', busy: '等待中', start: 'Enterable · 可进入',
   continue: 'Enterable · 可进入', current:'Current · Solar 强调候选', review: 'Completed · 已完成', locked: '未解锁', skipped: '已跳过',
   long: '长标题', single: '单组词卡', used: '词卡已使用',
+  cutout:'透明缺角 · 候选', slanted:'斜切标签 · 候选', upcoming:'未完成 · 灰色', completed:'已完成 · 金色',
 };
 export type Scene = {
   component: ComponentKey; view: 'components' | 'overview' | 'foundations' | 'review';
@@ -46,6 +49,9 @@ export type Scene = {
   wordSelected:string[]; wordAnswer:string[]; wordGroup:string; wordResult:'neutral'|'correct'|'incorrect'|'hint'|'shown';
   solarRayIntensity:number; solarRayLength:number; solarRayCount:number; solarBokeh:number;
   solarRimBoost:number; solarGlowSpread:number; solarBrightness:number; flagWind:number;
+  solarPreset:'A'|'B'|'C'|'custom';solarBorderColor:string;solarGlowColor:string;
+  wordTabAppearance:'connected'|'slanted';unitCorner:'folded'|'cutout';
+  transitionDuration:number;transitionBlur:number;transitionPage:'staircase'|'lesson';
 };
 export const defaultScene: Scene = {
   component: 'choice', view: 'components', mode: 'live', state: 'default', locale: 'en', width: 'fit',
@@ -53,6 +59,8 @@ export const defaultScene: Scene = {
   buttonContent:'text',layout:'hug',background:'light',tabCount:'4',tabActive:'L2',composition:'card',currentAction:'start',material:'en',answerPhase:'open',
   wordScenario:'A',wordContent:'word',wordTabs:'auto',wordCount:'1',wordSelection:'default',wordEvaluation:'neutral',wordInteraction:'enabled',wordSelected:[],wordAnswer:[],wordGroup:'g0',wordResult:'neutral',
   solarRayIntensity:0.6,solarRayLength:0.45,solarRayCount:64,solarBokeh:0.16,solarRimBoost:1.66,solarGlowSpread:18,solarBrightness:1,flagWind:0.04,
+  solarPreset:'A',solarBorderColor:'#B25415',solarGlowColor:'#E89B55',
+  wordTabAppearance:'connected',unitCorner:'folded',transitionDuration:500,transitionBlur:12,transitionPage:'staircase',
 };
 function oneOf<T extends string>(value: string | null, options: readonly T[], fallback: T): T {
   return options.includes(value as T) ? value as T : fallback;
@@ -63,6 +71,7 @@ export function readScene(search: string): Scene {
   const entry = catalog.find(c => c.key === component)!;
   const choice = oneOf(p.get('choice'), ['single', 'multiple'], 'single');
   const selected = [...new Set((p.get('selected') ?? '').split(',').filter(s => ['a', 'b', 'c'].includes(s)))];
+  const color=(key:string,fallback:string)=>{const value=p.get(key)??fallback;return /^#[0-9a-fA-F]{6}$/.test(value)?value:fallback;};
   const num=(name:string,fallback:number,min:number,max:number)=>{
     const raw=p.get(name);
     if(raw==null||raw==='')return fallback;
@@ -100,6 +109,14 @@ export function readScene(search: string): Scene {
     solarGlowSpread:num('solarGlowSpread',18,2,50),
     solarBrightness:num('solarBrightness',1,0.2,1.8),
     flagWind:num('flagWind',0.04,0,0.12),
+    solarPreset:oneOf(p.get('solarPreset'),['A','B','C','custom'],'A'),
+    solarBorderColor:color('solarBorderColor','#B25415'),
+    solarGlowColor:color('solarGlowColor','#E89B55'),
+    wordTabAppearance:oneOf(p.get('wordTabAppearance'),['connected','slanted'],'connected'),
+    unitCorner:oneOf(p.get('unitCorner'),['folded','cutout'],'folded'),
+    transitionDuration:Math.round(num('transitionDuration',500,0,1200)),
+    transitionBlur:num('transitionBlur',12,0,30),
+    transitionPage:oneOf(p.get('transitionPage'),['staircase','lesson'],'staircase'),
   };
 }
 export function sceneSearch(scene: Scene): string {
