@@ -85,7 +85,9 @@ function SolarBorderCanvas({params,enabled,onRuntime}:{
   const callback=useRef(onRuntime);
   options.current=params;callback.current=onRuntime;
   useEffect(()=>{
-    if(!enabled){callback.current('paused');return;}
+    // Do not overwrite a WebGL failure with "paused": that would reenable
+    // the failing context and cause an infinite fallback/retry render loop.
+    if(!enabled)return;
     const canvas=canvasRef.current;if(!canvas)return;
     let gl:WebGLRenderingContext|null=null;
     let program:WebGLProgram|null=null,vs:WebGLShader|null=null,fs:WebGLShader|null=null,buffer:WebGLBuffer|null=null;
