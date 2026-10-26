@@ -85,7 +85,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
           : card}
         {scene.composition==='terrace'&&<LandscapeTerrace/>}
       </div>
-      {isCurrent?<p className="review04-caption">{zh?'Current 是 Enterable 的强调视觉。Solar 仅在组件库中预览，未接入阶梯页。':'Current is a visual emphasis of Enterable. Solar is a library-only preview, not integrated into Staircase.'}</p>:null}
+      {isCurrent?<p className="review04-caption">{zh?'Current 是 Enterable 的强调视觉。此处与阶梯页使用同一个 Solar 组件。':'Current is a visual emphasis of Enterable. This is the same Solar wrapper used by Staircase.'}</p>:null}
       {output}
     </div>;
   }
@@ -133,7 +133,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
       <BAPageTransition viewKey={target} renderView={view}
         duration={scene.motion==='reduce'?0:scene.transitionDuration} maxBlur={scene.transitionBlur}
         reducedMotion={scene.motion==='reduce'}/>
-      <p className="review04-caption">{zh?'仅组件库模拟转场，不修改 Writing 导航。':'Library-only transition preview. Writing navigation unchanged.'}</p>
+      <p className="review04-caption">{zh?'此处独立模拟转场；真实 Writing 页面也已经使用同一组件。':'Isolated transition demo; real Writing navigation now uses the same visual component.'}</p>
     </div>;
   }
   if (scene.component === 'hamburger') {
