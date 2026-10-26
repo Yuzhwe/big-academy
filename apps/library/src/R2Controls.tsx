@@ -42,7 +42,6 @@ export function R2Controls({scene,update}:{scene:Scene;update:(patch:Partial<Sce
         {range('solarBrightness','Brightness · 整体亮度',0.2,1.8,0.01)}
         <p>如系统减少动态、WebGL 失败或性能不足，将使用深棕色 3px 静态边框。</p>
       </section>}
-    {scene.component==='unit'&&field('unitCorner','右上角方案',[['rounded','普通四角圆角（本轮候选）'],['folded','旧版折角（实际页面）']])}
     {scene.component==='transition'&&<section className="review04-solar-controls" aria-label="Cross Blur 参数">
       <h3>Cross Blur · Page Transition</h3>
       {range('transitionDuration','Duration (ms)',0,1200,25)}
