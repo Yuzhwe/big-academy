@@ -8,6 +8,7 @@ import { BAPageTransition } from '../../writing/src/components/writing/BAPageTra
 import { LandscapeTerrace } from '../../writing/src/components/writing/LandscapeTerrace';
 import { HamburgerComposition } from '../../writing/src/components/writing/HamburgerComposition';
 import { LevelRewardFlag } from '../../writing/src/course/LevelRewardFlag';
+import { CloudShaderSky, type CloudRenderer } from '../../writing/src/course/CloudShaderSky';
 import { SolarLessonPreview } from './SolarLessonPreview';
 import './Review04Preview.css';
 import { WordPlayground } from './WordPlayground';
@@ -17,6 +18,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
   const [tab, setTab] = useState('L2');
 
   const [notice, setNotice] = useState('');
+  const [cloudRenderer, setCloudRenderer] = useState<CloudRenderer>('lightweight');
   const [activity, setActivity] = useState(2);
   const [transitionTarget,setTransitionTarget] = useState('staircase');
   const [flagLocalImage,setFlagLocalImage]=useState<string|undefined>();
@@ -24,6 +26,21 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
   const state = scene.mode === 'state' ? scene.state : 'default';
   const output = notice ? <output className="preview-result" aria-live="polite">{notice}</output> : null;
 
+  if (scene.component === 'cloud') {
+    return <section className="preview-example preview-example--cloud" data-testid="cloud-preview">
+      <div style={{position:'relative',height:340,width:'100%',minWidth:300,overflow:'hidden',
+        background:`linear-gradient(135deg, ${scene.skyTop}, ${scene.skyBottom})`}}>
+        <CloudShaderSky mode={scene.cloudRenderMode} preset={scene.cloudPreset}
+          skyTop={scene.skyTop} skyBottom={scene.skyBottom} cloudColor={scene.cloudColor}
+          cloudCount={scene.cloudCount} driftSpeed={scene.driftSpeed}
+          parallaxStrength={scene.parallaxStrength} cameraX={scene.cloudCameraX}
+          cameraMaxTravel={1200} paused={scene.cloudPaused} reducedMotion={scene.motion==='reduce'}
+          onRendererChange={setCloudRenderer}/>
+      </div>
+      <output aria-live="polite">实际渲染：{cloudRenderer} · 相机 X = {scene.cloudCameraX}px · 视差 = {Math.round(scene.cloudCameraX*scene.parallaxStrength)}px</output>
+      <p className="review04-caption">Shader / Lightweight 与正式 Staircase 使用同一 CloudShaderSky；原始 M4 Clear 和阶梯页当前颜色均为可比较候选，需设计师批准。</p>
+    </section>;
+  }
   if (scene.component === 'choice') {
     const forced = scene.mode === 'state';
     const checked = !forced && scene.answerPhase === 'checked';
