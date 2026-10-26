@@ -15,7 +15,7 @@ export interface StairUnitCardProps {
  * The scenery owns positioning, cloud base, progress and lesson permissions. */
 export function StairUnitCard({unit,locale='en',corner='folded'}:StairUnitCardProps) {
   const zh=locale==='zh';
-  const kicker=zh?`第 ${unit.index} 单元`:`UNIT ${unit.index}`;
+  const kicker=zh?`第 ${unit.index} 单元`:corner==='folded'?`Unit ${unit.index}`:`UNIT ${unit.index}`;
   const paths=corner==='folded'?unitFoldPaths():null;
   const face=`course-unit-fold-face-${unit.id}`;
   return <section className="course-unit" data-component="BA-WR-007"
