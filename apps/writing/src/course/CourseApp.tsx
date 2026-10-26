@@ -100,6 +100,7 @@ function UnitFold({ id }: { id: string }) {
         vectorEffect="non-scaling-stroke"
       />
       <path className="course-unit__fold-flap" d={paths.flap} fill={`url(#${face})`} />
+      <path className="course-unit__fold-seam" d={`M 0 0 L 32 32`} fill="none" stroke="var(--ba-writing-unit-paper-border, #dcc3ab)" strokeWidth="0.7" vectorEffect="non-scaling-stroke"/>
     </svg>
   );
 }
@@ -116,7 +117,6 @@ function PathView({ session }: { session: CourseSession }) {
       <BATabs className="course-level-tabs" selectedKey={session.levelId} onSelectionChange={(key) => session.switchLevel(key)}>
         <header className="course-path__bar course-path__header">
           <div className="course-path__header-title">
-            <p className="course-kicker">{zh ? '写作路径' : 'Writing path'}</p>
             <h1 className="course-title" title={session.text(level.name)}>
               {zh ? '第 ' + level.id.slice(1) + ' 级' : 'Level ' + level.id.slice(1)} {session.text(level.name)}
             </h1>
