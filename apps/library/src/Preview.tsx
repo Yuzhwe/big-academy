@@ -115,7 +115,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
     const done=scene.mode==='state' ? state==='completed' : true;
     return <div className="preview-example preview-example--center review04-milestone-stage">
       <UnitMilestone unitId="preview-unit" title={zh?'观点段落':'Opinion Paragraph'} completed={done}
-        celebrationEligible={false} locale={scene.locale} previewAppearance="gold-shine"
+        celebrationEligible={false} locale={scene.locale}
         onCelebrate={()=>setNotice(zh?'已触发重播请求，组件库不修改学习记录。':'Replay event received; no learner progress is written.')}/>
       <p className="review04-caption">{done?'Completed · 金色、7 秒扫光、可点击':'Upcoming · 灰色、无扫光、不可点击'}</p>{output}
     </div>;
