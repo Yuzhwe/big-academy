@@ -394,7 +394,7 @@
       ],
       "layoutOwner": "TopBar owns global centering, progress owns internal overflow",
       "requirements": [
-        "Public name ActivityScreenIndicator. Same numeric-only numbered circle in LessonTopBar and the All activity screens popover. Every state shows the Activity Screen index (Lesson 1: 1-8) without a separate visible check/lock/status icon.",
+        "Public name ActivityScreenIndicator. Same numeric-only numbered circle in LessonTopBar and the All activity screens popover. Every state shows the Activity Screen index (Lesson 1: 1-6) without a separate visible check/lock/status icon.",
         "Unselected Done: dark fill with white digit. Selected Done: dark fill/white digit plus outer selected ring. Unselected Skipped: dashed inner outline. Selected Skipped: same dashed inner outline plus outer selected ring. Incomplete selected: neutral base plus outer selected ring. Locked: disabled colors, no icon.",
         "Dosis ExtraBold 800 numerals; 36×36px visual circle. Status remains in the accessible button name while the visual marker contains only the screen index.",
         "Only canOpen-authorized screen navigation; locked never navigates",
@@ -495,7 +495,7 @@
         "Initial Lesson entry selects first Screen and all successors are locked until earned",
         "Use BA-UI-006 shared ActivityScreenIndicator + anchored All activity screens popover, not an alternative marker design",
         "Full-bar geometric centering, no hamburger, no extra right-side action",
-        "Retain Lesson metadata plus eight Activity Screen indicators and overflow",
+        "Retain Lesson metadata plus six current Activity Screen indicators and overflow",
         "Standalone visible icon-only top Back returns to Staircase; no visible helper words",
         "Footer Previous is distinct, previous Activity Screen only, disabled on first screen",
         "Top Back 50x50 shared accessible button, hover/pressed/focus motion; keeps lesson title/meta and centered activity status indicators",
@@ -1134,7 +1134,7 @@
       "layoutOwner": "Staircase owns flag scene placement; LevelRewardFlag owns original SVG cloth movement",
       "requirements": [
         "R04 actual Writing+library uses browser Canvas physical-pixel 1px vertical column slicing; only translateY, no scale/perspective/shadow/light; image aspect ratio preserved, slight overlap avoids seams.",
-        "OffsetY=amplitude*sin(x/flagWidth * waves * PI + phase); phase=2PI*elapsedSeconds/period, baseline 4px/6/1.6s. Do not double 6*PI.",
+        "OffsetY=amplitude*sin(x/flagWidth * waves * PI + phase); phase=2PI*elapsedSeconds/period, historical sample 4px/6/1.6s; approved Review 06 defaults are 3px/5/3s. Do not double waves*PI.",
         "Local designer library supports period/waves/amplitude, pause/play, reset values plus phase, local file replacement (FileReader only). Actual Staircase uses confirmed defaults.",
         "Original Flutter sample yarden, https://stackoverflow.com/a/78383275, retrieved 2026-10-26, CC BY-SA 4.0, adapted to browser Canvas, attribution retained.",
         "Review 05: static writing_flag_2.png pole (lossless transparent boundary derivative) + original writing_flag_1.5.png yellow completed / writing_flag_1.png gray upcoming cloth. Cloth only waves; pause offscreen/hidden; reduced-motion flat. No outer card/title. Local image replacement never hides the pole. Gray cloth retains designer-authored Completed text; semantic mismatch awaits designer review.",
@@ -1295,24 +1295,6 @@
   },
   "lesson1ActivityMappings": [
     {
-      "screenId": "L2-04.learn",
-      "templateId": "P2",
-      "layoutVariantId": "P2.rule-pair.hamburger",
-      "componentIds": [
-        "BA-WR-001",
-        "BA-WR-002",
-        "BA-WR-004",
-        "BA-UI-006",
-        "BA-UI-001"
-      ],
-      "internalComposites": [],
-      "authority": {
-        "behavior": "apps/writing/PRODUCT.md §12",
-        "visual": "DESIGN.md / Writing Activity layout variants"
-      },
-      "verification": "specified-not-runtime-verified"
-    },
-    {
       "screenId": "L2-04.t.ts1",
       "templateId": "P3",
       "layoutVariantId": "P3.list.option.single",
@@ -1432,6 +1414,28 @@
         ],
         "interaction": "tab switches available words; word card inserts at active writing caret, without grading"
       }
+    }
+  ],
+  "lesson1ActivityMappingVersion": "1.1.0-review06-six-runtime",
+  "historicalActivityMappings": [
+    {
+      "screenId": "L2-04.learn",
+      "templateId": "P2",
+      "layoutVariantId": "P2.rule-pair.hamburger",
+      "componentIds": [
+        "BA-WR-001",
+        "BA-WR-002",
+        "BA-WR-004",
+        "BA-UI-006",
+        "BA-UI-001"
+      ],
+      "internalComposites": [],
+      "authority": {
+        "behavior": "apps/writing/PRODUCT.md §12",
+        "visual": "DESIGN.md / Writing Activity layout variants"
+      },
+      "verification": "specified-not-runtime-verified",
+      "runtimeStatus": "Not in current runtime sequence"
     },
     {
       "screenId": "L2-04.check",
@@ -1450,8 +1454,8 @@
         "behavior": "apps/writing/PRODUCT.md §12",
         "visual": "DESIGN.md / Writing Activity layout variants"
       },
-      "verification": "specified-not-runtime-verified"
+      "verification": "specified-not-runtime-verified",
+      "runtimeStatus": "Not in current runtime sequence"
     }
-  ],
-  "lesson1ActivityMappingVersion": "1.0.0-review"
+  ]
 }

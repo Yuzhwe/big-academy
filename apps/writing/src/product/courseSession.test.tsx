@@ -567,3 +567,26 @@ describe('Review 05 isolated lesson tests',()=>{
     expect(course.levelRewardDone('L1')).toBe(false);expect(course.levelRewardDone('L2')).toBe(false);
   });
 });
+
+
+describe('Review 06 acceptance gates', () => {
+  it('keeps every runtime lesson free from standalone P2/P7 while preserving all nine lesson records', () => {
+    const course = session();
+    expect(course.config.lessons).toHaveLength(9);
+    expect(course.config.lessons.flatMap(lesson => lesson.screens).every(screen => screen.template !== 'P2' && screen.template !== 'P7')).toBe(true);
+    expect(course.screens.filter(ref => ref.li === 0).map(ref => ref.screen.id)).toEqual([
+      'L2-04.t.ts1', 'L2-04.t.ts4', 'L2-04.t.ts3', 'L2-04.t.ss.L2-04', 'L2-04.t.ts8', 'L2-04.apply',
+    ]);
+  });
+  it('enters Lesson End only after the sixth, Apply, activity is complete', () => {
+    const course = session();
+    course.openLesson('G2-O', 1);
+    satisfyAll(course, 0);
+    const indexes = course.liveIdx(0);
+    course.inspect().screen = indexes[indexes.length - 1];
+    expect(course.screens[course.inspect().screen].screen.kind).toBe('apply');
+    course.pressPrimary();
+    expect(course.view).toBe('lessonEnd');
+    expect(course.inspect().checks['L2-04.check']?.passed).toBeUndefined();
+  });
+});

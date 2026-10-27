@@ -19,7 +19,7 @@ This is the sole active Writing PRODUCT.md. Chapters describe the current system
 
 **Acceptance measures:** all six real screens and original task data; correct/wrong/empty/second-attempt/reveal behavior by task; sequential unlocking; Back/exit/refresh/Continue state recovery; accessible keyboard and touch; screenshots and designer approval. These are delivery criteria, not unvalidated learning-effect metrics.
 
-**Out of scope:** implementing the other 44 screens, adding new exercises, old Index/Analytics chrome, user-facing Save my paragraph/Print, or cross-level demo unlocking.
+**Out of scope:** implementing other lessons beyond the six-screen pilot, adding new exercises, old Index/Analytics chrome, user-facing Save my paragraph/Print, or cross-level demo unlocking.
 
 ## 2. Information architecture
 
@@ -36,7 +36,7 @@ E-01 Staircase
           └─ pass / move on → Lesson End → Return to E-01
 ```
 
-**Screen flow:** initial Lesson entry focuses Screen 1, with Screens 2–6 locked. A Screen that legitimately terminates its own learning interaction unlocks its successor; the learner activates Next to navigate. On first visit, no later Screen is directly navigable, including by a collapsed-number popover or URL. A terminal practice `shown` state does not imply correctness. Apply can terminate by passing or by an explicit `Move on for now` after two failed checks; Check can terminate after two failed assessment rounds without awarding mastery. Existing authorized skill-skip transitions remain distinct from ordinary sequential completion.
+**Screen flow:** initial Lesson entry focuses Screen 1, with Screens 2–6 locked. A Screen that legitimately terminates its own learning interaction unlocks its successor; the learner activates Next to navigate. On first visit, no later Screen is directly navigable, including by a collapsed-number popover or URL. A terminal practice `shown` state does not imply correctness. **Review 06 Tapword exception:** `shown` still blocks Next until the learner selects a valid target and passes a new Check; this does not automatically apply to other templates. Apply can terminate by passing or by an explicit `Move on for now` after two failed checks; Check can terminate after two failed assessment rounds without awarding mastery. Existing authorized skill-skip transitions remain distinct from ordinary sequential completion.
 
 **Saved navigation:** Back, exit, browser reload, Continue and Review must preserve answer content, attempts, hints, `shown`, drafts, check history and valid unlocks. Deleted P2/P7 pages never add extra LessonTopBar steps. The detailed activity rules below supply the acceptance conditions; this flow does not replace them.
 
@@ -96,7 +96,7 @@ A skipped skill step counts as complete for both gates. Minutes on those screens
 | --- | --- | --- |
 | `learn`, `model_read`, `plan_topic`, `draft_ready`, `rev_comments`, `rep_paragraph`, `rep_grew` | The learner presses Next once (`seen`) | Immediately. Next records `seen`. |
 | `rep_reflect` | Next is pressed. That press also marks the report page done. | Immediately. |
-| `task`, `model_task` | That screen’s item status is `done` or `shown` (not `open`) | Only then. Until then the footer is Check, or the task’s own completion gesture. |
+| `task`, `model_task` | Normally `done` or `shown` (not `open`); **Tapword `shown` is not complete** | Normally then. Review 06 Tapword must pass a subsequent valid Check before Next. |
 | `plan_layer` | `seen` **and** every field on that screen has text after pictures are stripped | As soon as every field has text. Next then records `seen`. |
 | `plan_check` | The plan page is marked done | Only then. |
 | `apply`, `check` | That page id is in the done map | Only then. |
@@ -104,7 +104,7 @@ A skipped skill step counts as complete for both gates. Minutes on those screens
 | `rev_cups` | A second draft exists, or the paragraph is already finished | Only then. |
 | `rev_final` | The learner has finished the paragraph | Only then. |
 
-Completion is **not** “the answer was correct.” `shown` (answer revealed), “Move on for now,” “Start writing anyway,” and a failed second Check all complete their screens without a correct result. Read-only screens complete with no answer at all.
+Completion is **not** “the answer was correct.” Except for the Review 06 Tapword retry gate, `shown` (answer revealed), “Move on for now,” “Start writing anyway,” and a failed second Check all complete their screens without a correct result. Read-only screens complete with no answer at all.
 
 When Next would enter another lesson, the footer label is **End of lesson**. That press opens the lesson-break screen. It does not skip the break. On the last screen of the book, the label is **I’m done** until the screen is seen, then **Finished**.
 
@@ -137,12 +137,12 @@ Text regions restore from stored segments, including a printed frame or given se
 Practice items (not Check questions) use status `open`, `done`, or `shown`.
 
 - `done` — the learner met the grader. Practice credit uses how the answer was produced.
-- `shown` — the answer was revealed. Credit is 0. The screen still completes. The revealed answer is marked as the answer, and the learner’s own pick stays unmarked as correct.
+- `shown` — the answer was revealed. Credit is 0. Most practice screens complete, **but Review 06 Tapword remains incomplete and Next stays blocked until a valid answer is selected and checked correctly**. The revealed answer is marked as the answer, and the learner’s own pick stays unmarked as correct.
 - A gutter tick appears for both `done` and `shown`. The revealed tick and the correct tick stay visually and accessibly distinct.
 
 **BAChoice board.** Option chrome uses `default` (alias `idle`), `selected`, `correct`, `correctUnselected` (alias `shown`), `wrong`, and `dim`. Before Check a row is `default` or `selected`. `selected` is the brown fill `#9B4F36` with a ring. That hex is the selected fill. After Check, the option the learner picked that is correct is `correct`: green fill `#14AE5C` and a leading check. A correct option the learner did not pick is `correctUnselected`: green outline `#14AE5C` and a leading check, with no solid green disc. A wrong option is `wrong`: fill `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state. The row shows the letter, the body, and the leading icon.
 
-**Two-try rule (pick, label, single-target tap-word, edit, write, build).** Each Check, or each completed build submission, adds one try. A correct result finishes `done` immediately. A wrong result with fewer than 2 tries stays `open`, shows the retry message, and leaves Next closed. The second wrong result finishes `shown` and reveals the answer. There is no unlimited-retry mode.
+**Two-try rule (pick, label, edit, write, build).** Each Check, or each completed build submission, adds one try. A correct result finishes `done` immediately. A wrong result with fewer than 2 tries stays `open`, shows the retry message, and leaves Next closed. The second wrong result finishes `shown` and reveals the answer with zero credit. **Tapword exception:** its second wrong Check also enters `shown`, reveals all valid targets with two green-outline flashes while retaining the incorrect mark and Coach explanation, but does not unlock Next or celebrate. Only selecting an authored valid target and passing another explicit Check changes it to `done`; grading credit and celebration receipts then follow the normal formal record rules. Do not extend this exception to other templates.
 
 **Hint ladder, separate from Check (R2 Review 03).** On an open practice item with authored hints, the secondary controls are **Need a hint?** and **Another hint**. They only append teaching hints. Once all hints are visible, the control disappears or disables. **No Hint button may call `finish(..., 'shown')`, select/fill an answer, grade, increase tries, complete or skip the screen.** The formal **Check** and its existing incorrect-attempt ceiling still lead to `shown` when appropriate. P7 has no practice Hint. Apply hints are non-grading. Ordered-build wrong-word hints remain a separate tile-local teaching behavior without submitting the line.
 
@@ -192,7 +192,7 @@ No question, no options, no grader. The screen completes when the learner presse
 - **Growth.** Word diff of the first handed-in draft against the final text. Matching ignores case and trailing punctuation. Added words and removed words are marked and named in a key. A four-row table compares first-draft and final scores: organization and purpose, evidence and elaboration, language, conventions. “My checks” lists each skill Check as passed, not yet, or not taken.
 - **Controls removed from the product:** “Save my paragraph” and “Print” are not on this page. Automatic saving still runs. The browser’s own print command is not a product button.
 
-### P2 Teach — removed from the runtime sequence
+### P2 Teach — Not in current runtime sequence (historical authored template)
 
 Review 06 removes standalone P2 Teach pages globally. Authored teaching text remains available to task Coach messages and source data.
 
@@ -294,7 +294,7 @@ Opinion pattern: I think / I believe / I feel / I know / in my opinion / should 
 
 **Recap.** Read-only plan plus the draft guide. No Check. The footer forward label is **Start writing**. Pressing it marks the screen seen and opens the draft.
 
-### P7 Check — removed from the runtime sequence
+### P7 Check — Not in current runtime sequence (historical authored template)
 
 Review 06 removes standalone P7 Check pages globally. No deleted assessment page may create a Passed record or block Lesson End.
 
@@ -389,10 +389,10 @@ Lessons are re-counted after a skip. A lesson whose own remaining minutes are 0 
 
 | Activity | WordGrid content groups, in order | Visibility and behavior |
 | --- | --- | --- |
-| 05 · Guided Word Build | `set` (Sentence set; source `type=build` takes precedence over inherited page groups) | The ordered word-card set is the task input. With only one active group, keep the grid and word cards but omit a decorative one-item tab strip. |
-| 06 · Frame Fill | `task` → `opinion` → `marks` | Three real, switchable content groups while filling the sentence. The task's own `grid.tabs` explicitly selects these groups. |
-| 07 · Apply | `opinion` → `nouns` → `adjectives` → `marks` | Four real, switchable category groups. Original page `grid.level=words`; preserve their authored English/Chinese labels and category content. |
-| 08 · Mastery Check | No usable WordGrid; `grid.level=off` | Do not expose selectable vocabulary groups during the check; keyboard writing and independent grading remain. |
+| 04 · Guided Word Build | `set` (Sentence set; source `type=build` takes precedence over inherited page groups) | The ordered word-card set is the task input. With only one active group, keep the grid and word cards but omit a decorative one-item tab strip. |
+| 05 · Frame Fill | `task` → `opinion` → `marks` | Three real, switchable content groups while filling the sentence. The task's own `grid.tabs` explicitly selects these groups. |
+| 06 · Apply | `opinion` → `nouns` → `adjectives` → `marks` | Four real, switchable category groups. Original page `grid.level=words`; preserve their authored English/Chinese labels and category content. |
+**Historical P7 Mastery Check: Not in current runtime sequence.** Its authored `grid.level=off` still applies to source/template inspection, never as a seventh Lesson 1 activity.
 
 The word bank is an **input aid**, never a multiple-choice answer selector. Switching tabs changes the visible vocabulary set and saves the active category for return; it must not clear the writing draft, affect the insertion caret, call the grader, count attempts, unlock a Screen or trigger celebrations. Pressing a word card, by contrast, inserts content into the active editable area, except on Screen 05 where it performs the dedicated ordered-build action. Groups and word cards come from the original authored configuration, not from hardcoded screenshot text. A single-group build uses the same underlying category semantics without a redundant tab header. Tab label, content and active state must remain accessible to keyboard and touch users.
 
@@ -400,14 +400,14 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 
 ### 12.2 Shared activity state machine and persistence
 
-1. **Entry:** an unlocked Activity Screen opens with previously saved response and attempt status, if any; untouched practice is `open`. Screen 1 is read-only and can advance without grading. TopBar `selected` is a navigation state, independent of `done/shown/skipped`.
+1. **Entry:** an unlocked Activity Screen opens with previously saved response and attempt status, if any; untouched practice is `open`. Screen 1 is the P3 single-pick task and requires a selection followed by Check; it is not a read-only Teach screen. TopBar `selected` is a navigation state, independent of `done/shown/skipped`.
 2. **Answer editing:** selection/tap/typing changes the working response only; it does not check, add attempts, emit correctness feedback, unlock the next Activity Screen or celebrate. Existing validated result remains until the learner explicitly checks again in templates that support revisions.
-3. **Check action:** only the template's authorized gesture runs the grader. For practice P3/P4 first wrong → `open` plus retry/feedback, next screen locked. Second wrong → `shown` with authored solution and zero credit, next screen available. Correct → `done` plus success feedback and then Next. For ordered Build, a wrong card tap leaves the full-line try unchanged, and the hint for a word tile appears after two wrong taps on that word. See Screen 05.
-4. **P5 Apply:** two failed completed submissions allow `Move on for now`; no success grade is invented. **P7 Check:** internal question edits and Next question do not grade; only Hand in grades the whole assessment; the second submitted set can finish without mastery.
-5. **Exit/Back/refresh/reentry:** preserve response selections, text, tries, wrong marks, hints, per-question P7 answers/index, completion and reveal state in the canonical state record (chapter 6). No separate UI-only progress store. Keyboard, touch, focus and reduced motion may alter presentation, never these gates.
+3. **Check action:** only the template's authorized gesture runs the grader. For practice P3/P4 first wrong → `open` plus retry/feedback, next screen locked. Second wrong → `shown` with authored solution and zero credit, next screen available **except for Tapword**, which must be checked correctly again before Next. Correct → `done` plus success feedback and then Next. For ordered Build, a wrong card tap leaves the full-line try unchanged, and the hint for a word tile appears after two wrong taps on that word. See Screen 05.
+4. **P5 Apply:** two failed completed submissions allow `Move on for now`; no success grade is invented. **Historical P7 Check (Not in current runtime sequence):** internal question edits and Next question do not grade; only Hand in grades the whole assessment; the second submitted set can finish without mastery.
+5. **Exit/Back/refresh/reentry:** preserve response selections, text, tries, wrong marks, hints, historical per-question P7 answers/index (retained for saved records), completion and reveal state in the canonical state record (chapter 6). No separate UI-only progress store. Keyboard, touch, focus and reduced motion may alter presentation, never these gates.
 6. **Navigation ownership:** the top-left LessonTopBar Back is the **only Lesson-to-parent navigation control** and returns to E-01. The bottom-right Footer button group only navigates and performs required actions *within the current Lesson*: Previous goes to the preceding Activity Screen (disabled on Screen 1), the primary button checks/submits or moves forward when allowed. P7 question Back/Next operate inside the same Check; on its first question, Back may return to the preceding Activity Screen without leaving the Lesson. These Footer controls never duplicate the parent-level Back. Never make every screen “correct → Next”.
 
-### 12.4 Screen 02 — Single Pick · `L2-04.t.ts1`
+### 12.4 Screen 01 — Single Pick · `L2-04.t.ts1`
 
 - **Identity:** task `ts1`; `type=pick`; `template=P3`; `variant=P3.list.option.single`; params `layout=list,unit=option,pick=single,scored=auto`.
 - **Question:** “Which one is a good topic sentence for a school garden? Tap it.”
@@ -416,18 +416,18 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Flow:** `open/no-choice` → select one radio-like row (`selected`, no grade) → Check enabled → correct: `done`, authored rationale and Next; first wrong: record try 1, mark selected wrong and clear it for retry, stay here; second wrong: `shown`, B shows the revealed check icon, and Next is available without credit.
 - **Feedback:** option-specific reason from authored `coach.options`; show Check feedback only after Check, not while selecting.
 - **Persistence:** selected index, wrong row marks, tries, status, revealed answer and feedback context.
-- **Acceptance:** selection of A does not unlock screen 3; after a failed Check the option can be changed; B correctly checked unlocks screen 3; second wrong reveals B but never pretends “correct”.
+- **Acceptance:** selection of A does not unlock screen 2; after a failed Check the option can be changed; B correctly checked unlocks screen 2; second wrong reveals B but never pretends “correct”.
 
-### 12.5 Screen 03 — Tapword · `L2-04.t.ts4`
+### 12.5 Screen 02 — Tapword · `L2-04.t.ts4`
 
 - **Identity:** task `ts4`; `type=tapword`; `template=P3`; `variant=P3.passage.word.single`; params `layout=passage,unit=word,pick=single,scored=auto`; task `need=one`.
 - **Question and passage:** “Tap a word that tells you this is an opinion.” / “I believe our class should get a pet fish.”
 - **Answer:** precisely one chosen word matching **either** authored target `believe` or `should`; punctuation and word occurrence are interpreted through original `targets[].at` + occurrence rules. Two targets are alternatives, **not** two required selections.
-- **Flow:** no chosen word → tap an eligible token (only one current selection; tap selected word again to deselect) → Check → success: `done` with opinion-word reason; first wrong: `open` + word-specific authored feedback and retry; second wrong: `shown` with acceptable targets and Next, no credit.
+- **Flow:** no chosen word → tap an eligible token (only one current selection; tap selected word again to deselect) → Check → success: `done` with opinion-word reason; first wrong: `open` + word-specific authored feedback and retry; second wrong: `shown`, all valid targets receive green outlines flashing twice, incorrect token remains marked, Coach explains; **Next stays disabled and no correctness credit or celebration is awarded**. Selecting `believe` or `should` and pressing Check again finishes `done` and unlocks Next under the formal grading/celebration rules.
 - **Persistence:** exact token index/target occurrence, tries, status and reveal; never save merely the display string when occurrences can be ambiguous.
 - **Acceptance:** both “believe” and “should” pass individually; “class” does not; pressing a word never grades or advances; keyboard token selection has a visible focus and equivalent Check.
 
-### 12.6 Screen 04 — Multi Pick · `L2-04.t.ts3`
+### 12.6 Screen 03 — Multi Pick · `L2-04.t.ts3`
 
 - **Identity:** `ts3`; `type=pick`, `multi=true`; `template=P3`; `variant=P3.list.option.multi`; `layout=list,unit=option,pick=multi`.
 - **Question:** “Some of these tell an opinion. Some are just facts. Tap every opinion.”
@@ -437,18 +437,18 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Persistence:** selected index set, tries, wrong marks and answer-revealed state.
 - **Acceptance:** multi-select allows simultaneous A/C/E; no radio behavior, no auto-grade when the third option is selected, zero credit on forced reveal.
 
-### 12.6 Screen 04 — Guided Word Build · `L2-04.t.ss.L2-04`
+### 12.7 Screen 04 — Guided Word Build · `L2-04.t.ss.L2-04`
 
 - **Identity:** task `ss.L2-04`; `type=build`; `template=P4`; `variant=P4.build.word.guided-order`; params `action=build,input=set,build_unit=word,order=guided,distractors=0`; `in_order=true`.
 - **Question:** “Build this topic sentence with the grid, one word at a time: ‘Our school should have a garden for two big reasons.’”
 - **Exact source `cells` and `target` order:** `our | school | should | have | a | garden | for | two | big | reasons | .`; authored `answer_text` “Our school should have a garden for two big reasons.”
-- **Flow:** A WordGrid card press tries to append the next token in the fixed order. The correct next token appends and updates the bench. Each remaining blank is an underline, one horizontal line for each word still to place. A wrong token stays off the bench, gives a brief nonblocking error, and adds one wrong tap on that word tile. After two wrong taps on that same word, the hint for that word is shown. A completed full line is one full-line try: a correct line finishes `done` and Next opens. A defensive wrong full line clears after a delay; the second wrong full line reveals the authored sentence (`shown`, zero credit, Next). With `in_order=true`, a word tap matches the next target, so a wrong full line is only that defensive path.
+- **Flow:** A WordGrid card press tries to append the next token in the fixed order. The correct next token appends and updates the bench. Each remaining blank is an underline, one horizontal line for each word still to place. A wrong token stays off the bench, gives a brief nonblocking error, and adds one wrong tap on that word tile. After two wrong taps on that same word, the hint for that word is shown. A completed full line is **not yet submitted**: the learner must press Check to grade the line. A correct submitted line finishes `done`, then Next opens. A defensive wrong full line clears after a delay; the second wrong full line reveals the authored sentence (`shown`, zero credit, Next). With `in_order=true`, a word tap matches the next target, so a wrong full line is only that defensive path.
 - **WordGrid:** the Approved panel is a peach bank with connected sticky tabs 本题词块, 观点, and 标点, and white pill cards. The active tab joins the bank. Empty slots on the bench stay underlines. A placed word stays in the line. Switching a tab changes the visible cards. Grading stays the ordered-build rule above.
 - **Actions:** word-card taps, and the Coach-rail button group (Previous and the contextual primary). A placed word stays in the line.
 - **Persistence:** token sequence, each word tile’s wrong-tap count, full-line tries, and reveal status. Revisit restores the build sequence and those per-word counts.
 - **Acceptance:** an incorrect token stays off the bench; each remaining blank is an underline; a wrong-token tap leaves the full-line attempt count unchanged; the hint for a word is shown after two wrong taps on that word; a tap on a placed word leaves that word in the line; the finished target matches the normalized answer and completes the screen; reduced motion still presents the wrong-next-token feedback as text.
 
-### 12.7 Screen 05 — Frame Fill · `L2-04.t.ts8`
+### 12.8 Screen 05 — Frame Fill · `L2-04.t.ts8`
 
 - **Identity:** task `ts8`; `type=write`, `template=P4`; `variant=P4.fill.chunks.frame`; params `action=fill,input=chunks,source=frame,scoring=rule+ai`.
 - **Question:** “Finish my sentence about recess. Fill each ___.”
@@ -459,7 +459,7 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Persistence:** fixed frame identity, both editable blank responses / typed source segments, attempts and result; focus and caret must not be lost when grid inserts.
 - **Acceptance:** a remaining blank never passes; too-short reason fails; accepting multiple meaningful reasons rather than one hardcoded phrase follows the source's rule-driven grader.
 
-### 12.8 Screen 06 — Apply Writing · `L2-04.apply`
+### 12.9 Screen 06 — Apply Writing · `L2-04.apply`
 
 - **Identity:** `kind=apply`; `template=P5`; `variant=P5.write.constraint-apply`; params `purpose=apply,phase=draft,input=words,feedback=constraint,evidence=apply`.
 - **Question:** “Write 3 different topic sentences for: Should our school have a garden? Put each one on a new line.” Three distinct sentences, not one long paragraph. Coach repeats the garden topic and three different ways.
@@ -472,7 +472,7 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 
 ## 13. Writing visual and spatial product constraints
 
-- **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, P7 assessment, saved answers and resume. Start/Continue remain **internal progress actions** but share one Enterable visual; Completed/Locked are the other visual roles. Keyboard/touch and reduced-motion behavior remain intact. The Writing demonstration remains six Activity Screens.
+- **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, historical P7 assessment source (Not in current runtime sequence), saved answers and resume. Start/Continue remain **internal progress actions** but share one Enterable visual; Completed/Locked are the other visual roles. Keyboard/touch and reduced-motion behavior remain intact. The Writing demonstration remains six Activity Screens.
 - **E-01 full-bleed stage (`v2-terraces`):** the path landscape is layered terraces. Separate platforms sit on a stack of mountain layers. LandscapeBackdrop (BA-WR-009) paints the stack. From back to front: the sky gradient `linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)`, clouds, hill 2, hill 1, then the lesson platforms and cards. The landscape fills the stage, including the area behind the level header. Level navigation and the language selector stay usable and leave the nodes clear. The scenery ignores pointer events and leaves course state unchanged.
 - **Path scroll:** drag, wheel, and keyboard movement along the staircase move the scenic layers horizontally slower than the cards. Farther layers are slower: hill 1 (foreground) is faster than hill 2 (mid), and the clouds and sky are slower still. Lesson platforms and cards stay locked to the path steps. Those speeds are computed from the card/node count and the resulting track length and camera max travel, so the layers stay covered across the full path. Hill and mountain art width alone is not coverage gained by scrolling those layers at the same horizontal speed as the card/camera track. The motion does not change the current lesson, score, or saved progress. The normative parallax rule and the sky gradient are in DESIGN.md. The stage background is `linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)`.
 - **Path art:** use version **`v2-terraces`** and these ids only.
@@ -529,7 +529,7 @@ If an existing authored Chinese UI/explanation string is absent, identify it for
 
 The Footer primary BAButton is **actually disabled**, not just painted gray, whenever the current activity lacks the required interaction. The disabled control must ignore mouse, touch and keyboard presses; it must not grade an empty answer, log a failed attempt or change the navigation position. Its enabled state is recomputed from the learner's current saved response and the authored task rules, including on reentry/reload.
 
-For L2/G2-O Lesson 1: P2 Learn is a readable instruction and can advance without answering; P3 single pick requires one selection; P3 multiple pick requires the authored three selections; P3 single-word tap needs one chosen word. P4 ordered-word Build advances only once its built-word interaction has reached the original completion gate (its word tiles perform the authored grading/hint behavior). P4 frame-fill requires all authored blanks filled before Check. P5 Apply Writing requires at least three words before Check my writing; later Check again still uses the authored review/feedback rules, and Move on remains independent. Deleted P7 pages do not participate in runtime navigation or grading. Answer correctness is never implied by enabled state; incorrect submissions retain their existing retry / shown / completed rules. The original P7 two-set mastery decision is unchanged.
+For L2/G2-O Lesson 1: the first screen is P3 single pick and requires one selection, then explicit Check; P3 multiple pick enables Check after **one or more** selected options, while all three authored answers still determine correctness; P3 Tapword needs one selected word, with the special shown-and-retry gate after two wrong Checks. P4 ordered-word Build requires an explicit Check after placing all target tokens; word tile taps only build/hint and do not grade the finished line. P4 frame-fill requires all authored blanks filled before Check. P5 Apply Writing requires at least three words before Check my writing; later Check again still uses the authored review/feedback rules, and Move on remains independent. Deleted P7 pages do not participate in runtime navigation or grading. Answer correctness is never implied by enabled state; incorrect submissions retain their existing retry / shown / completed rules. The original P7 two-set mastery decision is unchanged.
 
 ### R2 Review 02 · long writing workspace (DR02-08)
 
@@ -560,7 +560,7 @@ The E-01 stage is the `v2-terraces` landscape specified by DESIGN.md. Layer orde
 
 ### R2 Design Review 03 · Activity and Staircase clarifications (2026-10-26)
 
-- **P2 Learn:** the `Better` and `Not yet` sample headings use matching Dosis 800 typography. Remove the Better check icon. The pale green Better teaching surface remains and does not indicate student grading.
+- **Historical P2 Learn (Not in current runtime sequence):** the `Better` and `Not yet` sample headings use matching Dosis 800 typography. Remove the Better check icon. The pale green Better teaching surface remains and does not indicate student grading.
 - **P3 Tapword:** an actually correct selected word is success-green fill with white text, **without an attached check icon, visible border or inset stroke**. A merely shown/unselected answer stays a visually distinct outline with a truthful accessible label. This does not change generic BAChoice option states.
 - **P3 multiple pick:** one or more selected choices makes **Check enabled**, regardless of whether that set is correct; zero leaves it disabled. The authored three true answers still determine grading, tries and retry/shown.
 - **P5 Apply Writing:** the secondary tip `Write each sentence on a new line.` is not visibly rendered under the editor. Keep source instructional data and real scoring intact. The P5 Textarea alone uses subtle horizontally ruled white paper (approx. 36px line pitch, soft `#EAEDEB` separator) inside the existing non-resizable, internally scrolling, height-filling editor; other tasks including P7 do not gain ruled paper.
@@ -626,3 +626,5 @@ LevelRewardFlag visual completion is derived from real completion of all Level U
 - Frame Fill uses two underline inputs with a 22px student-entry scale. Apply Writing uses a flexing, internally scrolling canvas with 24px, 600-weight text and the four-group WordGrid docked below it.
 - Staircase has High motion and Low motion controls. High motion uses M4 when eligible, full parallax and one-time left-to-right card drop; Low motion uses Lightweight Clouds, reduced parallax and final-position cards. System reduced motion always wins. LevelRewardFlag defaults are amplitude 3px, waves 5, period 3s. Milestone and Flag outer containers are transparent.
 - WordGrid keeps the approved neutral peach/white visual in real Writing pages. The multi-tab bank has complete outer corners; 56px/18px word cards are a Workbench candidate only. BATabs 36px remains the real-page size; 50px is the recommended Workbench candidate and 70px is an additional candidate.
+
+**Review 06 motion ownership:** each Level has one first-visit receipt per browser-tab session (`sessionStorage`, with memory fallback), separate from Alex learning records. First entry can play the left-to-right card drop once; return from a Lesson, switching back to the Level and refreshing the page never replays it. A new browsing session can play again. Low Motion or system Reduced Motion never plays that drop. The effective policy is System Reduced Motion > selected High/Low preference and also governs Cloud Shader fallback, scenic parallax, flag cloth, milestone/Solar decoration, page transitions and celebration particles while preserving all essential feedback.
