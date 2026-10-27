@@ -5,6 +5,7 @@ import topbarSource from '../../writing/src/components/writing/LessonTopBar.tsx?
 import lessonSource from '../../writing/src/components/writing/StairLessonCard.tsx?raw';
 import solarSource from '../../writing/src/components/writing/SolarLessonPreview.tsx?raw';
 import hamburgerSource from '../../writing/src/components/writing/HamburgerComposition.tsx?raw';
+import coachSource from '../../writing/src/components/writing/LessonWorkspace.tsx?raw';
 import flagSource from '../../writing/src/course/LevelRewardFlag.tsx?raw';
 import wordsSource from '../../writing/src/components/writing/WordGrid.tsx?raw';
 import unitSource from '../../writing/src/components/writing/StairUnitCard.tsx?raw';
@@ -13,7 +14,7 @@ import transitionSource from '../../writing/src/components/writing/BAPageTransit
 import cloudSource from '../../writing/src/course/CloudShaderSky.tsx?raw';
 import originalM4ShaderSource from '../../writing/src/course/cloudShaderM4.ts?raw';
 import { choiceOptions, type Scene, type Entry } from './catalog';
-const sources = { button: buttonSource, choice: choiceSource, tabs: tabsSource, topbar: topbarSource,
+const sources = { coach:coachSource, button: buttonSource, choice: choiceSource, tabs: tabsSource, topbar: topbarSource,
   lesson: lessonSource + '\n\n/* Shared Current Solar overlay (same source used in Writing page): */\n' + solarSource,
   unit: unitSource, hamburger: hamburgerSource, flag: flagSource, words: wordsSource,
   milestone:milestoneSource, transition:transitionSource,

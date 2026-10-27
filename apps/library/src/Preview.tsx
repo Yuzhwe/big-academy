@@ -11,6 +11,7 @@ import { LevelRewardFlag } from '../../writing/src/course/LevelRewardFlag';
 import { CloudShaderSky, type CloudRenderer } from '../../writing/src/course/CloudShaderSky';
 import { SolarLessonPreview } from './SolarLessonPreview';
 import './Review04Preview.css';
+import { CoachMessage } from '../../writing/src/components/writing/LessonWorkspace';
 import { WordPlayground } from './WordPlayground';
 import { choiceOptions, type Scene } from './catalog';
 
@@ -135,7 +136,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
       <UnitMilestone unitId="preview-unit" title={zh?'观点段落':'Opinion Paragraph'} completed={done}
         celebrationEligible={false} locale={scene.locale}
         onCelebrate={()=>setNotice(zh?'已触发重播请求，组件库不修改学习记录。':'Replay event received; no learner progress is written.')}/>
-      <p className="review04-caption">{done?'Completed · 金色、7 秒扫光、可点击':'Upcoming · 灰色、无扫光、不可点击'}</p>{output}
+      {output}
     </div>;
   }
   if (scene.component === 'transition') {
@@ -166,9 +167,16 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
       <p className="review04-caption">{zh?'设计候选：上下两层宽度为 Reason 的 88%，标题与示例句垂直居中。':'Candidate: buns are 88% of Reason width; title and example are vertically centered.'}</p>
     </div>;
   }
+  if (scene.component === 'coach') {
+    return <div className="preview-example" style={{width:'min(100%,420px)'}}>
+      {(['orientation','hint','correct','wrong'] as const).filter(tone=>scene.mode!=='state'||tone===state).map(tone=><CoachMessage key={tone} tone={tone} locale={scene.locale}>
+        {zh?({orientation:'读一读题目，再选出你的答案。',hint:'找出表达作者观点的词。',correct:'你找到了主题句。',wrong:'再想一想，哪一句表达了观点？'}[tone]):({orientation:'Read the question and choose your answer.',hint:'Look for the word that shows an opinion.',correct:'You found the topic sentence.',wrong:'Look again for a sentence that shows an opinion.'}[tone])}
+      </CoachMessage>)}
+    </div>;
+  }
   if (scene.component === 'flag') {
     return <div className="preview-example preview-example--center review04-flag-stage">
-      <LevelRewardFlag amplitude={scene.flagAmplitude} waves={scene.flagWaves}
+      <LevelRewardFlag completed={scene.mode!=='state'||state==='completed'} amplitude={scene.flagAmplitude} waves={scene.flagWaves}
         period={scene.flagPeriod} playing={scene.flagPlaying&&scene.motion==='system'}
         resetKey={scene.flagReset} imageSrc={flagLocalImage}/>
       <label className="review04-flag-local">替换本地旗帜图片（仅在当前浏览器内使用）
@@ -180,7 +188,7 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
         }}/>
       </label>
       <p className="review04-caption">Canvas · Period {scene.flagPeriod}s · Waves {scene.flagWaves} × π · Amplitude {scene.flagAmplitude}px · {scene.flagPlaying?'Playing':'Paused'}</p>
-      <p className="review04-caption">来源 yarden，Stack Overflow answer 78383275，CC BY-SA 4.0。已改编为浏览器 Canvas。当前旧图仅临时演示。</p>
+      <p className="review04-caption">来源 yarden，Stack Overflow answer 78383275，CC BY-SA 4.0。已改编为浏览器 Canvas。本轮指定黄／灰旗布与原图旗杆；灰旗布的 Completed 文字待视觉审核。</p>
     </div>;
   }
   if (scene.component === 'words') return <WordPlayground scene={scene} update={update}/>;

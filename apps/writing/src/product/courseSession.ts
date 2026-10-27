@@ -340,6 +340,7 @@ export class CourseSession {
   readonly screens: ScreenRef[];
 
   private readonly storage: Storage;
+  private readonly sourceHtml: string;
   private readonly listeners = new Set<() => void>();
   private revision = 0;
   private yesCount = 0;
@@ -366,6 +367,7 @@ export class CourseSession {
   private saveTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor(options: CourseSessionOptions) {
+    this.sourceHtml = options.html;
     const source = loadAlexSource(options.html);
     this.config = source.config;
     this.levelPath = source.levelPath;
@@ -394,6 +396,41 @@ export class CourseSession {
   };
 
   getSnapshot = () => this.revision;
+
+  /** Review-only simulation: a fresh lesson in a wholly separate memory store.
+   * The real session remains alive, including its exact view and resume point.
+   * No storage key, receipt, timer or progress object is shared with the copy.
+   */
+  createLessonTestSession(): CourseSession {
+    this.flush();
+    const index = this.curLesson();
+    const indexes = this.liveIdx(index);
+    const refs = indexes.map(i => this.screens[i]);
+    const copy = structuredClone(this.state);
+    const pages = new Set(refs.map(ref => ref.screen.page));
+    const ids = new Set(refs.map(ref => ref.screen.id));
+    const lessonId = this.config.lessons[index].id ?? refs[0].screen.page.split('.')[0];
+    const roots = new Set([lessonId,...refs.map(ref=>ref.screen.page.split('.')[0]),...refs.map(ref=>ref.step.skill).filter((id):id is string=>!!id)]);
+    refs.forEach(ref=>ids.add(ref.step.id));
+    const inLesson = (key: string) => ids.has(key) || pages.has(key) || [...roots].some(root=>key===root||key.startsWith(root+'.')||key.startsWith(root+':'));
+    for (const records of [copy.seen,copy.done,copy.tasks,copy.regions,copy.checks,copy.applies,copy.feedbackByScreen,copy.grid.tab,copy.grid.open,copy.skills,copy.skipChoice]) {
+      if (records) for (const key of Object.keys(records)) if (inLesson(key)) delete records[key as keyof typeof records];
+    }
+    copy.screen = indexes[0]; copy.page = this.pageIndex(refs[0].screen.page);
+    copy.unlockAll = false; copy.stoppedAt = null; copy.welcomePending = false;
+    copy.overlay = 'none';
+    copy.events = copy.events.filter(event => !(event.page && inLesson(event.page)) && !indexes.includes(event.screen ?? -1));
+    const memory = createMemoryStorage({[ALEX_STATE_KEY]:JSON.stringify(copy)});
+    const test = new CourseSession({html:this.sourceHtml,storage:memory});
+    test.openLesson(this.playUnit().id, index + 1);
+    return test;
+  }
+
+  /** Decorative flag state uses real unit completion, never the L0/L1 fixtures. */
+  levelRewardDone(levelId = this.levelId): boolean {
+    const level = this.level(levelId);
+    return level.units.length > 0 && level.units.every(unit => this.unitMilestoneDone(unit, !!level.current));
+  }
 
   get locale(): 'en' | 'zh' {
     return this.state.zh ? 'zh' : 'en';

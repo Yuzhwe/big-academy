@@ -1,5 +1,5 @@
 {
-  "registryVersion": "0.4.0-r3",
+  "registryVersion": "0.5.0-review05",
   "project": "Big Academy Writing (pilot)",
   "status": "pilot-in-review",
   "sourceOfTruth": {
@@ -34,7 +34,8 @@
         "trailingIcon": "ReactNode optional",
         "layout": "hug | fixed | full (default hug); layout is independent of variant",
         "fixedWidth": "number, default 240; constrained to container",
-        "wrap": "boolean, default false; opt-in auto-height long content"
+        "wrap": "boolean, default false; opt-in auto-height long content",
+        "aria-pressed": "boolean | mixed, optional; forwarded to React Aria Button for speaker/toggle semantics"
       },
       "events": {
         "onPress": "(event) => void"
@@ -462,9 +463,9 @@
       "id": "BA-WR-001",
       "name": "LessonTopBar",
       "kind": "composite",
-      "contractVersion": "0.4.0-r3",
+      "contractVersion": "0.5.0-review05",
       "status": "implemented",
-      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
+      "visualStatus": "in-review",
       "implementation": "apps/writing/src/components/writing/LessonTopBar.tsx",
       "story": "apps/writing/src/components/writing/LessonTopBar.stories.tsx",
       "props": {
@@ -473,7 +474,7 @@
         "tasks": "TaskProgressItem[]",
         "current": "number, lesson-local active index",
         "canOpen": "(index) => boolean, required injected gate",
-        "tags": "string[], optional necessary labels",
+        "tags": "deprecated compatibility prop; ignored. One fixed G2-O pill appears immediately after lesson title in every instance.",
         "locale": "en | zh, optional chrome language"
       },
       "events": {
@@ -501,7 +502,8 @@
         "No horizontal divider between the lesson TopBar and the lesson content",
         "Whole-bar-centered progress uses BA-UI-006 responsive collapsed rail and one anchored 6-column full-list popover; only layout changes across the two placements, markers must remain identical.",
         "Completed numeric indicators change to Writing brown while preserving the shared 36px geometry, current-selected outer ring and data-controlled access.",
-        "Final: long and short LessonTopBar titles share exact one-line nowrap/text-overflow ellipsis; never wrap or move viewport-centered progress."
+        "Final: long and short LessonTopBar titles share exact one-line nowrap/text-overflow ellipsis; never wrap or move viewport-centered progress.",
+        "Review 05: exactly one always-visible G2-O tag; no duplicate old tags, no wrapping inside the identity. Flexible title receives only remaining width."
       ],
       "requiredStories": [
         "Desktop",
@@ -518,7 +520,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
-      "notes": "LessonTopBar uses an icon-only 50×50 Back with accessible name; title fills the safe left width and clamps to two lines, without displacing progress centered against the whole bar. At narrow widths the activity indicators may occupy a second full-width centered row. The shared BA-UI-006 marker displays only numbers; completed/selected and skipped/selected are distinct composite visuals, with status-aware accessible labels. No bar divider. Final rendered visual signoff remains with the designer. R2 Review 02: top one row of max 9 elements including 36px ellipsis, current activity priority; popup 424px max, 40px radius/padding and 6 left-aligned columns."
+      "notes": "One-line lesson number, flexible ellipsized name and nonshrinking G2-O pill. Reserve Back, centered progress and gaps dynamically; short titles hug their pill. Narrow containers retain original centered progress second row. Popover padding 24px. Designer rendered approval pending."
     },
     {
       "id": "BA-WR-002",
@@ -645,7 +647,7 @@
       "id": "BA-WR-004",
       "name": "HamburgerLayer",
       "kind": "composite",
-      "contractVersion": "0.4.0-r3",
+      "contractVersion": "0.5.0-review05",
       "status": "implemented",
       "implementation": "apps/writing/src/components/writing/HamburgerLayer.tsx",
       "story": "apps/writing/src/components/writing/HamburgerLayer.stories.tsx",
@@ -673,7 +675,7 @@
         "Three Hamburger layers share two typographic roles (title and supporting text), consistent values per layer",
         "Do not invent missing educational copy to populate support tier",
         "R04-R2 hamburger exact: Top green #E7F6DF radii 28/28/10/10; Reason #F3EFE4 radii 10; Bottom #E7C48A radii 10/10/28/28. Width 88/100/88, layer stack gap 8px.",
-        "R04 final HamburgerComposition is shared between live first learn activity and library, with three existing HamburgerLayers width 88/100/88, 28/28/10/10, 10, 10/10/28/28 radii, colors unchanged; each layer independent 0 4px 10px rgba(71,44,34,.12) shadow."
+        "Review 05 fixed HamburgerComposition: 88/100/88 widths, green #E7F6DF / #F3EFE4 / #E7C48A, radii 28/28/10/10,10,10/10/28/28; no outer or inset shadows, no added stroke. Live Activity 1 uses the same component with shared 48px column gap."
       ],
       "requiredStories": [
         "Idle",
@@ -687,7 +689,7 @@
       ],
       "figma": null,
       "runtimeEvidence": null,
-      "visualStatus": "R1-candidate-pending-designer-review"
+      "visualStatus": "in-review"
     },
     {
       "id": "BA-WR-005",
@@ -762,9 +764,9 @@
       "id": "BA-WR-006",
       "name": "UnitMilestone",
       "kind": "composite",
-      "contractVersion": "0.4.0-r3",
+      "contractVersion": "0.5.0-review05",
       "status": "implemented",
-      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
+      "visualStatus": "in-review",
       "implementation": "apps/writing/src/components/writing/UnitMilestone.tsx",
       "story": "apps/writing/src/components/writing/UnitMilestone.stories.tsx",
       "props": {
@@ -787,7 +789,7 @@
         "Click completed to replay",
         "No unlock authority",
         "Default high-fidelity L0/L1 fixture shows completed and allows replay, without mutating saved learner mastery/scores. Reduced Motion suppresses particle animation.",
-        "R04 final: Submitted PNG derivatives are now canonical two-layer artwork in Storybook AND E-01. Base seal (writing_milestone_2) and check (writing_milestone_1) each get different independent 3D XY motion. Completed gold has 7s sweep and replay, Upcoming silver grayscale no shine/click, reduced-motion static."
+        "Review 05: writing_milestone_1.1.webp green base + unchanged writing_milestone_1.png gold check, each with distinct depth/XY displacement; upcoming same layers grayscale. Badge only, no outside background/border/padding/title; accessible Unit name and state retained. Stable wrapper geometry and elapsed-time RAF damping are independent of compositor-only 7s sheen. Reduced Motion static; completed replay only."
       ],
       "requiredStories": [
         "Upcoming",
@@ -798,7 +800,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
-      "notes": "Candidate Warm Frame. Not validated and not visually approved. Completed state is injected from Alex lesson states. Confetti receipt is UI-only and does not unlock anything. Level Goal formula stays open. R2 Review 03: L0/L1 completed examples are display-only by default without a query parameter. Clicking any completed Unit badge replays existing Confetti once at its center, startCount 50/rate.quantity 0/life.count 1. L2 genuine progress remains authoritative."
+      "notes": "Completion remains product-injected. Automatic celebration and manual replay do not change progress. Review 05 rendered visual approval remains open."
     },
     {
       "id": "BA-UI-008",
@@ -975,16 +977,12 @@
       "layoutOwner": "Staircase scene owns placement and anchor; UnitCard owns its paper surface and fold",
       "requirements": [
         "Distinct light tinted informative card with decorative warm border",
-        "45-degree top-right genuine layered fold with rounded flap tip, cream under-fold, gentle warm shadow and no alpha holes",
-        "Fold must not cover text and preserve outer body round corners",
         "Unit title matches StairLessonCard heading typography tokens (Dosis 24px 800 / 30px, Chinese uses shared fallback)",
-        "Folded corner is mandatory on every unit state",
         "No Lesson CTA or lesson status-number assembly",
         "Ensure complete card visible at pan terminal bounds",
-        "Inner ornamental border masked at 45-degree fold; upper right seam joins rounded body silhouette without detached triangle",
         "R3 tinted informational surface remains distinct from white actionable lessons",
         "Unit top line only UNIT N / 第 N 单元; never add Writing Unit or Unit type label.",
-        "R04 final: one canonical shared component (library+Staircase) with all four 16px rounded corners, ZERO fold/cutout. UNIT N label uses Dosis 800/18px theme brown #B25415, same color for full rounded metadata pill text; e.g. 9 lessons · 170 min, title Dosis800/24px. Preserve actual per-unit count and source duration."
+        "Locked current design: four 16px corners, no fold/cutout, brown Dosis 800/18px UNIT identity and brown full-word lesson/time pill, title 24px; preserve warm paper, outline, content and anchors."
       ],
       "requiredStories": [
         "UnitFoldCornerAt200Zoom",
@@ -997,7 +995,7 @@
         "MinimalInformation",
         "FourRoundedCornersR2"
       ],
-      "notes": "Unit card keeps current content and size, uses one continuous top/right triangular folded-paper flap with restrained local contact shading, no floating rounded rectangle. Unit main title shares StairLessonCard typography (Dosis 24px / 800 / 30px; same Chinese heading alias). Goals remain plain paragraphs. R2 Review 03: simplified Unit N caption and one warm full-stroke pill for lesson total + exact time in both live and preview levels. Reusable BA-WR-007 implementation now supplies the exact Unit card in both Staircase and designer library; code/demo stories are provisional until visual signoff.\nR04 R2 upcoming target replaces the fold; current live Staircase still uses it only until Stage B.",
+      "notes": "Same approved rounded card in library and real E-01. No corner variant prop.",
       "story": "apps/writing/src/components/writing/StairUnitCard.stories.tsx",
       "runtimeEvidence": "apps/writing/src/components/writing/StairUnitCard.test.tsx"
     },
@@ -1106,9 +1104,9 @@
       "id": "BA-WR-011",
       "name": "LevelRewardFlag",
       "kind": "composite",
-      "contractVersion": "0.4.0-r4",
+      "contractVersion": "0.5.0-review05",
       "status": "implemented",
-      "visualStatus": "Canvas algorithm integrated · flag artwork temporary until designer image received",
+      "visualStatus": "in-review",
       "implementation": "apps/writing/src/course/LevelRewardFlag.tsx",
       "story": "apps/writing/src/course/LevelRewardFlag.stories.tsx",
       "props": {
@@ -1117,7 +1115,9 @@
         "amplitude": "px, default 4",
         "playing": "boolean, pause or play",
         "resetKey": "integer; phase=0 when updated",
-        "imageSrc": "optional local image DataURL, not uploaded"
+        "imageSrc": "optional local image DataURL, not uploaded",
+        "completed": "boolean, default false. Product-derived real Level unit completion; never from fixture seeding or pixel text.",
+        "label": "optional localized accessible name with state"
       },
       "events": {},
       "states": [
@@ -1130,7 +1130,7 @@
         "OffsetY=amplitude*sin(x/flagWidth * waves * PI + phase); phase=2PI*elapsedSeconds/period, baseline 4px/6/1.6s. Do not double 6*PI.",
         "Local designer library supports period/waves/amplitude, pause/play, reset values plus phase, local file replacement (FileReader only). Actual Staircase uses confirmed defaults.",
         "Original Flutter sample yarden, https://stackoverflow.com/a/78383275, retrieved 2026-10-26, CC BY-SA 4.0, adapted to browser Canvas, attribution retained.",
-        "Final designer flag artwork is STILL MISSING; temporary R2.12 flag SVG remains until supplied. No final visual signoff should be inferred."
+        "Review 05: static writing_flag_2.png pole (lossless transparent boundary derivative) + original writing_flag_1.5.png yellow completed / writing_flag_1.png gray upcoming cloth. Cloth only waves; pause offscreen/hidden; reduced-motion flat. No outer card/title. Local image replacement never hides the pole. Gray cloth retains designer-authored Completed text; semantic mismatch awaits designer review."
       ],
       "requiredStories": [
         "Default",
@@ -1139,7 +1139,7 @@
       "figma": null,
       "runtimeEvidence": null,
       "reviewStatus": "Pending Designer Review",
-      "notes": "The R2.12 level reward SVG is reused from apps/writing/src/assets/r2.12/level-flag.svg as-is, with existing cloth/shimmer layering and RAFrame wind. The designer library can adjust CSS --ba-path-flag-wind without changing production placement."
+      "notes": "Original files and SHA-256 provenance in assets/review05/manifest.json. Edge-connected neutral backdrop removed only on pole/badge derivatives; source files preserved. No SVG pole or temporary flag art in final rendering."
     },
     {
       "id": "BA-WR-012",
@@ -1211,7 +1211,14 @@
       "events": {
         "onRendererChange": "Renderer status only; no grading, unlock or navigation mutations"
       },
-      "states": ["auto", "shader", "lightweight", "fallback", "reduced", "paused"],
+      "states": [
+        "auto",
+        "shader",
+        "lightweight",
+        "fallback",
+        "reduced",
+        "paused"
+      ],
       "layoutOwner": "Viewport sky layer, behind hills; clouds never attached to course rail; all pointer events pass through",
       "requirements": [
         "WebGL copies the exact GLSL cloud shape/noise/shading from user-supplied M4 HTML. No new cloud algorithm.",
@@ -1223,9 +1230,46 @@
         "Scroll does not recompile shaders; resource disposal, tab visibility, IntersectionObserver, resize and reduced motion must be validated.",
         "No parameter controls or product logic changes in the student Staircase."
       ],
-      "requiredStories": ["Adaptive", "OriginalM4Clear", "CurrentPalette", "Lightweight", "ReducedMotion", "Scrolled", "WebGLUnavailable"],
+      "requiredStories": [
+        "Adaptive",
+        "OriginalM4Clear",
+        "CurrentPalette",
+        "Lightweight",
+        "ReducedMotion",
+        "Scrolled",
+        "WebGLUnavailable"
+      ],
       "runtimeEvidence": null,
       "notes": "M4 source provenance Aceternity UI Cloud Shader (original HTML preserved as separately supplied archive); licensing verification and actual cross-browser visual QA remain open."
+    },
+    {
+      "id": "BA-WR-014",
+      "name": "CoachMessage",
+      "kind": "composite",
+      "contractVersion": "0.5.0-review05",
+      "status": "implemented",
+      "visualStatus": "in-review",
+      "implementation": "apps/writing/src/components/writing/LessonWorkspace.tsx",
+      "story": "apps/writing/src/components/writing/CoachMessage.stories.tsx",
+      "props": {
+        "children": "ReactNode, teaching body only",
+        "tone": "orientation | hint | correct | wrong",
+        "locale": "en | zh"
+      },
+      "events": {},
+      "states": [
+        "idle",
+        "speaking",
+        "unsupported",
+        "failed"
+      ],
+      "requirements": [
+        "Every Coach instruction, explanation, Hint and submitted feedback uses the shared card and one global lessonSpeech owner.",
+        "36x36 visual speaker, at least 44x44 target, upper-right, semantic card colors retained and body clearance reserved.",
+        "Toggle stops; another card or prompt takes ownership; Activity, path exit, Test Mode entry/exit, pagehide and hidden page stop speech.",
+        "Only body text is spoken. CJK selects zh-CN, English selects en-US. End/error/unsupported never changes answer, tries, hints, grade or progression."
+      ],
+      "layoutOwner": "Coach card owns body clearance and audio target; app owns rail placement."
     }
   ],
   "currentDirection": {

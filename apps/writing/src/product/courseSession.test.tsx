@@ -494,3 +494,41 @@ describe('Review 03: hint-only coaching and one-selection Check', () => {
     expect(course.pathNodes('L2').find(node => node.unit)?.unit?.meta).toMatch(/^\d+ 课(?: · \d+ 分钟)?$/);
   });
 });
+
+describe('Review 05 isolated lesson tests',()=>{
+  it('resets lesson answers, tries, hints and gates in memory and preserves the real record byte for byte',()=>{
+    const storage=createMemoryStorage({unrelated:'keep'}),formal=session('',storage);
+    formal.openLesson('G2-O',1);formal.pressPrimary();formal.pick(0);formal.pressPrimary();formal.openHint();
+    const before=storage.getItem(ALEX_STATE_KEY),receipts=storage.getItem(CELEBRATION_KEY);
+    const test=formal.createLessonTestSession();
+    expect(test.inspect().screen).toBe(0);expect(test.inspect().tasks).toEqual({});
+    expect(test.canOpen(1)).toBe(false);expect(test.canOpen(8)).toBe(false);
+    test.pressPrimary();test.pick(1);test.pressPrimary();test.openHint();test.backToPath();test.observePath();test.flush();
+    expect(storage.getItem(ALEX_STATE_KEY)).toBe(before);expect(storage.getItem(CELEBRATION_KEY)).toBe(receipts);
+    expect(storage.getItem('unrelated')).toBe('keep');expect(formal.inspect().screen).toBe(1);
+    expect(formal.inspect().tasks['L2-04.skill:ts1'].tries).toBe(1);
+    expect(test.inspect()).not.toBe(formal.inspect());
+  });
+  it('can retest a completed lesson, clear its skip and isolate even a full-unit milestone',()=>{
+    const storage=createMemoryStorage(),formal=session('?skills=L2-04:writing',storage);
+    satisfyAll(formal);formal.openLesson('G2-O',1);formal.flush();
+    const before=storage.getItem(ALEX_STATE_KEY),test=formal.createLessonTestSession();
+    expect(test.screenDone(0)).toBe(false);expect(test.inspect().skills?.['L2-04']).toBeUndefined();
+    expect(test.unitMilestoneDone(test.playUnit(),true)).toBe(false);
+    satisfyAll(test);test.backToPath();test.observePath();test.flush();
+    expect(test.unitMilestoneDone(test.playUnit(),true)).toBe(true);
+    expect(storage.getItem(ALEX_STATE_KEY)).toBe(before);
+    const restored=session('',storage);restored.openLesson('G2-O',1);expect(restored.liveState(0)).toBe('skipped');
+  });
+  it('leaves every other lesson record intact in the isolated copy',()=>{
+    const formal=session();formal.inspect().regions['L2-05.apply']=[{t:'Other lesson',s:'typed'}];
+    formal.inspect().checks['L2-05.check']={attempt:1,q:2,history:[]};
+    formal.openLesson('G2-O',1);const test=formal.createLessonTestSession();
+    expect(test.inspect().regions['L2-05.apply']).toEqual([{t:'Other lesson',s:'typed'}]);
+    expect(test.inspect().checks['L2-05.check'].q).toBe(2);
+  });
+  it('never derives Level flag completion from the display-only L0/L1 examples',()=>{
+    const course=session();expect(course.pathNodes('L1').filter(n=>n.milestone).every(n=>n.milestone?.completed)).toBe(true);
+    expect(course.levelRewardDone('L1')).toBe(false);expect(course.levelRewardDone('L2')).toBe(false);
+  });
+});

@@ -1,3 +1,5 @@
+> Historical review record. Current product/design authority is PRODUCT.md and root DESIGN.md; current delivery is docs/REVIEW_05.md.
+
 # Big Academy · Review 04 — Integrated Library + Writing (2026-10-26)
 
 **Implementation branch:** `feat/writing-hifi-integration-v1`, PR #52 (Draft). **Scope:** design-system/library and live Writing Staircase/Activity integration **together**. No main merge or Vercel deployment. **Status:** implementation committed, browser/TypeScript checks and designer visual approval pending.

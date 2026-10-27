@@ -44,29 +44,16 @@ Camera data source: `boundedX`, `maxX` and `scenic.cloud` computed once in Stair
 
 ## 5. Actual verification and remaining gates
 
-- **Original M4 integrity:** the original uploaded vertex/fragment GLSL source matches the repository by length/FNV-1a (VERT 179 chars / `0x29cf13d3`, FRAG 4,599 chars / `0xd1e1ef50`). Source HTML SHA-256: `58289cd3b472c1b04b7a47043f11909410180a44e9435f01e7068a4cb675453e`. No replacement algorithm was introduced.
-- **GitHub Actions real checks:** `npm ci`, `check:docs`, `typecheck`, complete production builds of Writing, design-system, library and Storybook **passed**; BA-WR-013 + registry Vitest **9/9 passed**.
-- **Complete unit baseline:** **118/121 passed**. Three failing assertions are in unchanged CourseSession and Review04Visuals suites. They remain unresolved; do not change scoring, milestone or flag behavior just to mask this unrelated baseline. CI intentionally stays red on this gate.
-- **Browser evidence:** GitHub-hosted Chromium ran 17 Playwright cases, **16 passed**, including **all 4 newly added Cloud M4 visual/interaction cases**. The only failure was an obsolete SVG flag selector from pre-R04 code. The existing real flag is now a Canvas; the test has been updated to validate Canvas motion/reduced-motion and awaits the latest rerun. Real screenshot/video/trace artifact (~17.6 MB): https://github.com/Yuzhwe/big-academy/actions/runs/40329723457/artifacts/12653188207
-- **Shader-versus-fallback proof:** the latest branch QA prints `browser-renderer-observations.json` (Clear vs current-palette) after the Chromium run; only `renderer=shader` establishes that software-GL browser compiled/drew M4. A screenshot produced in forced Shader mode is **not** proof when the observed renderer is `lightweight`.
-- **Not yet verified:** original standalone HTML in actual Chromium/Safari screenshot, Safari/macOS hardware shader visuals, real GPU frame-time field tests, long-run device performance, real tablet touch, designer visual approval and license conditions for externally redistributing source. Linux Chrome software WebGL does not stand in for native Safari or final visual approval. The user's localhost is not remotely accessible from this chat.
+Engineering audit baseline: PR #53 commit `044f4a6f91b13daf4d834e7b71bdebb62c7ed503`.
 
-On a genuine local checkout:
-```sh
-git fetch origin
-git switch feat/writing-cloud-shader-m4-adaptive
-npm ci
-npm run check:docs
-npm run typecheck
-npm test
-npm run build
-npm run test:integration
-npm run dev
-npm run dev:library
-npm run storybook
-```
+- GitHub Actions [40341060938](https://github.com/Yuzhwe/big-academy/actions/runs/40341060938) **passed** docs, types, 121/121 unit tests, all production/Storybook builds and 17/17 Chromium tests. [Actual screenshots/videos/artwork artifact](https://github.com/Yuzhwe/big-academy/actions/runs/40341060938/artifacts/12658614597).
+- Repaired obsolete fold/Better-icon expectations, waited for actual Cross Blur navigation and checked disabled Apply without expecting a submission. Milestone replay was also verified by real mouse click. CI now installs Playwright's video encoder. macOS caret test uses Meta+ArrowLeft instead of Home, which did not move the Mac caret.
+- Local Chrome actually rendered both original Clear and transparent current-palette candidates as `shader`, with no fallback. ANGLE Metal on Apple M1 Max measured 300 draws / 15.01 seconds (~19.99/s) in the workbench. Simulated hidden page had zero draws; real WEBGL_lose_context and simulated sustained slow frames each safely produced the existing three lightweight clouds. Raw results: `apps/writing/docs/evidence/m4-audit/runtime.json`.
+- Native Safari 18.6 was detected but WebDriver rejected session creation because Allow remote automation is disabled. Safari remains **not run**; no Safari parity claim.
+- Original M4 integrity remains the recorded VERT 179 chars / FNV-1a `0x29cf13d3`, FRAG 4,599 chars / `0xd1e1ef50`; Review 05 does not edit the original or derived shader algorithm. The original standalone HTML is not present in this chat's attachments, so its independent browser screenshot remains unavailable.
+- Designer approval of opacity/edges/parallax, real-device touch and extended field performance, audible voice quality and source redistribution licensing remain separate review items. An automated browser does not certify those decisions.
 
-Visual QA capture at 1440×900, 1024×768, 834×1112 and 390×844. On macOS, `Start Big Academy.command` normally serves the Writing page at `http://127.0.0.1:5174`; the separate designer workbench is `http://127.0.0.1:6007/?view=components&component=cloud` after `npm run dev:library`. Storybook is normally port 6006. Confirm actual printed Vite/Storybook ports. Verify real shader drift and scroll in Chrome/Safari, WebGL failure and scene continuity, observe system preference changes, and confirm other card assets and controls are unchanged. Do not treat URL examples as hosted previews.
+The Review 05 branch retains this verified M4 commit as its direct baseline. Current runnable ports and latest regression evidence are listed in [REVIEW_05.md](REVIEW_05.md).
 
 ## 6. Designer decisions
 

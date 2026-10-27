@@ -1,3 +1,5 @@
+> Historical review record. Current product/design authority is PRODUCT.md and root DESIGN.md; current delivery is docs/REVIEW_05.md.
+
 > **HISTORICAL IMPLEMENTATION STAGE — SUPERSEDED on 2026-10-26 by [Review 04 Integrated Library + Writing](./REVIEW_04_INTEGRATED.md).** Its statements that Unit folds, milestones, Solar or Cross Blur remain out of real Writing pages are no longer current. Do not use its Stage A-only URLs, defaults, or pending-integration rules as product authority.
 
 # Big Academy · Review 04 — Stage A R2 delivery (2026-10-26)

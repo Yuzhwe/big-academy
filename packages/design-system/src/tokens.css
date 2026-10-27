@@ -485,3 +485,35 @@
 }
 
 :root { --ba-path-flag-wind: .04; }
+
+/* Review 05: fixed decisions plus motion values pending rendered designer review. */
+:root {
+  --ba-coach-audio-size: 36px;
+  --ba-coach-audio-clearance: var(--ba-hit-min);
+  --ba-topbar-tag-padding: 1px 8px;
+  --ba-learn-column-gap: var(--ba-space-12);
+  --ba-milestone-perspective: 1000px;
+  --ba-milestone-back-depth: 8px;
+  --ba-milestone-sheen-depth: 38px;
+  --ba-topbar-side-share: 32cqw;
+  --ba-test-modal-max-width: 480px;
+  --ba-test-overlay-surface: rgb(19 53 71 / 32%);
+  --ba-test-banner-z: 50;
+  --ba-test-overlay-z: 100;
+  --ba-milestone-tilt: 12deg;
+  --ba-milestone-back-travel: 6px;
+  --ba-milestone-front-travel: 11px;
+  --ba-milestone-follow-ms: 55;
+  --ba-milestone-return-ms: 110;
+  --ba-milestone-sweep-period: 7s;
+  --ba-flag-width: 218px;
+  --ba-flag-height: 200px;
+  --ba-flag-cloth-width: 208px;
+  --ba-flag-cloth-height: 156px;
+  --ba-flag-cloth-left: 8px;
+  --ba-flag-cloth-top: 10px;
+  --ba-flag-pole-height: 200px;
+  --ba-test-banner-height: 56px;
+  --ba-topbar-side-min: 15rem;
+  --ba-topbar-side-limit: 27.5rem;
+}

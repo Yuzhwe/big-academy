@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { expect, test } from '@playwright/test';
 
 const evidenceDir = resolve(import.meta.dirname, '../docs/evidence/cloud-m4');
-const library = 'http://127.0.0.1:6007/';
+const library = (process.env.BA_LIBRARY_URL ?? 'http://127.0.0.1:6007/');
 test.use({ video: 'on' });
 type Observation = { candidate: string; renderer: string | null; fallback: string | null; timestamp: string };
 

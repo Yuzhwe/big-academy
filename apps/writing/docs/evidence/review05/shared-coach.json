@@ -1,0 +1,12 @@
+{
+  "library": {
+    "count": 1,
+    "tone": "correct",
+    "font": "Jost, \"Noto Sans\", sans-serif",
+    "size": "18px"
+  },
+  "live": {
+    "font": "Jost, \"Noto Sans\", sans-serif",
+    "size": "18px"
+  }
+}

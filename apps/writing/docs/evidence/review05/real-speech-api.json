@@ -1,0 +1,11 @@
+{
+  "voiceCount": 191,
+  "englishVoices": 47,
+  "chineseVoices": 21,
+  "during": {
+    "voices": 191,
+    "speaking": true,
+    "pending": false
+  },
+  "note": "Real browser speech API smoke. Audible output was not independently heard or recorded; deterministic ownership/error behavior is covered by browser stubs."
+}

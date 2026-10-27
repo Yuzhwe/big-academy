@@ -1,3 +1,5 @@
+> Historical review record. Current product/design authority is PRODUCT.md and root DESIGN.md; current delivery is docs/REVIEW_05.md.
+
 # Big Academy · Review 04 / Stage 1 · Designer Library Candidate
 
 **Status:** implementation committed to Draft PR #52, **NOT designer approved**. This is a **component-library-only experiment**. Do not integrate Solar or the CTA shine into Writing's Staircase until the UI/UX designer explicitly approves a chosen configuration. No main merge, no Vercel deployment.

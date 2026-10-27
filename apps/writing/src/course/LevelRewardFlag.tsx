@@ -1,102 +1,62 @@
-import {useEffect,useMemo,useRef} from 'react';
-import artwork from '../assets/r2.12/level-flag.svg?raw';
+import {useEffect,useRef} from 'react';
+import completedCloth from '../assets/review05/writing_flag_1.5.png';
+import upcomingCloth from '../assets/review05/writing_flag_1.png';
+import pole from '../assets/review05/writing_flag_2.cutout.png';
 import './LevelRewardFlag.css';
 
-/**
- * BA-WR-011 · adapted browser Canvas column-slice waving.
- * Reference: yarden, https://stackoverflow.com/a/78383275
- * Retrieved 2026-10-26; cited source license CC BY-SA 4.0.
- * Adapted from Flutter CustomPainter to browser Canvas; no copied shader.
- * Final user-supplied flag image has NOT arrived: R2.12 SVG is TEMPORARY art.
+/** Adapted from yarden's Flutter algorithm to browser Canvas.
+ * https://stackoverflow.com/a/78383275 · retrieved 2026-10-26 · CC BY-SA 4.0.
+ * Original source imagery retained in assets/review05, no redrawn pole or cloth.
  */
 export const FLAG_DEFAULTS={period:1.6,waves:6,amplitude:4} as const;
-export function flagPhase(elapsedSeconds:number,period:number){
-  return 2*Math.PI*elapsedSeconds/Math.max(.1,period);
-}
-export function flagOffsetY(x:number,width:number,waves:number,amplitude:number,phase:number){
-  return amplitude*Math.sin((x/width)*waves*Math.PI+phase);
-}
+export function flagPhase(elapsedSeconds:number,period:number){return 2*Math.PI*elapsedSeconds/Math.max(.1,period);}
+export function flagOffsetY(x:number,width:number,waves:number,amplitude:number,phase:number){return amplitude*Math.sin((x/width)*waves*Math.PI+phase);}
 export interface LevelRewardFlagProps {
-  period?:number; waves?:number; amplitude?:number;
-  playing?:boolean;resetKey?:number;imageSrc?:string;
+  completed?:boolean; label?:string; period?:number; waves?:number; amplitude?:number;
+  playing?:boolean; resetKey?:number; imageSrc?:string;
 }
-function splitArtwork() {
-  if(typeof DOMParser==='undefined') return {cloth:'',staticSvg:artwork};
-  const parser=new DOMParser();
-  const original=parser.parseFromString(artwork,'image/svg+xml').documentElement;
-  const fixed=original.cloneNode(true) as Element;
-  fixed.querySelectorAll('.flag-cloth,.flag-highlight,.flag-emblem').forEach(el=>el.remove());
-  const fabric=original.cloneNode(true) as Element;
-  fabric.querySelectorAll('ellipse,rect,circle').forEach(el=>el.remove());
-  /* Explicit intrinsic SVG pixel size prevents browser 300×150 fallback from
-   * stretching the original 200×160 art when Canvas samples columns. */
-  fabric.setAttribute('width','200');fabric.setAttribute('height','160');
-  const serialize=new XMLSerializer();
-  return {cloth:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(serialize.serializeToString(fabric)),
-    staticSvg:serialize.serializeToString(fixed)};
-}
-export function LevelRewardFlag({
-  period=FLAG_DEFAULTS.period,waves=FLAG_DEFAULTS.waves,
-  amplitude=FLAG_DEFAULTS.amplitude,playing=true,resetKey=0,imageSrc
-}:LevelRewardFlagProps){
-  const canvas=useRef<HTMLCanvasElement>(null);
-  const phaseRef=useRef(0);
-  const previousTick=useRef<number|null>(null);
-  const {cloth,staticSvg}=useMemo(splitArtwork,[]);
-  useEffect(()=>{phaseRef.current=0;previousTick.current=null;},[resetKey]);
+export function LevelRewardFlag({completed=false,label,period=1.6,waves=6,amplitude=4,playing=true,resetKey=0,imageSrc}:LevelRewardFlagProps){
+  const canvas=useRef<HTMLCanvasElement>(null),phaseRef=useRef(0);
+  const src=imageSrc||(completed?completedCloth:upcomingCloth);
+  useEffect(()=>{phaseRef.current=0;},[resetKey]);
   useEffect(()=>{
-    const element=canvas.current;
-    if(!element)return;
-    const context=element.getContext('2d');
-    if(!context)return;
-    const deviceScale=Math.min(Math.max(window.devicePixelRatio||1,1),2);
-    const w=200,h=160,pad=20;
-    element.width=Math.round(w*deviceScale);
-    element.height=Math.round((h+2*pad)*deviceScale);
-    context.setTransform(deviceScale,0,0,deviceScale,0,0);
-    const image=new Image();
-    const media=typeof window.matchMedia==='function'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)'):null;
-    let disposed=false,frame=0,ready=false;
+    const element=canvas.current;if(!element)return;
+    const context=element.getContext('2d');if(!context)return;
+    const css=getComputedStyle(element),w=parseFloat(css.getPropertyValue('--ba-flag-cloth-width'))||200,h=parseFloat(css.getPropertyValue('--ba-flag-cloth-height'))||150;
+    const pad=Math.ceil(Math.max(4,Math.abs(amplitude)))+2;
+    const dpr=Math.min(Math.max(window.devicePixelRatio||1,1),2);
+    element.width=Math.round(w*dpr);element.height=Math.round((h+pad*2)*dpr);
+    element.style.height=`${h+pad*2}px`;element.style.marginTop=`${-pad}px`;
+    context.setTransform(dpr,0,0,dpr,0,0);
+    const image=new Image(),media=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    element.dataset.imageState='loading';
+    let disposed=false,frame=0,ready=false,previous:number|null=null,onScreen=true;
     const draw=(now:number)=>{
-      if(disposed)return;
-      if(previousTick.current===null)previousTick.current=now;
-      const delta=Math.max(0,(now-previousTick.current)/1000);
-      previousTick.current=now;
+      frame=0;if(disposed||document.hidden||!onScreen)return;
       const reduced=media?.matches??false;
-      if(playing&&!reduced)phaseRef.current+=2*Math.PI*delta/Math.max(.1,period);
-      context.clearRect(0,0,w,h+2*pad);
+      if(previous!==null&&playing&&!reduced)phaseRef.current+=flagPhase(Math.max(0,(now-previous)/1000),period);
+      previous=now;context.clearRect(0,0,w,h+pad*2);
       if(ready){
-        const one=1/deviceScale;
-        /* Contain the supplied image without changing its aspect ratio.
-         * Sample one device pixel worth of its source width per column. */
-        const scale=Math.min(w/image.naturalWidth,h/image.naturalHeight);
-        const fitW=image.naturalWidth*scale,fitH=image.naturalHeight*scale;
-        const left=(w-fitW)/2,top=pad+(h-fitH)/2;
-        const count=Math.ceil(fitW*deviceScale);
-        for(let i=0;i<count;i++){
-          const x=i/deviceScale;
-          const width=Math.min(one,fitW-x);
-          if(width<=0)continue;
-          const offset=flagOffsetY(x,fitW,waves,amplitude,reduced?0:phaseRef.current);
-          const sourceX=(x/fitW)*image.naturalWidth;
-          const sourceWidth=(width/fitW)*image.naturalWidth;
-          context.drawImage(image,sourceX,0,sourceWidth,image.naturalHeight,
-            left+x,top+offset,width+.35/deviceScale,fitH);
+        const fit=Math.min(w/image.naturalWidth,h/image.naturalHeight),fw=image.naturalWidth*fit,fh=image.naturalHeight*fit;
+        const left=(w-fw)/2,top=pad+(h-fh)/2;
+        for(let i=0;i<Math.ceil(fw*dpr);i++){
+          const x=i/dpr,width=Math.min(1/dpr,fw-x);if(width<=0)continue;
+          const offset=reduced?0:flagOffsetY(x,fw,waves,amplitude,phaseRef.current);
+          context.drawImage(image,x/fw*image.naturalWidth,0,width/fw*image.naturalWidth,image.naturalHeight,left+x,top+offset,width+.35/dpr,fh);
         }
       }
-      if(playing&&!reduced)frame=requestAnimationFrame(draw);
+      element.dataset.phase=String(phaseRef.current);
+      if(ready&&playing&&!reduced)frame=requestAnimationFrame(draw);
     };
-    const wake=()=>{cancelAnimationFrame(frame);previousTick.current=null;frame=requestAnimationFrame(draw);};
-    image.onload=()=>{if(!disposed){ready=true;wake();}};
-    image.onerror=()=>{if(!disposed){ready=false;wake();}};
-    image.src=imageSrc||cloth;
-    media?.addEventListener?.('change',wake);
-    if(!playing)wake(); // render first static/paused frame
-    return()=>{disposed=true;cancelAnimationFrame(frame);media?.removeEventListener?.('change',wake);image.onload=null;image.onerror=null;previousTick.current=null;};
-  },[amplitude,waves,period,playing,imageSrc,cloth,resetKey]);
-  return <span className="course-goal__flag ba-flag" role="img" aria-label="Level reward flag">
-    <span className="ba-flag__fixed" aria-hidden="true" style={{display:imageSrc?'none':undefined}} dangerouslySetInnerHTML={{__html:staticSvg}}/>
-    <canvas ref={canvas} className="ba-flag__canvas" aria-hidden="true"/>
+    const wake=()=>{cancelAnimationFrame(frame);previous=null;element.dataset.visibility=document.visibilityState;element.dataset.reduced=String(media?.matches??false);frame=requestAnimationFrame(draw);};
+    image.onload=()=>{if(!disposed){ready=true;element.dataset.imageState='ready';wake();}};image.onerror=()=>{ready=false;element.dataset.imageState='error';};image.src=src;
+    media?.addEventListener('change',wake);document.addEventListener('visibilitychange',wake);
+    const visibility=typeof IntersectionObserver!=='undefined'?new IntersectionObserver(entries=>{onScreen=entries[0]?.isIntersecting??true;element.dataset.onScreen=String(onScreen);wake();}):null;
+    visibility?.observe(element);
+    return()=>{disposed=true;cancelAnimationFrame(frame);media?.removeEventListener('change',wake);document.removeEventListener('visibilitychange',wake);visibility?.disconnect();image.onload=null;image.onerror=null;};
+  },[amplitude,waves,period,playing,src,resetKey]);
+  return <span className="course-goal__flag ba-flag" role="img" data-component="BA-WR-011" data-playing={playing} data-state={completed?'completed':'upcoming'} aria-label={label??`Level reward · ${completed?'Completed':'Upcoming'}`}>
+    <img className="ba-flag__pole" src={pole} alt="" draggable={false}/>
+    <canvas ref={canvas} className="ba-flag__canvas" data-cloth={src} aria-hidden="true"/>
   </span>;
 }

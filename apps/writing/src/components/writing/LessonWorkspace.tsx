@@ -1,12 +1,17 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
+import { SpeechButton } from './SpeechButton';
 import './LessonWorkspace.css';
 
 export type CoachMessageTone = 'orientation' | 'hint' | 'correct' | 'wrong';
 
-export function CoachMessage({ children, tone = 'orientation', ...props }: {
-  children: ReactNode; tone?: CoachMessageTone; role?: 'status'; 'data-testid'?: string; 'data-outcome'?: string;
+export function CoachMessage({ children, tone = 'orientation', locale = 'en', ...props }: {
+  children: ReactNode; tone?: CoachMessageTone; locale?: 'en' | 'zh'; role?: 'status'; 'data-testid'?: string; 'data-outcome'?: string;
 }) {
-  return <p className="lesson-workspace__message" data-tone={tone} {...props}>{children}</p>;
+  const body = useRef<HTMLParagraphElement>(null);
+  return <div className="lesson-workspace__message" data-tone={tone} lang={locale==='zh'?'zh-CN':'en'} {...props}>
+    <p ref={body} className="lesson-workspace__message-body">{children}</p>
+    <SpeechButton className="coach-audio" locale={locale} text={() => body.current?.textContent ?? ''}/>
+  </div>;
 }
 
 export interface LessonWorkspaceProps {

@@ -326,16 +326,12 @@
   }
 }
 
-.course-lesson .lesson-topbar__title,
 .course-lesson .ba-task-progress__marker {
   font-family: "Dosis", "Arial Narrow", sans-serif;
   font-weight: 800;
 }
 
-.course-app[lang='zh-CN'] .course-lesson .lesson-topbar__name {
-  font-family: var(--ba-font-zh-title);
-  font-weight: 700;
-}
+
 
 .course-bench,
 .course-revealed,
@@ -641,7 +637,7 @@
 .course-activity__heading .course-listen .ba-icon {color:#fff;}
 .course-learn-two-column {
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  align-items:start;gap:24px;min-width:0;
+  align-items:start;gap:var(--ba-learn-column-gap);min-width:0;
 }
 .course-learn-two-column > .course-examples {min-width:0;}
 .course-learn-two-column .hamburger-composition {min-width:0;}
@@ -655,3 +651,15 @@
 }
 /* Cross Blur stays local to rendered page content, not confetti overlays. */
 .course-app > .ba-page-transition {min-width:0;}
+
+/* Review 05 removes only the outside Level card chrome. */
+.course-goal { padding:0; border:0; background:transparent; }
+.course-test-banner { position:fixed; top:0; left:0; right:0; z-index:var(--ba-test-banner-z); height:var(--ba-test-banner-height); box-sizing:border-box; display:flex; align-items:center; justify-content:center; gap:var(--ba-space-3); padding:var(--ba-space-1) var(--ba-space-4); background:var(--ba-color-warning-2); color:var(--ba-color-warning-10); font-size:var(--ba-type-supporting-size); }
+.course-app[data-test-mode='true'] { padding-top:var(--ba-test-banner-height); }
+.course-app[data-test-mode='true'] .course-lesson { height:calc(100dvh - var(--ba-test-banner-height)); min-height:calc(100dvh - var(--ba-test-banner-height)); }
+.lesson-test-tools { margin-bottom:var(--ba-space-3); }
+.lesson-test-overlay { position:fixed; inset:0; z-index:var(--ba-test-overlay-z); background:var(--ba-test-overlay-surface); display:grid; place-items:center; padding:var(--ba-space-4); }
+.lesson-test-modal { width:min(100%,var(--ba-test-modal-max-width)); box-sizing:border-box; border-radius:var(--ba-radius-16); background:var(--ba-paper); color:var(--ba-color-content-primary); padding:var(--ba-space-6); font-family:var(--ba-type-body-family); }
+.lesson-test-modal h2 { font-family:var(--ba-type-heading-family); font-weight:800; margin-top:0; }
+.lesson-test-actions { display:flex; justify-content:flex-end; gap:var(--ba-space-3); }
+@media(max-width:600px) { .course-test-banner span { display:none; } }

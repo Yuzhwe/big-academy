@@ -84,11 +84,11 @@ describe('Review 04 Stage A — opt-in designs only', () => {
   });
 });
 
-it('uses the submitted R04 PNG artwork in the completed milestone candidate only',()=>{
+it('uses the supplied Review 05 green base and the unchanged gold check',()=>{
  const {container}=render(<UnitMilestone unitId="demo" title="Unit completed" completed
     celebrationEligible={false}/>);
  const imgs=[...container.querySelectorAll('.unit-milestone__action img')];
  expect(imgs).toHaveLength(2);
- expect(imgs[0].getAttribute('src')).toContain('writing_milestone_2.png');
+ expect(imgs[0].getAttribute('src')).toContain('writing_milestone_1.1.webp');
  expect(imgs[1].getAttribute('src')).toContain('writing_milestone_1.png');
 });

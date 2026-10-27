@@ -1,0 +1,50 @@
+{
+  "start": {
+    "draws": 29,
+    "time": 3273.9000000059605
+  },
+  "samples": [
+    {
+      "time": 13279,
+      "draws": 229,
+      "renderer": "shader",
+      "width": 1008,
+      "height": 575
+    },
+    {
+      "time": 23281.80000001192,
+      "draws": 429,
+      "renderer": "shader",
+      "width": 1008,
+      "height": 575
+    },
+    {
+      "time": 33283.70000001788,
+      "draws": 629,
+      "renderer": "shader",
+      "width": 1008,
+      "height": 575
+    },
+    {
+      "time": 43313.10000002384,
+      "draws": 830,
+      "renderer": "shader",
+      "width": 1008,
+      "height": 575
+    },
+    {
+      "time": 53314.5,
+      "draws": 1030,
+      "renderer": "shader",
+      "width": 1008,
+      "height": 575
+    },
+    {
+      "time": 63317,
+      "draws": 1230,
+      "renderer": "shader",
+      "width": 1008,
+      "height": 575
+    }
+  ]
+}

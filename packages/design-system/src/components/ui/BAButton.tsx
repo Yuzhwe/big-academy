@@ -29,6 +29,7 @@ export interface BAButtonProps {
   onPress?: (event: ButtonPressEvent) => void;
   busyLabel?: string;
   'aria-label'?: string;
+  'aria-pressed'?: boolean | 'mixed';
   locale?: BALocale;
   className?: string;
   id?: string;
@@ -56,6 +57,7 @@ export function BAButton({
   onPress,
   busyLabel,
   'aria-label': ariaLabel,
+  'aria-pressed': ariaPressed,
   locale = 'en',
   className,
   id,
@@ -88,6 +90,7 @@ export function BAButton({
       isPending={busy}
       onPress={disabled || busy ? undefined : onPress}
       aria-label={ariaLabel}
+      aria-pressed={ariaPressed}
     >
       <span className="ba-button__assembly" aria-hidden={undefined}>
         {busy ? (

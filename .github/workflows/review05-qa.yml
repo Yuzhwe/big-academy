@@ -1,0 +1,37 @@
+name: Writing Review 05 regression (draft only)
+on:
+  push:
+    branches:
+      - feat/writing-review05-components-pages
+  workflow_dispatch:
+concurrency:
+  group: review05-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run check:docs
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: google-chrome --version
+      - run: npx playwright install ffmpeg
+      - run: npm run test:integration
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: review05-browser-evidence
+          path: |
+            apps/writing/docs/evidence/
+            apps/writing/test-results/
+          retention-days: 14

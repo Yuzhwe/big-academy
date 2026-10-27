@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { createRequire } from 'node:module';
 test.use({reducedMotion:'reduce'});
 const dir=resolve(import.meta.dirname,'../docs/evidence/integration-v1');mkdirSync(dir,{recursive:true});
 const state=(p:Page)=>p.evaluate(()=>JSON.parse(localStorage.getItem('g2o_unit_state_v4')!));
@@ -99,7 +100,7 @@ test('accessibility audit of path, lesson and graded Choice; report retained',as
  const {writeFileSync}=await import('node:fs');
  const reports:unknown[]=[];
  const audit=async(name:string)=>{
-  await page.addScriptTag({path:resolve(import.meta.dirname,'../../../node_modules/axe-core/axe.min.js')});
+   await page.addScriptTag({path:createRequire(import.meta.url).resolve('axe-core/axe.min.js')});
   const violations=await page.evaluate(async()=>{const result=await (window as any).axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return result.violations.map((v:any)=>({id:v.id,impact:v.impact,description:v.description,nodes:v.nodes.map((n:any)=>({target:n.target,summary:n.failureSummary}))}));});
   reports.push({name,violations});writeFileSync(resolve(dir,'accessibility.json'),JSON.stringify(reports,null,2));
   expect(violations.filter((v:any)=>v.id!=='color-contrast')).toEqual([]);
@@ -111,6 +112,9 @@ test('R04 Canvas flag has moving pixels and freezes on reduced motion',async({pa
  await page.goto('/');
  const canvas=page.locator('.course-goal__flag .ba-flag__canvas');
  await expect(canvas).toHaveCount(1);
+ const stage=page.locator('.staircase-viewport');
+ await stage.focus();await page.keyboard.press('End');
+ await expect(canvas).toBeInViewport(); // Review 05 deliberately suspends offscreen cloth.
  const snapshot=()=>canvas.evaluate(el=>(el as HTMLCanvasElement).toDataURL());
  await expect.poll(async()=>canvas.evaluate(el=>{
    const c=el as HTMLCanvasElement,ctx=c.getContext('2d');

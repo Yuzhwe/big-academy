@@ -1,6 +1,6 @@
 .lesson-topbar {
-  --ba-topbar-progress-max: min(36rem, 52cqw);
-  --ba-topbar-side-max: calc(50cqw - min(18rem, 26cqw) - 1rem);
+  --ba-topbar-progress-max: min(36rem, calc(100cqw - 2 * (var(--ba-topbar-side-max) + var(--ba-space-4))));
+  --ba-topbar-side-max: clamp(var(--ba-topbar-side-min), var(--ba-topbar-side-share), var(--ba-topbar-side-limit));
   position: relative;
   box-sizing: border-box;
   display: grid;
@@ -35,13 +35,14 @@
 
 .lesson-topbar__title {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   min-width: 0;
   max-width: 100%;
   margin: 0;
+  font-family: var(--ba-font-heading-en);
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.25;
 }
 
@@ -51,7 +52,7 @@
 
 .lesson-topbar__name {
   display: block;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
@@ -60,24 +61,7 @@
   overflow-wrap: normal;
 }
 
-.lesson-topbar__tags {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 6px;
-  margin: 4px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.lesson-topbar__tags li {
-  border: 1px solid var(--ba-control-border, #133547);
-  border-radius: 999px;
-  padding: 1px 8px;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.4;
-  background: var(--ba-paper, #ffffff);
-}
+.lesson-topbar__tag { flex:none; white-space:nowrap; border:1px solid var(--ba-color-action-primary); border-radius:var(--ba-radius-full); padding:var(--ba-topbar-tag-padding); font:var(--ba-type-control-weight) var(--ba-type-supporting-size)/1.4 var(--ba-font-body-en); color:var(--ba-color-action-primary); background:var(--ba-paper); }
 
 .lesson-topbar__center {
   position: absolute;
@@ -107,20 +91,6 @@
 
 @media (max-width: 1279px) {
   .lesson-topbar { min-height: 76px; }
-}
-
-@container (max-width: 1359px) {
-  .lesson-topbar__tags {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
-  }
 }
 
 /* Container-query the component itself, not only the viewport: this also
@@ -158,3 +128,5 @@
 .lesson-topbar__back.ba-button { width:var(--ba-writing-back-size); height:var(--ba-writing-back-size); padding:0; flex:none; }
 .lesson-topbar__back .ba-button__assembly { width:100%; height:100%; border-radius:var(--ba-radius-circle); }
 .lesson-topbar__number { font-family:var(--ba-font-digit); font-weight:800; }
+
+.lesson-topbar:lang(zh) .lesson-topbar__title {font-family:var(--ba-font-heading-zh);}

@@ -194,7 +194,7 @@
 .path-controls .ba-button { width:var(--ba-path-arrow-size); height:var(--ba-path-arrow-size); }
 .staircase-viewport .unit-milestone { background:transparent; border:0; }
 .staircase-viewport .course-goal { background:transparent; border:0; text-align:center; }
-.course-goal__flag { display:block; width:190px; height:158px; margin:auto; }
+.course-goal__flag { margin:auto; }
 .course-path__header { position:relative; z-index:5; }
 
 @media(prefers-reduced-motion:reduce) { .staircase-rail,.course-goal__flag { animation:none; transition:none; } }

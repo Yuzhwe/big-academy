@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, type CSSProperties, type ReactNode } from 'react';
 import { useSyncExternalStore } from 'react';
-import { BAButton, BAChoice, BAIcon, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
+import { BAButton, BAChoice, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { CoachMessage, LessonWorkspace } from '../components/writing/LessonWorkspace';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
@@ -15,6 +15,9 @@ import './course.css';
 import { LevelRewardFlag } from './LevelRewardFlag';
 import { SolarLessonPreview } from '../components/writing/SolarLessonPreview';
 import { BAPageTransition } from '../components/writing/BAPageTransition';
+import { SpeechButton } from '../components/writing/SpeechButton';
+import { lessonSpeech } from '../components/writing/speech';
+import { LessonTestTools } from './LessonTestTools';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 
@@ -28,11 +31,20 @@ function cardState(courseState: string, action: string): StairLessonState {
   return 'locked';
 }
 
-export function CourseApp({ session: provided }: { session?: CourseSession }) {
-  const [session] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
+export function CourseApp({ session: provided, enableLessonTestTools = true }: { session?: CourseSession; enableLessonTestTools?: boolean }) {
+  const [formalSession] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
+  const [testSession,setTestSession] = useState<CourseSession|null>(null);
+  const session = testSession ?? formalSession;
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
   const locale = session.locale;
   const zh = locale === 'zh';
+  useEffect(()=>{lessonSpeech.stop();return()=>lessonSpeech.stop();},[session,session.view,session.state.screen]);
+  useEffect(()=>{
+    const stop=()=>lessonSpeech.stop();
+    const hidden=()=>{if(document.hidden)stop();};
+    window.addEventListener('pagehide',stop);document.addEventListener('visibilitychange',hidden);
+    return()=>{stop();window.removeEventListener('pagehide',stop);document.removeEventListener('visibilitychange',hidden);};
+  },[]);
   useEffect(() => {
     const flush = () => session.flush();
     const visibility = () => { if (document.visibilityState === 'hidden') flush(); };
@@ -68,14 +80,19 @@ export function CourseApp({ session: provided }: { session?: CourseSession }) {
   if (gallery) return <ChoiceGallery zh={zh} />;
 
   return (
-    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ba-product="writing">
+    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ba-product="writing" data-test-mode={testSession?'true':undefined}>
+      {testSession&&<div className="course-test-banner" role="region" aria-label="Test Mode">
+        <strong>Test Mode</strong><span>{zh?'正式学习记录已保留':'Your real learning record is preserved'}</span>
+        <BAButton size={36} variant="secondary" onPress={()=>{lessonSpeech.stop();setTestSession(null);}}>Exit Test</BAButton>
+      </div>}
       <a className="course-skip" href="#course-main">
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
       <BAPageTransition viewKey={session.view === 'lessonEnd' ? 'lesson' : session.view}
         duration={500} maxBlur={12}
         onSettled={target=>{if(target==='path')restorePathFocus();}}
-        renderView={key=>key==='path'?<PathView session={session}/>:key==='lesson'?<LessonView session={session}/>:<PreviewView session={session}/>}/>
+        renderView={key=>key==='path'?<PathView session={session}/>:key==='lesson'?<LessonView session={session}
+          onResetLesson={enableLessonTestTools?()=>{lessonSpeech.stop();setTestSession(session.createLessonTestSession());}:undefined}/>:<PreviewView session={session}/>}/>
       {session.celebration ? <Celebration session={session} /> : null}
       {session.practiceBurst ? <PracticeBurst session={session} /> : null}
     </div>
@@ -188,10 +205,8 @@ function PathView({ session }: { session: CourseSession }) {
             if (node.kind === 'goal' && node.goal) {
               return (
                 <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
-                  <section className="course-goal" data-testid="level-goal" data-formula="open">
-                    <p className="course-kicker">{node.goal.title}</p>
-                    <h2>{node.goal.detail}</h2>
-                    <LevelRewardFlag />
+                  <section className="course-goal" data-testid="level-goal" data-formula="open" aria-label={`${node.goal.title} · ${node.goal.detail}`}>
+                    <LevelRewardFlag completed={session.levelRewardDone()} label={`${node.goal.title} · ${node.goal.detail} · ${session.levelRewardDone()?(zh?'已完成':'Completed'):(zh?'未完成':'Upcoming')}`} />
                   </section>
                 </li>
               );
@@ -212,7 +227,7 @@ function PathView({ session }: { session: CourseSession }) {
   );
 }
 
-function LessonView({ session }: { session: CourseSession }) {
+function LessonView({ session,onResetLesson }: { session: CourseSession;onResetLesson?:()=>void }) {
   const bar = session.topBar();
   const activity = session.activity();
   const footer = session.footer();
@@ -248,11 +263,12 @@ function LessonView({ session }: { session: CourseSession }) {
           renderView={()=> <ActivityBody session={session} activity={activity}/>}/> }
         coach={
           <div>
+            {onResetLesson&&<LessonTestTools onReset={onResetLesson} zh={session.zh}/>}
             {activity.coach.map((line, index) => (
-              <CoachMessage key={index} tone="orientation">{line}</CoachMessage>
+              <CoachMessage key={index} tone="orientation" locale={session.locale}>{line}</CoachMessage>
             ))}
             {activity.hints.map((hint, index) => (
-              <CoachMessage key={index} tone="hint" data-testid="hint">{hint}</CoachMessage>
+              <CoachMessage key={index} tone="hint" locale={session.locale} data-testid="hint">{hint}</CoachMessage>
             ))}
             {activity.coachMore ? (
               <BAButton variant="secondary" locale={session.locale} onPress={() => session.showAnother()}>
@@ -265,7 +281,7 @@ function LessonView({ session }: { session: CourseSession }) {
               </BAButton>
             ) : null}
             {activity.feedback ? (
-              <CoachMessage tone={activity.feedbackTone} role="status" data-testid="feedback" data-outcome={activity.feedbackTone}>{activity.feedback}</CoachMessage>
+              <CoachMessage tone={activity.feedbackTone} locale={session.locale} role="status" data-testid="feedback" data-outcome={activity.feedbackTone}>{activity.feedback}</CoachMessage>
             ) : null}
           </div>
         }
@@ -306,18 +322,6 @@ function ActivityHeading({ title, speaker }: { title: string; speaker: ReactNode
 }
 
 function ActivityBody({ session, activity }: { session: CourseSession; activity: ActivityModel }) {
-  const [speaking, setSpeaking] = useState(false);
-  useEffect(() => () => { window.speechSynthesis?.cancel(); }, []);
-  const listen = () => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    if (speaking) { setSpeaking(false); return; }
-    const text = activity.ask || activity.learn?.teach || activity.title;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = session.zh ? 'zh-CN' : 'en-US';
-    utterance.onend = utterance.onerror = () => setSpeaking(false);
-    setSpeaking(true); window.speechSynthesis.speak(utterance);
-  };
   const editor = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const rememberCaret = (el: HTMLInputElement | HTMLTextAreaElement) => {
     editor.current = el;
@@ -331,9 +335,8 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
     });
   };
   const speaker = activity.check?.phase === 'results' ? null : (
-    <BAButton className="course-listen" iconOnly size={50} variant="ghost"
-      aria-label={speaking ? (session.zh ? '停止朗读' : 'Stop listening') : (session.zh ? '朗读题目' : 'Listen to the prompt')}
-      onPress={listen}><BAIcon name="speaker" size={24} /></BAButton>
+    <SpeechButton className="course-listen" size={50} prompt locale={session.locale}
+      text={activity.ask || activity.learn?.teach || activity.title}/>
   );
   const pickLocked =
     !!activity.pick?.locked ||
