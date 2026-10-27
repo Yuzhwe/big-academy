@@ -46,14 +46,14 @@ test('Lesson 1 has exactly six activities and ends directly after Apply',async({
   }
   await expect(primary(page)).toBeEnabled();await next(page);await next(page);
   const blanks=page.getByTestId('frame').locator('input');await blanks.nth(0).fill('be longer');await blanks.nth(1).fill('kids need time to run');await next(page);await next(page);
-  await page.getByTestId('writing-canvas').fill('Our school should have a garden for learning.\\nI believe a garden gives us fresh food.\\nIn my opinion the school garden is the best place to relax.');await next(page);await next(page);
+  await page.getByTestId('writing-canvas').fill('Our school should have a garden for learning.\nI believe a garden gives us fresh food.\nIn my opinion the school garden is the best place to relax.');await next(page);await next(page);
   await expect(page.locator('.course-app')).toHaveAttribute('data-view','lessonEnd');
 });
 
 test('Tapword Shown reveals valid answers but blocks Next and never celebrates until correct Check',async({page})=>{
   await page.goto('/?start=lesson');
   await options(page).nth(1).click();await next(page);await next(page);
-  const fish=page.getByRole('button',{name:'fish',exact:true});
+  const fish=page.getByRole('button',{name:'fish.',exact:true});
   await fish.click();await next(page);
   await expect(primary(page)).toBeDisabled();
   await fish.click();await next(page);
