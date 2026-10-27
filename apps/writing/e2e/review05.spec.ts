@@ -11,21 +11,19 @@ const stored=(p:Page)=>p.evaluate(()=>({learning:localStorage.getItem('g2o_unit_
 async function start(p:Page){await p.goto('/?start=lesson');await expect(p.getByTestId('activity')).toBeVisible();}
 async function reset(p:Page){await p.getByRole('button',{name:'Reset Lesson',exact:true}).click();await p.getByRole('button',{name:'Enter Test Mode',exact:true}).click();await expect(p.getByRole('region',{name:'Test Mode'})).toBeVisible();}
 async function finish(p:Page){
- await next(p);await options(p).nth(1).click();await next(p);await next(p);
+ await options(p).nth(1).click();await next(p);await next(p);
  await p.getByRole('button',{name:'believe',exact:true}).click();await next(p);await next(p);
  for(const i of [0,2,4])await options(p).nth(i).click();await next(p);await next(p);
  for(const word of ['our','school','should','have','a','garden','for','two','big','reasons','.'])await p.locator('.word-grid__card').filter({has:p.locator('.word-grid__text',{hasText:new RegExp('^'+word.replace('.','\\.')+'$')})}).click();
- await next(p);const blanks=p.getByTestId('frame').locator('input');await blanks.nth(0).fill('be longer');await blanks.nth(1).fill('kids need time to run');await next(p);await next(p);
+ await next(p);await next(p);const blanks=p.getByTestId('frame').locator('input');await blanks.nth(0).fill('be longer');await blanks.nth(1).fill('kids need time to run');await next(p);await next(p);
  await p.getByTestId('writing-canvas').fill('Our school should have a garden for learning.\nI believe a garden gives us fresh food.\nIn my opinion the school garden is the best place to relax.');await next(p);await next(p);
- await options(p).nth(1).click();await next(p);await options(p).nth(2).click();await next(p);await p.getByRole('button',{name:'should',exact:true}).click();await next(p);
- await p.getByTestId('writing-canvas').fill('I believe kids should have pets at home.');await next(p);await expect(p.getByTestId('check-results')).toContainText('You passed');await next(p);
- await expect(p.locator('.course-app')).toHaveAttribute('data-view','lessonEnd');
+  await expect(p.locator('.course-app')).toHaveAttribute('data-view','lessonEnd');
 }
 test.use({video:'on'});
 
-test('Reset Lesson isolates a full eight-screen test, completion, navigation and reload',async({page})=>{
+test('Reset Lesson isolates a full six-screen test, completion, navigation and reload',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('unrelated-review05','keep'));
- await start(page);await next(page);await options(page).nth(0).click();await next(page);await page.getByRole('button',{name:'Need a hint?',exact:true}).click();
+ await start(page);await options(page).nth(0).click();await next(page);await page.getByRole('button',{name:'Need a hint?',exact:true}).click();
  const before=await stored(page);
  await page.getByRole('button',{name:'Reset Lesson',exact:true}).click();await page.getByRole('button',{name:'Cancel',exact:true}).click();expect(await stored(page)).toEqual(before);
  const resetButton=page.getByRole('button',{name:'Reset Lesson',exact:true});await resetButton.focus();await page.keyboard.press('Enter');await expect(page.getByRole('dialog')).toBeVisible();await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toHaveCount(0);await expect(resetButton).toBeFocused();
@@ -34,7 +32,7 @@ test('Reset Lesson isolates a full eight-screen test, completion, navigation and
  await finish(page);expect(await stored(page)).toEqual(before);await shot(page,'test-mode-completed');
  await page.getByRole('button',{name:'Exit Test',exact:true}).click();
  await expect(page.getByTestId('feedback')).toContainText('You chose A');await expect(page.getByTestId('hint')).toHaveCount(1);expect(await stored(page)).toEqual(before);
- await reset(page);await next(page);await options(page).nth(1).click();await next(page);
+ await reset(page);await options(page).nth(1).click();await next(page);
  await page.getByRole('button',{name:'Back to my path',exact:true}).click();await expect(page.getByRole('region',{name:'Test Mode'})).toBeVisible();
  expect(await stored(page)).toEqual(before);await page.reload();await expect(page.getByRole('region',{name:'Test Mode'})).toHaveCount(0);const reloaded=await stored(page);const original=JSON.parse(before.learning!);const restored=JSON.parse(reloaded.learning!);delete original.events;delete restored.events;expect(restored).toEqual(original);expect(reloaded.receipts).toBe(before.receipts);expect(reloaded.other).toBe(before.other);
  writeFileSync(resolve(dir,'reset-isolation.json'),JSON.stringify({fullLesson:true,exitRestores:true,backToPath:true,refreshDropsTest:true,formalRecordUnchanged:true,unrelatedKeyPreserved:true},null,2));
@@ -42,7 +40,7 @@ test('Reset Lesson isolates a full eight-screen test, completion, navigation and
 
 test('completed lesson retest and closing the test page preserve real completion',async({page,context})=>{
  await start(page);await finish(page);await page.getByTestId('lesson-footer').getByRole('button',{name:'Back to my path',exact:true}).click();await page.locator('[data-lesson-focus="G2-O:1"]').click();
- const before=await stored(page);await reset(page);await expect(page.locator('[data-task-index="1"]').first()).toBeDisabled();await next(page);await options(page).nth(0).click();await next(page);
+ const before=await stored(page);await reset(page);await expect(page.locator('[data-task-index="1"]').first()).toBeDisabled();await options(page).nth(0).click();await next(page);
  expect(await stored(page)).toEqual(before);await page.close();const reopened=await context.newPage();await reopened.goto('/');await expect(reopened.getByRole('region',{name:'Test Mode'})).toHaveCount(0);expect(await stored(reopened)).toEqual(before);
  await expect(reopened.locator('[data-lesson-id="G2-O:1"]')).toHaveAttribute('data-state','review');await reopened.close();
 });
@@ -59,7 +57,7 @@ test('Coach audio shares one owner, reads only body, handles errors and stops ac
  expect(await audio.locator('.ba-button__assembly').evaluate(e=>({width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}))).toEqual({width:36,height:36});
  await audio.click();await expect(audio).toHaveAttribute('aria-pressed','false');
  await audio.click();await page.getByRole('button',{name:'Listen to the prompt',exact:true}).click();await expect(audio).toHaveAttribute('aria-pressed','false');
- await audio.click();await next(page);await expect(page.locator('.coach-audio[aria-pressed="true"]')).toHaveCount(0);
+ await audio.click();await options(page).nth(1).click();await next(page);await next(page);await expect(page.locator('.coach-audio[aria-pressed="true"]')).toHaveCount(0);
  await page.getByRole('button',{name:'Need a hint?',exact:true}).click();await page.locator('.coach-audio').first().click();const hint=page.getByTestId('hint').getByRole('button');await hint.click();await expect(page.locator('.coach-audio[aria-pressed="true"]')).toHaveCount(1);await expect(hint).toHaveAttribute('aria-pressed','true');
  await page.evaluate(()=>(window as any).__speech.last.onerror());await expect(hint).toHaveAttribute('aria-pressed','false');await hint.focus();await page.keyboard.press('Enter');await expect(hint).toHaveAttribute('aria-pressed','true');
  await reset(page);await expect(page.locator('[aria-pressed="true"].coach-audio')).toHaveCount(0);await page.locator('.coach-audio').first().click();await page.getByRole('button',{name:'Exit Test',exact:true}).click();await expect(page.locator('[aria-pressed="true"].coach-audio')).toHaveCount(0);
@@ -104,7 +102,7 @@ test('original pole is static, yellow/gray cloth waves by time and resets phase'
  await page.emulateMedia({reducedMotion:'reduce'});const stopped=await page.locator('.ba-flag canvas').getAttribute('data-phase');await page.waitForTimeout(300);expect(await page.locator('.ba-flag canvas').getAttribute('data-phase')).toBe(stopped);
 });
 
-test('real first Activity has shadow-free Hamburger, wider columns and aligned source sentence',async({page})=>{
+test.skip('Historical P2 Teach demo (Not in current runtime sequence): shadow-free Hamburger and aligned sentence',async({page})=>{
  await start(page);const layers=page.locator('.hamburger-composition .hamburger-layer');expect(await layers.evaluateAll(es=>es.every(e=>getComputedStyle(e).boxShadow==='none'))).toBe(true);
  expect(await page.locator('.course-learn-two-column').evaluate(e=>getComputedStyle(e).columnGap)).toBe('48px');
  for(const width of [1440,1024,834,390]){await page.setViewportSize({width,height:width===834?1112:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await shot(page,'activity1-'+width);}

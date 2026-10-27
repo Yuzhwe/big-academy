@@ -11,8 +11,8 @@ async function shot(p:Page,name:string){await p.screenshot({path:resolve(dir,nam
 async function start(p:Page){await p.goto('/');await p.locator('[data-lesson-focus="G2-O:1"]').click();await expect(p.getByTestId('activity')).toBeVisible();}
 async function forward(p:Page){await primary(p).click();}
 async function resume(p:Page){await p.reload();await p.locator('[data-lesson-focus="G2-O:1"]').click();}
-async function practices(p:Page,wrong=false){
- await forward(p);await expect(primary(p)).toBeDisabled(); // Learn, then unanswered Check guard
+async function practices(p:Page,wrong=false,stopAtApply=false){
+ await expect(primary(p)).toBeDisabled(); // Unanswered first P3 Check guard
  expect(Object.values((await state(p)).tasks).some((t:any)=>t.tries)).toBe(false);
  await options(p).nth(wrong?0:1).click();await forward(p);
  if(wrong){
@@ -21,7 +21,7 @@ async function practices(p:Page,wrong=false){
   await options(p).nth(2).click();await forward(p);await expect(options(p).nth(1)).toHaveAttribute('data-state','correctUnselected');await shot(p,'single-shown');
  }
  await shot(p,'screen-02-'+(wrong?'shown':'correct'));await forward(p);await p.getByRole('button',{name:wrong?'class':'believe',exact:true}).click();await forward(p);
- if(wrong){await p.getByRole('button',{name:'fish.',exact:true}).click();await forward(p);await shot(p,'tapword-shown');}
+ if(wrong){await p.getByRole('button',{name:'fish.',exact:true}).click();await forward(p);await shot(p,'tapword-shown');await expect(primary(p)).toBeDisabled();await p.getByRole('button',{name:/^believe/}).click();await forward(p);}
  await shot(p,'screen-03-'+(wrong?'shown':'correct'));await forward(p);for(const i of (wrong?[1,2,4]:[0,2,4]))await options(p).nth(i).click();await forward(p);
  if(wrong){await options(p).nth(2).click();await options(p).nth(3).click();await forward(p);await shot(p,'multi-shown');}
  await shot(p,'screen-04-'+(wrong?'shown':'correct'));await forward(p);
@@ -30,12 +30,12 @@ async function practices(p:Page,wrong=false){
   expect((await state(p)).tasks['L2-04.skill:ss.L2-04'].tries).toBe(0);await expect(p.getByTestId('bench-blank')).toHaveCount(11);await shot(p,'build-word-hint');
  }
  for(const word of ['our','school','should','have','a','garden','for','two','big','reasons','.'])await p.locator('.word-grid__card').filter({has:p.locator('.word-grid__text',{hasText:new RegExp('^'+word.replace('.','\\.')+'$')})}).click();
- await expect(p.getByTestId('bench-blank')).toHaveCount(0);await shot(p,'build-complete');await forward(p);
+ await expect(p.getByTestId('bench-blank')).toHaveCount(0);await shot(p,'build-complete');await forward(p);await forward(p);
  const blanks=p.getByTestId('frame').locator('input');await blanks.nth(0).fill('be longer');await blanks.nth(1).fill(wrong?'nice':'kids need time to run');await forward(p);
  if(wrong){await forward(p);expect((await state(p)).tasks['L2-04.skill:ts8'].status).toBe('shown');await shot(p,'frame-shown');}
- await forward(p);await p.getByTestId('writing-canvas').fill(wrong?'I like plants.':'Our school should have a garden for learning.\nI believe a garden gives us fresh food.\nIn my opinion the school garden is the best place to relax.');await forward(p);
+ await forward(p);if(stopAtApply)return;await p.getByTestId('writing-canvas').fill(wrong?'I like plants.':'Our school should have a garden for learning.\nI believe a garden gives us fresh food.\nIn my opinion the school garden is the best place to relax.');await forward(p);
  if(wrong){await forward(p);await p.getByTestId('move-on').click();expect((await state(p)).applies['L2-04'].passed).toBe(false);}
- await shot(p,'apply-'+(wrong?'move-on':'passed'));await forward(p);await expect(p.getByTestId('check-number')).toHaveText('1');
+ await shot(p,'apply-'+(wrong?'move-on':'passed'));await forward(p);await expect(p.locator('.course-app')).toHaveAttribute('data-view','lessonEnd');
 }
 async function assessment(p:Page,round:number,pass:boolean){
  for(let q=0;q<3;q++){
@@ -46,23 +46,20 @@ async function assessment(p:Page,round:number,pass:boolean){
  await expect(p.getByRole('heading',{name:/Write a topic sentence/})).toBeVisible();await p.getByTestId('writing-canvas').fill(pass?'I believe kids should have pets at home.':'pets');await shot(p,'check-round-'+round+'-writing');
  expect((await state(p)).checks['L2-04.check'].history).toHaveLength(round);await forward(p);await expect(p.getByTestId('check-results')).toContainText(pass?'You passed':'Not yet');
 }
-test('eight screens correct, complete, return, review and responsive',async({page})=>{
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.setViewportSize({width:1440,height:900});await start(page);await shot(page,'screen-01-learn');
- await expect(page.getByTestId('lesson-footer').getByRole('button',{name:'Previous'})).toBeDisabled();await practices(page);await assessment(page,0,true);await shot(page,'check-mastery');
- await page.getByTestId('check-results').getByRole('button').first().click();await expect(options(page).first()).toBeDisabled();await forward(page);await forward(page);
+test('six screens correct, complete, return, review and responsive',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.setViewportSize({width:1440,height:900});await start(page);await shot(page,'screen-01-single-pick');
+ await expect(page.getByTestId('lesson-footer').getByRole('button',{name:'Previous'})).toBeDisabled();await practices(page);
  await expect(page.locator('.course-app')).toHaveAttribute('data-view','lessonEnd');await shot(page,'lesson-end-mastery');await page.getByTestId('lesson-footer').getByRole('button',{name:'Back to my path',exact:true}).click();
  await expect(page.locator('[data-lesson-id="G2-O:1"]')).toHaveAttribute('data-state','review');await shot(page,'path-completed');await page.locator('[data-lesson-focus="G2-O:1"]').click();expect((await state(page)).screen).toBe(0);
  for(const width of [1440,1024,834,390]){await page.setViewportSize({width,height:width===834?1112:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await shot(page,'lesson-review-'+width);}
  expect(errors).toEqual([]);
 });
-test('wrong twice, shown, move-on, failed sets, optional Review retry',async({page})=>{
- await start(page);await practices(page,true);await page.getByTestId('lesson-footer').getByRole('button',{name:'Back',exact:true}).click();expect((await state(page)).screen).toBe(6);await forward(page);
- await assessment(page,0,false);expect((await state(page)).done['L2-04.check']).not.toBe(true);await forward(page);await resume(page);expect((await state(page)).checks['L2-04.check'].attempt).toBe(1);
- await assessment(page,1,false);expect((await state(page)).done['L2-04.check']).toBe(true);expect((await state(page)).checks['L2-04.check'].passed).toBe(false);await shot(page,'check-without-mastery');await forward(page);await shot(page,'end-without-mastery');
- await expect(page.getByTestId('practice-burst')).toHaveCount(0);await page.getByTestId('lesson-footer').getByRole('button',{name:'Back to my path',exact:true}).click();await page.locator('[data-lesson-focus="G2-O:1"]').click();await page.locator('[data-task-index="7"]').first().click();
- await page.getByRole('button',{name:'Try a new set',exact:true}).click();expect((await state(page)).checks['L2-04.check'].attempt).toBe(2);expect((await state(page)).done['L2-04.check']).toBe(true);
+test('wrong twice, shown-and-retry, move-on without fabricated P7 mastery',async({page})=>{
+ await start(page);await practices(page,true);expect((await state(page)).done['L2-04.check']).not.toBe(true);
+ expect((await state(page)).checks['L2-04.check']?.passed).toBeUndefined();await shot(page,'end-without-mastery');
+ await page.getByTestId('lesson-footer').getByRole('button',{name:'Back to my path',exact:true}).click();await expect(page.locator('[data-lesson-id="G2-O:1"]')).toHaveAttribute('data-state','review');
 });
-test('P7 blank warning, question navigation and recovery',async({page})=>{
+test.skip('Historical P7 (Not in current runtime sequence): blank warning, question navigation and recovery',async({page})=>{
  await start(page);await practices(page);await options(page).nth(1).click();await forward(page);await page.getByRole('button',{name:'Question 1',exact:true}).click();await expect(options(page).nth(1)).toBeChecked();await page.getByRole('button',{name:'Question 4',exact:true}).click();await forward(page);
  await expect(page.getByTestId('feedback')).toContainText('2, 3, 4');expect((await state(page)).checks['L2-04.check'].history).toHaveLength(0);await resume(page);await expect(primary(page)).toContainText('Hand in anyway');await forward(page);expect((await state(page)).checks['L2-04.check'].history).toHaveLength(1);
 });
@@ -75,24 +72,24 @@ test('Chinese path, keyboard, touch, reduced motion and 200 percent layout',asyn
   const last=await page.getByTestId('level-goal').boundingBox();expect(last!.x).toBeGreaterThanOrEqual(0);expect(last!.x+last!.width).toBeLessThanOrEqual(width+1);
   await scene.focus();await page.keyboard.press('Home');
   await page.locator('[data-lesson-focus="G2-O:1"]').click();
-  await expect(page.getByTestId('better-panel')).toContainText('Our school should have a garden');
-  await expect(page.getByTestId('lesson-footer')).toContainText('下一页');
+  await expect(options(page)).toHaveCount(3);
+  await expect(primary(page)).toBeDisabled();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await shot(page,'lesson-zh-'+width);
  }
  // A 720 CSS px viewport corresponds to 1440 physical pixels at 200% browser scaling.
  await page.setViewportSize({width:720,height:450});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await shot(page,'lesson-200pct-layout');
- const context=await browser.newContext({viewport:{width:834,height:1112},hasTouch:true,reducedMotion:'reduce'});const touch=await context.newPage();await touch.goto(new URL('/',page.url()).href);await touch.locator('[data-lesson-focus="G2-O:1"]').tap();await touch.getByTestId('lesson-footer').getByRole('button',{name:'Next'}).tap();await touch.locator('.ba-choice__option').nth(1).tap();await touch.getByTestId('lesson-footer').getByRole('button',{name:'Check',exact:true}).tap();await expect(touch.getByTestId('feedback')).toHaveAttribute('data-outcome','correct');await context.close();
+ const context=await browser.newContext({viewport:{width:834,height:1112},hasTouch:true,reducedMotion:'reduce'});const touch=await context.newPage();await touch.goto(new URL('/',page.url()).href);await touch.locator('[data-lesson-focus="G2-O:1"]').tap();await touch.locator('.ba-choice__option').nth(1).tap();await touch.getByTestId('lesson-footer').getByRole('button',{name:'Check',exact:true}).tap();await expect(touch.getByTestId('feedback')).toHaveAttribute('data-outcome','correct');await context.close();
 });
 test('WordGrid preserves caret and provenance across category changes and reload',async({page})=>{
- await start(page);await practices(page);await page.getByTestId('lesson-footer').getByRole('button',{name:'Back',exact:true}).click();
+ await start(page);await practices(page,false,true);
  const canvas=page.getByTestId('writing-canvas');await expect(canvas).toHaveCSS('resize','none');await expect(canvas).toHaveCSS('overflow-y','auto');await canvas.fill('Our garden.');await canvas.press(process.platform==='darwin'?'Meta+ArrowLeft':'Home');await canvas.press('ArrowRight');await canvas.press('ArrowRight');await canvas.press('ArrowRight');await canvas.press('ArrowRight');
  await page.getByRole('tab',{name:'Nouns',exact:true}).click();const first=page.locator('.word-grid__card').first();const word=await first.locator('.word-grid__text').innerText();await first.click();
  await expect(canvas).toHaveValue(new RegExp('^Our '+word+'.*garden\\.$'));
  const text=await canvas.inputValue();await resume(page);await expect(canvas).toHaveValue(text);await expect(page.getByRole('tab',{name:'Nouns',exact:true})).toHaveAttribute('aria-selected','true');
  expect((await state(page)).regions['L2-04.apply'].some((s:any)=>s.s==='grid')).toBe(true);
 });
-test('second assessment set can pass after first failed hand-in',async({page})=>{
+test.skip('Historical P7 (Not in current runtime sequence): second assessment set can pass after failed hand-in',async({page})=>{
  await start(page);await practices(page);await assessment(page,0,false);await forward(page);await assessment(page,1,true);
  expect((await state(page)).checks['L2-04.check'].passed).toBe(true);await shot(page,'second-set-passed');
 });
@@ -105,7 +102,7 @@ test('accessibility audit of path, lesson and graded Choice; report retained',as
   reports.push({name,violations});writeFileSync(resolve(dir,'accessibility.json'),JSON.stringify(reports,null,2));
   expect(violations.filter((v:any)=>v.id!=='color-contrast')).toEqual([]);
  };
- await page.goto('/');await page.locator('[data-lesson-focus="G2-O:1"]').waitFor();await audit('path');await page.locator('[data-lesson-focus="G2-O:1"]').click();await audit('learn');await forward(page);await options(page).nth(1).click();await forward(page);await audit('choice-correct');
+ await page.goto('/');await page.locator('[data-lesson-focus="G2-O:1"]').waitFor();await audit('path');await page.locator('[data-lesson-focus="G2-O:1"]').click();await audit('first-pick');await options(page).nth(1).click();await forward(page);await audit('choice-correct');
 });
 test('R04 Canvas flag has moving pixels and freezes on reduced motion',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
@@ -147,11 +144,11 @@ test('R2 Review 02 overflow uses current-first 36px markers and fixed left-align
  await overflow.click();
  const pop=page.getByRole('dialog',{name:'All activity screens'});
  await expect(pop).toBeVisible();
- await expect(pop.locator('.ba-task-progress__digit')).toHaveCount(8);
+ await expect(pop.locator('.ba-task-progress__digit')).toHaveCount(6);
  await expect(pop.locator('.ba-task-progress__popover-grid')).toHaveCSS('grid-template-columns',/44px 44px 44px 44px 44px 44px/);
  const firstRow=await pop.locator('.ba-task-progress__button').first().boundingBox();
- const secondRow=await pop.locator('.ba-task-progress__button').nth(6).boundingBox();
- expect(secondRow!.x).toBeCloseTo(firstRow!.x,0);
+ const sixth=await pop.locator('.ba-task-progress__button').nth(5).boundingBox();
+ expect(sixth!.y).toBeCloseTo(firstRow!.y,0);
  await page.keyboard.press('Escape');
  await expect(pop).toHaveCount(0);
  await expect(overflow).toBeFocused();
@@ -166,10 +163,7 @@ test('Review 03 Coach messages, Speaker placement and non-grading hints',async({
  const headingBox=await head.locator('.course-title').boundingBox();
  const speakerBox=await head.locator('.course-listen').boundingBox();
  expect(speakerBox!.x).toBeGreaterThanOrEqual(headingBox!.x+headingBox!.width);
- await expect(page.getByTestId('better-panel').locator('.ba-icon')).toHaveCount(0);
- await expect(page.locator('.course-examples__label').first()).toHaveCSS('font-family',/Dosis/);
- await expect(page.getByTestId('coach').locator('.lesson-workspace__message').first()).toBeVisible();
- await forward(page); // P3 single pick
+   await expect(page.getByTestId('coach').locator('.lesson-workspace__message').first()).toBeVisible();
  const hintButton=page.getByRole('button',{name:'Need a hint?'});
  await expect(hintButton).toBeEnabled();
  await hintButton.click();
@@ -221,8 +215,7 @@ test('Review 03 default L0/L1 completion fixtures are independent from real L2 r
 });
 
 test('Review 03 P5 lined editor only, without redundant tip',async({page})=>{
- await start(page);await practices(page);
- await page.getByTestId('lesson-footer').getByRole('button',{name:'Back',exact:true}).click();
+ await start(page);await practices(page,false,true);
  const editor=page.getByTestId('writing-canvas');
  await expect(editor).toHaveCSS('resize','none');
  await expect(editor).toHaveCSS('background-image',/repeating-linear-gradient/);
@@ -234,7 +227,6 @@ test('Review 03 P5 lined editor only, without redundant tip',async({page})=>{
 test('R04 bug fix: completed topbar and portal numbers use the exact Writing brown',async({page})=>{
   await page.setViewportSize({width:1024,height:768});
   await start(page);
-  await forward(page); // finish the non-answer Learn screen
   await options(page).nth(1).click();
   await forward(page); // check the authored single-choice answer
   await forward(page); // navigate to next screen so first two are Done
