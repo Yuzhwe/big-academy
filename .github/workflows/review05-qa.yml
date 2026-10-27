@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feat/writing-review05-components-pages
+      - feat/writing-review06-refinement
   workflow_dispatch:
 concurrency:
   group: review05-${{ github.ref }}
