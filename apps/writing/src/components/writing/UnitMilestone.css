@@ -10,3 +10,7 @@
 .unit-milestone__sheen::after { content:''; position:absolute; inset:-25%; background:linear-gradient(110deg,transparent 36%,rgb(255 255 241 / 64%) 50%,transparent 64%); animation:ba-milestone-shine var(--ba-milestone-sweep-period) linear infinite; }
 @keyframes ba-milestone-shine { 0%,3%{transform:translateX(-110%)} 17%,100%{transform:translateX(110%)} }
 @media(prefers-reduced-motion:reduce) { .unit-milestone__action,.unit-milestone__action img {transform:none!important;} .unit-milestone__sheen{display:none;} }
+
+.unit-milestone[data-motion='low'] .unit-milestone__action,
+.unit-milestone[data-motion='low'] .unit-milestone__action img { transform: none !important; }
+.unit-milestone[data-motion='low'] .unit-milestone__sheen { display: none; }

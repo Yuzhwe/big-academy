@@ -5,6 +5,7 @@ import hillMid from '../assets/r2.12/hill-mid.svg';
 import hillFront from '../assets/r2.12/hill-front.svg';
 import { BAButton, BAIcon } from '@big-academy/design-system';
 import { CloudShaderSky } from './CloudShaderSky';
+import { claimLevelIntro } from './staircaseMotion';
 
 const STEP_GAP = 290;
 const CARD_WIDTH = 260;
@@ -281,11 +282,13 @@ export function StaircaseScene({
   focusIndex,
   locale,
   motionMode = 'high',
+  levelId = 'preview',
 }: {
   children: ReactNode;
   count: number;
   focusIndex: number;
   locale: BALocale;
+  levelId?: string;
   motionMode?: 'high' | 'low';
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -294,6 +297,17 @@ export function StaircaseScene({
   const [cameraX, setCameraX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [cardHeights, setCardHeights] = useState<number[]>([]);
+  const [introActive, setIntroActive] = useState(false);
+  // Claim before paint: this is a session-only UI receipt, not Alex progress.
+  useLayoutEffect(() => {
+    if (claimLevelIntro(levelId) && motionMode === 'high') setIntroActive(true);
+  }, [levelId]);
+  useEffect(() => {
+    if (!introActive) return;
+    if (motionMode !== 'high') { setIntroActive(false); return; }
+    const timeout = window.setTimeout(() => setIntroActive(false), 610 + Math.max(0, count - 1) * 90);
+    return () => window.clearTimeout(timeout);
+  }, [introActive, motionMode, count]);
   const preferredRise = stepRise(view.width, view.height);
   const rise = riseThatFits(count, view.width, view.height, cardHeights, preferredRise);
   const slope = rise / STEP_GAP;
@@ -403,7 +417,7 @@ export function StaircaseScene({
   const hillLayer = (layer: 'hill1' | 'hill2'): CSSProperties => ({
     width: frame.width,
     height: frame.height,
-    left: -scenic[layer] * boundedX,
+    left: -scenic[layer] * boundedX * (motionMode === 'low' ? 0.25 : 1),
     bottom: 0,
   });
 
@@ -413,6 +427,7 @@ export function StaircaseScene({
       className="staircase-viewport"
       data-landscape="v2-terraces"
       data-motion={motionMode}
+      data-intro={introActive && motionMode === 'high' ? 'enter' : 'settled'}
       data-camera-x={Math.round(boundedX)}
       data-camera-y={Math.round(cameraY)}
       data-rise-px={rise}

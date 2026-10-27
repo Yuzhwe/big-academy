@@ -9,11 +9,12 @@ export interface UnitMilestoneProps {
   unitId: string; title: string; completed: boolean; locale?: BALocale;
   /** Automatic first-return highlight; completed manual replay stays eligible. */
   celebrationEligible: boolean;
+  motionEnabled?: boolean;
   onCelebrate?: (unitId: string) => void;
 }
 
 /** BA-WR-006. Stable hit geometry, one RAF for two depths; independent CSS shine. */
-export function UnitMilestone({unitId,title,completed,celebrationEligible,locale='en',onCelebrate}:UnitMilestoneProps) {
+export function UnitMilestone({unitId,title,completed,celebrationEligible,motionEnabled=true,locale='en',onCelebrate}:UnitMilestoneProps) {
   const root = useRef<HTMLDivElement>(null);
   const motion = useRef({x:0,y:0,tx:0,ty:0,frame:0,last:0,returning:false});
   const tick = (now:number) => {
@@ -31,19 +32,19 @@ export function UnitMilestone({unitId,title,completed,celebrationEligible,locale
   };
   const target=(x:number,y:number,returning=false)=>{
     const m=motion.current;m.tx=x;m.ty=y;m.returning=returning;
-    if (!m.frame) m.frame=requestAnimationFrame(tick);
+    if (motionEnabled && !m.frame) m.frame=requestAnimationFrame(tick);
   };
   useEffect(()=>{
     const mq=window.matchMedia?.('(prefers-reduced-motion: reduce)');
     const reset=()=>{const m=motion.current;cancelAnimationFrame(m.frame);m.frame=0;m.x=m.y=m.tx=m.ty=m.last=0;root.current?.style.setProperty('--badge-x','0');root.current?.style.setProperty('--badge-y','0');};
     mq?.addEventListener('change',reset);
     return()=>{reset();mq?.removeEventListener('change',reset);};
-  },[]);
+  },[motionEnabled]);
   const zh=locale==='zh';
   return <div ref={root} className="unit-milestone" data-component="BA-WR-006" data-unit={unitId}
-    data-state={!completed?'upcoming':celebrationEligible?'newly-completed':'completed'}
+    data-state={!completed?'upcoming':celebrationEligible?'newly-completed':'completed'} data-motion={motionEnabled?'high':'low'}
     onPointerMove={event=>{
-      if(event.pointerType==='touch'||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+      if(!motionEnabled||event.pointerType==='touch'||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
       const box=event.currentTarget.getBoundingClientRect();
       if(!box.width||!box.height)return;
       // Scene node wrappers are wider than the badge. Normalize against the

@@ -41,7 +41,7 @@ export function LevelRewardFlag({completed=false,label,period=FLAG_DEFAULTS.peri
         const left=(w-fw)/2,top=pad+(h-fh)/2;
         for(let i=0;i<Math.ceil(fw*dpr);i++){
           const x=i/dpr,width=Math.min(1/dpr,fw-x);if(width<=0)continue;
-          const offset=reduced?0:flagOffsetY(x,fw,waves,amplitude,phaseRef.current);
+          const offset=reduced||!playing?0:flagOffsetY(x,fw,waves,amplitude,phaseRef.current);
           context.drawImage(image,x/fw*image.naturalWidth,0,width/fw*image.naturalWidth,image.naturalHeight,left+x,top+offset,width+.35/dpr,fh);
         }
       }

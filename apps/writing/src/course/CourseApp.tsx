@@ -18,6 +18,7 @@ import { BAPageTransition } from '../components/writing/BAPageTransition';
 import { SpeechButton } from '../components/writing/SpeechButton';
 import { lessonSpeech } from '../components/writing/speech';
 import { LessonTestTools } from './LessonTestTools';
+import { resolveMotionMode, type MotionMode } from './staircaseMotion';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 
@@ -38,6 +39,18 @@ export function CourseApp({ session: provided, enableLessonTestTools = true }: {
   const revision = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
   const locale = session.locale;
   const zh = locale === 'zh';
+  const [motionMode, setMotionMode] = useState<MotionMode>('high');
+  const [systemReduced, setSystemReduced] = useState(prefersReducedMotion);
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const media = window.matchMedia(REDUCED_MOTION);
+    const update = () => setSystemReduced(media.matches);
+    update();
+    media.addEventListener?.('change', update);
+    return () => media.removeEventListener?.('change', update);
+  }, []);
+  const effectiveMotion = resolveMotionMode(motionMode, systemReduced);
+  const lowMotion = effectiveMotion === 'low';
   useEffect(()=>{lessonSpeech.stop();return()=>lessonSpeech.stop();},[session,session.view,session.state.screen]);
   useEffect(()=>{
     const stop=()=>lessonSpeech.stop();
@@ -80,7 +93,7 @@ export function CourseApp({ session: provided, enableLessonTestTools = true }: {
   if (gallery) return <ChoiceGallery zh={zh} />;
 
   return (
-    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ba-product="writing" data-test-mode={testSession?'true':undefined}>
+    <div className="course-app" lang={localeTag(locale)} data-revision={revision} data-view={session.view} data-ba-product="writing" data-test-mode={testSession?'true':undefined} data-motion={effectiveMotion} data-system-reduced={systemReduced ? 'true' : 'false'}>
       {testSession&&<div className="course-test-banner" role="region" aria-label="Test Mode">
         <strong>Test Mode</strong><span>{zh?'正式学习记录已保留':'Your real learning record is preserved'}</span>
         <BAButton size={36} variant="secondary" onPress={()=>{lessonSpeech.stop();setTestSession(null);}}>Exit Test</BAButton>
@@ -89,26 +102,25 @@ export function CourseApp({ session: provided, enableLessonTestTools = true }: {
         {zh ? '跳到主要内容' : 'Skip to content'}
       </a>
       <BAPageTransition viewKey={session.view === 'lessonEnd' ? 'lesson' : session.view}
-        duration={500} maxBlur={12}
+        duration={500} maxBlur={12} reducedMotion={lowMotion}
         onSettled={target=>{if(target==='path')restorePathFocus();}}
-        renderView={key=>key==='path'?<PathView session={session}/>:key==='lesson'?<LessonView session={session}
+        renderView={key=>key==='path'?<PathView session={session} motionMode={motionMode} effectiveMotion={effectiveMotion} systemReduced={systemReduced} onMotionModeChange={setMotionMode}/>:key==='lesson'?<LessonView session={session} lowMotion={lowMotion}
           onResetLesson={enableLessonTestTools?()=>{lessonSpeech.stop();setTestSession(session.createLessonTestSession());}:undefined}/>:<PreviewView session={session}/>}/>
-      {session.celebration ? <Celebration session={session} /> : null}
-      {session.practiceBurst ? <PracticeBurst session={session} /> : null}
+      {session.celebration ? <Celebration session={session} lowMotion={lowMotion} /> : null}
+      {session.practiceBurst ? <PracticeBurst session={session} lowMotion={lowMotion} /> : null}
     </div>
   );
 }
 
-function PathView({ session }: { session: CourseSession }) {
+function PathView({ session, motionMode, effectiveMotion, systemReduced, onMotionModeChange }: { session: CourseSession; motionMode: MotionMode; effectiveMotion: MotionMode; systemReduced: boolean; onMotionModeChange: (mode: MotionMode) => void }) {
   const zh = session.zh;
-  const [motionMode, setMotionMode] = useState<'high' | 'low'>('high');
   const level = session.level();
   const nodes = session.pathNodes();
   const freshMilestone = session.celebration && !session.celebration.replay ? session.celebration.unitId : null;
   const focusIndex = Math.max(0, nodes.findIndex((node) => node.kind === 'lesson' && node.lesson && (node.lesson.action === 'start' || node.lesson.action === 'continue')));
 
   return (
-    <div className="course-path">
+    <div className="course-path" data-motion={effectiveMotion}>
       <BATabs className="course-level-tabs" selectedKey={session.levelId} onSelectionChange={(key) => session.switchLevel(key)}>
         <header className="course-path__bar course-path__header">
           <div className="course-path__header-title">
@@ -123,9 +135,10 @@ function PathView({ session }: { session: CourseSession }) {
             }))}/>
           <div className="course-path__header-locale">
             <div className="course-motion-toggle" role="group" aria-label={zh ? '阶梯动效' : 'Staircase motion'}>
-              <button type="button" aria-pressed={motionMode === 'high'} onClick={() => setMotionMode('high')}>{zh ? '高动态' : 'High motion'}</button>
-              <button type="button" aria-pressed={motionMode === 'low'} onClick={() => setMotionMode('low')}>{zh ? '低动态' : 'Low motion'}</button>
+              <button type="button" aria-pressed={motionMode === 'high'} onClick={() => onMotionModeChange('high')}>{zh ? '高动态' : 'High motion'}</button>
+              <button type="button" aria-pressed={motionMode === 'low'} onClick={() => onMotionModeChange('low')}>{zh ? '低动态' : 'Low motion'}</button>
             </div>
+            {systemReduced ? <span className="course-motion-system-note" role="status">{zh ? '系统减少动态已启用' : 'System reduced motion is on'}</span> : null}
             <BAButton variant="secondary" locale={session.locale} onPress={() => session.toggleLocale()}>
               {zh ? 'English' : '中文'}
             </BAButton>
@@ -148,7 +161,7 @@ function PathView({ session }: { session: CourseSession }) {
             {zh ? '进度保存在这台设备上。' : 'Your work is saved on this device.'}
           </p>
         ) : null}
-        <StaircaseScene key={level.id} locale={session.locale} count={nodes.length} focusIndex={focusIndex} motionMode={motionMode}>
+        <StaircaseScene key={level.id} levelId={level.id} locale={session.locale} count={nodes.length} focusIndex={focusIndex} motionMode={effectiveMotion}>
         <ol className="course-nodes">
           {nodes.map((node, index) => {
             if (node.kind === 'intro') {
@@ -172,7 +185,7 @@ function PathView({ session }: { session: CourseSession }) {
               return (
                 <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
                   {lesson.courseState === 'current'
-                    ? <SolarLessonPreview><StairLessonCard
+                    ? <SolarLessonPreview motionEnabled={effectiveMotion === 'high'}><StairLessonCard
                     lessonId={lesson.lessonId}
                     number={lesson.number}
                     title={lesson.title}
@@ -201,6 +214,7 @@ function PathView({ session }: { session: CourseSession }) {
                     title={node.milestone.title}
                     completed={node.milestone.completed}
                     celebrationEligible={freshMilestone === node.milestone.unitId}
+                    motionEnabled={effectiveMotion === 'high'}
                     locale={session.locale}
                     onCelebrate={(unitId) => session.replayMilestone(unitId)}
                   />
@@ -211,7 +225,7 @@ function PathView({ session }: { session: CourseSession }) {
               return (
                 <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
                   <section className="course-goal" data-testid="level-goal" data-formula="open" aria-label={`${node.goal.title} · ${node.goal.detail}`}>
-                    <LevelRewardFlag completed={session.levelRewardDone()} label={`${node.goal.title} · ${node.goal.detail} · ${session.levelRewardDone()?(zh?'已完成':'Completed'):(zh?'未完成':'Upcoming')}`} />
+                    <LevelRewardFlag playing={effectiveMotion === 'high'} completed={session.levelRewardDone()} label={`${node.goal.title} · ${node.goal.detail} · ${session.levelRewardDone()?(zh?'已完成':'Completed'):(zh?'未完成':'Upcoming')}`} />
                   </section>
                 </li>
               );
@@ -232,7 +246,7 @@ function PathView({ session }: { session: CourseSession }) {
   );
 }
 
-function LessonView({ session,onResetLesson }: { session: CourseSession;onResetLesson?:()=>void }) {
+function LessonView({ session,lowMotion,onResetLesson }: { session: CourseSession;lowMotion?:boolean;onResetLesson?:()=>void }) {
   const bar = session.topBar();
   const activity = session.activity();
   const footer = session.footer();
@@ -265,7 +279,7 @@ function LessonView({ session,onResetLesson }: { session: CourseSession;onResetL
       {onResetLesson ? <div className="course-lesson__tools"><LessonTestTools onReset={onResetLesson} zh={session.zh}/></div> : null}
       <LessonWorkspace
         navigationLayout={lessonEnd ? 'end' : 'pair'}
-        activity={<BAPageTransition viewKey={String(bar.current)} duration={300} maxBlur={6}
+        activity={<BAPageTransition viewKey={String(bar.current)} duration={300} maxBlur={6} reducedMotion={lowMotion}
           renderView={()=> <ActivityBody session={session} activity={activity}/>}/> }
         coach={
           <div>
@@ -591,8 +605,8 @@ function PreviewView({ session }: { session: CourseSession }) {
   );
 }
 
-function PracticeBurst({ session }: { session: CourseSession }) {
-  const reduced = prefersReducedMotion();
+function PracticeBurst({ session, lowMotion = false }: { session: CourseSession; lowMotion?: boolean }) {
+  const reduced = lowMotion || prefersReducedMotion();
   const lesson = !!session.practiceBurst?.lesson;
   useEffect(() => { const timeout = window.setTimeout(() => session.dismissPractice(), 2400); return () => window.clearTimeout(timeout); }, [session, session.practiceBurst?.id]);
   const label = lesson
@@ -634,8 +648,8 @@ function PracticeBurst({ session }: { session: CourseSession }) {
   );
 }
 
-function Celebration({ session }: { session: CourseSession }) {
-  const reduced = prefersReducedMotion();
+function Celebration({ session, lowMotion = false }: { session: CourseSession; lowMotion?: boolean }) {
+  const reduced = lowMotion || prefersReducedMotion();
   const title = session.celebration?.title ?? '';
   const unitId = session.celebration?.unitId ?? '';
   useEffect(() => {
