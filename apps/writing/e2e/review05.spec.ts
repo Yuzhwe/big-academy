@@ -67,7 +67,7 @@ test('Coach audio shares one owner, reads only body, handles errors and stops ac
 });
 
 test('unsupported speech stays safe without changing learning or controls',async({page})=>{
- await page.addInitScript(()=>Object.defineProperty(window,'speechSynthesis',{configurable:true,value:undefined}));await start(page);const before=await stored(page);await page.locator('.coach-audio').first().click();await expect(page.locator('.coach-audio').first()).toHaveAttribute('aria-pressed','false');expect(await stored(page)).toEqual(before);await expect(primary(page)).toBeEnabled();
+ await page.addInitScript(()=>Object.defineProperty(window,'speechSynthesis',{configurable:true,value:undefined}));await start(page);const before=await stored(page);await page.locator('.coach-audio').first().click();await expect(page.locator('.coach-audio').first()).toHaveAttribute('aria-pressed','false');expect(await stored(page)).toEqual(before);await expect(primary(page)).toBeDisabled();await options(page).nth(1).click();await expect(primary(page)).toBeEnabled();
 });
 
 test('TopBar hugs G2-O, ellipsizes long titles and avoids progress overlap across widths',async({page})=>{

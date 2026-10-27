@@ -14,7 +14,8 @@ test('BA-WR-013 student sky is shared, camera-driven and click-through', async (
   const sky = viewport.getByTestId('path-cloud');
   await expect(viewport).toBeVisible();
   await expect(sky).toHaveCount(1);
-  await expect(sky).toHaveAttribute('data-mode', 'auto');
+  // Review 06: system Reduced Motion forces Lightweight, even when High is selected.
+  await expect(sky).toHaveAttribute('data-mode', 'lightweight');
   await expect(sky).toHaveAttribute('data-renderer', 'lightweight');
   await expect(sky.locator('.r2-cloud')).toHaveCount(3);
   await expect(sky.locator('canvas')).toHaveCount(0);
