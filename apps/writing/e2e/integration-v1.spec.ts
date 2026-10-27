@@ -123,7 +123,10 @@ test('R04 Canvas flag has moving pixels and freezes on reduced motion',async({pa
  const moving=await snapshot();
  await expect.poll(snapshot,{timeout:5000,intervals:[200,250,300,400]}).not.toBe(moving);
  await page.emulateMedia({reducedMotion:'reduce'});
- await page.waitForTimeout(150); // Let the OS preference change repaint once.
+ await expect(page.locator('.course-goal__flag')).toHaveAttribute('data-playing','false');
+ await expect(canvas).toHaveAttribute('data-image-state','ready');
+ await expect(canvas).toHaveAttribute('data-reduced','true');
+ await page.waitForTimeout(150); // One flat repaint of the already decoded cloth.
  const frozen=await snapshot();
  await page.waitForTimeout(350);
  expect(await snapshot()).toBe(frozen);
