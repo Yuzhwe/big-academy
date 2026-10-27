@@ -10,7 +10,7 @@ Updated 2026-10-27 (Asia/Shanghai). Current work: Review 05 shared components + 
 4. `apps/writing/contracts/components.json`: stable IDs/API/states.
 5. This delivery record. Review 04 documents are historical context.
 
-Target remains L2/G2-O Lesson 1's eight screens, E-01 entry/return and Lesson End. Preserve Warm Frame + White Canvas, diagonal separate-platform landscape and all authored grading/gates. Designer owns visual approval; Product Owner owns curriculum. Never change RaoJing414 repositories, merge unreviewed work to main or deploy Vercel without a request.
+Target is now L2/G2-O Lesson 1's six screens, E-01 entry/return and Lesson End. Preserve Warm Frame + White Canvas, diagonal separate-platform landscape and all authored grading/gates. Designer owns visual approval; Product Owner owns curriculum. Never change RaoJing414 repositories, merge unreviewed work to main or deploy Vercel without a request.
 
 ## Verified Cloud M4 baseline
 
@@ -41,3 +41,12 @@ Writing: `http://127.0.0.1:5184/`; library: `http://127.0.0.1:6017/`. These serv
 - Physical tablet touch, extended field GPU/battery performance and upstream shader redistribution rights remain separate reviews. Existing missing licensed Douyin asset/fallback remains.
 
 Keep Draft. No main merge and no Vercel deployment.
+
+
+## Review 06 · current delivery state
+
+- Runtime lesson generation filters standalone P2 Teach and P7 Check pages globally. Source data and saved records remain available for migration; no deleted assessment result is fabricated. Lesson 1 now has six activities and ends after Apply Writing.
+- Implemented: High/Low Staircase motion control with system reduced-motion override; one-time left-to-right card drop; LevelRewardFlag 3/5/3 defaults; transparent Milestone/Flag outer containers; WordGrid multi-tab corner repair; Coach action ordering; Reset Lesson top tool placement; Tapword shown-and-retry state; Guided Build manual Check; Frame Fill underline inputs; Apply Writing flexing canvas; semantic input sizes.
+- Workbench candidates: WordGrid 56px/18px cards (baseline shown beside candidate) and BATabs 36/50/70px (50px recommended). Candidates are isolated from real Writing defaults and remain **Pending Visual Approval**.
+- Verification in this checkout: TypeScript passes. Existing unit suite still contains Review 05 assertions for eight screens/P7 and therefore has expected failures until those tests are migrated to Review 06. Build, browser and accessibility checks remain to be run after test migration.
+- Review report entry: start the Library at `npm run dev:library`, open WordGrid to compare the baseline and dashed candidate panel, and open BATabs to switch 36/50/70px.

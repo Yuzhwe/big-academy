@@ -163,6 +163,12 @@ body { margin: 0; }
 }
 /* R2 additions extend the R1 shell. */
 .review-boundary,.candidate-label,.demo-notice { font-size:var(--ba-library-caption-size); color:var(--ba-color-warning-text); }
+.word-playground__baseline,.word-playground__candidate { padding: 12px; border-radius: 16px; }
+.word-playground__baseline { background: color-mix(in srgb, var(--ba-paper) 92%, var(--ba-color-neutral-2)); }
+.word-playground__candidate { margin-top: 16px; border: 2px dashed var(--ba-color-warning-5, #d9a66e); background: color-mix(in srgb, var(--ba-color-warning-1, #fff9f2) 86%, white); }
+.word-playground__baseline h3,.word-playground__candidate summary { margin: 0 0 8px; font-size: 16px; font-weight: 700; cursor: pointer; }
+.word-playground__candidate summary span { color: var(--ba-color-warning-8, #944511); font-size: 12px; font-weight: 600; }
+.word-playground__candidate .word-grid__card { min-height: 56px; padding-inline: 18px; font-size: 18px; }
 .demo-actions { display:flex; flex-wrap:wrap; gap:var(--ba-space-2); margin-top:var(--ba-space-4); }
 [data-background='dark'].preview-frame,[data-background='dark'].showcase-preview { background:var(--ba-color-brand-10); color:var(--ba-paper); }
 [data-background='dark'] .preview-result,[data-background='dark'] .candidate-label { color:var(--ba-paper); }

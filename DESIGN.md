@@ -799,3 +799,11 @@ For Lesson 1 Screen 05, PRODUCT §12.1's authored single `set` bank takes preced
 - **Preserved:** approved StairLessonCard internals, four-rounded Unit card, peach convex WordGrid, Solar, Cross Blur, Cloud M4/hills/platforms/camera and learning controls. Test Mode is a temporary labelled tool, with confirmation and Exit Test; its behavior and isolation live in PRODUCT.md.
 
 Designer review remains required for rendered motion tuning, pole/cloth alignment, transparent boundary treatment and all screenshots. No new visual approval is inferred from tests.
+
+
+## Review 06 current visual and motion decisions (2026-10-27)
+
+- Staircase exposes a full-round High motion / Low motion control. High motion preserves the M4 cloud renderer when eligible, full scenic parallax, Solar emphasis, milestone sweep and Level flag cloth motion, and staggers lesson cards from left to right. Low motion uses Lightweight Clouds, lower parallax, final-position cards and static or minimal decorative movement. `prefers-reduced-motion` always overrides both choices.
+- LevelRewardFlag’s approved implementation defaults are amplitude `3px`, waves `5` (the existing `waves × PI` formula), and period `3s`. The pole remains still and only the cloth is drawn by columns. UnitMilestone and LevelRewardFlag have no outer card, background, border, shadow or standalone title.
+- WordGrid real-page geometry keeps the four-corner peach bank and shifts the multi-tab strip inward so the upper-left bank corner remains visible. The 56px/18px word-card scale is isolated to the Workbench candidate. BATabs real pages remain 36px; 50px and 70px are Workbench candidates, with 50px recommended and neither approved.
+- Student entry text uses a semantic 22px scale; Apply Writing uses 24px at weight 600. Frame Fill blanks are underlines, and Apply Writing’s ruled editor flexes to fill the paper column while the WordGrid remains docked below.

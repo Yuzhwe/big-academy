@@ -280,11 +280,13 @@ export function StaircaseScene({
   count,
   focusIndex,
   locale,
+  motionMode = 'high',
 }: {
   children: ReactNode;
   count: number;
   focusIndex: number;
   locale: BALocale;
+  motionMode?: 'high' | 'low';
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const gesture = useRef<{ x: number; y: number; camera: number; active: boolean } | null>(null);
@@ -410,6 +412,7 @@ export function StaircaseScene({
       ref={viewportRef}
       className="staircase-viewport"
       data-landscape="v2-terraces"
+      data-motion={motionMode}
       data-camera-x={Math.round(boundedX)}
       data-camera-y={Math.round(cameraY)}
       data-rise-px={rise}
@@ -430,8 +433,8 @@ export function StaircaseScene({
       onKeyDown={keyDown}
     >
       <div className="path-sky" data-testid="path-sky" data-parallax={speedAttr(scenic.sky)} aria-hidden="true" />
-      <CloudShaderSky mode="auto" preset="staircase" cameraX={boundedX}
-        cameraY={cameraY} cameraMaxTravel={maxX} parallaxStrength={scenic.cloud} />
+      <CloudShaderSky mode={motionMode === 'low' ? 'lightweight' : 'auto'} preset="staircase" cameraX={boundedX}
+        cameraY={cameraY} cameraMaxTravel={maxX} parallaxStrength={motionMode === 'low' ? scenic.cloud * 0.35 : scenic.cloud} />
       <div className="path-layer path-hill path-hill-2" data-testid="path-hill-2" data-parallax={speedAttr(scenic.hill2)} style={hillLayer('hill2')} aria-hidden="true">
         <img src={hillMid} alt="" width={HILL_WIDTH} height={HILL_HEIGHT} />
       </div>

@@ -1,9 +1,9 @@
 {
-  "registryVersion": "0.5.0-review05",
+  "registryVersion": "0.6.0-review06",
   "project": "Big Academy Writing (pilot)",
   "status": "pilot-in-review",
   "sourceOfTruth": {
-    "product": "apps/writing/PRODUCT.md (v0.4 R3 current behavior)",
+    "product": "apps/writing/PRODUCT.md (v0.5 Review 06 current behavior)",
     "design": "/DESIGN.md (v0.6 R3 current visual)",
     "tokens": "packages/design-system/src/tokens.css (status and lesson-platform candidates; path art is v2-terraces)"
   },
@@ -111,7 +111,8 @@
         "ARIA tabs",
         "Arrow-key interaction",
         "Locale labels",
-        "R2 indicator has uniform 2px padding inside track border; scroll tab overflow horizontally; preserve readable labels"
+        "R2 indicator has uniform 2px padding inside track border; scroll tab overflow horizontally; preserve readable labels",
+        "Workbench compares 36px baseline, 50px recommended candidate and 70px candidate; real Writing remains 36px until visual approval"
       ],
       "requiredStories": [
         "LevelNavigation",
@@ -561,7 +562,9 @@
         "P3 Tapword correct outcome uses solid Success-6 fill, white text, no visible border or check icon. Shown answer without credit remains visually distinct; keyboard focus remains visible.",
         "P3 multiselect Check activates once one choice is selected (not only after the three authored correct choices), while checking, wrong try counts and shown follow PRODUCT.",
         "Only P5 Apply Textarea uses low-contrast 36px horizontally lined paper and omits the duplicate visible Write each sentence on a new line tip. P7 remains plain.",
-        "Coach Need a hint/Another hint only reveal authored teaching messages; the final hint never calls finish(shown), auto-fills, grades or consumes a formal attempt."
+        "Coach Need a hint/Another hint only reveal authored teaching messages; the final hint never calls finish(shown), auto-fills, grades or consumes a formal attempt.",
+        "Coach secondary action buttons render after all orientation, hint and feedback cards",
+        "Reset Lesson belongs in the Lesson top tool area, outside the Coach transcript"
       ],
       "requiredStories": [
         "Desktop",
@@ -625,7 +628,10 @@
         "Used never implies disabled; product explicitly marks consumed ordered-build words disabled. The component never grades.",
         "Sentence cards fill their row and wrap; word/punctuation/emoji keep complete content and touch targets. New selection/evaluation chrome is candidate only.",
         "On P5 Apply Writing, the parent paper layout docks this same WordGrid at the bottom under a flexing Textarea; WordGrid itself does not own height or authoring/grade logic.",
-        "R04 final: bank panel always has four outward-convex identical 16px corners regardless of selected tab; no inverted radial-gradient corners, no underlay patch, and no Slanted; preserve original peach rounded tabs and grade/insertion logic."
+        "R04 final: bank panel always has four outward-convex identical 16px corners regardless of selected tab; no inverted radial-gradient corners, no underlay patch, and no Slanted; preserve original peach rounded tabs and grade/insertion logic.",
+        "Real Writing keeps the peach bank’s four complete outward corners; multi-tab strip is inset so the upper-left corner is never clipped",
+        "56px minimum cards / 18px text are Workbench-only candidates until visual approval; real page defaults remain unchanged",
+        "Incorrect word feedback preserves neutral card colors and uses the existing shake animation; reduced motion removes the animation"
       ],
       "requiredStories": [
         "MultiGroup",
@@ -640,7 +646,7 @@
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
       "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
-      "notes": "Joe Approved the WordGrid peach connected sticky-tab bank and white pill cards. The ordered-build bank tabs are 本题词块, 观点, and 标点. The Apply bank tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点). The active tab joins the peach bank. Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match wordgrid-ordered-build-approved.png and wordgrid-apply-approved.png. A single group shows its cards directly. Ordered-build empty slots are underlines. The ordered-build controls are the word cards and the Coach-rail button group. A placed word stays in the line. PRODUCT.md chapter 12 owns the per-word hint and grading.",
+      "notes": "Approved neutral peach/white bank remains the real-page default. Review 06 repairs the multi-tab upper-left corner by shifting the tab strip inward. A 56px/18px card scale is shown only in the Workbench candidate comparison and is pending visual approval.",
       "r2VisualStatus": "Existing neutral peach bank Approved; explicit selection/evaluation/sentence extensions Candidate / Pending Approval"
     },
     {
@@ -789,7 +795,8 @@
         "Click completed to replay",
         "No unlock authority",
         "Default high-fidelity L0/L1 fixture shows completed and allows replay, without mutating saved learner mastery/scores. Reduced Motion suppresses particle animation.",
-        "Review 05: writing_milestone_1.1.webp green base + unchanged writing_milestone_1.png gold check, each with distinct depth/XY displacement; upcoming same layers grayscale. Badge only, no outside background/border/padding/title; accessible Unit name and state retained. Stable wrapper geometry and elapsed-time RAF damping are independent of compositor-only 7s sheen. Reduced Motion static; completed replay only."
+        "Review 05: writing_milestone_1.1.webp green base + unchanged writing_milestone_1.png gold check, each with distinct depth/XY displacement; upcoming same layers grayscale. Badge only, no outside background/border/padding/title; accessible Unit name and state retained. Stable wrapper geometry and elapsed-time RAF damping are independent of compositor-only 7s sheen. Reduced Motion static; completed replay only.",
+        "Milestone owns only the badge layers; no outer card/background/border/shadow/title container"
       ],
       "requiredStories": [
         "Upcoming",
@@ -1130,7 +1137,9 @@
         "OffsetY=amplitude*sin(x/flagWidth * waves * PI + phase); phase=2PI*elapsedSeconds/period, baseline 4px/6/1.6s. Do not double 6*PI.",
         "Local designer library supports period/waves/amplitude, pause/play, reset values plus phase, local file replacement (FileReader only). Actual Staircase uses confirmed defaults.",
         "Original Flutter sample yarden, https://stackoverflow.com/a/78383275, retrieved 2026-10-26, CC BY-SA 4.0, adapted to browser Canvas, attribution retained.",
-        "Review 05: static writing_flag_2.png pole (lossless transparent boundary derivative) + original writing_flag_1.5.png yellow completed / writing_flag_1.png gray upcoming cloth. Cloth only waves; pause offscreen/hidden; reduced-motion flat. No outer card/title. Local image replacement never hides the pole. Gray cloth retains designer-authored Completed text; semantic mismatch awaits designer review."
+        "Review 05: static writing_flag_2.png pole (lossless transparent boundary derivative) + original writing_flag_1.5.png yellow completed / writing_flag_1.png gray upcoming cloth. Cloth only waves; pause offscreen/hidden; reduced-motion flat. No outer card/title. Local image replacement never hides the pole. Gray cloth retains designer-authored Completed text; semantic mismatch awaits designer review.",
+        "Review 06 defaults are amplitude 3px, waves 5 and period 3s; restore defaults resets phase to zero",
+        "Flag owns the pole and cloth only; outer page containers stay transparent"
       ],
       "requiredStories": [
         "Default",

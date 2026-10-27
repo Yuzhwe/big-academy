@@ -57,7 +57,7 @@ export function R2Controls({scene,update}:{scene:Scene;update:(patch:Partial<Sce
         {range('flagWaves','Waves · 波数 (waves × π)',0,12,1)}
         {range('flagPeriod','Period · 周期 (s)',.2,5,.1)}
         <button type="button" onClick={()=>update({flagPlaying:!scene.flagPlaying})}>{scene.flagPlaying?'暂停':'播放'}</button>
-        <button type="button" onClick={()=>update({flagAmplitude:4,flagWaves:6,flagPeriod:1.6,flagReset:scene.flagReset+1})}>恢复默认参数 · 4 / 6 / 1.6 (Phase = 0)</button>
+        <button type="button" onClick={()=>update({flagAmplitude:3,flagWaves:5,flagPeriod:3,flagReset:scene.flagReset+1})}>恢复默认参数 · 3 / 5 / 3 (Phase = 0)</button>
         <p>每列约 1 个物理像素，仅竖直位移。使用设计师提供的原始黄／灰旗布与静止旗杆。</p>
         <p>算法来源：yarden · Stack Overflow a/78383275 · CC BY-SA 4.0；已改编为浏览器 Canvas。</p>
       </section>}

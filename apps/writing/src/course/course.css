@@ -160,6 +160,12 @@
   height: 100%;
   min-height: 0;
 }
+.course-lesson__tools {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 16px 0;
+}
+.course-lesson__tools .lesson-test-tools { margin: 0; }
 
 .course-teach {
   font-size: 22px;
@@ -218,7 +224,7 @@
 }
 
 .course-word[data-wrong='true'] {
-  border-color: #9b4f36;
+  border-color: var(--ba-brand-dark, #133547);
 }
 
 .course-word[data-revealed='true'] {
@@ -560,6 +566,14 @@
   color: var(--ba-color-content-primary, #133547);
   border-color: var(--ba-color-success-6, #14ae5c);
   box-shadow: inset 0 0 0 1px var(--ba-color-success-6, #14ae5c);
+  animation: course-tapword-reveal 800ms ease-in-out 2;
+}
+@keyframes course-tapword-reveal {
+  0%, 100% { box-shadow: inset 0 0 0 1px var(--ba-color-success-6, #14ae5c); }
+  50% { box-shadow: inset 0 0 0 4px var(--ba-color-success-6, #14ae5c); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .course-word[data-revealed='true'] { animation: none; }
 }
 /* One neutral outlined pill for the Unit's total lesson count and duration.
  * No status-dependent count, about/约 or appended unit-type label. */
@@ -594,6 +608,28 @@
   );
   background-position: 0 12px;
   background-attachment: local;
+}
+
+/* Review 06: student-entered text has a deliberately larger reading scale. */
+.course-frame input,
+.course-canvas textarea { font-size: var(--ba-writing-input-font-size, 22px); line-height: 1.45; }
+.course-frame input {
+  min-width: 8ch;
+  padding-inline: 0;
+  padding-block: 4px 2px;
+  border: 0;
+  border-bottom: 2px solid var(--ba-color-content-primary, #133547);
+  border-radius: 0;
+  background: transparent;
+}
+.course-frame input:focus-visible {
+  outline: 2px solid var(--ba-color-focus, #2364db);
+  outline-offset: 4px;
+  border-bottom-color: var(--ba-color-writing-7, #b25415);
+}
+.course-activity[data-kind='apply'] .course-canvas textarea {
+  font-size: var(--ba-writing-apply-input-font-size, 24px);
+  font-weight: 600;
 }
 
 
@@ -649,6 +685,13 @@
 .course-activity[data-writing='true'] > .word-grid {
  margin-top:auto; padding-top:24px;
 }
+.lesson-workspace__coach-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ba-space-2, 8px);
+  margin-top: var(--ba-space-3, 12px);
+}
+.lesson-workspace__coach-actions .ba-button { width: 100%; }
 /* Cross Blur stays local to rendered page content, not confetti overlays. */
 .course-app > .ba-page-transition {min-width:0;}
 

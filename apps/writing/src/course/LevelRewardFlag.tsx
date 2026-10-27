@@ -8,14 +8,14 @@ import './LevelRewardFlag.css';
  * https://stackoverflow.com/a/78383275 · retrieved 2026-10-26 · CC BY-SA 4.0.
  * Original source imagery retained in assets/review05, no redrawn pole or cloth.
  */
-export const FLAG_DEFAULTS={period:1.6,waves:6,amplitude:4} as const;
+export const FLAG_DEFAULTS={period:3,waves:5,amplitude:3} as const;
 export function flagPhase(elapsedSeconds:number,period:number){return 2*Math.PI*elapsedSeconds/Math.max(.1,period);}
 export function flagOffsetY(x:number,width:number,waves:number,amplitude:number,phase:number){return amplitude*Math.sin((x/width)*waves*Math.PI+phase);}
 export interface LevelRewardFlagProps {
   completed?:boolean; label?:string; period?:number; waves?:number; amplitude?:number;
   playing?:boolean; resetKey?:number; imageSrc?:string;
 }
-export function LevelRewardFlag({completed=false,label,period=1.6,waves=6,amplitude=4,playing=true,resetKey=0,imageSrc}:LevelRewardFlagProps){
+export function LevelRewardFlag({completed=false,label,period=FLAG_DEFAULTS.period,waves=FLAG_DEFAULTS.waves,amplitude=FLAG_DEFAULTS.amplitude,playing=true,resetKey=0,imageSrc}:LevelRewardFlagProps){
   const canvas=useRef<HTMLCanvasElement>(null),phaseRef=useRef(0);
   const src=imageSrc||(completed?completedCloth:upcomingCloth);
   useEffect(()=>{phaseRef.current=0;},[resetKey]);

@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { BAButton } from '@big-academy/design-system';
 import { WordGrid, type WordSelection, type WordEvaluation } from '../../writing/src/components/writing/WordGrid';
 import { wordGroups } from './wordScenarios';
 import type { Scene } from './catalog';
 export function WordPlayground({scene,update}:{scene:Scene;update?:(patch:Partial<Scene>)=>void}) {
+  const [candidateOpen, setCandidateOpen] = useState(false);
   const groups=wordGroups(scene), all=groups.flatMap(g=>g.words), build=scene.wordScenario==='B', forced=scene.mode==='state';
   const words=scene.wordAnswer.map(id=>all.find(w=>w.id===id)).filter(w=>w!==undefined);
   const zh=scene.locale==='zh';
@@ -20,9 +22,18 @@ export function WordPlayground({scene,update}:{scene:Scene;update?:(patch:Partia
   const check=()=>{ const correct=build?scene.wordAnswer.join(',')==='g0-w0,g0-w1,g0-w2,g0-w3':scene.wordSelected.length===1&&scene.wordSelected[0]==='g0-w0';update?.({wordResult:correct?'correct':'incorrect'}); };
   return <div className="preview-example word-playground">
     <p className="demo-notice">{zh?'组件示例数据，不计学习成绩。新增反馈外观为 Candidate / Pending Approval。':'Component demo only · No learner score. New feedback visuals are candidates.'}</p>
-    <WordGrid groups={display} activeGroup={scene.wordGroup} tabs={scene.wordTabs}
-      tabAppearance="connected" locale={scene.locale}
-      onGroupChange={wordGroup=>update?.({wordGroup})} onWordAction={w=>change(w.id)}/>
+    <section aria-label="WordGrid 原版" className="word-playground__baseline">
+      <h3>Approved baseline · 50px / 16px</h3>
+      <WordGrid groups={display} activeGroup={scene.wordGroup} tabs={scene.wordTabs}
+        tabAppearance="connected" locale={scene.locale}
+        onGroupChange={wordGroup=>update?.({wordGroup})} onWordAction={w=>change(w.id)}/>
+    </section>
+    <details className="word-playground__candidate" onToggle={event => setCandidateOpen(event.currentTarget.open)}>
+      <summary>Candidate · 56px / 18px <span>待视觉审核</span></summary>
+      {candidateOpen ? <WordGrid groups={display} activeGroup={scene.wordGroup} tabs={scene.wordTabs}
+        tabAppearance="connected" locale={scene.locale}
+        onGroupChange={wordGroup=>update?.({wordGroup})} onWordAction={w=>change(w.id)}/> : null}
+    </details>
     {build&&<section className="answer-bench" aria-label={zh?'答案区域':'Answer area'} data-result={forced&&stateSelection==='used'?stateEvaluation:scene.wordResult}>
       <h3>{zh?'自由拼句示例':'Free-build example'}</h3><p>{zh?'目标：We love gardens. 此示例允许撤销；Writing 第 5 屏的有序拼句不允许撤销。':'Target: We love gardens. Undo is allowed in this isolated free-build demo, not Writing screen 5.'}</p>
       <div className="answer-tokens">{(forced&&stateSelection==='used'?all.slice(0,4):words).map((w,i)=><span key={`${w.id}-${i}`}>{w.text}<button aria-label={`${zh?'撤销':'Remove'} ${w.text}`} onClick={()=>update?.({wordAnswer:scene.wordAnswer.filter((_,n)=>n!==i),wordResult:'neutral'})}>×</button></span>)}</div>

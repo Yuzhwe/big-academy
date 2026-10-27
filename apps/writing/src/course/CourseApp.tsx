@@ -101,6 +101,7 @@ export function CourseApp({ session: provided, enableLessonTestTools = true }: {
 
 function PathView({ session }: { session: CourseSession }) {
   const zh = session.zh;
+  const [motionMode, setMotionMode] = useState<'high' | 'low'>('high');
   const level = session.level();
   const nodes = session.pathNodes();
   const freshMilestone = session.celebration && !session.celebration.replay ? session.celebration.unitId : null;
@@ -121,6 +122,10 @@ function PathView({ session }: { session: CourseSession }) {
               id: item.id, label: item.id, accessibleLabel: session.text(item.name)
             }))}/>
           <div className="course-path__header-locale">
+            <div className="course-motion-toggle" role="group" aria-label={zh ? '阶梯动效' : 'Staircase motion'}>
+              <button type="button" aria-pressed={motionMode === 'high'} onClick={() => setMotionMode('high')}>{zh ? '高动态' : 'High motion'}</button>
+              <button type="button" aria-pressed={motionMode === 'low'} onClick={() => setMotionMode('low')}>{zh ? '低动态' : 'Low motion'}</button>
+            </div>
             <BAButton variant="secondary" locale={session.locale} onPress={() => session.toggleLocale()}>
               {zh ? 'English' : '中文'}
             </BAButton>
@@ -143,7 +148,7 @@ function PathView({ session }: { session: CourseSession }) {
             {zh ? '进度保存在这台设备上。' : 'Your work is saved on this device.'}
           </p>
         ) : null}
-        <StaircaseScene key={level.id} locale={session.locale} count={nodes.length} focusIndex={focusIndex}>
+        <StaircaseScene key={level.id} locale={session.locale} count={nodes.length} focusIndex={focusIndex} motionMode={motionMode}>
         <ol className="course-nodes">
           {nodes.map((node, index) => {
             if (node.kind === 'intro') {
@@ -257,32 +262,34 @@ function LessonView({ session,onResetLesson }: { session: CourseSession;onResetL
         onBack={() => (lessonEnd ? session.leaveLesson('path') : session.backToPath())}
         onNavigate={(index) => session.navigateLocal(index)}
       />
+      {onResetLesson ? <div className="course-lesson__tools"><LessonTestTools onReset={onResetLesson} zh={session.zh}/></div> : null}
       <LessonWorkspace
         navigationLayout={lessonEnd ? 'end' : 'pair'}
         activity={<BAPageTransition viewKey={String(bar.current)} duration={300} maxBlur={6}
           renderView={()=> <ActivityBody session={session} activity={activity}/>}/> }
         coach={
           <div>
-            {onResetLesson&&<LessonTestTools onReset={onResetLesson} zh={session.zh}/>}
             {activity.coach.map((line, index) => (
               <CoachMessage key={index} tone="orientation" locale={session.locale}>{line}</CoachMessage>
             ))}
             {activity.hints.map((hint, index) => (
               <CoachMessage key={index} tone="hint" locale={session.locale} data-testid="hint">{hint}</CoachMessage>
             ))}
-            {activity.coachMore ? (
-              <BAButton variant="secondary" locale={session.locale} onPress={() => session.showAnother()}>
-                {session.zh ? '再看一个' : 'Show me another'}
-              </BAButton>
-            ) : null}
-            {hintLabel ? (
-              <BAButton variant="secondary" locale={session.locale} onPress={() => session.openHint()}>
-                {hintLabel}
-              </BAButton>
-            ) : null}
             {activity.feedback ? (
               <CoachMessage tone={activity.feedbackTone} locale={session.locale} role="status" data-testid="feedback" data-outcome={activity.feedbackTone}>{activity.feedback}</CoachMessage>
             ) : null}
+            <div className="lesson-workspace__coach-actions">
+              {activity.coachMore ? (
+                <BAButton variant="secondary" locale={session.locale} onPress={() => session.showAnother()}>
+                  {session.zh ? '再看一个' : 'Show me another'}
+                </BAButton>
+              ) : null}
+              {hintLabel ? (
+                <BAButton variant="secondary" locale={session.locale} onPress={() => session.openHint()}>
+                  {hintLabel}
+                </BAButton>
+              ) : null}
+            </div>
           </div>
         }
         navigation={
@@ -532,7 +539,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.wordGrid ? (
         <WordGrid
-          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, disabled: word.used || session.currentTaskClosed(), evaluation: word.hint ? 'hint' as const : word.shake ? 'incorrect' as const : undefined })) }))}
+          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, disabled: word.used || session.currentTaskClosed(), evaluation: word.hint ? 'hint' as const : undefined })) }))}
           activeGroup={activity.wordGrid.active}
           locale={session.locale}
           onGroupChange={(key) => session.selectGrid(key)}

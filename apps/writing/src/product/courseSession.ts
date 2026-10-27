@@ -32,6 +32,18 @@ import type { ChoiceVisualState } from '@big-academy/design-system';
 export const ALEX_STATE_KEY = 'g2o_unit_state_v4';
 export const CELEBRATION_KEY = 'ba_writing_milestone_receipts_v1';
 
+/** Review 06 removes standalone Teach (P2) and Check (P7) pages from the
+ * runtime sequence while preserving the authored source and saved records. */
+function withoutStandaloneTeachAndCheck(config: AlexConfig): AlexConfig {
+  return {
+    ...config,
+    lessons: config.lessons.map((lesson) => ({
+      ...lesson,
+      screens: lesson.screens.filter((screen) => screen.template !== 'P2' && screen.template !== 'P7'),
+    })),
+  };
+}
+
 export type LessonAction = 'start' | 'continue' | 'review' | 'locked';
 export type LessonCourseState = 'locked' | 'current' | 'available' | 'done' | 'skipped' | 'view';
 export type TaskChipStatus = 'done' | 'current' | 'available' | 'locked' | 'skipped';
@@ -369,7 +381,7 @@ export class CourseSession {
   constructor(options: CourseSessionOptions) {
     this.sourceHtml = options.html;
     const source = loadAlexSource(options.html);
-    this.config = source.config;
+    this.config = withoutStandaloneTeachAndCheck(source.config);
     this.levelPath = source.levelPath;
     this.engine = source.engine;
     this.analyzer = source.analyzer;
@@ -505,6 +517,9 @@ export class CourseSession {
       case 'task':
       case 'model_task': {
         const taskState = this.state.tasks[`${screen.page}:${screen.task}`];
+        // Shown is a teaching state for Tapword; the learner must still
+        // choose a valid word and pass a later Check.
+        if (screen.task && taskState?.status === 'shown' && this.task(screen.task).type === 'tapword') return false;
         return !!taskState && taskState.status !== 'open';
       }
       case 'apply':
@@ -1020,11 +1035,11 @@ export class CourseSession {
           hints,
           hintAction,
           tapword: {
-            locked: taskState.status !== 'open',
+            locked: taskState.status === 'done',
             words: tokens.map((token, index) => ({
               index,
               text: token.w,
-              selected: taskState.sel === index && taskState.status !== 'shown',
+              selected: taskState.sel === index,
               correct: taskState.status === 'done' && taskState.sel === index,
               wrong: taskState.status !== 'done' && taskState.bad === index,
               revealed: taskState.status === 'shown' && (task.targets ?? []).some((target) => this.engine.locate(task.text ?? '', target) === index),
@@ -1074,8 +1089,15 @@ export class CourseSession {
     const key = this.taskKey(screen);
     const answer = this.state.tasks[key];
     if (task.type === 'pick') return (answer?.picked?.length ?? 0) >= 1; // readiness is not correctness
-    if (task.type === 'tapword' && task.need !== 'all') return answer?.sel != null;
-    if (task.type === 'build') return false; // automatically checked as word cards complete the sentence
+    if (task.type === 'tapword' && task.need !== 'all') {
+      if (answer?.status === 'shown') {
+        const selected = answer.sel;
+        const targets = (task.targets ?? []).map((target) => this.engine.locate(task.text ?? '', target));
+        return selected != null && targets.includes(selected);
+      }
+      return answer?.sel != null;
+    }
+    if (task.type === 'build') return (answer?.built?.length ?? 0) >= (task.target?.length ?? 0);
     if (task.frameFill) {
       const blanks = answer?.blanks ?? [];
       const count = task.frameFill.frame.split('___').length - 1;
@@ -1195,9 +1217,13 @@ export class CourseSession {
         if (task?.type === 'pick') this.pickCheck(task, this.taskKey(screen));
         else if (task?.type === 'tapword' && task.need !== 'all') this.wordCheck(task, this.taskKey(screen));
         else if (task?.type === 'build') {
-          this.say(this.zh ? '先用下面的词卡把句子拼出来。' : 'Build it with the word cards below first.');
-          this.log('next_blocked');
-          this.emit();
+          const state = this.taskState(this.taskKey(screen));
+          if ((state.built?.length ?? 0) >= (task.target?.length ?? 0)) this.buildCheck(task, this.taskKey(screen));
+          else {
+            this.say(this.zh ? '先用下面的词卡把句子拼出来。' : 'Build it with the word cards below first.');
+            this.log('next_blocked');
+            this.emit();
+          }
         } else if (task?.type === 'write' || task?.frameFill) this.writeCheck(task, this.taskKey(screen));
         else {
           this.say(`${this.lockedMsg(index)} ${this.activity()?.unsupportedReason ?? ''}`.trim());
@@ -1247,7 +1273,7 @@ export class CourseSession {
     const task = this.task(screen.task);
     if (task.type !== 'tapword' || task.need === 'all') return;
     const taskState = this.taskState(this.taskKey(screen));
-    if (taskState.status !== 'open') return;
+    if (taskState.status !== 'open' && taskState.status !== 'shown') return;
     taskState.sel = taskState.sel === index ? null : index;
     taskState.bad = null;
     this.save(true);
@@ -1966,26 +1992,27 @@ export class CourseSession {
     this.shakeCard = null;
     taskState.built.push(cellText);
     this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
-    if (task.target && taskState.built.length === task.target.length) {
-      const bench = this.benchFrom(taskState.built);
-      const ok = (!!task.answer_text && this.engine.sameText(bench, task.answer_text)) || JSON.stringify(taskState.built) === JSON.stringify(task.target);
-      taskState.tries += 1;
-      if (ok) {
-        this.finish(task, key, 'done');
-        return;
-      }
-      if (taskState.tries >= 2) {
-        this.finish(task, key, 'shown');
-        return;
-      }
-      this.say(this.text(task.why));
-      taskState.built = [];
-      delete this.state.regions[key];
-      this.log('task_try');
-      this.save();
-      this.emit();
+    this.save();
+    this.emit();
+  }
+
+  /** Guided Word Build is complete only after the learner presses Check. */
+  private buildCheck(task: AlexTask, key: string): void {
+    const taskState = this.taskState(key);
+    if (taskState.status !== 'open') return;
+    const bench = this.benchFrom(taskState.built ?? []);
+    const ok = (!!task.answer_text && this.engine.sameText(bench, task.answer_text)) || JSON.stringify(taskState.built ?? []) === JSON.stringify(task.target ?? []);
+    taskState.tries += 1;
+    if (ok) {
+      this.finish(task, key, 'done');
       return;
     }
+    if (taskState.tries >= 2) {
+      this.finish(task, key, 'shown');
+      return;
+    }
+    this.say(this.text(task.why));
+    this.log('task_try');
     this.save();
     this.emit();
   }
@@ -2170,9 +2197,13 @@ export class CourseSession {
   private maybeLessonCelebration(): void {
     const lessonIndex = this.screens[this.state.screen]?.li ?? 0;
     const check = this.screens.find((ref) => ref.li === lessonIndex && ref.screen.kind === 'check');
-    if (!check) return;
-    const record = this.state.checks[check.screen.page];
-    if (record?.passed) this.notePractice(check.screen.page, true);
+    if (check) {
+      const record = this.state.checks[check.screen.page];
+      if (record?.passed) this.notePractice(check.screen.page, true);
+      return;
+    }
+    const last = this.screens.filter((ref) => ref.li === lessonIndex).at(-1);
+    if (last && this.screenDone(this.screens.indexOf(last))) this.notePractice(last.screen.id, true);
   }
 
   private lessonEndActivity(): ActivityModel {
@@ -2432,7 +2463,8 @@ export class CourseSession {
     if (!page || (page.kind !== 'skill' && page.kind !== 'model') || !page.tasks) return;
     const finished = page.tasks.every((id) => {
       const taskState = this.state.tasks[`${page.id}:${id}`];
-      return !!taskState && taskState.status !== 'open';
+      const task = this.engine.taskById(this.config, id);
+      return !!taskState && taskState.status !== 'open' && !(task?.type === 'tapword' && taskState.status === 'shown');
     });
     if (finished) this.state.done[page.id] = true;
     void task;
@@ -2612,9 +2644,9 @@ export class CourseSession {
     lessonIndex: number,
     courseState: LessonCourseState,
   ): string {
-    const lesson = unit.lessons[lessonIndex];
     if (courseState === 'done') {
-      return this.zh ? `完成 · ${lesson.pages ?? ''} 页` : `Done · ${lesson.pages ?? ''} pages`;
+      const count = this.liveIdx(lessonIndex).length;
+      return this.zh ? `完成 · ${count} 页` : `Done · ${count} pages`;
     }
     if (courseState === 'skipped') return this.zh ? '已掌握 · 跳过' : 'Mastered · skipped';
     if (!level.current) return this.zh ? '之后打开' : 'Opens later';

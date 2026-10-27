@@ -135,7 +135,7 @@
   top:calc(var(--anchor-base-y) + (var(--step-count) - 1 - var(--step-index)) * var(--step-rise));
   transform:translateY(-100%);
 }
-.staircase-viewport .course-nodes :is(.course-unit,.course-intro,.course-goal,.unit-milestone) {
+.staircase-viewport .course-nodes :is(.course-unit,.course-intro) {
   background: var(--ba-writing-unit-paper-surface, #fff9f2);
   color:var(--ba-color-content-primary);
   border-color: var(--ba-writing-unit-paper-border, #dcc3ab);
@@ -201,5 +201,39 @@
 
 @media(max-width:500px) { .course-level-tablist { max-width:42vw; } }
 .path-controls .ba-button__assembly { background:var(--ba-tabs-glass-surface); }
+
+.course-motion-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ba-paper, #fff) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ba-brand-dark, #133547) 18%, transparent);
+}
+.course-motion-toggle button {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ba-brand-dark, #133547);
+  font: 700 13px/1 var(--ba-font-body-en, "Jost", sans-serif);
+  cursor: pointer;
+}
+.course-motion-toggle button[aria-pressed='true'] { background: var(--ba-brand-dark, #133547); color: var(--ba-paper, #fff); }
+.course-motion-toggle button:focus-visible { outline: 2px solid var(--ba-color-focus, #2364db); outline-offset: 2px; }
+.staircase-viewport[data-motion='high'] .staircase-rail > .course-nodes > li[data-node-kind='lesson'] {
+  animation: staircase-card-drop 520ms cubic-bezier(.2,.8,.25,1) both;
+  animation-delay: calc(var(--step-index) * 90ms);
+}
+@keyframes staircase-card-drop {
+  from { opacity: 0; transform: translateY(calc(-100% - 120px)); }
+  70% { opacity: 1; transform: translateY(calc(-100% + 7px)); }
+  to { opacity: 1; transform: translateY(-100%); }
+}
+@media (max-width: 900px) { .course-motion-toggle button { padding-inline: 8px; } }
+@media (prefers-reduced-motion: reduce) {
+  .staircase-viewport[data-motion='high'] .staircase-rail > .course-nodes > li[data-node-kind='lesson'] { animation: none; }
+}
 
 .course-goal__flag svg { width:100%; height:100%; overflow:visible; }
