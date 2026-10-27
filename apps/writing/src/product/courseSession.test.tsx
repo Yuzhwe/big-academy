@@ -193,6 +193,9 @@ describe('course slice UI', () => {
     expect(document.querySelector('.course-unit__identity')).toBeTruthy();
     expect(document.querySelector('.course-unit ul, .course-unit li')).toBeNull();
     expect(document.querySelector('.course-unit__goal')?.tagName).toBe('P');
+    // An animated incoming card intentionally blocks accidental pointer entry.
+    // The UI test waits for the first-visit animation before interacting.
+    await waitFor(() => expect(document.querySelector('.staircase-viewport')).toHaveAttribute('data-intro', 'settled'), { timeout: 18000 });
     await user.click(document.querySelector('[data-lesson-focus="G2-O:1"]') as HTMLElement);
 
     await waitFor(() => expect(screen.getByRole('heading', { name: /good topic sentence/i })).toBeInTheDocument());
@@ -214,7 +217,7 @@ describe('course slice UI', () => {
     expect(screen.getByTestId('locked-note')).toHaveTextContent(/Lesson 1/);
     expect(screen.getByRole('heading', { name: /Level 2/ })).toBeInTheDocument();
     expect(course.inspect().screen).toBe(0);
-  });
+  }, 20000);
 });
 
 function reach(course: Session, match: (screen: Session['screens'][number]['screen']) => boolean) {
