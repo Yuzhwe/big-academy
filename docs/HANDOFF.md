@@ -1,6 +1,6 @@
 # Big Academy · current handoff
 
-Updated 2026-10-27 (Asia/Shanghai). Current work: Review 05 shared components + Writing integration, branch `feat/writing-review05-components-pages`.
+Updated 2026-10-27 (Asia/Shanghai). Current work: Review 06 Final Fix & Acceptance, branch `feat/writing-review06-refinement`, Draft PR #55 targeting `feat/writing-review05-components-pages`.
 
 ## Authorities and scope
 
@@ -28,7 +28,7 @@ The reported Better sentence whitespace was located and measured but not reprodu
 
 Local documentation check, all TypeScript scopes, **125/125 unit tests**, all four builds and **25/25 native Chrome browser tests passed**. Four Storybook examples rendered without page errors. Axe reports zero violations on path/Learn/graded Choice in the checked tags. Full-size Staircase held actual shader rendering for 60 seconds at ~20 draws/s, 1008×575 buffer. Raw records and source-preservation hashes are in `apps/writing/docs/evidence/review05/verification.json`. Final PR CI status is reported in the delivery message; do not confuse local results with remote CI.
 
-## Runnable local review
+## Historical Review 05 runnable local review
 
 Writing: `http://127.0.0.1:5184/`; library: `http://127.0.0.1:6017/`. These servers point to this independent checkout at `/Users/yuzhe/Documents/ChatGPT/Big Academy/review05`, not the older `integration-v1` server on 5174/6007. Standard commands/configs remain available in package.json; verify actual printed ports. Existing servers on older ports are not evidence for this branch.
 
@@ -43,10 +43,46 @@ Writing: `http://127.0.0.1:5184/`; library: `http://127.0.0.1:6017/`. These serv
 Keep Draft. No main merge and no Vercel deployment.
 
 
-## Review 06 · current delivery state
+## Review 06 · final acceptance handoff
 
-- Runtime lesson generation filters standalone P2 Teach and P7 Check pages globally. Source data and saved records remain available for migration; no deleted assessment result is fabricated. Lesson 1 now has six activities and ends after Apply Writing.
-- Implemented: High/Low Staircase motion control with system reduced-motion override; one-time left-to-right card drop; LevelRewardFlag 3/5/3 defaults; transparent Milestone/Flag outer containers; WordGrid multi-tab corner repair; Coach action ordering; Reset Lesson top tool placement; Tapword shown-and-retry state; Guided Build manual Check; Frame Fill underline inputs; Apply Writing flexing canvas; semantic input sizes.
-- Workbench candidates: WordGrid 56px/18px cards (baseline shown beside candidate) and BATabs 36/50/70px (50px recommended). Candidates are isolated from real Writing defaults and remain **Pending Visual Approval**.
-- Verification after landing local commit `3418b44` on remote Review 05 tip `65c28a1`: `npm run check:docs` and `npm run typecheck` passed. `npm test` passed 125/125 with 3 skipped. Build, browser and accessibility checks were not run.
-- Review report entry: start the Library at `npm run dev:library`, open WordGrid to compare the baseline and dashed candidate panel, and open BATabs to switch 36/50/70px.
+### Current branch and verified implementation
+
+- Draft PR: #55, branch `feat/writing-review06-refinement`, base `feat/writing-review05-components-pages`.
+- Verified engineering implementation SHA: `926224b334dcc1f1d3595ec2da0cec323cabf3df`. This handoff update is delivery metadata only; before making new code changes, read PR #55's current HEAD in case another Agent has added a newer commit.
+- Verification run: GitHub Actions [40470164313](https://github.com/Yuzhwe/big-academy/actions/runs/40470164313), checked out exactly `926224b`, conclusion **success**.
+- Evidence artifact: [12718139175](https://github.com/Yuzhwe/big-academy/actions/runs/40470164313/artifacts/12718139175), SHA-256 `8ba7b5a437ed6a13cab99baab44829359fb816864029dc840eefae7ac53eab97`.
+- PR stays **Draft**. No main merge and no Vercel deployment.
+
+### Accepted fixes
+
+1. **Per-Level first-entry card drop:** session-only receipt uses `sessionStorage` plus an in-memory fallback, keyed by Level and kept completely outside Alex learning records. The drop can run only on the first Level entry in a browser-tab session, never on Lesson return, Level re-entry or reload. Low/System Reduced Motion claims the first visit without playing a deferred drop. Incoming Lesson cards temporarily reject pointer entry during the animation so the motion cannot accidentally enter a lesson.
+2. **Unified motion policy:** the CourseApp shell owns High/Low preference; live `prefers-reduced-motion: reduce` overrides High. Low/Reduced forces Lightweight Clouds, reduces scenic parallax, suppresses the first-entry drop, pauses LevelRewardFlag cloth motion, removes UnitMilestone/Solar ornamental motion, removes route blur and celebration particles, while preserving layout, focus and essential correctness/error feedback. High keeps M4 `auto` selection and its existing performance/WebGL fallback rules.
+3. **Six-Activity runtime and Tapword semantics:** every runtime Lesson filters standalone P2/P7 while authored templates and historical records remain preserved. Lesson 1 is exactly `ts1 → ts4 → ts3 → ss.L2-04 → ts8 → apply` and ends after Apply. Tapword second wrong enters `shown`, reveals both authored valid targets with the approved outline flash, retains wrong semantics, gives zero credit/celebration and keeps Next blocked. A later valid selection + explicit Check is required for `done`.
+4. **Single-source docs/contracts:** PRODUCT.md, DESIGN.md and `components.json` now use six current Lesson 1 activities. P2/P7 are explicitly historical / **Not in current runtime sequence**. Old 1–8 indicators, old Guided Build three-tab description and stale Review 05 current-task wording were removed or marked historical. `tokens.css` requires no Review 06 value change beyond the already-landed semantic input/motion values.
+
+### Final automated and browser verification
+
+All results below are from run **40470164313** on `926224b`, not from Review 05 or an older local server.
+
+- `npm run check:docs`: **Passed**.
+- `npm run typecheck`: **Passed**.
+- `npm test`: **127 passed / 0 failed / 3 skipped** across 22 test files. The skipped cases are retained legacy/historical flows, not deleted coverage.
+- `npm run build`: **Passed** for design-system, Writing, Storybook and Library.
+- `npm run test:integration`: **27 passed / 0 failed / 3 skipped** in native GitHub Actions Chrome, 4.1 minutes. The three skipped browser cases are explicitly historical P2/P7 tests that are not in the Review 06 runtime.
+- Browser coverage that passed includes: real M4 candidate rendering and Lightweight/WebGL-unavailable fallback; six-screen correct flow; wrong-twice shown-and-retry; Lesson End after Apply; reload/return/retest persistence; English and Chinese path; keyboard/touch/reduced-motion checks; 200% layout; WordGrid caret/provenance; TopBar overflow; High→Low→High and live System Reduced Motion; first entry once per Level including reload; and 1440/1024/834/390 no-horizontal-overflow regression.
+- Automated axe test passed for the configured WCAG tags on path, first Lesson activity and graded Choice, with its report retained at `apps/writing/docs/evidence/integration-v1/accessibility.json` in the CI artifact. The test treats color-contrast findings separately, so do not claim an independent manual contrast sign-off from this automation.
+
+### Review entry points
+
+- Component Library command: `npm run dev:library`. Review the existing WordGrid candidate comparison and BATabs 36/50/70 candidate controls there.
+- Writing command: `npm run dev`.
+- No currently running local URL is claimed by this handoff. The older Review 05 localhost addresses above are historical and are **not** evidence for Review 06.
+- Workbench WordGrid 56px/18px and BATabs 36/50/70 remain **Pending Visual Approval** and do not replace approved real-page defaults.
+
+### Remaining human/device review only
+
+- UI/UX Designer final rendered visual approval: Unit milestone follow/sheen, flag pole/cloth alignment, title/pill spacing, Coach/Activity composition, plus the isolated Workbench candidate sizes.
+- Safari was not part of run 40470164313; physical tablet/mobile touch hardware was not tested. CI covers emulated viewport/touch regression only.
+- Extended real-device GPU/battery behavior and audible speech quality remain device/human checks. Existing shader fallback, visibility suspension and speech error paths are automated.
+- No unresolved Review 06 engineering blocker is known after the green run above.
+
