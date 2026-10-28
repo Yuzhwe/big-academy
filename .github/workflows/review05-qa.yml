@@ -5,6 +5,7 @@ on:
       - feat/writing-review05-components-pages
       - feat/writing-review06-refinement
       - audit/writing-review06-documentation-sync-20261028
+      - chore/writing-baseline01-integration
       - main
   workflow_dispatch:
 concurrency:
@@ -18,10 +19,14 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
+      - name: Git whitespace safety relative to main
+        run: git diff --check "$(git merge-base origin/main HEAD)" HEAD
       - run: npm ci
       - run: npm run check:docs
       - run: npm run typecheck
