@@ -2015,6 +2015,23 @@ export class CourseSession {
       this.emit();
       return;
     }
+    // Re-selecting a card removed from the middle of an ordered answer
+    // restores its original slot if the surviving suffix still matches.
+    if (task.in_order && cardId && task.target) {
+      const insertion = task.target.findIndex((word, index) =>
+        word === cellText && index < taskState.built!.length &&
+        taskState.built!.slice(index).every((present, offset) => task.target![index + offset + 1] === present));
+      if (insertion >= 0) {
+        taskState.built.splice(insertion, 0, cellText);
+        ids.splice(insertion, 0, cardId);
+        taskState.builtCardIds = ids;
+        this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
+        this.shakeCard = null;
+        this.save();
+        this.emit();
+        return;
+      }
+    }
     if (task.in_order) {
       const want = task.target?.[taskState.built.length];
       if (cellText !== want) {
