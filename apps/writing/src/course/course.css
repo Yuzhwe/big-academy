@@ -160,17 +160,6 @@
   height: 100%;
   min-height: 0;
 }
-/* The optional designer reset tools are a second explicit auto row.
- * Without this, they consume the 1fr row and push the workspace off-screen. */
-.course-lesson:has(> .course-lesson__tools) {
-  grid-template-rows: auto auto minmax(0, 1fr);
-}
-.course-lesson__tools {
-  display: flex;
-  justify-content: flex-end;
-  padding: 8px 16px 0;
-}
-.course-lesson__tools .lesson-test-tools { margin: 0; }
 
 .course-teach {
   font-size: 22px;
