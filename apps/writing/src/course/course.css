@@ -160,6 +160,11 @@
   height: 100%;
   min-height: 0;
 }
+/* The optional designer reset tools are a second explicit auto row.
+ * Without this, they consume the 1fr row and push the workspace off-screen. */
+.course-lesson:has(> .course-lesson__tools) {
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
 .course-lesson__tools {
   display: flex;
   justify-content: flex-end;
@@ -219,8 +224,8 @@
 }
 
 .course-word[data-selected='true'] {
-  border-color: var(--ba-writing-accent, #b25415);
-  box-shadow: inset 0 0 0 1px var(--ba-writing-accent, #b25415);
+  border-color: var(--ba-color-warm-9);
+  box-shadow: inset 0 0 0 2px var(--ba-color-warm-9);
 }
 
 .course-word[data-wrong='true'] {
@@ -481,7 +486,7 @@
 }
 
 .course-word[data-correct='true'] { background:var(--ba-success); color:var(--ba-paper); border-color:var(--ba-success); }
-.course-word[data-revealed='true'] { background:var(--ba-paper); color:var(--ba-brand-dark); border-color:var(--ba-success); }
+.course-word[data-revealed='true'] { background:var(--ba-paper); color:var(--ba-brand-dark); border-color:var(--ba-color-success-6); box-shadow:inset 0 0 0 2px var(--ba-color-success-6); }
 .course-word { display:inline-flex; align-items:center; gap:var(--ba-space-1); }
 
 /* Question-dot visuals stay 16px; their separate hit targets are 44px. */
