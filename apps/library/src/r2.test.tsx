@@ -20,7 +20,8 @@ it('builds and undoes words with sentence-level correct/incorrect feedback',asyn
   const user=userEvent.setup();render(<App/>);await user.click(screen.getByRole('button',{name:'B · 造句词块'}));
   for(const name of ['We','love','gardens','.']) await user.click(screen.getByRole('button',{name}));
   await user.click(screen.getByRole('button',{name:'Check demo'}));expect(screen.getByText('✓ Demo: correct')).toBeVisible();
-  expect(screen.getByRole('button',{name:'We · Used'})).toBeEnabled();expect(screen.getByRole('button',{name:'We · Used'})).toHaveAttribute('data-evaluation','neutral');
+  // Review 06 keeps an inserted word selected and actionable before Check; Used no longer means disabled.
+  expect(screen.getByRole('button',{name:'We · Selected'})).toBeEnabled();expect(screen.getByRole('button',{name:'We · Selected'})).toHaveAttribute('data-evaluation','neutral');
   await user.click(screen.getByRole('button',{name:'Remove love'}));await user.click(screen.getByRole('button',{name:'Check demo'}));expect(screen.getByText('× Demo: incorrect; edit and retry')).toBeVisible();
   await user.click(screen.getByRole('button',{name:'Reset demo'}));expect(readScene(window.location.search).wordAnswer).toEqual([]);
 });
