@@ -31,7 +31,10 @@ describe('component registry', () => {
       'BA-WR-001', 'BA-WR-002', 'BA-WR-003', 'BA-WR-004', 'BA-WR-005', 'BA-WR-006', 'BA-WR-007', 'BA-WR-009', 'BA-WR-010', 'BA-WR-011', 'BA-WR-012', 'BA-WR-013', 'BA-WR-014',
     ]);
     for (const component of registry.components) {
-      if (component.id === 'BA-WR-010') expect(component.status).toBe('implemented-interim-scene-and-story-decoration');
+      if (component.id === 'BA-WR-010') {
+        // Stable ID retained; the old standalone source is now historical scene composition.
+        expect(component.status).toBe('historical-composition-integrated-in-scene');
+      }
       else if (implemented.has(component.id)) expect(component.status).toBe('implemented');
       else expect(['planned', 'specified-not-implemented']).toContain(component.status);
       // Engineering implementation is not final designer visual acceptance.
