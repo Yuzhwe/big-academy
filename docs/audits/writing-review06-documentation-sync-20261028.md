@@ -10,6 +10,8 @@
 
 ## Phase B · Supervisor reconciliation (2026-10-28, remote Docs Audit PR)
 
+**Retrospective evidence correction:** Phase A's first filtered Actions query found no runs, but a later Check Runs query exposed a failed push run on the exact frozen SHA; see D06-009 below. An absence from the first query never established a passing build.
+
 **Candidate only — not integrated into main.** Frozen Review 06 source remains `46e315b91aece8f839cd68011f78b86c3b6becc9`. Phase B changed documentation, metadata and the existing docs check on this stacked branch; **not** learning/scoring runtime or designer visuals. Current integration branch exact-SHA CI and main post-merge CI are required before any success declaration. Earlier Phase A statements remain historical observations at their recorded SHA.
 
 | Finding | Phase B disposition | Current boundary |
@@ -22,7 +24,7 @@
 | D06-006 P1 | **Approved design recorded / implementation PENDING** | Separate orange Level Title Card above lower card, equal width, wrapping, decorative arrow, min-four-line Level/Unit descriptions; not claimed present |
 | D06-007 P1 | **Contract + library docs corrected** | Screen 04 single `set` group, Screen 05 three authored groups; reversible cards before Check pending exact-SHA QA |
 | D06-008 P1 | **Metadata corrected** | BA-WR-010 ID retained but former LandscapeTerrace source paths no longer advertised as standalone existing files; actual scene paths referenced |
-| D06-009 P1 | **QA PENDING** | No CI was found directly associated with original frozen SHA. Integration CI must run and match tested HEAD; designer render acceptance is separate |
+| D06-009 P1 | **QA FAILURE FOUND / REPAIR AND CI PENDING** | Subsequent Check Runs lookup found [40630525117](https://github.com/Yuzhwe/big-academy/actions/runs/40630525117) at frozen `46e315b`: docs/typechecks passed, two unit tests failed (128 passed, 3 skipped); build and browser were skipped. Integration branch corrects two stale test expectations; rerun full suite at exact HEAD. Designer render acceptance remains separate |
 | D06-010 P2 | **Metadata corrected** | `sourceOfTruth` contains canonical paths without stale version decorations |
 | D06-011 P2 | **Docs corrected** | Library README current catalog count, true boundaries and reversible-card notes; R2 record marked historical |
 | D06-012 P2 | **Check extended / CI PENDING** | Existing docs smoke script detects obsolete current eight-screen entrypoints, canonical contract paths, duplicate IDs and simple implemented-source files |
