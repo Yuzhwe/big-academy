@@ -372,6 +372,8 @@ Lessons are re-counted after a skip. A lesson whose own remaining minutes are 0 
 
 ## 12. Lesson 1 — six authoritative per-Activity contracts
 
+**Writing Baseline 01 document checkpoint (2026-10-28):** this six-screen runtime sequence and all existing authored grading, persistence, Shown/Correct/Next, skip and completion rules remain product-authoritative. No change to Alex's underlying learning logic is authorized by the baseline freeze. Approved BAChoice pre-Check visual selection/undo and Level Title Card composition targets are recorded in root DESIGN.md / Component Contracts; implementation and browser verification remain pending and must not be counted as completed product behaviors solely because the visual target is approved.
+
 **Scope:** L2 / G2-O / Lesson 1, Topic sentences. These six records are the only required Lesson 1 Activity Screens. The table below is a **routing index**, not a substitute for the item contracts. The screen, task, and authored options are grounded in `apps/writing/source/alex-original.html` at source blob `c06c8db7317092f081febcebc9eb70979d357c11`. Template-specific behavior follows chapters 5, 7, 9–10; each entry below gives exact fixture values, state transitions and acceptance. Design visual treatment is normatively specified in root `DESIGN.md` section **Writing Activity layout variants**. Component IDs refer to the component registry, not necessarily implemented components; “planned” components must not be mistaken for usable current production code.
 
 ### 12.1 Stable identity and template / variant routing
