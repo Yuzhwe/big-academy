@@ -2,7 +2,7 @@
 
 ## Mandatory source order
 1. `apps/writing/PRODUCT.md` — Writing product goals, exact lesson data, scoring, gating, recovery and acceptance.
-2. Root `DESIGN.md` — sole authoritative visual/design guide, including detailed Spacing, Gap, Radius, Typography, Motion and Unit folded-corner direction.
+2. Root `DESIGN.md` — sole authoritative visual/design guide, including Spacing, Gap, Radius, Typography, Motion and the current four-rounded-corner Unit Card direction.
 3. `packages/design-system/src/tokens.css` — executable design values and semantic aliases. Candidate values are not automatically visually approved.
 4. `apps/writing/contracts/components.json` — stable IDs, props, events, states, slots and ownership.
 5. `docs/HANDOFF.md` — current delivery and verification gaps.
