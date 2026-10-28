@@ -68,12 +68,17 @@ jobs:
           fi
           if git show-ref --verify --quiet "refs/tags/$tag"; then
             target="$(git rev-parse "$tag^{}")"
-            if [ "$target" != "$GITHUB_SHA" ]; then
-              echo "::error::Baseline tag exists at another SHA: $target; never force/move"
-              exit 1
+            if [ "$target" = "$GITHUB_SHA" ]; then
+              echo "Existing tag already points to the exact verified baseline SHA"
+              exit 0
             fi
-            echo "Existing tag already points to the exact verified main SHA"
-            exit 0
+            # Later main documentation/Review 07 work must not move the historical baseline tag.
+            if git merge-base --is-ancestor "$target" "$GITHUB_SHA"; then
+              echo "Baseline tag already exists on an earlier main ancestor; preserving it unchanged"
+              exit 0
+            fi
+            echo "::error::Baseline tag exists outside verified main ancestry: $target; never force/move"
+            exit 1
           fi
           git -c user.name='Big Academy CI' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' tag -a "$tag" -m 'Big Academy · Writing Baseline 01
 
