@@ -1,0 +1,64 @@
+[
+  {
+    "file": "writing_flag_1.png",
+    "sha256": "9bb58dc3cb63a9d7b8ce03cf5e452db87b3a1ef3b110d61cfd84328679923057",
+    "size": [
+      800,
+      600
+    ]
+  },
+  {
+    "file": "writing_flag_2.png",
+    "sha256": "f1525b0275219a2629b0d9847eeec3d68cc651b24f8a2b50475743da4ebe5bfc",
+    "size": [
+      1024,
+      1024
+    ]
+  },
+  {
+    "file": "writing_flag_1.5.png",
+    "sha256": "fe224cff022aa3fe6166eb3b25989766ba17fc277f590aab3c7af83856d4170b",
+    "size": [
+      800,
+      600
+    ]
+  },
+  {
+    "file": "writing_milestone_1.1.source.png",
+    "sha256": "1f67f2a95fb05ee6d83637d6b26e0b9475d5bb55b3cd6933fa2ec019286ce45f",
+    "size": [
+      1024,
+      1024
+    ]
+  },
+  {
+    "file": "writing_flag_2.cutout.png",
+    "source": "writing_flag_2.png",
+    "crop": [
+      498,
+      13,
+      539,
+      1013
+    ],
+    "size": [
+      41,
+      1000
+    ],
+    "processing": "Edge-connected neutral backdrop to transparent; original colored pixels retained; lossless encoding"
+  },
+  {
+    "file": "writing_milestone_1.1.webp",
+    "source": "writing_milestone_1.1.source.png",
+    "crop": [
+      165,
+      124,
+      860,
+      843
+    ],
+    "size": [
+      695,
+      719
+    ],
+    "processing": "Edge-connected pale neutral backdrop (min RGB >=200, chroma <=45) to transparent; original colored pixels retained; lossless encoding"
+  }
+]

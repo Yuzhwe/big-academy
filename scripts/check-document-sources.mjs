@@ -35,6 +35,38 @@ if (existsSync(resolve(root, 'apps/writing/contracts/components.json'))) {
     if (!Array.isArray(c.components)) errors.push('Component contract list missing');
   } catch (e) { errors.push('Invalid component registry: ' + e.message); }
 }
+// Baseline 01: fail if current entrypoints regress to the obsolete eight-screen lesson.
+for (const f of ['AGENTS.md', 'README.md']) {
+  const path = resolve(root, f);
+  if (!existsSync(path)) { errors.push('Missing project entry: ' + f); continue; }
+  const body = readFileSync(path, 'utf8');
+  if (!/six (current )?Activity Screens/i.test(body) && !/six Activity Screens/i.test(body)) errors.push(f + ' must state the current six-Activity scope');
+  if (/active implementation target is eight Activity Screens|Lesson 1, eight Activity Screens|八屏完整流程/i.test(body)) errors.push(f + ' advertises obsolete eight-screen runtime');
+}
+const contractPath = resolve(root, 'apps/writing/contracts/components.json');
+if (existsSync(contractPath)) {
+  try {
+    const contract = JSON.parse(readFileSync(contractPath, 'utf8'));
+    for (const [k, path] of Object.entries({product: 'apps/writing/PRODUCT.md', design: 'DESIGN.md', tokens: 'packages/design-system/src/tokens.css'})) {
+      if (contract.sourceOfTruth?.[k] !== path) errors.push('Contract sourceOfTruth.' + k + ' must be the canonical path');
+    }
+    const seen = new Set();
+    for (const component of contract.components ?? []) {
+      if (seen.has(component.id)) errors.push('Duplicate Component ID: ' + component.id);
+      seen.add(component.id);
+      // Validate unambiguous implementation paths for current implemented components;
+      // multi-path legacy commentary and historical composites are reviewed separately.
+      const source = component.implementation;
+      const simpleSource = typeof source === 'string' && !source.includes(';') && !source.includes(' ')
+        && ['.tsx', '.ts', '.css'].some(ext => source.endsWith(ext));
+      if (component.status === 'implemented' && simpleSource
+          && !existsSync(resolve(root, source))) {
+        errors.push('Missing implemented Component path ' + component.id + ': ' + component.implementation);
+      }
+    }
+  } catch (e) { errors.push('Baseline contract references invalid: ' + e.message); }
+}
+
 if (errors.length) {
   console.error('P1-A documentation checks failed:\n' + errors.map(e => '- ' + e).join('\n'));
   process.exitCode = 1;

@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from 'react';
+import type { ComponentProps, ReactNode, CSSProperties } from 'react';
 import { Button, ProgressBar } from 'react-aria-components';
 import type { BALocale } from '../../types/task';
 import { taskChrome } from '../../i18n/chrome';
@@ -7,7 +7,7 @@ import './BAButton.css';
 type ButtonPressEvent = Parameters<NonNullable<ComponentProps<typeof Button>['onPress']>>[0];
 export type BAButtonSize = 36 | 50 | 70 | 90;
 export type BAButtonRadius = 'full' | 'standard';
-export type BAButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'ghost';
+export type BAButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'outline';
 export interface BAButtonProps {
   /** "ghost" is backwards-compatible alias for Figma tertiary. */
   variant?: BAButtonVariant;
@@ -17,6 +17,9 @@ export interface BAButtonProps {
   intent?: 'default' | 'destructive';
   /** Accent applies to tertiary only with default intent. */
   tone?: 'default' | 'accent';
+  layout?: 'hug' | 'fixed' | 'full';
+  fixedWidth?: number;
+  wrap?: boolean;
   iconOnly?: boolean;
   leadingIcon?: ReactNode;
   trailingIcon?: ReactNode;
@@ -26,10 +29,13 @@ export interface BAButtonProps {
   onPress?: (event: ButtonPressEvent) => void;
   busyLabel?: string;
   'aria-label'?: string;
+  'aria-pressed'?: boolean | 'mixed';
   locale?: BALocale;
   className?: string;
   id?: string;
   type?: 'button' | 'submit' | 'reset';
+  /** Pass data attributes through without reimplementing the button. */
+  dataAttributes?: { [key: `data-${string}`]: string | number | undefined };
 }
 
 /** BA-UI-001: Figma Button V2 presentation on React Aria's Button.
@@ -41,6 +47,7 @@ export function BAButton({
   radius = 'full',
   intent = 'default',
   tone = 'default',
+  layout = 'hug', fixedWidth = 240, wrap = false,
   iconOnly = false,
   leadingIcon,
   trailingIcon,
@@ -50,10 +57,12 @@ export function BAButton({
   onPress,
   busyLabel,
   'aria-label': ariaLabel,
+  'aria-pressed': ariaPressed,
   locale = 'en',
   className,
   id,
   type = 'button',
+  dataAttributes,
 }: BAButtonProps) {
   const pendingLabel = busyLabel ?? taskChrome(locale).busy;
   const visualVariant = variant === 'ghost' ? 'tertiary' : variant;
@@ -65,9 +74,14 @@ export function BAButton({
       type={type}
       className={cls}
       data-component="BA-UI-001"
+      {...dataAttributes}
       data-variant={variant}
       data-kind={visualVariant}
       data-size={size}
+      data-layout={layout}
+      data-wrap={wrap}
+      data-visual-review={variant === 'outline' ? 'candidate' : undefined}
+      style={{ '--ba-button-fixed-width': `${Math.max(44, fixedWidth)}px` } as CSSProperties}
       data-radius={radius}
       data-intent={intent}
       data-tone={tone}
@@ -76,6 +90,7 @@ export function BAButton({
       isPending={busy}
       onPress={disabled || busy ? undefined : onPress}
       aria-label={ariaLabel}
+      aria-pressed={ariaPressed}
     >
       <span className="ba-button__assembly" aria-hidden={undefined}>
         {busy ? (

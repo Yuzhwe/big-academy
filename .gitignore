@@ -9,3 +9,12 @@ coverage/
 *.log
 playwright-report/
 test-results/
+
+/.local
+/node_modules
+
+# Full generated review runs are retained as CI artifacts; curated evidence is committed.
+/apps/writing/docs/evidence/cloud-m4/*.png
+/apps/writing/docs/evidence/integration-v1/*.png
+/apps/writing/docs/evidence/m4-audit/video/
+/apps/writing/docs/evidence/m4-audit/scene-video/

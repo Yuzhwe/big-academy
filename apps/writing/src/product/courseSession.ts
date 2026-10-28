@@ -32,6 +32,18 @@ import type { ChoiceVisualState } from '@big-academy/design-system';
 export const ALEX_STATE_KEY = 'g2o_unit_state_v4';
 export const CELEBRATION_KEY = 'ba_writing_milestone_receipts_v1';
 
+/** Review 06 removes standalone Teach (P2) and Check (P7) pages from the
+ * runtime sequence while preserving the authored source and saved records. */
+function withoutStandaloneTeachAndCheck(config: AlexConfig): AlexConfig {
+  return {
+    ...config,
+    lessons: config.lessons.map((lesson) => ({
+      ...lesson,
+      screens: lesson.screens.filter((screen) => screen.template !== 'P2' && screen.template !== 'P7'),
+    })),
+  };
+}
+
 export type LessonAction = 'start' | 'continue' | 'review' | 'locked';
 export type LessonCourseState = 'locked' | 'current' | 'available' | 'done' | 'skipped' | 'view';
 export type TaskChipStatus = 'done' | 'current' | 'available' | 'locked' | 'skipped';
@@ -49,6 +61,10 @@ export interface TaskProgress {
   /** Ordered-build wrong taps, one count per word tile. */
   wrongTaps?: Record<string, number>;
   built?: string[];
+  /** Stable card identity aligns with built, including duplicate text. */
+  builtCardIds?: string[];
+  /** Editable frame word placements are answer data, not a separate UI selection. */
+  frameCardPlacements?: { id: string; blank: number; start: number; end: number; text: string }[];
   blanks?: string[];
   focusBlank?: number;
 }
@@ -88,6 +104,7 @@ export interface CheckRecord {
 
 export interface AlexState {
   v: 4;
+  feedbackByScreen?: Record<string, { text: string; tone: 'correct' | 'wrong'; locale: 'en' | 'zh' }>;
   screen: number;
   page: number;
   seen: Record<string, boolean>;
@@ -196,7 +213,7 @@ export interface ActivityModel {
     locked?: boolean;
   };
   tapword?: {
-    words: { index: number; text: string; selected: boolean; wrong: boolean; revealed?: boolean }[];
+    words: { index: number; text: string; selected: boolean; wrong: boolean; correct?: boolean; revealed?: boolean }[];
     locked?: boolean;
   };
   build?: {
@@ -231,7 +248,7 @@ export interface ActivityModel {
   unsupportedReason?: string;
   skip: SkipOffer | null;
   hints: string[];
-  hintAction: 'hint' | 'another' | 'reveal' | null;
+  hintAction: 'hint' | 'another' | null;
   coach: string[];
   coachMore: boolean;
   feedback: string;
@@ -243,6 +260,7 @@ export interface FooterModel {
   backDisabled?: boolean;
   primaryLabel: string;
   primaryTestId: string;
+  primaryDisabled?: boolean;
 }
 
 export interface TopBarModel {
@@ -338,6 +356,7 @@ export class CourseSession {
   readonly screens: ScreenRef[];
 
   private readonly storage: Storage;
+  private readonly sourceHtml: string;
   private readonly listeners = new Set<() => void>();
   private revision = 0;
   private yesCount = 0;
@@ -359,11 +378,14 @@ export class CourseSession {
   private returnTo: { unitId: string; number: number } | null = null;
   private shakeCard: string | null = null;
   /** Designer query only. Never copied into the learner record. */
-  private previewSeed = false;
+  caret = { start: Number.MAX_SAFE_INTEGER, end: Number.MAX_SAFE_INTEGER };
+  private pasted = false;
+  private saveTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor(options: CourseSessionOptions) {
+    this.sourceHtml = options.html;
     const source = loadAlexSource(options.html);
-    this.config = source.config;
+    this.config = withoutStandaloneTeachAndCheck(source.config);
     this.levelPath = source.levelPath;
     this.engine = source.engine;
     this.analyzer = source.analyzer;
@@ -377,7 +399,6 @@ export class CourseSession {
     if (!loaded.fromStorage && new URLSearchParams(options.search ?? '').get('locale') === 'zh') {
       this.state.zh = true;
     }
-    this.previewSeed = new URLSearchParams(options.search ?? '').get('demo') === 'preview-seed';
     this.applySkillQuery(options.search ?? '');
     if (!this.canOpen(this.state.screen)) this.state.screen = this.firstOpen();
     this.state.page = this.pageIndex(this.screens[this.state.screen]?.screen.page ?? '');
@@ -391,6 +412,41 @@ export class CourseSession {
   };
 
   getSnapshot = () => this.revision;
+
+  /** Review-only simulation: a fresh lesson in a wholly separate memory store.
+   * The real session remains alive, including its exact view and resume point.
+   * No storage key, receipt, timer or progress object is shared with the copy.
+   */
+  createLessonTestSession(): CourseSession {
+    this.flush();
+    const index = this.curLesson();
+    const indexes = this.liveIdx(index);
+    const refs = indexes.map(i => this.screens[i]);
+    const copy = structuredClone(this.state);
+    const pages = new Set(refs.map(ref => ref.screen.page));
+    const ids = new Set(refs.map(ref => ref.screen.id));
+    const lessonId = this.config.lessons[index].id ?? refs[0].screen.page.split('.')[0];
+    const roots = new Set([lessonId,...refs.map(ref=>ref.screen.page.split('.')[0]),...refs.map(ref=>ref.step.skill).filter((id):id is string=>!!id)]);
+    refs.forEach(ref=>ids.add(ref.step.id));
+    const inLesson = (key: string) => ids.has(key) || pages.has(key) || [...roots].some(root=>key===root||key.startsWith(root+'.')||key.startsWith(root+':'));
+    for (const records of [copy.seen,copy.done,copy.tasks,copy.regions,copy.checks,copy.applies,copy.feedbackByScreen,copy.grid.tab,copy.grid.open,copy.skills,copy.skipChoice]) {
+      if (records) for (const key of Object.keys(records)) if (inLesson(key)) delete records[key as keyof typeof records];
+    }
+    copy.screen = indexes[0]; copy.page = this.pageIndex(refs[0].screen.page);
+    copy.unlockAll = false; copy.stoppedAt = null; copy.welcomePending = false;
+    copy.overlay = 'none';
+    copy.events = copy.events.filter(event => !(event.page && inLesson(event.page)) && !indexes.includes(event.screen ?? -1));
+    const memory = createMemoryStorage({[ALEX_STATE_KEY]:JSON.stringify(copy)});
+    const test = new CourseSession({html:this.sourceHtml,storage:memory});
+    test.openLesson(this.playUnit().id, index + 1);
+    return test;
+  }
+
+  /** Decorative flag state uses real unit completion, never the L0/L1 fixtures. */
+  levelRewardDone(levelId = this.levelId): boolean {
+    const level = this.level(levelId);
+    return level.units.length > 0 && level.units.every(unit => this.unitMilestoneDone(unit, !!level.current));
+  }
 
   get locale(): 'en' | 'zh' {
     return this.state.zh ? 'zh' : 'en';
@@ -465,6 +521,9 @@ export class CourseSession {
       case 'task':
       case 'model_task': {
         const taskState = this.state.tasks[`${screen.page}:${screen.task}`];
+        // Shown is a teaching state for Tapword; the learner must still
+        // choose a valid word and pass a later Check.
+        if (screen.task && taskState?.status === 'shown' && this.task(screen.task).type === 'tapword') return false;
         return !!taskState && taskState.status !== 'open';
       }
       case 'apply':
@@ -607,7 +666,6 @@ export class CourseSession {
         : live
           ? this.lessonStates(unit)
           : unit.lessons.map(() => 'view' as const);
-      const doneCount = states.filter((state) => state === 'done' || state === 'skipped').length;
       nodes.push({
         kind: 'unit',
         id: unit.id,
@@ -616,13 +674,9 @@ export class CourseSession {
           index: unitIndex + 1,
           typeLabel: this.unitTypeLabel(unit),
           title: this.shortTitle(unit.title),
-          meta: live
-            ? this.zh
-              ? `${doneCount} / ${unit.lessons.length} 课 · 约 ${unit.min ?? ''} 分钟`
-              : `${doneCount} of ${unit.lessons.length} lessons · about ${unit.min ?? ''} min`
-            : this.zh
-              ? `${unit.lessons.length} 课 · 约 ${unit.min ?? ''} 分钟`
-              : `${unit.lessons.length} lessons · about ${unit.min ?? ''} min`,
+          meta: this.zh
+            ? `${unit.lessons.length} 课${unit.min == null ? '' : ` · ${unit.min} 分钟`}`
+            : `${unit.lessons.length} lessons${unit.min == null ? '' : ` · ${unit.min} mins`}`,
           goals: unit.playable ? (this.config.unit_goals ?? []).map((goal) => this.text(goal)) : [],
         },
       });
@@ -696,7 +750,7 @@ export class CourseSession {
         return false;
       }
       let target =
-        lessonIndex === this.curLesson()
+        courseState === 'done' ? indexes[0] : lessonIndex === this.curLesson()
           ? this.state.screen
           : (indexes.find((index) => !this.screenDone(index) && !this.stepSkipped(this.screens[index].step)) ??
             indexes[0]);
@@ -845,7 +899,9 @@ export class CourseSession {
   }
 
   private showsPreviewSeed(levelId: string): boolean {
-    return this.previewSeed && (levelId === 'L0' || levelId === 'L1');
+    // High-fidelity path preview: L0/L1 are visually complete by default.
+    // This does not mutate saved learner grades, mastered skills or L2 gates.
+    return levelId === 'L0' || levelId === 'L1';
   }
 
   topBar(): TopBarModel | null {
@@ -918,8 +974,8 @@ export class CourseSession {
       hintAction: null as ActivityModel['hintAction'],
       coach,
       coachMore: this.coachHasMore(screen),
-      feedback: this.feedback,
-      feedbackTone: this.feedback ? this.feedbackTone : 'wrong',
+      feedback: this.feedback || (this.state.feedbackByScreen?.[screen.id]?.locale === this.locale ? this.state.feedbackByScreen[screen.id].text : ''),
+      feedbackTone: this.feedback ? this.feedbackTone : this.state.feedbackByScreen?.[screen.id]?.tone ?? 'wrong',
     };
 
     if (screen.kind === 'learn' && screen.template === 'P2') {
@@ -983,12 +1039,16 @@ export class CourseSession {
           hints,
           hintAction,
           tapword: {
+            locked: taskState.status === 'done',
             words: tokens.map((token, index) => ({
               index,
               text: token.w,
-              selected: taskState.sel === index && taskState.status === 'open',
-              wrong: taskState.bad === index,
-              revealed: taskState.status === 'shown' && (task.targets ?? []).some((target) => this.engine.locate(task.text ?? '', target) === index),
+              selected: taskState.sel === index,
+              correct: taskState.status === 'done' && taskState.sel === index,
+              wrong: taskState.status !== 'done' && taskState.bad === index,
+              revealed: (taskState.status === 'shown' || taskState.status === 'done') &&
+                !(taskState.status === 'done' && taskState.sel === index) &&
+                (task.targets ?? []).some((target) => this.engine.locate(task.text ?? '', target) === index),
             })),
           },
         };
@@ -1014,6 +1074,45 @@ export class CourseSession {
     };
   }
 
+  /** Presentation-only readiness follows authored task checks; this never grades or changes records. */
+  primaryReady(index = this.state.screen): boolean {
+    if (this.view === 'lessonEnd' || this.view === 'preview') return true;
+    const screen = this.screens[index]?.screen;
+    if (!screen) return false;
+    if (screen.kind === 'check') {
+      // P7 explicitly allows blank internal questions and has an authored one-time
+      // blank warning on Hand in. Never turn that workflow into a mandatory answer gate.
+      return true;
+    }
+    if (this.canNext(index)) return true;
+    if (screen.kind === 'apply') {
+      const text = this.engine.stripPictures(regionText(this.state.regions[screen.page])).trim();
+      return this.analyzer.wordCount(text) >= 3;
+    }
+    if (screen.kind !== 'task' && screen.kind !== 'model_task') return false;
+    if (!screen.task) return false;
+    const task = this.task(screen.task);
+    const key = this.taskKey(screen);
+    const answer = this.state.tasks[key];
+    if (task.type === 'pick') return (answer?.picked?.length ?? 0) >= 1; // readiness is not correctness
+    if (task.type === 'tapword' && task.need !== 'all') {
+      if (answer?.status === 'shown') {
+        const selected = answer.sel;
+        const targets = (task.targets ?? []).map((target) => this.engine.locate(task.text ?? '', target));
+        return selected != null && targets.includes(selected);
+      }
+      return answer?.sel != null;
+    }
+    if (task.type === 'build') return (answer?.built?.length ?? 0) >= (task.target?.length ?? 0);
+    if (task.frameFill) {
+      const blanks = answer?.blanks ?? [];
+      const count = task.frameFill.frame.split('___').length - 1;
+      return count > 0 && blanks.slice(0, count).length === count && blanks.slice(0, count).every(v => !!v.trim());
+    }
+    if (task.type === 'write') return !!regionText(this.state.regions[key]).trim();
+    return false;
+  }
+
   footer(): FooterModel {
     if (this.view === 'lessonEnd') {
       return {
@@ -1033,7 +1132,7 @@ export class CourseSession {
     const screen = this.screens[index]?.screen;
     const backLabel = this.zh ? '上一页' : 'Previous';
     const backDisabled = index === 0;
-    if (screen?.kind === 'check') return this.checkFooter(screen, backLabel, backDisabled);
+    if (screen?.kind === 'check') return { ...this.checkFooter(screen, backLabel, backDisabled), primaryDisabled: !this.primaryReady(index) };
     if (screen?.kind === 'apply' && !this.canNext(index)) {
       const record = this.applyRecord(screen);
       return {
@@ -1041,6 +1140,7 @@ export class CourseSession {
         backDisabled,
         primaryLabel: record.tries ? (this.zh ? '再检查一次' : 'Check again') : this.zh ? '检查我的写作' : 'Check my writing',
         primaryTestId: 'check-writing',
+        primaryDisabled: !this.primaryReady(index),
       };
     }
     if (!this.canNext(index)) {
@@ -1049,6 +1149,7 @@ export class CourseSession {
         backDisabled,
         primaryLabel: this.blockedLabel(index),
         primaryTestId: 'check',
+        primaryDisabled: !this.primaryReady(index),
       };
     }
     return {
@@ -1056,6 +1157,7 @@ export class CourseSession {
       backDisabled,
       primaryLabel: this.nextLabel(index),
       primaryTestId: 'next',
+      primaryDisabled: !this.primaryReady(index),
     };
   }
 
@@ -1094,6 +1196,7 @@ export class CourseSession {
   }
 
   pressPrimary(): void {
+    if (!this.primaryReady()) return;
     if (this.view === 'preview') {
       this.backToPath();
       return;
@@ -1120,9 +1223,13 @@ export class CourseSession {
         if (task?.type === 'pick') this.pickCheck(task, this.taskKey(screen));
         else if (task?.type === 'tapword' && task.need !== 'all') this.wordCheck(task, this.taskKey(screen));
         else if (task?.type === 'build') {
-          this.say(this.zh ? '先用下面的词卡把句子拼出来。' : 'Build it with the word cards below first.');
-          this.log('next_blocked');
-          this.emit();
+          const state = this.taskState(this.taskKey(screen));
+          if ((state.built?.length ?? 0) >= (task.target?.length ?? 0)) this.buildCheck(task, this.taskKey(screen));
+          else {
+            this.say(this.zh ? '先用下面的词卡把句子拼出来。' : 'Build it with the word cards below first.');
+            this.log('next_blocked');
+            this.emit();
+          }
         } else if (task?.type === 'write' || task?.frameFill) this.writeCheck(task, this.taskKey(screen));
         else {
           this.say(`${this.lockedMsg(index)} ${this.activity()?.unsupportedReason ?? ''}`.trim());
@@ -1164,7 +1271,7 @@ export class CourseSession {
       const taskState = this.taskState(item.key);
       taskState.sel = taskState.sel === index ? null : index;
       taskState.bad = null;
-      this.save();
+      this.save(true);
       this.emit();
       return;
     }
@@ -1172,15 +1279,21 @@ export class CourseSession {
     const task = this.task(screen.task);
     if (task.type !== 'tapword' || task.need === 'all') return;
     const taskState = this.taskState(this.taskKey(screen));
-    if (taskState.status !== 'open') return;
+    if (taskState.status !== 'open' && taskState.status !== 'shown') return;
     taskState.sel = taskState.sel === index ? null : index;
     taskState.bad = null;
-    this.save();
+    this.save(true);
     this.emit();
   }
 
   openHint(): void {
     const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind === 'apply') {
+      const task = this.task(this.pageOf(screen.page)?.task ?? '');
+      const record = this.taskState(screen.page + ':hints');
+      record.hintLv = Math.min((record.hintLv ?? 0) + 1, task.coach?.hints?.length ?? 0);
+      this.save(); this.emit(); return;
+    }
     if (!screen?.task) return;
     const task = this.task(screen.task);
     const taskState = this.taskState(this.taskKey(screen));
@@ -1194,7 +1307,9 @@ export class CourseSession {
       this.emit();
       return;
     }
-    this.finish(task, this.taskKey(screen), 'shown');
+    // Hint controls never submit, grade or reveal an answer.
+    // Existing formal wrong-attempt rules remain responsible for shown.
+    return;
   }
 
   showAnother(): void {
@@ -1244,13 +1359,17 @@ export class CourseSession {
     return focus;
   }
 
-  placeCard(text: string): void {
+  placeCard(text: string, cardId?: string): void {
     const screen = this.screens[this.state.screen]?.screen;
     if (!screen) return;
     if (screen.kind === 'task' && screen.task) {
       const task = this.task(screen.task);
       if (task.type === 'build') {
-        this.buildTap(task, this.taskKey(screen), text);
+        this.buildTap(task, this.taskKey(screen), text, cardId);
+        return;
+      }
+      if (task.frameFill && cardId) {
+        this.toggleFrameCard(this.taskKey(screen), cardId, text);
         return;
       }
     }
@@ -1265,6 +1384,7 @@ export class CourseSession {
     const taskState = this.taskState(this.taskKey(screen));
     if (taskState.status !== 'open') return;
     taskState.built = [];
+    taskState.builtCardIds = [];
     delete this.state.regions[this.taskKey(screen)];
     this.shakeCard = null;
     this.save();
@@ -1277,10 +1397,24 @@ export class CourseSession {
     const taskState = this.taskState(this.taskKey(screen));
     if (taskState.status !== 'open') return;
     const blanks = taskState.blanks ?? [];
+    const previous = blanks[index] ?? '';
+    // Preserve unaffected card provenance when a learner types before/after a token.
+    let prefix = 0;
+    while (prefix < previous.length && prefix < value.length && previous[prefix] === value[prefix]) prefix++;
+    let suffix = 0;
+    while (suffix < previous.length - prefix && suffix < value.length - prefix &&
+      previous[previous.length - 1 - suffix] === value[value.length - 1 - suffix]) suffix++;
+    const oldEnd = previous.length - suffix;
+    const delta = value.length - previous.length;
+    taskState.frameCardPlacements = (taskState.frameCardPlacements ?? []).flatMap(placement => {
+      if (placement.blank !== index || placement.end <= prefix) return [placement];
+      if (placement.start >= oldEnd) return [{ ...placement, start: placement.start + delta, end: placement.end + delta }];
+      return []; // Manually edited card content is no longer a selected card.
+    });
     blanks[index] = value;
     taskState.blanks = blanks;
     taskState.focusBlank = index;
-    this.save();
+    this.save(true);
     this.emit();
   }
 
@@ -1296,8 +1430,14 @@ export class CourseSession {
     if (!screen) return;
     const key = this.canvasKey(screen);
     if (!key) return;
-    this.state.regions[key] = value ? [{ t: value, s: 'typed' }] : [];
-    this.save();
+    const old = regionText(this.state.regions[key]);
+    let prefix = 0;
+    while (prefix < old.length && prefix < value.length && old[prefix] === value[prefix]) prefix++;
+    let suffix = 0;
+    while (suffix < old.length - prefix && suffix < value.length - prefix && old[old.length - 1 - suffix] === value[value.length - 1 - suffix]) suffix++;
+    this.replaceRegion(key, prefix, old.length - suffix, value.slice(prefix, value.length - suffix), this.pasted ? 'paste' : 'typed');
+    this.pasted = false;
+    this.save(true);
     this.emit();
   }
 
@@ -1305,7 +1445,7 @@ export class CourseSession {
     const screen = this.screens[this.state.screen]?.screen;
     if (!screen) return;
     this.state.grid.tab[this.gridKey(screen)] = groupId;
-    this.save();
+    this.save(true);
     this.emit();
   }
 
@@ -1343,6 +1483,29 @@ export class CourseSession {
     this.emit();
   }
 
+  retryCheck(): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.kind !== 'check') return;
+    const record = this.checkRecord(screen);
+    if (!record.finished || record.passed) return;
+    record.attempt += 1;
+    record.finished = false;
+    record.q = 0;
+    record.view = null;
+    record.blankAsk = false;
+    this.say('');
+    this.save();
+    this.emit();
+  }
+
+  currentTaskClosed(): boolean {
+    const screen = this.screens[this.state.screen]?.screen;
+    return !!screen?.task && this.taskState(this.taskKey(screen)).status !== 'open';
+  }
+
+  setCaret(start: number, end: number): void { this.caret = { start, end }; }
+  markPaste(): void { this.pasted = true; }
+
   dismissPractice(): void {
     this.practiceBurst = null;
     this.emit();
@@ -1360,7 +1523,7 @@ export class CourseSession {
       taskState.picked = [index];
     }
     this.log('pick', { task: task.id });
-    this.save();
+    this.save(true);
     this.emit();
   }
 
@@ -1399,23 +1562,13 @@ export class CourseSession {
   private buildModel(task: AlexTask, taskState: TaskProgress): Pick<ActivityModel, 'build' | 'wordGrid'> {
     const built = taskState.built ?? [];
     const bench = this.benchFrom(built);
-    const cards = this.setCards(task).map((text) => ({
+    const selectedIds = new Set(this.buildCardIds(task, taskState));
+    const cards = this.setCards(task).map((text, index) => ({
       text,
-      used: false,
+      used: selectedIds.has(`${text}-${index}`),
       hint: !!task.in_order && (taskState.wrongTaps?.[text] ?? 0) >= 2,
       shake: this.shakeCard === text,
     }));
-    const used = built.slice();
-    for (const card of cards) {
-      const found = used.indexOf(card.text);
-      if (found >= 0) {
-        card.used = true;
-        used.splice(found, 1);
-      }
-    }
-    const screen = this.screens[this.state.screen]?.screen;
-    const page = screen ? this.pageOf(screen.page) : null;
-    const level = page?.grid?.level && page.grid.level !== 'off' ? page.grid.level : 'chunks';
     const taskWords = cards.map((card, index) => ({
       id: `${card.text}-${index}`,
       text: card.text,
@@ -1431,12 +1584,10 @@ export class CourseSession {
         revealed: taskState.status === 'shown' ? task.answer_text : undefined,
         cards,
       },
-      wordGrid: task.in_order
-        ? this.trioGrid(screen ? this.gridKey(screen) : task.id, taskWords, level, task)
-        : {
-            groups: [{ id: 'set', label: this.zh ? '句组' : 'Sentence set', words: taskWords }],
-            active: 'set',
-          },
+      wordGrid: {
+        groups: [{ id: 'set', label: this.zh ? '本题词块' : 'Sentence set', words: taskWords }],
+        active: 'set',
+      },
     };
   }
 
@@ -1455,16 +1606,22 @@ export class CourseSession {
         blanks,
         focus: taskState.focusBlank ?? 0,
       },
-      wordGrid: this.trioGrid(
-        key,
-        (task.cells ?? []).map((cell, index) => ({ id: `task-${index}-${this.cellText(cell)}`, text: this.cellText(cell) })),
-        level,
-        task,
-      ),
+      wordGrid: (() => {
+        const grid = this.trioGrid(
+          key,
+          (task.cells ?? []).map((cell, index) => ({ id: `task-${index}-${this.cellText(cell)}`, text: this.cellText(cell) })),
+          level,
+          task,
+        );
+        const used = new Set((taskState.frameCardPlacements ?? []).map(placement => placement.id));
+        return { ...grid, groups: grid.groups.map(group => ({
+          ...group, words: group.words.map(word => ({ ...word, used: used.has(word.id) })),
+        })) };
+      })(),
     };
   }
 
-  private applyModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'canvas' | 'wordGrid' | 'applyMoveOn' | 'feedback' | 'feedbackTone'> {
+  private applyModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'canvas' | 'wordGrid' | 'applyMoveOn' | 'feedback' | 'feedbackTone' | 'hints' | 'hintAction'> {
     const page = this.pageOf(screen.page);
     const task = page?.task ? this.task(page.task) : null;
     const record = this.applyRecord(screen);
@@ -1486,6 +1643,8 @@ export class CourseSession {
       : this.feedback;
     return {
       ask: this.text(task?.ask),
+      hints: (task?.coach?.hints ?? []).slice(0, this.state.tasks[screen.page + ':hints']?.hintLv ?? 0).map(hint => this.text(hint)),
+      hintAction: (this.state.tasks[screen.page + ':hints']?.hintLv ?? 0) < (task?.coach?.hints?.length ?? 0) ? (this.state.tasks[screen.page + ':hints']?.hintLv ? 'another' : 'hint') : null,
       feedback: remembered,
       feedbackTone: record.result ? (record.passed && !record.safety ? 'correct' : 'wrong') : this.feedbackTone,
       canvas: {
@@ -1498,7 +1657,7 @@ export class CourseSession {
     };
   }
 
-  private checkModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'pick' | 'tapword' | 'canvas' | 'check'> {
+  private checkModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'pick' | 'tapword' | 'canvas' | 'check'> & Partial<Pick<ActivityModel, 'feedback' | 'feedbackTone'>> {
     const page = this.pageOf(screen.page);
     if (!page) return { ask: '', check: { phase: 'answer', number: 1, total: 0, dots: [] } };
     const record = this.checkRecord(screen);
@@ -1533,6 +1692,7 @@ export class CourseSession {
     return {
       ask: task ? this.text(task.ask) : '',
       ...body,
+      ...(graded ? { feedback: this.zh ? graded.zh || graded.explanation || '' : graded.explanation || '', feedbackTone: graded.correct ? 'correct' as const : 'wrong' as const } : {}),
       check: {
         phase: graded ? 'graded' : 'answer',
         number: index + 1,
@@ -1579,7 +1739,8 @@ export class CourseSession {
             text: token.w,
             selected: taskState.sel === index,
             wrong: graded && taskState.sel === index && !targets.includes(index),
-            revealed: graded && targets.includes(index),
+            correct: graded && !!correct && taskState.sel === index && targets.includes(index),
+            revealed: graded && targets.includes(index) && !(correct && taskState.sel === index),
           })),
         },
       };
@@ -1826,10 +1987,51 @@ export class CourseSession {
     this.emit();
   }
 
-  private buildTap(task: AlexTask, key: string, cellText: string): void {
+  /** Recover stable tile IDs from old text-only saved builds without changing the grader. */
+  private buildCardIds(task: AlexTask, taskState: TaskProgress): string[] {
+    const built = taskState.built ?? [];
+    if (taskState.builtCardIds?.length === built.length) return taskState.builtCardIds;
+    const available = this.setCards(task).map((text, index) => ({ text, id: `${text}-${index}` }));
+    return built.map((text, index) => {
+      const position = available.findIndex(card => card.text === text);
+      return position < 0 ? `legacy-${index}` : available.splice(position, 1)[0].id;
+    });
+  }
+
+  private buildTap(task: AlexTask, key: string, cellText: string, cardId?: string): void {
     const taskState = this.taskState(key);
     if (taskState.status !== 'open') return;
     taskState.built = taskState.built ?? [];
+    const ids = this.buildCardIds(task, taskState);
+    const selectedIndex = cardId ? ids.indexOf(cardId) : -1;
+    if (selectedIndex >= 0) {
+      // A selected tile remains operable until Check. Remove only its own slot.
+      taskState.built.splice(selectedIndex, 1);
+      ids.splice(selectedIndex, 1);
+      taskState.builtCardIds = ids;
+      this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
+      this.shakeCard = null;
+      this.save();
+      this.emit();
+      return;
+    }
+    // Re-selecting a card removed from the middle of an ordered answer
+    // restores its original slot if the surviving suffix still matches.
+    if (task.in_order && cardId && task.target) {
+      const insertion = task.target.findIndex((word, index) =>
+        word === cellText && index < taskState.built!.length &&
+        taskState.built!.slice(index).every((present, offset) => task.target![index + offset + 1] === present));
+      if (insertion >= 0) {
+        taskState.built.splice(insertion, 0, cellText);
+        ids.splice(insertion, 0, cardId);
+        taskState.builtCardIds = ids;
+        this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
+        this.shakeCard = null;
+        this.save();
+        this.emit();
+        return;
+      }
+    }
     if (task.in_order) {
       const want = task.target?.[taskState.built.length];
       if (cellText !== want) {
@@ -1841,8 +2043,8 @@ export class CourseSession {
         const hinted = taps[cellText] >= 2;
         const why = this.text(task.why);
         this.say(
-          hinted && why
-            ? why
+          hinted && (task.coach?.words?.[cellText] || why)
+            ? this.text(task.coach?.words?.[cellText]) || why
             : this.zh
               ? '这个词还不是下一个。'
               : 'That word does not come next.',
@@ -1855,28 +2057,79 @@ export class CourseSession {
     }
     this.shakeCard = null;
     taskState.built.push(cellText);
+    const available = this.setCards(task).map((text, index) => ({ text, id: `${text}-${index}` }));
+    const nextId = cardId ?? available.find(card => card.text === cellText && !ids.includes(card.id))?.id ?? `legacy-${ids.length}`;
+    taskState.builtCardIds = [...ids, nextId];
     this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
-    if (task.target && taskState.built.length === task.target.length) {
-      const bench = this.benchFrom(taskState.built);
-      const ok = (!!task.answer_text && this.engine.sameText(bench, task.answer_text)) || JSON.stringify(taskState.built) === JSON.stringify(task.target);
-      taskState.tries += 1;
-      if (ok) {
-        this.finish(task, key, 'done');
-        return;
-      }
-      if (taskState.tries >= 2) {
-        this.finish(task, key, 'shown');
-        return;
-      }
-      this.say(this.text(task.why));
-      taskState.built = [];
-      delete this.state.regions[key];
-      this.log('task_try');
-      this.save();
-      this.emit();
+    this.save();
+    this.emit();
+  }
+
+  /** Guided Word Build is complete only after the learner presses Check. */
+  private buildCheck(task: AlexTask, key: string): void {
+    const taskState = this.taskState(key);
+    if (taskState.status !== 'open') return;
+    const bench = this.benchFrom(taskState.built ?? []);
+    const ok = (!!task.answer_text && this.engine.sameText(bench, task.answer_text)) || JSON.stringify(taskState.built ?? []) === JSON.stringify(task.target ?? []);
+    taskState.tries += 1;
+    if (ok) {
+      this.finish(task, key, 'done');
       return;
     }
+    if (taskState.tries >= 2) {
+      this.finish(task, key, 'shown');
+      return;
+    }
+    this.say(this.text(task.why));
+    this.log('task_try');
     this.save();
+    this.emit();
+  }
+
+  /** Frame text and selected-card appearance share this one persisted task record.
+   * Each placement points to a stable card ID and exact current blank substring. */
+  private toggleFrameCard(key: string, cardId: string, text: string): void {
+    const state = this.taskState(key);
+    if (state.status !== 'open') return;
+    const blanks = state.blanks ?? [];
+    const placements = state.frameCardPlacements ?? [];
+    const existing = placements.find(card => card.id === cardId);
+    if (existing) {
+      const current = blanks[existing.blank] ?? '';
+      const valid = current.slice(existing.start, existing.end) === existing.text;
+      if (valid) {
+        blanks[existing.blank] = current.slice(0, existing.start) + current.slice(existing.end);
+        const removed = existing.end - existing.start;
+        this.caret = { start: existing.start, end: existing.start };
+        state.focusBlank = existing.blank;
+        state.frameCardPlacements = placements.filter(card => card.id !== cardId).map(card =>
+          card.blank === existing.blank && card.start >= existing.end
+            ? { ...card, start: card.start - removed, end: card.end - removed } : card);
+      } else {
+        // Manual edits invalidated the exact inserted span; never delete unrelated text.
+        state.frameCardPlacements = placements.filter(card => card.id !== cardId);
+      }
+    } else {
+      const blank = state.focusBlank ?? 0;
+      const current = blanks[blank] ?? '';
+      const from = Math.min(this.caret.start, current.length);
+      const to = Math.min(this.caret.end, current.length);
+      const next = this.engine.smartInsert(current, from, to, text, 'grid');
+      const inserted = next.value.slice(from, next.value.length - (current.length - to));
+      const delta = next.value.length - current.length;
+      state.frameCardPlacements = [
+        ...placements.flatMap(card => {
+          if (card.blank !== blank || card.end <= from) return [card];
+          if (card.start >= to) return [{ ...card, start: card.start + delta, end: card.end + delta }];
+          return [];
+        }),
+        { id: cardId, blank, start: from, end: from + inserted.length, text: inserted },
+      ];
+      blanks[blank] = next.value;
+      this.caret = { start: next.caret, end: next.caret };
+    }
+    state.blanks = blanks;
+    this.save(true);
     this.emit();
   }
 
@@ -1889,8 +2142,10 @@ export class CourseSession {
       const index = taskState.focusBlank ?? 0;
       const blanks = taskState.blanks ?? [];
       const current = blanks[index] ?? '';
-      const gap = current && !current.endsWith(' ') && !/^[.,!?]/.test(text) ? ' ' : '';
-      blanks[index] = `${current}${gap}${text}`;
+      const from = Math.min(this.caret.start, current.length), to = Math.min(this.caret.end, current.length);
+      const inserted = this.engine.smartInsert(current, from, to, text, 'grid');
+      blanks[index] = inserted.value;
+      this.caret = { start: inserted.caret, end: inserted.caret };
       taskState.blanks = blanks;
       this.save();
       this.emit();
@@ -1900,13 +2155,27 @@ export class CourseSession {
     if (!key) return;
     const current = regionText(this.state.regions[key]);
     const kind = /^[.,!?]$/.test(text) ? 'mark' : /\s/.test(text) ? 'chunk' : 'grid';
-    const next = this.engine.smartInsert(current, current.length, current.length, text, kind).value;
-    const added = next.slice(current.length);
-    const segs = this.state.regions[key] ? [...this.state.regions[key]] : [];
-    if (added) segs.push({ t: added, s: kind === 'chunk' ? 'chunk' : 'grid' });
-    this.state.regions[key] = segs;
+    const from = Math.min(this.caret.start, current.length), to = Math.min(this.caret.end, current.length);
+    const next = this.engine.smartInsert(current, from, to, text, kind);
+    const tailLength = current.length - to;
+    const inserted = next.value.slice(from, next.value.length - tailLength);
+    this.replaceRegion(key, from, to, inserted, kind === 'chunk' ? 'chunk' : 'grid');
+    this.caret = { start: next.caret, end: next.caret };
     this.save();
     this.emit();
+  }
+
+  private replaceRegion(key: string, start: number, end: number, inserted: string, source: string): void {
+    const segments = this.state.regions[key] ?? [];
+    const slice = (from: number, to: number) => {
+      let offset = 0;
+      return segments.flatMap(segment => {
+        const a = Math.max(0, from - offset), b = Math.min(segment.t.length, to - offset);
+        offset += segment.t.length;
+        return b > a ? [{ t: segment.t.slice(a, b), s: segment.s }] : [];
+      });
+    };
+    this.state.regions[key] = [...slice(0, start), ...(inserted ? [{ t: inserted, s: source }] : []), ...slice(end, Number.MAX_SAFE_INTEGER)];
   }
 
   private canvasKey(screen: AlexScreen): string | null {
@@ -2044,9 +2313,13 @@ export class CourseSession {
   private maybeLessonCelebration(): void {
     const lessonIndex = this.screens[this.state.screen]?.li ?? 0;
     const check = this.screens.find((ref) => ref.li === lessonIndex && ref.screen.kind === 'check');
-    if (!check) return;
-    const record = this.state.checks[check.screen.page];
-    if (record?.passed) this.notePractice(check.screen.page, true);
+    if (check) {
+      const record = this.state.checks[check.screen.page];
+      if (record?.passed) this.notePractice(check.screen.page, true);
+      return;
+    }
+    const last = this.screens.filter((ref) => ref.li === lessonIndex).at(-1);
+    if (last && this.screenDone(this.screens.indexOf(last))) this.notePractice(last.screen.id, true);
   }
 
   private lessonEndActivity(): ActivityModel {
@@ -2306,7 +2579,8 @@ export class CourseSession {
     if (!page || (page.kind !== 'skill' && page.kind !== 'model') || !page.tasks) return;
     const finished = page.tasks.every((id) => {
       const taskState = this.state.tasks[`${page.id}:${id}`];
-      return !!taskState && taskState.status !== 'open';
+      const task = this.engine.taskById(this.config, id);
+      return !!taskState && taskState.status !== 'open' && !(task?.type === 'tapword' && taskState.status === 'shown');
     });
     if (finished) this.state.done[page.id] = true;
     void task;
@@ -2315,6 +2589,12 @@ export class CourseSession {
   private say(text: string, tone: 'correct' | 'wrong' = 'wrong'): void {
     this.feedback = text;
     this.feedbackTone = tone;
+    const id = this.screens[this.state.screen]?.screen.id;
+    if (text && id) {
+      this.state.feedbackByScreen ??= {};
+      this.state.feedbackByScreen[id] = { text, tone, locale: this.locale };
+      this.save();
+    }
   }
 
   private affirm(text: string): string {
@@ -2345,7 +2625,7 @@ export class CourseSession {
     const level = taskState.hintLv ?? 0;
     if (level === 0) return 'hint';
     if (level < hints.length) return 'another';
-    return 'reveal';
+    return null;
   }
 
   private skipOffer(step: StepTag, screen: AlexScreen): SkipOffer | null {
@@ -2480,9 +2760,9 @@ export class CourseSession {
     lessonIndex: number,
     courseState: LessonCourseState,
   ): string {
-    const lesson = unit.lessons[lessonIndex];
     if (courseState === 'done') {
-      return this.zh ? `完成 · ${lesson.pages ?? ''} 页` : `Done · ${lesson.pages ?? ''} pages`;
+      const count = this.liveIdx(lessonIndex).length;
+      return this.zh ? `完成 · ${count} 页` : `Done · ${count} pages`;
     }
     if (courseState === 'skipped') return this.zh ? '已掌握 · 跳过' : 'Mastered · skipped';
     if (!level.current) return this.zh ? '之后打开' : 'Opens later';
@@ -2635,7 +2915,12 @@ export class CourseSession {
     this.storage.setItem(CELEBRATION_KEY, JSON.stringify(this.receipt));
   }
 
-  private save(): void {
+  flush(): void { this.save(); }
+
+  private save(debounce = false): void {
+    if (this.saveTimer) clearTimeout(this.saveTimer);
+    this.saveTimer = undefined;
+    if (debounce) { this.saveTimer = setTimeout(() => this.save(), 250); return; }
     const stored = { ...this.state, unlockAll: false };
     this.storage.setItem(ALEX_STATE_KEY, JSON.stringify(stored));
   }

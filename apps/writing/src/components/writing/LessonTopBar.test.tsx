@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { LONG_TITLE_EN, LONG_TITLE_ZH, getFixture } from '../../fixtures/topbarFixtures';
@@ -50,15 +50,24 @@ describe('LessonTopBar', () => {
       'aria-current',
       'step',
     );
+    expect(screen.getByRole('button', { name: '任务 3：找出观点词，已跳过' })).toHaveAttribute('data-state', 'skipped');
+    expect(header.querySelectorAll('.ba-task-progress__digit')).toHaveLength(8);
+    expect(header.querySelector('.ba-task-progress__badge')).toBeNull();
+    expect(header.querySelector('.lesson-topbar__name')).toHaveTextContent(LONG_TITLE_ZH);
   });
 
   it('blocks locked tasks and emits navigate for an open task in a long list', async () => {
     const user = userEvent.setup();
     const onNavigate = vi.fn();
     renderBar('many', 'en', { onNavigate });
-    expect(screen.getAllByRole('button', { name: /^Task / })).toHaveLength(18);
-    await user.click(screen.getByRole('button', { name: 'Task 6: Activity 6, available' }));
-    await user.click(screen.getByRole('button', { name: 'Task 18: Activity 18, locked' }));
+    const navigation = screen.getByRole('navigation', { name: /Tasks in Lesson 4/ });
+    expect(within(navigation).getAllByRole('button')).toHaveLength(9);
+    await user.click(within(navigation).getByRole('button', { name: 'All activity screens' }));
+    let dialog = screen.getByRole('dialog', { name: 'All activity screens' });
+    await user.click(within(dialog).getByRole('button', { name: 'Task 6: Activity 6, available' }));
+    await user.click(within(navigation).getByRole('button', { name: 'All activity screens' }));
+    dialog = screen.getByRole('dialog', { name: 'All activity screens' });
+    await user.click(within(dialog).getByRole('button', { name: 'Task 18: Activity 18, locked' }));
     expect(onNavigate.mock.calls.map((call) => call[0])).toEqual([5]);
   });
 });

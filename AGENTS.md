@@ -2,7 +2,7 @@
 
 ## Mandatory source order
 1. `apps/writing/PRODUCT.md` — Writing product goals, exact lesson data, scoring, gating, recovery and acceptance.
-2. Root `DESIGN.md` — sole authoritative visual/design guide, including detailed Spacing, Gap, Radius, Typography, Motion and Unit folded-corner direction.
+2. Root `DESIGN.md` — sole authoritative visual/design guide, including Spacing, Gap, Radius, Typography, Motion and the current four-rounded-corner Unit Card direction.
 3. `packages/design-system/src/tokens.css` — executable design values and semantic aliases. Candidate values are not automatically visually approved.
 4. `apps/writing/contracts/components.json` — stable IDs, props, events, states, slots and ownership.
 5. `docs/HANDOFF.md` — current delivery and verification gaps.
@@ -10,7 +10,7 @@
 Do not use old branches, historical prompts, demos, abandoned PRs or duplicate design files as product/design authority. One root DESIGN.md, one PRODUCT.md per product. There is no `apps/writing/DESIGN.md`.
 
 ## Scope
-Writing v1 target: **L2/G2-O Lesson 1, eight Activity Screens**, E-01 Staircase entry/return and Lesson End. No obligation to build all 52 screens. Existing source code is a reusable pilot, not proven parity with the current contracts.
+Writing Baseline 01 scope: **L2/G2-O Lesson 1, six current Activity Screens**, E-01 Staircase entry/return and Lesson End. P2/P7 authored template data are retained for historical reference but are **not** standalone runtime screens. Current implementation is an engineering baseline; unresolved visual refinements are tracked for Review 07. No obligation to build all 52 screens. Existing source code is a reusable pilot, not proven parity with the current contracts.
 
 ## Roles and boundaries
 - UI/UX Designer: final visual and major UX approval.
@@ -28,4 +28,4 @@ Start each feature from the latest `main`. Use an isolated branch. Read canonica
 Checks: `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, applicable Playwright/Storybook and browser accessibility/responsive evidence. Record not-run or failing checks instead of claiming success. Update `docs/HANDOFF.md` when changing integration state.
 
 ## Visual state
-A component may be `implemented` yet `temporary` or `in-review` visually. The new ActivityScreenIndicator and Unit folded-corner treatment require rendered comparison and designer approval. Never treat successful compilation as approval.
+A component may be `implemented` yet `temporary` or `in-review` visually. The current six-screen ActivityScreenIndicator, Staircase scenery and unapproved component refinements require separate rendered designer acceptance; legacy folded-corner proposals do not supersede the current Unit card. Never treat successful compilation as approval.

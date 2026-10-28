@@ -36,7 +36,7 @@ export function LessonTopBar({
   canOpen,
   onBack,
   onNavigate,
-  tags = [],
+  tags: _tags,
   locale = 'en',
 }: LessonTopBarProps) {
   const copy = taskChrome(locale);
@@ -53,26 +53,21 @@ export function LessonTopBar({
         <div className="lesson-topbar__start">
           <BAButton
             variant="ghost"
+            iconOnly
+            size={50}
             className="lesson-topbar__back"
             locale={locale}
             aria-label={copy.back}
             onPress={() => onBack?.()}
           >
             <BAIcon name="arrow-left" size={20} className="lesson-topbar__back-icon" />
-            <span className="lesson-topbar__back-label">{copy.backShort}</span>
           </BAButton>
           <div className="lesson-topbar__identity">
             <p className="lesson-topbar__title" title={fullTitle}>
               <span className="lesson-topbar__number">{lessonNumber}</span>
               <span className="lesson-topbar__name">{lessonTitle}</span>
+              <span className="lesson-topbar__tag">G2-O</span>
             </p>
-            {tags.length > 0 ? (
-              <ul className="lesson-topbar__tags">
-                {tags.map((tag) => (
-                  <li key={tag}>{tag}</li>
-                ))}
-              </ul>
-            ) : null}
           </div>
         </div>
         <div className="lesson-topbar__center">

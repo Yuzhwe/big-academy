@@ -1,0 +1,10 @@
+/* Designer-supplied R2.12 cloud; shared by real scene and library composition. */
+.staircase-rail .course-nodes > li:not([data-node-kind='milestone']):not([data-node-kind='goal'])::before,
+.landscape-terrace {
+  content:''; position:absolute; z-index:0; pointer-events:none;
+  top:calc(100% - var(--ba-cloud-platform-overlap));
+  left:var(--ba-cloud-platform-left); width:var(--ba-cloud-platform-width); height:var(--ba-cloud-platform-height);
+  background:url('../../assets/r2.12/cloud-platform.webp') center / 100% 100% no-repeat;
+  filter:drop-shadow(var(--ba-path-cloud-shadow));
+}
+.staircase-rail .course-nodes > li:has([data-state='locked'])::before { opacity:var(--ba-path-cloud-opacity); filter:grayscale(.16) drop-shadow(var(--ba-path-locked-cloud-shadow)); }

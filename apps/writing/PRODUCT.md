@@ -2,7 +2,7 @@
 
 **Edition:** Canonical product specification v1 · 2026-10-21
 **Authority:** current Writing product behavior, curriculum content and learning state contracts.
-**Scope:** Writing L2 / G2-O / Lesson 1, eight Activity Screens; other templates are documented for system compatibility.
+**Scope:** Writing L2 / G2-O / Lesson 1, six Activity Screens; other templates are documented for system compatibility.
 **Status:** current product behavior documented; selected visual concepts require separate rendered approval.
 
 ## How to use this specification
@@ -15,55 +15,51 @@ This is the sole active Writing PRODUCT.md. Chapters describe the current system
 
 **Problem:** separate activity demonstrations do not by themselves provide a navigable, recoverable learning journey with accurate feedback, gating, and assessment.
 
-**Goal:** deliver the complete eight-screen, end-to-end Lesson 1 journey in the approved Warm Frame + White Canvas direction. Preserve the distinctions among input, evaluation, feedback, completion, and unlocking.
+**Goal:** deliver the complete six-screen, end-to-end Lesson 1 journey in the approved Warm Frame + White Canvas direction. Preserve the distinctions among input, evaluation, feedback, completion, and unlocking.
 
-**Acceptance measures:** all eight real screens and original task data; correct/wrong/empty/second-attempt/reveal behavior by task; sequential unlocking; P7 both rounds; Back/exit/refresh/Continue state recovery; accessible keyboard and touch; screenshots and designer approval. These are delivery criteria, not unvalidated learning-effect metrics.
+**Acceptance measures:** all six real screens and original task data; correct/wrong/empty/second-attempt/reveal behavior by task; sequential unlocking; Back/exit/refresh/Continue state recovery; accessible keyboard and touch; screenshots and designer approval. These are delivery criteria, not unvalidated learning-effect metrics.
 
-**Out of scope:** implementing the other 44 screens, adding new exercises, old Index/Analytics chrome, user-facing Save my paragraph/Print, or cross-level demo unlocking.
+**Out of scope:** implementing other lessons beyond the six-screen pilot, adding new exercises, old Index/Analytics chrome, user-facing Save my paragraph/Print, or cross-level demo unlocking.
 
 ## 2. Information architecture
 
 ```text
 Writing → Level → Unit → Lesson → Activity Screen → optional internal Task/Question
 E-01 Staircase
-  └─ Lesson entry (Start / Continue / Review; Locked cannot enter)
-       ├─ 01 Learn [P2]
-       ├─ 02 Topic sentence — single pick [P3]
-       ├─ 03 Opinion word — tapword [P3]
-       ├─ 04 Opinion or fact — multi-pick [P3]
-       ├─ 05 Build sentence — guided word cards [P4]
-       ├─ 06 Finish sentence — frame fill [P4]
-       ├─ 07 Apply writing [P5]
-       └─ 08 Check [P7: 3 auto questions + 1 writing, internal pager]
-          ├─ pass → Lesson End (passed)
-          └─ fail → second set → pass or finish-not-mastered
-       → Return to E-01
+  └─ Lesson entry (Enterable / Completed / Locked visually; underlying start/continue/review and saved progress preserved)
+       ├─ 01 Topic sentence — single pick [P3]
+       ├─ 02 Opinion word — tapword [P3]
+       ├─ 03 Opinion or fact — multi-pick [P3]
+       ├─ 04 Build sentence — guided word cards [P4]
+       ├─ 05 Finish sentence — frame fill [P4]
+       └─ 06 Apply writing [P5]
+          └─ pass / move on → Lesson End → Return to E-01
 ```
 
-**Screen flow:** initial Lesson entry focuses Screen 1, with Screens 2–8 locked. A Screen that legitimately terminates its own learning interaction unlocks its successor; the learner activates Next to navigate. On first visit, no later Screen is directly navigable, including by a collapsed-number popover or URL. A terminal practice `shown` state does not imply correctness. Apply can terminate by passing or by an explicit `Move on for now` after two failed checks; Check can terminate after two failed assessment rounds without awarding mastery. Existing authorized skill-skip transitions remain distinct from ordinary sequential completion.
+**Screen flow:** initial Lesson entry focuses Screen 1, with Screens 2–6 locked. A Screen that legitimately terminates its own learning interaction unlocks its successor; the learner activates Next to navigate. On first visit, no later Screen is directly navigable, including by a collapsed-number popover or URL. A terminal practice `shown` state does not imply correctness. **Review 06 Tapword exception:** `shown` still blocks Next until the learner selects a valid target and passes a new Check; this does not automatically apply to other templates. Apply can terminate by passing or by an explicit `Move on for now` after two failed checks; Check can terminate after two failed assessment rounds without awarding mastery. Existing authorized skill-skip transitions remain distinct from ordinary sequential completion.
 
-**Saved navigation:** Back, exit, browser reload, Continue and Review must preserve answer content, attempts, hints, `shown`, drafts, check history and valid unlocks. P7's four internal questions never add four LessonTopBar steps. The detailed activity rules below supply the acceptance conditions; this flow does not replace them.
+**Saved navigation:** Back, exit, browser reload, Continue and Review must preserve answer content, attempts, hints, `shown`, drafts, check history and valid unlocks. Deleted P2/P7 pages never add extra LessonTopBar steps. The detailed activity rules below supply the acceptance conditions; this flow does not replace them.
 
 
 This document is the product authority for Writing behavior: what the learner sees, how an answer is chosen, how it is checked, when feedback appears, and when the next Activity Screen opens.
 
 Shared visual foundations (Warm Frame, White Canvas, type ramp, Iconoir, motion, tokens) live in repository-root `/DESIGN.md`. This file does not repeat that system. Learner-facing English and Chinese UI strings are authored in the unit configuration and selected by the active locale, **not shown in parallel**. Mode B (Chinese interface, essential English learning content retained) keeps essential English-language learning material in English (task example sentences, answer choices, vocabulary word cards, fixed writing frames and learner-entered writing); see chapter 8 and chapter 14. The rules below decide structure, correctness, gates, and persistence. A reader does not need the HTML runtime to apply them.
 
-**Current build scope:** L2 unit G2-O, Lesson 1, Topic sentences, the eight Activity Screens in [Lesson 1](#12-lesson-1--eight-authoritative-per-activity-contracts). The other eight lessons and their 44 screens are specified here so later lessons use the same gates. They are not part of this build.
+**Current build scope:** L2 unit G2-O, Lesson 1, Topic sentences, the six Activity Screens in [Lesson 1](#12-lesson-1--six-authoritative-per-activity-contracts). The other lessons use the same gates after P2/P7 filtering. They are not part of this build.
 
 ## 3. Course structure
 
 Hierarchy is Level → Unit → Lesson → Activity Screen. A step tag (Skill, Model, Plan, Draft, Revise, Report) is a label on screens, not a separate level the learner navigates.
 
-G2-O, “The Hamburger Paragraph,” is the only playable unit on the learner path. It has 9 lessons and 52 Activity Screens. Other levels and units appear on the learner path as locked or view-only. The learner path does not unlock them for demonstration. The designer preview query in chapter 16 is separate and does not change this learner rule.
+G2-O, “The Hamburger Paragraph,” is the only playable unit on the learner path. It has 9 lessons and 43 runtime Activity Screens after removing standalone P2/P7 pages from the generated sequence. Other levels and units appear on the learner path as locked or view-only. The learner path does not unlock them for demonstration. The designer preview query in chapter 16 is separate and does not change this learner rule.
 
 | Lesson | Title | Screens | Templates used |
 | --- | --- | --- | --- |
-| 1 | Topic sentences | 8 | P2, P3, P3, P3, P4, P4, P5, P7 |
-| 2 | Reasons & closing | 8 | P2, P3, P3, P4, P4, P3, P5, P7 |
-| 3 | Linking words | 8 | P2, P4, P4, P3, P4, P4, P5, P7 |
-| 4 | Run-on sentences | 8 | P2, P3, P3, P4, P4, P4, P5, P7 |
-| 5 | A strong paragraph | 6 | P2, P3, P3, P3, P3, P3 |
+| 1 | Topic sentences | 6 | P3, P3, P3, P4, P4, P5 |
+| 2 | Reasons & closing | 6 | P3, P3, P4, P4, P3, P5 |
+| 3 | Linking words | 6 | P4, P4, P3, P4, P4, P5 |
+| 4 | Run-on sentences | 6 | P3, P3, P4, P4, P4, P5 |
+| 5 | A strong paragraph | 5 | P3, P3, P3, P3, P3 |
 | 6 | Plan your paragraph | 6 | P3, P6, P6, P6, P6, P6 |
 | 7 | Write your paragraph | 2 | P6, P5 |
 | 8 | Read my comments and revise | 3 | P5, P5, P5 |
@@ -71,7 +67,7 @@ G2-O, “The Hamburger Paragraph,” is the only playable unit on the learner pa
 
 Lesson 1 goal, shown as the lesson aim: “I can write a topic sentence that tells the topic and what I think.”
 
-The lesson top bar counts **Activity Screens inside the current lesson** (Lesson 1 is 1–8). It does not count questions inside a Check. P7 retains internal question navigation while showing only a prominent single current-question numeral at top-left; full count remains in accessible labeling.
+The lesson top bar counts **Activity Screens inside the current lesson** (Lesson 1 is 1–6 after Review 06 removes standalone P2 Teach and P7 Check). It does not count questions inside a Check. Deleted P7 pages do not expose internal question navigation in the runtime lesson.
 
 ## 4. Interaction primitives
 
@@ -100,7 +96,7 @@ A skipped skill step counts as complete for both gates. Minutes on those screens
 | --- | --- | --- |
 | `learn`, `model_read`, `plan_topic`, `draft_ready`, `rev_comments`, `rep_paragraph`, `rep_grew` | The learner presses Next once (`seen`) | Immediately. Next records `seen`. |
 | `rep_reflect` | Next is pressed. That press also marks the report page done. | Immediately. |
-| `task`, `model_task` | That screen’s item status is `done` or `shown` (not `open`) | Only then. Until then the footer is Check, or the task’s own completion gesture. |
+| `task`, `model_task` | Normally `done` or `shown` (not `open`); **Tapword `shown` is not complete** | Normally then. Review 06 Tapword must pass a subsequent valid Check before Next. |
 | `plan_layer` | `seen` **and** every field on that screen has text after pictures are stripped | As soon as every field has text. Next then records `seen`. |
 | `plan_check` | The plan page is marked done | Only then. |
 | `apply`, `check` | That page id is in the done map | Only then. |
@@ -108,7 +104,7 @@ A skipped skill step counts as complete for both gates. Minutes on those screens
 | `rev_cups` | A second draft exists, or the paragraph is already finished | Only then. |
 | `rev_final` | The learner has finished the paragraph | Only then. |
 
-Completion is **not** “the answer was correct.” `shown` (answer revealed), “Move on for now,” “Start writing anyway,” and a failed second Check all complete their screens without a correct result. Read-only screens complete with no answer at all.
+Completion is **not** “the answer was correct.” Except for the Review 06 Tapword retry gate, `shown` (answer revealed), “Move on for now,” “Start writing anyway,” and a failed second Check all complete their screens without a correct result. Read-only screens complete with no answer at all.
 
 When Next would enter another lesson, the footer label is **End of lesson**. That press opens the lesson-break screen. It does not skip the break. On the last screen of the book, the label is **I’m done** until the screen is seen, then **Finished**.
 
@@ -141,14 +137,14 @@ Text regions restore from stored segments, including a printed frame or given se
 Practice items (not Check questions) use status `open`, `done`, or `shown`.
 
 - `done` — the learner met the grader. Practice credit uses how the answer was produced.
-- `shown` — the answer was revealed. Credit is 0. The screen still completes. The revealed answer is marked as the answer, and the learner’s own pick stays unmarked as correct.
+- `shown` — the answer was revealed. Credit is 0. Most practice screens complete, **but Review 06 Tapword remains incomplete and Next stays blocked until a valid answer is selected and checked correctly**. The revealed answer is marked as the answer, and the learner’s own pick stays unmarked as correct.
 - A gutter tick appears for both `done` and `shown`. The revealed tick and the correct tick stay visually and accessibly distinct.
 
 **BAChoice board.** Option chrome uses `default` (alias `idle`), `selected`, `correct`, `correctUnselected` (alias `shown`), `wrong`, and `dim`. Before Check a row is `default` or `selected`. `selected` is the brown fill `#9B4F36` with a ring. That hex is the selected fill. After Check, the option the learner picked that is correct is `correct`: green fill `#14AE5C` and a leading check. A correct option the learner did not pick is `correctUnselected`: green outline `#14AE5C` and a leading check, with no solid green disc. A wrong option is `wrong`: fill `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state. The row shows the letter, the body, and the leading icon.
 
-**Two-try rule (pick, label, single-target tap-word, edit, write, build).** Each Check, or each completed build submission, adds one try. A correct result finishes `done` immediately. A wrong result with fewer than 2 tries stays `open`, shows the retry message, and leaves Next closed. The second wrong result finishes `shown` and reveals the answer. There is no unlimited-retry mode.
+**Two-try rule (pick, label, edit, write, build).** Each Check, or each completed build submission, adds one try. A correct result finishes `done` immediately. A wrong result with fewer than 2 tries stays `open`, shows the retry message, and leaves Next closed. The second wrong result finishes `shown` and reveals the answer with zero credit. **Tapword exception:** its second wrong Check also enters `shown`, reveals all valid targets with two green-outline flashes while retaining the incorrect mark and Coach explanation, but does not unlock Next or celebrate. Only selecting an authored valid target and passing another explicit Check changes it to `done`; grading credit and celebration receipts then follow the normal formal record rules. Do not extend this exception to other templates.
 
-**Hint ladder, separate from Check.** On an open practice item that has hints, the hint control is a secondary button: “Need a hint?” then “Another hint,” then “Show me the answer.” Reveal calls the same `shown` finish as a second miss. Hints are never offered inside a Check, and Apply uses the ladder without the reveal button. Asking for a hint does not grade and does not add a try. The ordered topic-sentence build shows the hint for a word from that word tile’s own wrong-tap count.
+**Hint ladder, separate from Check (R2 Review 03).** On an open practice item with authored hints, the secondary controls are **Need a hint?** and **Another hint**. They only append teaching hints. Once all hints are visible, the control disappears or disables. **No Hint button may call `finish(..., 'shown')`, select/fill an answer, grade, increase tries, complete or skip the screen.** The formal **Check** and its existing incorrect-attempt ceiling still lead to `shown` when appropriate. P7 has no practice Hint. Apply hints are non-grading. Ordered-build wrong-word hints remain a separate tile-local teaching behavior without submitting the line.
 
 **Per-item exceptions to the two-try rule:**
 
@@ -180,7 +176,7 @@ Choice, word, and sentence options are at least 50 CSS px tall and grow with wra
 
 Option chrome is `default` (alias `idle`), `selected`, `correct`, `correctUnselected` (alias `shown`), `wrong`, `dim`, and `disabled`, as chapter 7 states. The row shows the letter, the body, and the leading icon. The accessible name carries the state. Coach feedback sentences stay in the feedback region.
 
-**Lesson question feedback.** Every lesson question feedback UI uses the same presentation. Each feedback message sits in its own card. A wrong message uses a white background and a light border. A correct message uses a white background and a green border. Previous and Next sit at the bottom of the Coach rail. The hint control is a secondary button. Card fill, border, and button chrome are the DESIGN.md candidate. When a message appears stays with the activity rules in this file.
+**Coach messages (Review 03).** Every Coach utterance (arrival text, additional teaching beats, learner-requested hints, correct or incorrect submitted feedback) occupies its own bordered, background-filled message card. Success messages use light/dark success green semantic steps; wrong responses use neutral grays; ordinary instruction/hints use quiet neutral cards. This changes only display, never the grading semantics of actual wrong choice controls. Coach scroll remains independent, and Previous/Next stay in its footer. Requesting any Coach Hint neither grades nor inputs an answer.
 
 Keys 1–9 and A–I select a choice when a choice group is on screen. Enter activates Check when that button is enabled and the learner is not typing in a field. Read-aloud on the prompt is available on every template. It does not grade.
 
@@ -196,7 +192,9 @@ No question, no options, no grader. The screen completes when the learner presse
 - **Growth.** Word diff of the first handed-in draft against the final text. Matching ignores case and trailing punctuation. Added words and removed words are marked and named in a key. A four-row table compares first-draft and final scores: organization and purpose, evidence and elaboration, language, conventions. “My checks” lists each skill Check as passed, not yet, or not taken.
 - **Controls removed from the product:** “Save my paragraph” and “Print” are not on this page. Automatic saving still runs. The browser’s own print command is not a product button.
 
-### P2 Teach — read, then Next
+### P2 Teach — Not in current runtime sequence (historical authored template)
+
+Review 06 removes standalone P2 Teach pages globally. Authored teaching text remains available to task Coach messages and source data.
 
 Variants: `rule_pair` (skill teach), `annotated_text` (model paragraph).
 
@@ -212,7 +210,7 @@ The prompt is the item’s ask line. Options are the item’s lines, passage wor
 
 **Choice grade.** The stored answer is a list of option indexes. Correct means the sorted list equals the authored answer indexes. If the item is marked `any` (model “Find an example”), correct means exactly one selected index and that index is in the answer list. Letters are A, B, C… in list order.
 
-**Select.** Single choice replaces the selection. Multi choice toggles and shows “Choose N · k chosen.” Selection writes the answer and clears the wrong-mark list. It does not add a try and does not write a new grade. Check stays disabled until at least one option is selected.
+**Select.** Single choice replaces the selection. Multi choice toggles and shows “Choose N · k chosen.” Selection writes the answer and clears the wrong-mark list. It does not add a try and does not write a new grade. Check stays disabled only when **zero** answers are selected. Both single choice and the L2/G2-O multiple-choice activity enable Check after **at least one** selected option. Choosing fewer or more than the three authored correct options is allowed for submission and is judged by the unchanged original grader. Selection is not grading.
 
 **Check.** Adds a try. Correct → `done`, feedback, screen completes. First wrong → stay `open`. Single choice clears the selection and marks the chosen row wrong; the retry sentence names the letter and the authored reason for that option, then “Try again.” Multi choice keeps the selection; the retry sentence names one wrong letter and its reason, or “You found r of n.” Second wrong → `shown`, wrong rows stay marked, correct rows show the leading check icon, and the feedback region uses the graded sentence in the next paragraph.
 
@@ -290,13 +288,15 @@ Opinion pattern: I think / I believe / I feel / I know / in my opinion / should 
 
 ### P6 Plan — fields, then Check my plan, then Start writing
 
-**Layer.** One hamburger. Only the fields named on that screen are editable; the others show as compact filled lines. A field counts once it has text with pictures removed. Next stays closed until every field on the screen has text. The footer still says Next and, if pressed early, tells the learner to write a few words in each part. An “Ask yourself” note follows the focused field. It is guidance, not a grade.
+**Layer.** One hamburger. Only the fields named on that screen are editable; the others show as compact filled lines. A field counts once it has text with pictures removed. Next stays closed until every field on the screen has text. The footer still says Next, but it stays genuinely disabled until each required field contains text; inactive presses never run grading or increment attempts. An “Ask yourself” note follows the focused field. It is guidance, not a grade.
 
 **Whole plan.** All slots editable. **Check my plan** (then **Check again**) sends the six fields. A field is not ok when it is empty, the opinion has no opinion signal, the text is only vague words or a single word, or the two reasons are the same or similarity ≥ 0.6. Ok on every field marks the plan done. Comments name up to two weak fields. After two checks that are not ok, **Start writing anyway** marks the plan done without a pass.
 
 **Recap.** Read-only plan plus the draft guide. No Check. The footer forward label is **Start writing**. Pressing it marks the screen seen and opens the draft.
 
-### P7 Check — answer all questions, then Hand in
+### P7 Check — Not in current runtime sequence (historical authored template)
+
+Review 06 removes standalone P7 Check pages globally. No deleted assessment page may create a Passed record or block Lesson End.
 
 One Check screen is four questions: three drawn from the page pool, then the page’s writing item. Display the current Question as one prominent numeral at upper-left rather than a visible count phrase. The grid is off. An accessible assessment announcement may communicate “No grid and no help this time” where useful, without introducing an extra visible count bar. Hints and reveal are absent. Lesson progress does not move when the question index moves.
 
@@ -370,55 +370,46 @@ Lessons are re-counted after a skip. A lesson whose own remaining minutes are 0 
 
 **Lesson break.** End of lesson shows how many screens in the lesson are complete, names the next lesson and its minutes, and offers **Stop for today**, **Back to my path**, and **Keep going**. Stop for today and Back to my path both set the resume screen to the start of the next lesson. Keep going opens that screen. The stopped view says the work is saved on this device and offers a return to the path. Starting the next lesson clears the stopped flag and shows Welcome back once.
 
-## 12. Lesson 1 — eight authoritative per-Activity contracts
+## 12. Lesson 1 — six authoritative per-Activity contracts
 
-**Scope:** L2 / G2-O / Lesson 1, Topic sentences. These eight records are the only required Lesson 1 Activity Screens. The table below is a **routing index**, not a substitute for the item contracts. The screen, task, and authored options are grounded in `apps/writing/source/alex-original.html` at source blob `c06c8db7317092f081febcebc9eb70979d357c11`. Template-specific behavior follows chapters 5, 7, 9–10; each entry below gives exact fixture values, state transitions and acceptance. Design visual treatment is normatively specified in root `DESIGN.md` section **Writing Activity layout variants**. Component IDs refer to the component registry, not necessarily implemented components; “planned” components must not be mistaken for usable current production code.
+**Writing Baseline 01 document checkpoint (2026-10-28):** this six-screen runtime sequence and all existing authored grading, persistence, Shown/Correct/Next, skip and completion rules remain product-authoritative. No change to Alex's underlying learning logic is authorized by the baseline freeze. Approved BAChoice pre-Check visual selection/undo and Level Title Card composition targets are recorded in root DESIGN.md / Component Contracts; implementation and browser verification remain pending and must not be counted as completed product behaviors solely because the visual target is approved.
+
+**Scope:** L2 / G2-O / Lesson 1, Topic sentences. These six records are the only required Lesson 1 Activity Screens. The table below is a **routing index**, not a substitute for the item contracts. The screen, task, and authored options are grounded in `apps/writing/source/alex-original.html` at source blob `c06c8db7317092f081febcebc9eb70979d357c11`. Template-specific behavior follows chapters 5, 7, 9–10; each entry below gives exact fixture values, state transitions and acceptance. Design visual treatment is normatively specified in root `DESIGN.md` section **Writing Activity layout variants**. Component IDs refer to the component registry, not necessarily implemented components; “planned” components must not be mistaken for usable current production code.
 
 ### 12.1 Stable identity and template / variant routing
 
 | # | Screen ID | Template ID | Layout Variant ID (canonical) | Required component responsibilities |
 | --- | --- | --- | --- | --- |
-| 01 | `L2-04.learn` | P2 | `P2.rule-pair.hamburger` | BA-WR-001 TopBar, BA-WR-002 Workspace, BA-WR-004 HamburgerLayer |
-| 02 | `L2-04.t.ts1` | P3 | `P3.list.option.single` | BA-UI-003 BAChoice (single) + feedback status + BAButton |
-| 03 | `L2-04.t.ts4` | P3 | `P3.passage.word.single` | Word-token selection adapter + feedback status + BAButton |
-| 04 | `L2-04.t.ts3` | P3 | `P3.list.option.multi` | BA-UI-003 BAChoice (multiple) + feedback status + BAButton |
-| 05 | `L2-04.t.ss.L2-04` | P4 | `P4.build.word.guided-order` | BA-WR-003 WordGrid + read-only build bench + feedback |
-| 06 | `L2-04.t.ts8` | P4 | `P4.fill.chunks.frame` | BA-WR-003 WordGrid + editable frame/field + feedback |
-| 07 | `L2-04.apply` | P5 | `P5.write.constraint-apply` | Writing canvas + **BA-WR-003 WordGrid** (four category tabs) + Coach semantic feedback + BAButton |
-| 08 | `L2-04.check` | P7 | `P7.assessment.3-auto-1-writing` | Internal question pager + choice/write variants + BAButton |
+| 01 | `L2-04.t.ts1` | P3 | `P3.list.option.single` | BA-UI-003 BAChoice (single) + feedback status + BAButton |
+| 02 | `L2-04.t.ts4` | P3 | `P3.passage.word.single` | Word-token selection adapter + feedback status + BAButton |
+| 03 | `L2-04.t.ts3` | P3 | `P3.list.option.multi` | BA-UI-003 BAChoice (multiple) + feedback status + BAButton |
+| 04 | `L2-04.t.ss.L2-04` | P4 | `P4.build.word.guided-order` | BA-WR-003 WordGrid + read-only build bench + explicit Check |
+| 05 | `L2-04.t.ts8` | P4 | `P4.fill.chunks.frame` | BA-WR-003 WordGrid + underline frame fields + feedback |
+| 06 | `L2-04.apply` | P5 | `P5.write.constraint-apply` | Writing canvas + **BA-WR-003 WordGrid** (four category tabs) + Coach semantic feedback + BAButton |
 
 **Authored WordGrid availability and groups (source-derived product behavior):**
 
 | Activity | WordGrid content groups, in order | Visibility and behavior |
 | --- | --- | --- |
-| 05 · Guided Word Build | `set` (Sentence set; source `type=build` takes precedence over inherited page groups) | The ordered word-card set is the task input. With only one active group, keep the grid and word cards but omit a decorative one-item tab strip. |
-| 06 · Frame Fill | `task` → `opinion` → `marks` | Three real, switchable content groups while filling the sentence. The task's own `grid.tabs` explicitly selects these groups. |
-| 07 · Apply | `opinion` → `nouns` → `adjectives` → `marks` | Four real, switchable category groups. Original page `grid.level=words`; preserve their authored English/Chinese labels and category content. |
-| 08 · Mastery Check | No usable WordGrid; `grid.level=off` | Do not expose selectable vocabulary groups during the check; keyboard writing and independent grading remain. |
+| 04 · Guided Word Build | `set` (Sentence set; source `type=build` takes precedence over inherited page groups) | The ordered word-card set is the task input. With only one active group, keep the grid and word cards but omit a decorative one-item tab strip. |
+| 05 · Frame Fill | `task` → `opinion` → `marks` | Three real, switchable content groups while filling the sentence. The task's own `grid.tabs` explicitly selects these groups. |
+| 06 · Apply | `opinion` → `nouns` → `adjectives` → `marks` | Four real, switchable category groups. Original page `grid.level=words`; preserve their authored English/Chinese labels and category content. |
+**Historical P7 Mastery Check: Not in current runtime sequence.** Its authored `grid.level=off` still applies to source/template inspection, never as a seventh Lesson 1 activity.
 
 The word bank is an **input aid**, never a multiple-choice answer selector. Switching tabs changes the visible vocabulary set and saves the active category for return; it must not clear the writing draft, affect the insertion caret, call the grader, count attempts, unlock a Screen or trigger celebrations. Pressing a word card, by contrast, inserts content into the active editable area, except on Screen 05 where it performs the dedicated ordered-build action. Groups and word cards come from the original authored configuration, not from hardcoded screenshot text. A single-group build uses the same underlying category semantics without a redundant tab header. Tab label, content and active state must remain accessible to keyboard and touch users.
 
-**Global shell mapping:** all eight use `BA-WR-001` and `BA-WR-002`; activity status/progress maps to `BA-UI-006` ActivityScreenIndicator; action controls use `BA-UI-001`; contextual semantic feedback maps to `BA-UI-007` (planned foundation). `BA-UI-005` is the popover foundation for the Activity Screen list (planned). Product-specific word selection, build bench, text editor and P7 pager have no separate approved reusable Component ID yet: treat as internal template composites, **not** as new imaginary shared components. Component existence/status is controlled by `components.json`. Screen 8 has four internal questions but contributes only **one** TopBar Activity Screen.
+**Global shell mapping:** all six use `BA-WR-001` and `BA-WR-002`; activity status/progress maps to `BA-UI-006` ActivityScreenIndicator; action controls use `BA-UI-001`; contextual semantic feedback maps to `BA-UI-007` (planned foundation). The anchored full-index overlay is owned by the shared BA-UI-006 implementation; do not create a second independently styled indicator. Product-specific word selection, build bench, text editor and P7 pager have no separate approved reusable Component ID yet: treat as internal template composites, **not** as new imaginary shared components. Component existence/status is controlled by `components.json`. Deleted P7 contributes no runtime TopBar Activity.
 
 ### 12.2 Shared activity state machine and persistence
 
-1. **Entry:** an unlocked Activity Screen opens with previously saved response and attempt status, if any; untouched practice is `open`. Screen 1 is read-only and can advance without grading. TopBar `selected` is a navigation state, independent of `done/shown/skipped`.
+1. **Entry:** an unlocked Activity Screen opens with previously saved response and attempt status, if any; untouched practice is `open`. Screen 1 is the P3 single-pick task and requires a selection followed by Check; it is not a read-only Teach screen. TopBar `selected` is a navigation state, independent of `done/shown/skipped`.
 2. **Answer editing:** selection/tap/typing changes the working response only; it does not check, add attempts, emit correctness feedback, unlock the next Activity Screen or celebrate. Existing validated result remains until the learner explicitly checks again in templates that support revisions.
-3. **Check action:** only the template's authorized gesture runs the grader. For practice P3/P4 first wrong → `open` plus retry/feedback, next screen locked. Second wrong → `shown` with authored solution and zero credit, next screen available. Correct → `done` plus success feedback and then Next. For ordered Build, a wrong card tap leaves the full-line try unchanged, and the hint for a word tile appears after two wrong taps on that word. See Screen 05.
-4. **P5 Apply:** two failed completed submissions allow `Move on for now`; no success grade is invented. **P7 Check:** internal question edits and Next question do not grade; only Hand in grades the whole assessment; the second submitted set can finish without mastery.
-5. **Exit/Back/refresh/reentry:** preserve response selections, text, tries, wrong marks, hints, per-question P7 answers/index, completion and reveal state in the canonical state record (chapter 6). No separate UI-only progress store. Keyboard, touch, focus and reduced motion may alter presentation, never these gates.
+3. **Check action:** only the template's authorized gesture runs the grader. For practice P3/P4 first wrong → `open` plus retry/feedback, next screen locked. Second wrong → `shown` with authored solution and zero credit, next screen available **except for Tapword**, which must be checked correctly again before Next. Correct → `done` plus success feedback and then Next. For ordered Build, a wrong card tap leaves the full-line try unchanged, and the hint for a word tile appears after two wrong taps on that word. See Screen 05.
+4. **P5 Apply:** two failed completed submissions allow `Move on for now`; no success grade is invented. **Historical P7 Check (Not in current runtime sequence):** internal question edits and Next question do not grade; only Hand in grades the whole assessment; the second submitted set can finish without mastery.
+5. **Exit/Back/refresh/reentry:** preserve response selections, text, tries, wrong marks, hints, historical per-question P7 answers/index (retained for saved records), completion and reveal state in the canonical state record (chapter 6). No separate UI-only progress store. Keyboard, touch, focus and reduced motion may alter presentation, never these gates.
 6. **Navigation ownership:** the top-left LessonTopBar Back is the **only Lesson-to-parent navigation control** and returns to E-01. The bottom-right Footer button group only navigates and performs required actions *within the current Lesson*: Previous goes to the preceding Activity Screen (disabled on Screen 1), the primary button checks/submits or moves forward when allowed. P7 question Back/Next operate inside the same Check; on its first question, Back may return to the preceding Activity Screen without leaving the Lesson. These Footer controls never duplicate the parent-level Back. Never make every screen “correct → Next”.
 
-### 12.3 Screen 01 — Learn · `L2-04.learn`
-
-- **Identity:** skill `L2-04`; `kind=learn`; `template=P2`; `variant=P2.rule-pair.hamburger`; `params.body=rule_pair`, `diagram=hamburger`, `skip_offer=true` from authored source.
-- **Authored teaching:** “A topic sentence tells the topic and what you think.” Weak / Not yet example: “Gardens have plants.” Better example: “Our school should have a garden for two big reasons.” The hamburger/top bun explains topic + opinion; use the source's authored EN/ZH teaching strings.
-- **Interaction:** read-only instruction. Next is available once this screen is seen. The Better panel uses a pale green fill and a leading check. That cue is pedagogical.
-- **Skip offer:** only according to skill's eligibility `skipMode`, chapter 11; an offer or skip never runs on mere visual rendering.
-- **Persistence:** `seen` and authorized skip decision; no fabricated answer attempt.
-- **Acceptance:** screen 2 starts locked; learner can read and Next to it, or take a legitimately offered skill-skip route. Both EN/ZH teaching variants preserve the same meaning; no P2 success celebration.
-
-### 12.4 Screen 02 — Single Pick · `L2-04.t.ts1`
+### 12.4 Screen 01 — Single Pick · `L2-04.t.ts1`
 
 - **Identity:** task `ts1`; `type=pick`; `template=P3`; `variant=P3.list.option.single`; params `layout=list,unit=option,pick=single,scored=auto`.
 - **Question:** “Which one is a good topic sentence for a school garden? Tap it.”
@@ -427,18 +418,18 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Flow:** `open/no-choice` → select one radio-like row (`selected`, no grade) → Check enabled → correct: `done`, authored rationale and Next; first wrong: record try 1, mark selected wrong and clear it for retry, stay here; second wrong: `shown`, B shows the revealed check icon, and Next is available without credit.
 - **Feedback:** option-specific reason from authored `coach.options`; show Check feedback only after Check, not while selecting.
 - **Persistence:** selected index, wrong row marks, tries, status, revealed answer and feedback context.
-- **Acceptance:** selection of A does not unlock screen 3; after a failed Check the option can be changed; B correctly checked unlocks screen 3; second wrong reveals B but never pretends “correct”.
+- **Acceptance:** selection of A does not unlock screen 2; after a failed Check the option can be changed; B correctly checked unlocks screen 2; second wrong reveals B but never pretends “correct”.
 
-### 12.5 Screen 03 — Tapword · `L2-04.t.ts4`
+### 12.5 Screen 02 — Tapword · `L2-04.t.ts4`
 
 - **Identity:** task `ts4`; `type=tapword`; `template=P3`; `variant=P3.passage.word.single`; params `layout=passage,unit=word,pick=single,scored=auto`; task `need=one`.
 - **Question and passage:** “Tap a word that tells you this is an opinion.” / “I believe our class should get a pet fish.”
 - **Answer:** precisely one chosen word matching **either** authored target `believe` or `should`; punctuation and word occurrence are interpreted through original `targets[].at` + occurrence rules. Two targets are alternatives, **not** two required selections.
-- **Flow:** no chosen word → tap an eligible token (only one current selection; tap selected word again to deselect) → Check → success: `done` with opinion-word reason; first wrong: `open` + word-specific authored feedback and retry; second wrong: `shown` with acceptable targets and Next, no credit.
+- **Flow:** no chosen word → tap an eligible token (only one current selection; tap selected word again to deselect) → Check → success: `done` with opinion-word reason; first wrong: `open` + word-specific authored feedback and retry; second wrong: `shown`, all valid targets receive green outlines flashing twice, incorrect token remains marked, Coach explains; **Next stays disabled and no correctness credit or celebration is awarded**. Selecting `believe` or `should` and pressing Check again finishes `done` and unlocks Next under the formal grading/celebration rules.
 - **Persistence:** exact token index/target occurrence, tries, status and reveal; never save merely the display string when occurrences can be ambiguous.
 - **Acceptance:** both “believe” and “should” pass individually; “class” does not; pressing a word never grades or advances; keyboard token selection has a visible focus and equivalent Check.
 
-### 12.6 Screen 04 — Multi Pick · `L2-04.t.ts3`
+### 12.6 Screen 03 — Multi Pick · `L2-04.t.ts3`
 
 - **Identity:** `ts3`; `type=pick`, `multi=true`; `template=P3`; `variant=P3.list.option.multi`; `layout=list,unit=option,pick=multi`.
 - **Question:** “Some of these tell an opinion. Some are just facts. Tap every opinion.”
@@ -448,18 +439,18 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Persistence:** selected index set, tries, wrong marks and answer-revealed state.
 - **Acceptance:** multi-select allows simultaneous A/C/E; no radio behavior, no auto-grade when the third option is selected, zero credit on forced reveal.
 
-### 12.7 Screen 05 — Guided Word Build · `L2-04.t.ss.L2-04`
+### 12.7 Screen 04 — Guided Word Build · `L2-04.t.ss.L2-04`
 
 - **Identity:** task `ss.L2-04`; `type=build`; `template=P4`; `variant=P4.build.word.guided-order`; params `action=build,input=set,build_unit=word,order=guided,distractors=0`; `in_order=true`.
 - **Question:** “Build this topic sentence with the grid, one word at a time: ‘Our school should have a garden for two big reasons.’”
 - **Exact source `cells` and `target` order:** `our | school | should | have | a | garden | for | two | big | reasons | .`; authored `answer_text` “Our school should have a garden for two big reasons.”
-- **Flow:** A WordGrid card press tries to append the next token in the fixed order. The correct next token appends and updates the bench. Each remaining blank is an underline, one horizontal line for each word still to place. A wrong token stays off the bench, gives a brief nonblocking error, and adds one wrong tap on that word tile. After two wrong taps on that same word, the hint for that word is shown. A completed full line is one full-line try: a correct line finishes `done` and Next opens. A defensive wrong full line clears after a delay; the second wrong full line reveals the authored sentence (`shown`, zero credit, Next). With `in_order=true`, a word tap matches the next target, so a wrong full line is only that defensive path.
+- **Flow:** A WordGrid card press tries to append the next token in the fixed order. The correct next token appends and updates the bench. Each remaining blank is an underline, one horizontal line for each word still to place. A wrong token stays off the bench, gives a brief nonblocking error, and adds one wrong tap on that word tile. After two wrong taps on that same word, the hint for that word is shown. A completed full line is **not yet submitted**: the learner must press Check to grade the line. A correct submitted line finishes `done`, then Next opens. A defensive wrong full line clears after a delay; the second wrong full line reveals the authored sentence (`shown`, zero credit, Next). With `in_order=true`, a word tap matches the next target, so a wrong full line is only that defensive path.
 - **WordGrid:** the Approved panel is a peach bank with connected sticky tabs 本题词块, 观点, and 标点, and white pill cards. The active tab joins the bank. Empty slots on the bench stay underlines. A placed word stays in the line. Switching a tab changes the visible cards. Grading stays the ordered-build rule above.
 - **Actions:** word-card taps, and the Coach-rail button group (Previous and the contextual primary). A placed word stays in the line.
 - **Persistence:** token sequence, each word tile’s wrong-tap count, full-line tries, and reveal status. Revisit restores the build sequence and those per-word counts.
 - **Acceptance:** an incorrect token stays off the bench; each remaining blank is an underline; a wrong-token tap leaves the full-line attempt count unchanged; the hint for a word is shown after two wrong taps on that word; a tap on a placed word leaves that word in the line; the finished target matches the normalized answer and completes the screen; reduced motion still presents the wrong-next-token feedback as text.
 
-### 12.8 Screen 06 — Frame Fill · `L2-04.t.ts8`
+### 12.8 Screen 05 — Frame Fill · `L2-04.t.ts8`
 
 - **Identity:** task `ts8`; `type=write`, `template=P4`; `variant=P4.fill.chunks.frame`; params `action=fill,input=chunks,source=frame,scoring=rule+ai`.
 - **Question:** “Finish my sentence about recess. Fill each ___.”
@@ -470,7 +461,7 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Persistence:** fixed frame identity, both editable blank responses / typed source segments, attempts and result; focus and caret must not be lost when grid inserts.
 - **Acceptance:** a remaining blank never passes; too-short reason fails; accepting multiple meaningful reasons rather than one hardcoded phrase follows the source's rule-driven grader.
 
-### 12.9 Screen 07 — Apply Writing · `L2-04.apply`
+### 12.9 Screen 06 — Apply Writing · `L2-04.apply`
 
 - **Identity:** `kind=apply`; `template=P5`; `variant=P5.write.constraint-apply`; params `purpose=apply,phase=draft,input=words,feedback=constraint,evidence=apply`.
 - **Question:** “Write 3 different topic sentences for: Should our school have a garden? Put each one on a new line.” Three distinct sentences, not one long paragraph. Coach repeats the garden topic and three different ways.
@@ -481,27 +472,9 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Persistence:** full draft, saved check result, attempt count, completed-with-pass versus completed-without-pass distinction, relevant feedback.
 - **Acceptance:** editing does not auto-grade; first failed submission cannot advance; second **counted** failure offers Move on in the ordinary path but never paints a success badge or triggers correct-answer celebration; a genuine pass completes normally. A three-word-plus CJK-heavy submission is a counted failed attempt under current source; separately flag safety-flagged submissions for owner decision before claiming their move-on treatment is final.
 
-### 12.10 Screen 08 — Mastery Check · `L2-04.check`
-
-- **Identity:** `kind=check`; `template=P7`; `variant=P7.assessment.3-auto-1-writing`; authored params `purpose=mastery,preset=assessment,items=3 auto + 1 writing,pass_rule=>=2/3 auto AND writing correct,second_set=true`.
-- **Internal structure:** this is **one** Activity Screen with four internal questions, three automatically graded and one written response. Question pager controls only the P7 internal index. Do not create 4 extra TopBar steps, per-question graded stamps or practice hints.
-- **Source-derived order rule (chapter 9):** pool `tq1,tq2,tq3,tq4,tq5` plus writing `L2-04.mw`; first set `tq1,tq2,tq3,mw`; second set `tq4,tq5,tq1,mw`. Every individual question renders its own authored response type (pick/tapword/label/write) with the same input grammar, but **no** per-question Check or reveal.
-- **Original authored assessment item fixtures, no invented questions:** the first set uses `tq1` (single pick: “Question: Should every student learn to cook? Best topic sentence?”; options A “Cooking uses pots and pans.”, B “I believe every student should learn to cook.”, C “My mom cooks rice.”; answer **B/index 1**), `tq2` (single pick: “Which sentence is a FACT, not an opinion?”; A “Soccer is the best sport.”, B “Kids should play outside more.”, C “Our school has 300 students.”; answer **C/index 2**), and `tq3` (tapword: “Our town should build a bigger library.”; the only correct token is **should**). The second set uses `tq4` (single pick: “Question: Is it better to live in a city or a village? Which topic sentence matches?”; A “I think living in a village is better than living in a city.”, B “Cities have tall buildings.”, C “My cousin visited Tokyo.”; answer **A/index 0**), `tq5` (single pick: “Which topic sentence is TOO NARROW (too small) for a whole paragraph?”; A “I think our school should start later in the morning.”, B “My shoe is blue.”, C “Kids should have a pet at home.”; answer **B/index 1**), and `tq1` again. Each set ends with `L2-04.mw`: “Write a topic sentence for this question: ‘Should kids have a pet at home?’ Tell your opinion.” Its source `rules` require an opinion signal `think|believe|should|best|opinion|feel`, `pet` or `pets`, at least **5 words**, initial capital and terminal punctuation (`.`, `!`, or `?`); this is **not** an arbitrary AI grade. The authored Chinese `ask.zh` and `coach` copy localize the UI but do not translate the English options/passage/fixed writing material (language mode B).
-- **Flow:** select/type answer → Next question / question dots change internal index only. Blank answer on any question: first **Hand in my check** warns once and identifies blank question numbers without grading; next **Hand in anyway** grades current responses including blanks as incorrect. Hand in grades the full paper once. Passing requires `autoCorrect >= 2` **AND** writing answer correct. On first failed set show diagnosis/feedback and **Try a new set**. The second set can complete without mastery; only a genuine passing check grants mastery. Afterwards the Lesson Screen is complete and Footer may show **End of lesson**. In Review, a Check which is finished but not passed can still show **Try a new set** for an optional further attempt, without undoing the Screen-completed state. If a skill had been skipped, the very first failed Hand in invokes skip revocation in the original handler.
-- **Persistence:** attempt set index, current P7 internal question index, four independent responses, once-only blank warning, per-item feedback results, pass/fail outcome and mastery flag. Saved answers restore on leave and return.
-- **Acceptance:** answering all four questions without Hand in never grades; answering 3 auto correctly with bad writing still fails; correctly writing with fewer than 2 auto still fails; first failed set offers new set, second submitted set ends even when unmastered; finished-unmastered Review permits another optional set; each attempt stores independent answers; a failed first Hand in immediately revokes an active skip; reduced motion never blocks Hand in.
-
-### 12.11 End-to-end acceptance contract
-
-- Exactly eight TopBar Activity circles in this lesson; no separate P7 question circles at lesson level. Screen IDs do not change when visually restyled.
-- Each Screen's template ID + variant ID and component responsibilities must match the table and detailed contract above; do not flatten P3 single vs multi or P4 Build vs Frame.
-- Exercise no-answer, partial, correct, first incorrect, second incorrect/`shown`, navigation back/forward, exit and reload, both EN/ZH, focus/keyboard/touch, and reduced motion where applicable.
-- Run both P7 submission sets and prove mastery is **not** awarded from an unmastered finish. Save and restore each Screen's answer and attempts. Product grading must not depend on animation or presentation color.
-- Real source implementation gaps are recorded in `docs/design-system/WRITING-REQUIREMENTS-TRACEABILITY-v1.md`. **They are not permission to weaken this specification.**
-
 ## 13. Writing visual and spatial product constraints
 
-- **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, P7 assessment, saved answers, resume, Start/Continue/Review/Locked, keyboard/touch and reduced-motion behavior. The Writing demonstration remains eight Activity Screens.
+- **Scope:** Visual and spatial refinement only. Preserve all authored content, exact graders, retry/shown, screen gates, historical P7 assessment source (Not in current runtime sequence), saved answers and resume. Start/Continue remain **internal progress actions** but share one Enterable visual; Completed/Locked are the other visual roles. Keyboard/touch and reduced-motion behavior remain intact. The Writing demonstration remains six Activity Screens.
 - **E-01 full-bleed stage (`v2-terraces`):** the path landscape is layered terraces. Separate platforms sit on a stack of mountain layers. LandscapeBackdrop (BA-WR-009) paints the stack. From back to front: the sky gradient `linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)`, clouds, hill 2, hill 1, then the lesson platforms and cards. The landscape fills the stage, including the area behind the level header. Level navigation and the language selector stay usable and leave the nodes clear. The scenery ignores pointer events and leaves course state unchanged.
 - **Path scroll:** drag, wheel, and keyboard movement along the staircase move the scenic layers horizontally slower than the cards. Farther layers are slower: hill 1 (foreground) is faster than hill 2 (mid), and the clouds and sky are slower still. Lesson platforms and cards stay locked to the path steps. Those speeds are computed from the card/node count and the resulting track length and camera max travel, so the layers stay covered across the full path. Hill and mountain art width alone is not coverage gained by scrolling those layers at the same horizontal speed as the card/camera track. The motion does not change the current lesson, score, or saved progress. The normative parallax rule and the sky gradient are in DESIGN.md. The stage background is `linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)`.
 - **Path art:** use version **`v2-terraces`** and these ids only.
@@ -512,20 +485,20 @@ The word bank is an **input aid**, never a multiple-choice answer selector. Swit
 - **Camera visibility:** on the v2-terraces Path, the stage does not clip content at the top or bottom of the usable viewport. The header, cards, platforms, and hill/cloud layers stay in that viewport. Hiding overflow is not the way to cut cards or terrain. Footer and dev banners do not eat the stage. Drag, wheel, keyboard, Home, and End reach the complete first and last nodes, including card bounds, decorative platforms, the sticky header, and viewport padding. The far-left/lower and far-right/upper nodes stay fully reachable.
 - **Lesson platform:** LandscapeTerrace (BA-WR-010) specifies 2–3 shallow rounded grass layers under each node, in front of hill 1. The interim scene uses one platform per node. Lesson card bottom anchors and path navigation geometry stay as this chapter and chapter 16 define them. Platform colors and curves are designer-review candidates [E].
 - **Lesson state:** Number Seal + Attached Symbol. The lesson number stays dominant in the seal. A small attached symbol carries current, completed, or locked. The accessible name carries the status. State gates stay as authored. Exact icon geometry is a designer review candidate.
-- **Unit fold:** the folded corner is mandatory on every unit state. The fold is a continuous rounded corner integrated with the card's outer edge. The inner border ends under the fold. The fold is decorative. The English unit title uses a smaller line-height. Goals stay plain paragraphs.
-- **Lesson card:** title uses exactly two reserved line boxes, 2-line truncation with accessible full title; estimated duration directly below title as number + localized unit, left aligned. CTA uses shared BAButton (height 70px), all approved hover/pressed/focus and reduced motion states. Outer/inner radius follows concentric relation rather than independent unrelated values.
-- **Activity hierarchy:** one primary separation treatment per structural boundary (surface, stroke, or divider, each with its own job). Previous and the primary action sit at the bottom of the Coach rail, below the independently scrolling transcript, at 1:2 with an 8px gap and 70px heights. Quiet neutral container strokes leave interactive focus and graded borders readable. Decrease gaps between peer content containers by one existing spacing scale step. The English unit title uses the smaller line-height. Hit targets stay as specified.
-- **Lesson question feedback:** each feedback message sits in its own card. A wrong message uses a white background and a light border. A correct message uses a white background and a green border. Previous and Next sit at the bottom of the Coach rail. The hint control is a secondary button. Card fill and border are a visual candidate in DESIGN.md. The treatment applies to every lesson question feedback UI.
-- **TopBar:** title and meta sit with a centered ActivityScreenIndicator, shared with the anchored full-screen Popover. Icon Back to Staircase remains 50×50. In every state the circle shows the Activity Screen index. The lesson TopBar has no horizontal divider between the bar and the lesson content. At tablet 834 the lesson-title ellipsis stays 「第1课 主·」. P7's internal question count is its own pager.
+- **Unit card:** four equal 16px corners with no fold/cutout; brown Dosis 800/18px UNIT label, full-word lesson/time pill, 24px main heading. Keep original content, card anchor and plain-paragraph goals.
+- **Lesson card:** three title lines are the default for StairLessonCard in both library and page. The full accessible title is retained; duration remains directly below as number + localized unit, left aligned. CTA uses shared BAButton (height 70px), all approved hover/pressed/focus and reduced motion states. Outer/inner radius follows concentric relation rather than independent unrelated values.
+- **Activity hierarchy:** one primary separation treatment per structural boundary (surface, stroke, or divider, each with its own job). Previous and the primary action sit at the bottom of the Coach rail, below the independently scrolling transcript, at 1:2 with an 8px gap and 70px heights. Quiet neutral container strokes leave interactive focus and graded borders readable. Decrease gaps between peer content containers by one existing spacing scale step. The Unit title uses the same Typography level as the Lesson title. Hit targets stay as specified.
+- **Coach messages:** each Coach arrival, extra teaching line, Hint and submitted feedback has its own bordered tinted card. Correct: Success-1 background / Success-4 border / Success-9 text; wrong: Neutral-2 / Neutral-4 / Neutral-8; ordinary explanation and Hint: Neutral-1 / Neutral-3 / Neutral-9. The Coach remains scrollable and independent of the Footer, and Hint is never a submitted answer.
+- **TopBar:** icon-only Back to Staircase remains 50×50, lesson identity fills the available safe left-hand width, and the title stays on one line with ellipsis and a fixed inline G2-O pill. ActivityScreenIndicator remains centered against the whole header, not pushed aside by long text; on narrow screens it may occupy a second centered row. All numbered progress markers show their screen index with no attached status icons; finished = Writing-brown fill/white number, locked = disabled colors, skipped = dashed outline. A currently viewed completed or skipped screen retains that status treatment plus an outer selected ring. The TopBar has no divider below it. P7's internal question count is its own pager.
 - **P2:** the Better example uses a pale green fill and a leading check. The cue is pedagogical.
 - **WordGrid:** the peach connected sticky-tab bank and white pill cards are Approved. The ordered-build bank tabs are 本题词块, 观点, and 标点. The Apply bank tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点). The active tab joins the peach bank. Ordered-build empty slots stay underlines. The ordered-build controls are the word cards and the Coach-rail button group. A placed word stays in the line. Storybook fixtures `MultipleStickyTabs`, `MultiGroup`, `Chinese`, and `WordWrapTablet` match these Approved visuals.
 - **Visual source:** path artwork and version id are the `v2-terraces` files above. DESIGN.md specifies compositing, placement, the normative parallax rule, and the sky gradient `linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)`.
 
 ## 14. Lesson TopBar and footer actions
 
-**BA-WR-001 top bar.** No hamburger and no collapsible menu. Left: icon-only Back (returns to E-01, does not clear answers; no visible helper text), lesson name, and necessary metadata. Center: the lesson’s Activity Screen progress, centered on the full bar, not in the leftover space between the title and the right edge. Right: no learner action. Long English or Chinese titles truncate inside the left area and do not push the progress off center. At tablet 834 the lesson-title ellipsis stays 「第1课 主·」. The lesson TopBar has no horizontal divider between the bar and the lesson content.
+**BA-WR-001 top bar.** No hamburger; overflow uses the approved numeric ellipsis/popover, not a second generic collapsible menu. Left: **50×50 icon-only Back** (returns to E-01 and saves/restores answers; no visible helper text), lesson number, and a lesson title that **uses only the remaining safe width and stays on one line** with ellipsis followed immediately by one fixed G2-O pill. The title must not overlap the activity progress. Center: Activity Screen navigation stays geometrically centered across the **full header**, not in leftover width next to the title. On narrower layouts a second, full-width centered indicator row is permitted so the title and navigation remain readable. Right: no learner action. No horizontal divider below the bar.
 
-Progress reads the live lesson screen list. Chips distinguish done, current, available, locked, and skipped in text as well as appearance. A chip navigates only when `canOpen` allows it. The current chip does not rewrite status.
+Progress reads the live lesson screen list. Its marker renders the **screen number only** (no check or lock icons); the status remains available through accessibility labels and semantic styling. The displayed/selected screen is determined by its index independently from underlying `done/current/available/locked/skipped` status. A completed selected screen keeps its Writing-brown-filled white-digit appearance with an outer selected ring. A skipped selected screen keeps its dashed inner border and gains an outer selected ring. Locked screens retain disabled presentation. A marker navigates only when `canOpen` allows it; selection must not rewrite saved status, attempts, unlocking, or grades.
 
 **Coach-rail navigation.** The button group at the bottom of the Coach rail controls **only current-Lesson navigation and actions**: one Previous (previous Activity Screen only; disabled on Screen 1) and one contextual primary (Check, Hand in, Next, and so on). The group sits at the bottom-right of the lesson. The top-left LessonTopBar Back is the **only control returning to the parent E-01 Staircase page**. The Coach-rail label is Previous. In P7 the question navigator replaces ordinary Previous/primary labels while answering; its first-question Back returns to the previous Activity Screen. Labels otherwise follow [page gates](#5-activity-screen-gates) and the template.
 
@@ -545,13 +518,24 @@ If an existing authored Chinese UI/explanation string is absent, identify it for
 
 ## 15. Activity screen indicator and overflow navigation
 
-**Single component:** `ActivityScreenIndicator` is shared between LessonTopBar and the **All activity screens** anchored popover. Both must render the same circle/number/status-icon visual component and state mappings; the popover must not create a separate rectangular-number design. Container layout, size and touch target may vary by a documented variant.
+**Single component:** `ActivityScreenIndicator` (`BA-UI-006` / `BATaskProgress`) is shared between LessonTopBar and the **All activity screens** anchored popover. Both use the same **numeric-only circle and status/selection styling**. No attached check, lock or other status icon may replace or accompany the visible screen number. The popover cannot introduce a different number design; layout/size/touch targets may vary through documented presentation variants.
 
-**Composite states:** `selected` (current view) is independent of progress status (`incomplete`, `done`, `locked`, `skipped`). A completed screen may be selected. Locked stays closed to user selection. An answer-revealed screen keeps an accessible revealed description. In every state the circle shows the Activity Screen index. Lesson 1 is 1–8. Status uses color, a ring, or a secondary mark. Done uses a small bottom check-circle, locked uses a bottom lock-circle, and the number and that mark meet with no connecting line. The lower circle sits against or slightly overlaps the number circle in a stable place. Visual tokens, relative positioning, and responsive variants are in root DESIGN.md and the component contract.
+**Composite states:** `selected` means the currently viewed Activity Screen and is independent of the stored progress status (`incomplete`, `done`, `locked`, `skipped`). Lesson 1 has six numbered markers (1–6). Incomplete-unselected shows a neutral number; incomplete-selected adds a selected outline; done-unselected uses **Writing brown (#B25415) fill + white numeral**; done-selected retains that brown fill and adds an **outer selected ring**. Locked uses disabled colors and **no lock icon**. Skipped uses a **dashed inner border**; skipped-selected preserves that dashed border and adds an **outer selected ring**. Never replace the status with `current` merely because the learner navigated back to a done or skipped screen. An answer revealed without credit stays distinct in saved learning state and its accessible description. Color and outlines are presentation; the `canOpen` gate and actual learning records remain authoritative. See root DESIGN.md and component contract for visual tokens and interaction states.
 
-**Overflow:** do not impose an eight-screen data limit. Visible node count responds to available container width; 8 desktop / 6 tablet / 4 mobile are review targets, not enforced product limits or exact breakpoints. Keep current screen visible and collapse other numbers behind a clearly labeled ellipsis trigger. A nonmodal **anchored Popover**, not a blocking dialog, opens near that trigger and lists **all** Screen numbers (including those visible outside) in a responsive grid. Overflow scrolls within the popover and the current indicator is initially in view. On allowed screen selection: validate access, navigate, close. Locked indicators do not navigate. Outside click, trigger toggle, close affordance, and Escape dismiss; Escape returns focus to the trigger. Opening/closing never alters progress or attempts. Use accessible button names and keyboard navigation. A shown-but-unanswered assessment item does not count as an additional Lesson Screen.
+**Overflow:** the top bar has **one horizontal row of at most nine elements, including the ellipsis button**. Use measured component width rather than device-based 8/6/4 counts. Keep the current Activity Screen visible by shifting the contiguous visible number window while preserving original order; reserve one slot for a **36×36px circular ellipsis** only when there is actual overflow. All numbered circles are also 36×36px visibly, with accessible hit areas of at least 44×44px where possible. Clicking the ellipsis opens a nonmodal **anchored All activity screens popover**, maximum about 424px wide, 40px radius and 40px padding, titled at top left with a top-right close control. The entire list is a **fixed six-column, left-aligned grid**, and a short last row starts from column one. Top bar and popover must reuse precisely the same marker component, size, number typography and composite visuals. The popover internally scrolls to the current item and stays within viewport bounds. Allowed items navigate and close it; locked ones are disabled. Trigger, top-right Close, outside click and Escape dismiss it; focus returns to the trigger or a safe remaining navigation target. Opening and closing never alters answers, progress or attempts. P7 internal questions do not add extra Lesson circles. Desktop and Tablet are the current scope; 320px Mobile-specific layout is deferred to global responsive rules.
 
-**Component contract:** separate `screenNumber`, `progressStatus`, `isSelected`, `canOpen`, and `onNavigate`; popover open/close is its container's state. Use the same React Aria focus/keyboard semantics across both locations. Document compact/regular sizes, hover/focus/pressed/disabled and Done+Selected combinations in Storybook; verify 1440/1024/834/390 widths, long headings, and 200% zoom.
+**Component contract:** separate activity number, progressStatus, isSelected, canOpen and onNavigate. BA-UI-006 owns one 36px visual marker in both TopBar and six-column popover; the top-level shell owns whole-bar centering. Keyboard/touch, hover/focus/pressed/disabled and Done+Selected/Skipped+Selected remain test targets. Verify Desktop/Tablet widths 1440/1024/834 and varied heights; 320px special Mobile layout is outside this Review.
+
+
+### R2 Review 02 · contextual primary button readiness (DR02-09)
+
+The Footer primary BAButton is **actually disabled**, not just painted gray, whenever the current activity lacks the required interaction. The disabled control must ignore mouse, touch and keyboard presses; it must not grade an empty answer, log a failed attempt or change the navigation position. Its enabled state is recomputed from the learner's current saved response and the authored task rules, including on reentry/reload.
+
+For L2/G2-O Lesson 1: the first screen is P3 single pick and requires one selection, then explicit Check; P3 multiple pick enables Check after **one or more** selected options, while all three authored answers still determine correctness; P3 Tapword needs one selected word, with the special shown-and-retry gate after two wrong Checks. P4 ordered-word Build requires an explicit Check after placing all target tokens; word tile taps only build/hint and do not grade the finished line. P4 frame-fill requires all authored blanks filled before Check. P5 Apply Writing requires at least three words before Check my writing; later Check again still uses the authored review/feedback rules, and Move on remains independent. Deleted P7 pages do not participate in runtime navigation or grading. Answer correctness is never implied by enabled state; incorrect submissions retain their existing retry / shown / completed rules. The original P7 two-set mastery decision is unchanged.
+
+### R2 Review 02 · long writing workspace (DR02-08)
+
+Only long writing-canvas screens expand their Textarea into the available height of the left white paper area. The editor is not manually resizable. Text longer than that region scrolls vertically **inside the Textarea**, instead of pushing WordGrid out of view. WordGrid stays at the bottom of the paper's writing content region (not fixed across the viewport or Coach). The instruction, tip and other authored controls remain intact. Touch/keyboard caret and WordGrid insertion position continue to be stored and restored.
 
 ## 16. E-01 · Staircase behavior
 
@@ -565,21 +549,32 @@ Node roles:
 | --- | --- |
 | Intro | Readable introduction. Not a lesson. |
 | Unit | Chapter banner. Not clickable. No destination. |
-| Lesson | The action. Stable lesson number at the card’s upper left. **Start**, **Continue**, **Review**, or **Locked**. Skipped is distinct from done. |
+| Lesson | Stable number at the card's upper left. Three visual states: **Enterable** (both new and resumed, CTA Enter / 进入), **Completed** (CTA Review / 复习), **Locked** (disabled). Skip remains distinct in saved progress data, not a separate card appearance. |
 | Milestone | After each unit. Complete when every lesson in that unit is done or skipped. Completion does not grant permissions. |
 | Level Goal | After the last unit. A label for the next level’s name, or “Top level” on the last level. Not a lesson, not a milestone, and not a scored object. No separate completion formula. |
 
-Only G2-O lessons call the course session. A locked card never navigates and never looks unlocked. Completed Lesson CTA is Review / 复习, not Start; current/available unfinished lessons show Start or Continue according to saved progress. The top-left number and completion/lock state form a single badge. Level tabs sit in one header row: level title at the left, the tab list centered on the header, language toggle at the right. Changing level changes which path is shown. It does not open a lesson and does not change score or progress. Phone widths may scroll the tab list inside that row.
+Only G2-O lessons call the course session. A locked card never navigates and never looks unlocked. Completed Lesson CTA is Review / 复习; current/available unfinished lessons all show Enter / 进入 with one identical Writing-brown outline; saved progress still decides where entry resumes. The top-left number and completion/lock state form a single badge. Level tabs sit in one header row: level title at the left, the tab list centered on the header, language toggle at the right. Changing level changes which path is shown. It does not open a lesson and does not change score or progress. Phone widths may scroll the tab list inside that row.
 
-**Preview seed (designer/demo only).** `?demo=preview-seed` is a designer preview. While that query is on, every Level 0 lesson card and every Level 1 lesson card renders as completed, so the designer can walk the path, open the completed milestones, and continue to the next lesson. The display leaves the learner course record, learner progress rules, and Mastery on the rules in this chapter. With the query off, cards, unlocks, and mastery follow those same rules.
+**L0 / L1 default display-only completion (Review 03).** The high-fidelity Staircase **always renders every L0 and L1 Lesson as Completed / Review and each Unit Milestone as completed**, without a query flag. This is a presentation fixture and does **not** write or grant saved learner scores, answer records, progress, unlocks or mastery. L2 remains the only genuinely interactive sample and preserves real gates and resume. Clicking any completed Unit Milestone replays the approved tsParticles Confetti effect (50 particles, one burst) without altering records; Reduced Motion suppresses the animation. The old `?demo=preview-seed` link remains harmless but is no longer required.
 
-The E-01 stage is the `v2-terraces` landscape specified by DESIGN.md. Layer order from back to front is the sky gradient `linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)`, clouds, hill 2, hill 1, then the lesson platforms and cards. LandscapeTerrace specifies 2–3 grass layers per node. The interim scene uses one platform per node. While the learner scrolls the path, scenic layers move horizontally slower than the cards, farther layers slower, and the platforms stay on the steps. The usable viewport shows the header, cards, platforms, and hill/cloud layers without clipping them at the top or bottom. Footer and dev banners do not eat the stage. The scenic layers are decorative. They leave navigation, scoring, and persistence unchanged.
+The E-01 stage is the `v2-terraces` landscape specified by DESIGN.md. Layer order from back to front is the sky gradient `linear-gradient(135deg, #85DBF9 0%, #F8F4ED 100%)`, clouds, hill 2, hill 1, then the lesson platforms and cards. LandscapeTerrace uses the approved R2.12 cloud-platform artwork per node; do not restore the obsolete CSS grassy terrace. The interim scene uses one platform per node. While the learner scrolls the path, scenic layers move horizontally slower than the cards, farther layers slower, and the platforms stay on the steps. The usable viewport shows the header, cards, platforms, and hill/cloud layers without clipping them at the top or bottom. Footer and dev banners do not eat the stage. The scenic layers are decorative. They leave navigation, scoring, and persistence unchanged.
+
+
+### R2 Design Review 03 · Activity and Staircase clarifications (2026-10-26)
+
+- **Historical P2 Learn (Not in current runtime sequence):** the `Better` and `Not yet` sample headings use matching Dosis 800 typography. Remove the Better check icon. The pale green Better teaching surface remains and does not indicate student grading.
+- **P3 Tapword:** an actually correct selected word is success-green fill with white text, **without an attached check icon, visible border or inset stroke**. A merely shown/unselected answer stays a visually distinct outline with a truthful accessible label. This does not change generic BAChoice option states.
+- **P3 multiple pick:** one or more selected choices makes **Check enabled**, regardless of whether that set is correct; zero leaves it disabled. The authored three true answers still determine grading, tries and retry/shown.
+- **P5 Apply Writing:** the secondary tip `Write each sentence on a new line.` is not visibly rendered under the editor. Keep source instructional data and real scoring intact. The P5 Textarea alone uses subtle horizontally ruled white paper (approx. 36px line pitch, soft `#EAEDEB` separator) inside the existing non-resizable, internally scrolling, height-filling editor; other tasks including P7 do not gain ruled paper.
+- **All Activity Screen titles:** use a title-and-speaker 2-column layout. The real 50×50px Speaker Icon control is pinned to the upper-right of the title, while a long heading wraps within its own flexible first column. Listening starts/stops and cleans up exactly as before.
+- **All Coach cards:** every visible teacher message is individually boxed, including arrived instruction, expanded teaching, each Hint and each submitted feedback; correctness uses success green with differentiated brightness, wrong feedback uses neutral gray, ordinary guidance uses neutral light gray. Hint never completes a task.
+- **Unit Card:** top label is only `UNIT N` / `第 N 单元` (no appended unit type). One warm-stroke pill displays actual total lessons and optional duration, e.g. `9 lessons · 170 mins` / `9 课 · 170 分钟`. Do not show `0 of`, `about`, or `约`; no hardcoded per-Unit totals. Preserve the four equal 16px Unit corners, landscape and card size.
 
 ## 17. Celebration triggers
 
 Celebration is presentation. Practice correct plays Ribbons + Explosions. A completed milestone plays the Confetti preset from the flag center (`startCount` 50, `rate.quantity` 0, `life.count` 1). Full-lesson mastery success plays Ribbons count 30 + three Explosions.
 
-- **Practice micro-celebration:** Ribbons + Explosions play once when a graded practice item first receives a correct Check (single/multi, tapword, ordered build, frame fill, P5 Apply). A per-item receipt survives Back, reentry, and refresh. P7 grades on Hand in.
+- **Practice micro-celebration:** Ribbons + Explosions play once when a graded practice item first receives a correct Check (single/multi, tapword, ordered build, frame fill, P5 Apply). A per-item receipt survives Back, reentry, and refresh. No runtime P7 grade is created.
 - **Full Lesson celebration:** Ribbons count 30 + three Explosions when the lesson reaches a legitimate completed mastery-success outcome; an unmastered Check finish must not be presented as a mastery celebration. Playback does not grade or unlock. Short composition intensity/duration await visual review.
 - **Milestone:** a click on a completed flag plays the Confetti preset from the center of that flag, with `startCount` 50, `rate.quantity` 0, and `life.count` 1.
 - The first time E-01 is shown, milestones that are already complete are recorded and do not play.
@@ -595,7 +590,7 @@ The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribb
 
 - No hamburger, Index, or Analytics in the learner chrome. Session, screen, and score data stay in the course record for the path, the top bar, and the Coach.
 - No Save or Print button on the book page. Saving remains automatic.
-- No demo unlock on the student path. `?demo=preview-seed` is the designer preview in chapter 16. It does not write learner progress and it does not grant Mastery.
+- L0/L1 display-only Completed in the high-fidelity Staircase (chapter 16) never writes learner progress, unlocks L2 or grants Mastery. The `?demo=preview-seed` flag is optional legacy compatibility.
 
 ## 19. Open product decisions
 
@@ -609,3 +604,36 @@ The ten-effect preview at `/?demo=celebration-effects` is a manual gallery (Ribb
 - Level Goal stays the next-level label. A scored Level Goal formula is not part of this product.
 - Live-screen visual sign-off (spacing, type, focus rings, screenshots) remains with the designer. Behavior in this document does not wait on that sign-off.
 
+
+
+
+## Review 05 · temporary lesson Test Mode and speech
+
+`Reset Lesson` is a secondary designer tool, separate from Check/Next. Confirmation opens **Test Mode** at Activity 1 for the current whole Lesson. `Exit Test` remains available in the Lesson, Lesson End and Staircase and restores the untouched formal session and its original view/resume point. The tool can be removed with `enableLessonTestTools=false` on CourseApp.
+
+The Test Mode session is a deep copy in an isolated, nonpersistent memory Storage. It removes only the tested Lesson's answers, grading, tries, hints, feedback, completion, skip and WordGrid state. Other lessons remain in the copy. All real authored tasks/graders/sequential gates run through the same CourseSession. Its writes, debounce timers, progress/unlocks and milestone/practice receipts have no access to formal localStorage. Completing the simulation cannot persist any unlock or milestone. Back to Staircase stays in Test Mode; reload or close discards the simulation and restores the formal saved record. Ordinary formal entry may append its existing navigation event; answers/tries/hints/completion/unlocks remain identical. No localStorage.clear and no removal of another Lesson or unrelated key.
+
+Coach instructions, explanations, hints and correct/incorrect feedback all use the shared CoachMessage with body-only speech. The prompt and Coach use one owner. Toggle stops; switching cards, Activity, exiting Lesson, entering/exiting Test Mode, pagehide and hidden-page stop playback. English text uses en-US and CJK text zh-CN. Unsupported/error paths never change Check, Next, evaluation, hint counts, tries or progress.
+
+LevelRewardFlag visual completion is derived from real completion of all Level Units and grants no permission or score. Existing L0/L1 demonstration completion does not write progress and does not supply the Level flag state. The supplied gray artwork retains “Level Completed!” text; its semantic state is still Upcoming.
+
+
+## Review 06 current behavior (2026-10-27)
+
+- The runtime removes every standalone `P2` Teach and `P7` Check screen from every Lesson. The authored source and saved records remain intact; Lesson 1 is `L2-04.t.ts1`, `L2-04.t.ts4`, `L2-04.t.ts3`, `L2-04.t.ss.L2-04`, `L2-04.t.ts8`, and `L2-04.apply`.
+- Lesson 1 has six TopBar activities. Lesson End follows the final Apply activity. Other lesson counts are derived from the filtered source sequence (6, 6, 6, 6, 5, 6, 2, 3, 3).
+- Tapword `ts4` accepts `believe` or `should`. Check is explicit. A first wrong Check remains open; a second wrong Check enters `shown`, draws both valid answers as green outlines with two flashes (static outlines under reduced motion), leaves Next closed, and allows further selection. Only a later correct Check enters `done`; records distinguish a shown-assisted result from an independent correct result.
+- Guided Word Build accepts ordered word taps and wrong-token teaching feedback, then waits for the learner to press Check after the final token. It never completes while the last token is inserted.
+- Coach cards render first in authored order, followed by expanded hints and graded feedback; secondary Coach actions (`Need a hint?`, `Another hint`, `Show me another`) are last. Reset Lesson is a Test Mode tool in the Lesson top tool area.
+- Frame Fill uses two underline inputs with a 22px student-entry scale. Apply Writing uses a flexing, internally scrolling canvas with 24px, 600-weight text and the four-group WordGrid docked below it.
+- Staircase has High motion and Low motion controls. High motion uses M4 when eligible, full parallax and one-time left-to-right card drop; Low motion uses Lightweight Clouds, reduced parallax and final-position cards. System reduced motion always wins. LevelRewardFlag defaults are amplitude 3px, waves 5, period 3s. Milestone and Flag outer containers are transparent.
+- WordGrid keeps the approved neutral peach/white visual in real Writing pages. The multi-tab bank has complete outer corners; 56px/18px word cards are a Workbench candidate only. BATabs 36px remains the real-page size; 50px is the recommended Workbench candidate and 70px is an additional candidate.
+
+**Review 06 motion ownership:** each Level has one first-visit receipt per browser-tab session (`sessionStorage`, with memory fallback), separate from Alex learning records. First entry can play the left-to-right card drop once; return from a Lesson, switching back to the Level and refreshing the page never replays it. A new browsing session can play again. Low Motion or system Reduced Motion never plays that drop. The effective policy is System Reduced Motion > selected High/Low preference and also governs Cloud Shader fallback, scenic parallax, flag cloth, milestone/Solar decoration, page transitions and celebration particles while preserving all essential feedback.
+
+
+## Review 06 · final visual and interaction refinement (2026-10-28)
+
+This implementation iteration does not change the six-screen authored curriculum, the existing Check validators, credit, or navigation gates. Before Check, an already selected WordGrid tile may be clicked again to deselect. An ordered-build tile's placement and a frame-fill tile's exact blank content are driven from the same task record and stable card ID; removing a tile removes only its own answer content. Duplicate visible words must remain distinct by ID. Selection is not a disabled or graded state. After a successful Check, the learner's selected correct target remains selected, while other authored valid Tapword targets are shown as a visually separate correct-answer hint without adding them to learner selections. A second wrong Tapword Check still enters Shown with Next blocked, no correct credit or celebration; a subsequent valid selection and explicit Check are needed for Correct. All other authored template-specific rules remain unchanged.
+
+The designer-only Reset Lesson control lives outside the scrollable Coach transcript and above the bottom-right Previous/Next group; it must not consume a separate full-height page-grid row. Writing Area and Coach begin below LessonTopBar and fill the available screen height. Staircase tree replacement now uses web-optimized transparent resources derived from the designer-supplied green/orange PNGs; the five original hill-front tree anchors and deterministic per-Level color assignment remain presentation-only. Designer review is pending.

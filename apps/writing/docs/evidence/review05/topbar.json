@@ -1,0 +1,82 @@
+[
+  {
+    "width": 1440,
+    "sample": "standard",
+    "nameWidth": 114.59375,
+    "tagWidth": 52.234375,
+    "gap": 8,
+    "sameRow": true,
+    "progressOverlap": 0,
+    "ellipsis": false
+  },
+  {
+    "width": 1440,
+    "sample": "long",
+    "nameWidth": 131.6875,
+    "tagWidth": 53.203125,
+    "gap": 8,
+    "sameRow": true,
+    "progressOverlap": 0,
+    "ellipsis": true
+  },
+  {
+    "width": 1024,
+    "sample": "standard",
+    "nameWidth": 118.5625,
+    "tagWidth": 53.203125,
+    "gap": 8,
+    "sameRow": true,
+    "progressOverlap": 0,
+    "ellipsis": false
+  },
+  {
+    "width": 1024,
+    "sample": "long",
+    "nameWidth": 403.78125,
+    "tagWidth": 53.203125,
+    "gap": 8,
+    "sameRow": true,
+    "progressOverlap": 0,
+    "ellipsis": true
+  },
+  {
+    "width": 834,
+    "sample": "standard",
+    "nameWidth": 118.5625,
+    "tagWidth": 53.203125,
+    "gap": 8,
+    "sameRow": true,
+    "progressOverlap": 0,
+    "ellipsis": false
+  },
+  {
+    "width": 834,
+    "sample": "long",
+    "nameWidth": 213.78125,
+    "tagWidth": 53.203125,
+    "gap": 8,
+    "sameRow": true,
+    "progressOverlap": 0,
+    "ellipsis": true
+  },
+  {
+    "width": 390,
+    "sample": "standard",
+    "nameWidth": 57.78125,
+    "tagWidth": 53.203125,
+    "gap": 8,
+    "sameRow": true,
+    "progressOverlap": 0,
+    "ellipsis": true
+  },
+  {
+    "width": 390,
+    "sample": "long",
+    "nameWidth": 57.78125,
+    "tagWidth": 53.203125,
+    "gap": 8,
+    "sameRow": true,
+    "progressOverlap": 0,
+    "ellipsis": true
+  }
+]

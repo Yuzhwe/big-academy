@@ -1,0 +1,35 @@
+{
+  "gpu": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Max, Unspecified Version)",
+    "vendor": "Google Inc. (Apple)",
+    "width": 708,
+    "height": 340
+  },
+  "performance": {
+    "durationMs": 15010.699999988079,
+    "draws": 300,
+    "drawsPerSecond": 19.985743502983755,
+    "renderer": "shader"
+  },
+  "simulatedHiddenDraws": 0,
+  "contextLoss": {
+    "testid": "path-cloud",
+    "parallax": "0.06",
+    "mode": "shader",
+    "renderer": "lightweight",
+    "preset": "staircase",
+    "reduced": "false",
+    "fallbackReason": "WebGL context lost",
+    "clouds": 3
+  },
+  "simulatedSlowFrames": {
+    "testid": "path-cloud",
+    "parallax": "0.06",
+    "mode": "shader",
+    "renderer": "lightweight",
+    "preset": "staircase",
+    "reduced": "false",
+    "fallbackReason": "Sustained slow frames",
+    "clouds": 3
+  }
+}

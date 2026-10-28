@@ -7,13 +7,17 @@
   ],
   "scripts": {
     "dev": "npm run dev -w @big-academy/writing",
-    "build": "npm run build -w @big-academy/design-system && npm run build -w @big-academy/writing && npm run build-storybook -w @big-academy/writing",
-    "typecheck": "npm run typecheck -w @big-academy/design-system && npm run typecheck -w @big-academy/writing && tsc -p tsconfig.pilot.json --noEmit",
+    "build": "npm run build -w @big-academy/design-system && npm run build -w @big-academy/writing && npm run build-storybook -w @big-academy/writing && npm run build:library",
+    "typecheck": "npm run typecheck -w @big-academy/design-system && npm run typecheck -w @big-academy/writing && tsc -p tsconfig.pilot.json --noEmit && npm run typecheck -w @big-academy/library",
     "test": "vitest run",
     "test:layout": "npm run test:layout -w @big-academy/writing",
     "storybook": "npm run storybook -w @big-academy/writing",
     "build-storybook": "npm run build-storybook -w @big-academy/writing",
-    "check:docs": "node scripts/check-document-sources.mjs"
+    "check:docs": "node scripts/check-document-sources.mjs",
+    "dev:library": "npm run dev -w @big-academy/library",
+    "build:library": "npm run build -w @big-academy/library",
+    "test:integration": "playwright test -c apps/writing/playwright.integration.config.ts",
+    "local-sites:install": "node scripts/install-local-sites.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",

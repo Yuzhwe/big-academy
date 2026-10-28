@@ -1,3 +1,4 @@
+@import '../components/writing/LandscapeTerrace.css';
 /* E-01 v2-terraces. Sky is the locked gradient. Parallax speed comes from the track. */
 .course-path:has(.staircase-viewport) {
   max-width: none;
@@ -70,7 +71,7 @@
   left: 0;
   top: 0;
   will-change: transform;
-  width: calc((var(--step-count) - 1) * 290px + 260px);
+  width: calc((var(--step-count) - 1) * 290px + 340px);
   height: var(--rail-height);
 }
 .staircase-rail .course-nodes {
@@ -86,7 +87,7 @@
   position: absolute;
   box-sizing: border-box;
   width: 260px;
-  left: calc(var(--step-index) * 290px);
+  left: calc(var(--step-index) * 290px + var(--path-edge, 40px));
   /* top is the absolute pedestal/anchor Y, not the visual card top. */
   top: calc(var(--anchor-base-y) + (var(--step-count) - 1 - var(--step-index)) * var(--step-rise));
   transform:translateY(-100%);
@@ -97,19 +98,6 @@
   width: 260px;
   margin: 0;
 }
-.staircase-rail .stair-lesson-card {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 16px;
-  box-sizing: border-box;
-  width: 260px;
-  min-height: 280px;
-  padding: 20px;
-}
-.staircase-rail .stair-lesson-card__body { flex: 1; min-width: 0; }
-.staircase-rail .stair-lesson-card__number { align-self: flex-start; }
-.staircase-rail .stair-lesson-card__action { align-self: stretch; }
 .staircase-rail .course-unit h2 { overflow-wrap: anywhere; }
 .staircase-rail :is(.course-intro, .course-unit, .course-goal, .unit-milestone, .stair-lesson-card) { position: relative; z-index: 2; }
 
@@ -147,12 +135,7 @@
   top:calc(var(--anchor-base-y) + (var(--step-count) - 1 - var(--step-index)) * var(--step-rise));
   transform:translateY(-100%);
 }
-.staircase-viewport .stair-lesson-card {
-  background:var(--ba-color-surface-canvas); color:var(--ba-color-content-primary);
-  border-color:var(--ba-color-border-default); border-radius:24px;
-  box-shadow:0 6px 20px rgba(19,53,71,.08);
-}
-.staircase-viewport .course-nodes :is(.course-unit,.course-intro,.course-goal,.unit-milestone) {
+.staircase-viewport .course-nodes :is(.course-unit,.course-intro) {
   background: var(--ba-writing-unit-paper-surface, #fff9f2);
   color:var(--ba-color-content-primary);
   border-color: var(--ba-writing-unit-paper-border, #dcc3ab);
@@ -184,24 +167,21 @@
   z-index: 1;
 }
 .path-hill-1 { z-index: 2; }
-.staircase-rail { z-index: 3; }
-/* One shallow terrace per node. Top of the platform meets the card bottom. Candidate curves. */
-.staircase-rail .course-nodes > li::before {
-  content: '';
+/* Tree sprites inherit the hill-1 parallax transform and its ground baseline.
+ * In the supplied PNGs the visible silhouette is centered at x≈52.5%, not at
+ * the transparent canvas center. Width/height are inline from hillTreeStyle.
+ */
+.path-hill-1 .path-tree {
   position: absolute;
-  z-index: 0;
+  max-width: none;
+  object-fit: contain;
+  transform: translateX(-52.5%);
   pointer-events: none;
-  top: 100%;
-  left: -46px;
-  width: 352px;
-  height: 64px;
-  border-radius: 46% 46% 18px 18px / 70% 70% 12px 12px;
-  background:
-    linear-gradient(#d7eb86, #d7eb86) 0 0 / 100% 28px no-repeat,
-    linear-gradient(#8fbf55, #4e8a3c) 0 22px / 100% 30px no-repeat,
-    linear-gradient(#3c7434, #3c7434) 8px 48px / calc(100% - 16px) 12px no-repeat;
-  filter: drop-shadow(0 6px 0 rgba(36, 78, 32, 0.18));
+  user-select: none;
 }
+
+.staircase-rail { z-index: 3; }
+/* Platforms reuse BA-WR-010 CSS, also shown in the component workbench. */
 .staircase-viewport:focus-visible { outline-color:var(--ba-color-focus); }
 @media (max-width:900px) {
   .course-path .course-path__header { gap:8px; }
@@ -216,3 +196,62 @@
   .course-level-tablist .ba-tabs__option { min-width:38px; }
   .course-path__header-locale .ba-button { min-width:44px; padding-inline:7px; font-size:12px; }
 }
+
+
+/* R2.12 scenery and arrow controls; shared diagonal camera and product gates retained. */
+.staircase-rail { transition:transform var(--ba-path-camera-duration) var(--ba-path-camera-easing); }
+.staircase-viewport[data-dragging='true'] .staircase-rail { transition:none; }
+
+.r2-sun { position:absolute; right:10%; top:13%; width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,var(--ba-path-sun-fill),transparent 71%); pointer-events:none; }
+.path-controls { position:absolute; z-index:5; left:50%; bottom:var(--ba-space-6,24px); transform:translateX(-50%); display:flex; gap:var(--ba-space-6,24px); }
+.path-controls .ba-button { width:var(--ba-path-arrow-size); height:var(--ba-path-arrow-size); }
+.staircase-viewport .unit-milestone { background:transparent; border:0; }
+.staircase-viewport .course-goal { background:transparent; border:0; text-align:center; }
+.course-goal__flag { margin:auto; }
+.course-path__header { position:relative; z-index:5; }
+
+@media(prefers-reduced-motion:reduce) { .staircase-rail,.course-goal__flag { animation:none; transition:none; } }
+
+@media(max-width:500px) { .course-level-tablist { max-width:42vw; } }
+.path-controls .ba-button__assembly { background:var(--ba-tabs-glass-surface); }
+
+.course-motion-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ba-paper, #fff) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ba-brand-dark, #133547) 18%, transparent);
+}
+.course-motion-toggle button {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ba-brand-dark, #133547);
+  font: 700 13px/1 var(--ba-font-body-en, "Jost", sans-serif);
+  cursor: pointer;
+}
+.course-motion-toggle button[aria-pressed='true'] { background: var(--ba-brand-dark, #133547); color: var(--ba-paper, #fff); }
+.course-motion-toggle button:focus-visible { outline: 2px solid var(--ba-color-focus, #2364db); outline-offset: 2px; }
+.staircase-viewport[data-motion='high'][data-intro='enter'] .staircase-rail > .course-nodes > li[data-node-kind='lesson'] {
+  animation: staircase-card-drop 520ms cubic-bezier(.2,.8,.25,1) both;
+  animation-delay: calc(var(--step-index) * 90ms);
+  pointer-events: none;
+}
+@keyframes staircase-card-drop {
+  from { opacity: 0; transform: translateY(calc(-100% - 120px)); }
+  70% { opacity: 1; transform: translateY(calc(-100% + 7px)); }
+  to { opacity: 1; transform: translateY(-100%); }
+}
+@media (max-width: 900px) { .course-motion-toggle button { padding-inline: 8px; } }
+@media (prefers-reduced-motion: reduce) {
+  .staircase-viewport[data-motion='high'][data-intro='enter'] .staircase-rail > .course-nodes > li[data-node-kind='lesson'] { animation: none; pointer-events: auto; }
+}
+
+.course-goal__flag svg { width:100%; height:100%; overflow:visible; }
+
+/* Low Motion preserves the scenery and controls without decorative loops. */
+.staircase-viewport[data-motion='low'] .unit-milestone__sheen { display: none; }
+.course-motion-system-note { font: 500 12px/1.2 var(--ba-font-body-en, 'Jost', sans-serif); color: var(--ba-brand-dark, #133547); max-width: 125px; padding-inline: 6px; }

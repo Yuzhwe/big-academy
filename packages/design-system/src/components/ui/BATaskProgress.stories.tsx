@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from 'storybook/test';
+import { expect, within, userEvent } from 'storybook/test';
 import type { TaskProgressItem } from '../../types/task';
 import { BATaskProgress } from './BATaskProgress';
 
@@ -22,8 +22,9 @@ function allow(tasks: TaskProgressItem[]) {
 }
 
 const meta = {
-  title: 'UI/BATaskProgress',
+  title: 'Primitives/BATaskProgress',
   component: BATaskProgress,
+  parameters: { ba: { contractId: 'BA-UI-006', status: 'in-review', owner: 'Design System', purpose: 'Activity progress and locked navigation states' } },
   args: {
     tasks: mixed,
     activeIndex: 2,
@@ -82,5 +83,36 @@ export const Skipped: Story = {
     await expect(skipped).toBeEnabled();
     await expect(skipped).not.toHaveAccessibleName(/已完成/);
     await expect(canvas.getByRole('button', { name: /已完成/ })).toBeInTheDocument();
+  },
+};
+
+/** Navigation is independent of status: a Done or Skipped screen can be selected. */
+export const DoneSelected: Story = {
+  args: { tasks: mixed, activeIndex: 0, canOpen: allow(mixed) },
+};
+export const SkippedSelected: Story = {
+  args: { tasks: mixed, activeIndex: 1, canOpen: allow(mixed) },
+};
+export const IncompleteSelected: Story = {
+  args: { tasks: mixed, activeIndex: 2, canOpen: allow(mixed) },
+};
+
+/** DR02-07: rail cap + current-first window with complete index in the same 36px marker. */
+export const Overflow16Screens: Story = {
+  args: { tasks: many.slice(0, 16), activeIndex: 12, canOpen: allow(many) },
+  decorators: [
+    (Story) => <div style={{ width: 520, maxWidth: '100%', margin: '0 auto' }}><Story /></div>,
+  ],
+};
+
+export const AllScreensPopover: Story = {
+  args: { tasks: many, activeIndex: 9, canOpen: allow(many) },
+  decorators: [
+    (Story) => <div style={{ width: 520, maxWidth: '100%', margin: '0 auto' }}><Story /></div>,
+  ],
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', { name: 'All activity screens' });
+    await userEvent.click(trigger);
+    await expect(within(document.body).getByRole('dialog', { name: 'All activity screens' })).toBeInTheDocument();
   },
 };

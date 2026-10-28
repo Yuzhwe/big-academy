@@ -1,63 +1,16 @@
-.unit-milestone {
-  box-sizing: border-box;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 16px;
-  padding: 16px;
-  background: var(--ba-paper, #ffffff);
-  border: var(--ba-border-weight, 0.5px) dashed var(--ba-writing-accent, #b25415);
-  border-radius: 16px;
-  color: var(--ba-brand-dark, #133547);
-}
+.unit-milestone { position:relative; box-sizing:border-box; display:grid; place-items:center; width:var(--ba-path-badge-size); height:var(--ba-path-badge-size); margin:0; padding:0; background:transparent; border:0; perspective:var(--ba-milestone-perspective); }
+.unit-milestone__action { position:relative; width:var(--ba-path-badge-size); height:var(--ba-path-badge-size); padding:0; border:0; background:transparent; border-radius:var(--ba-radius-circle); cursor:pointer; transform-style:preserve-3d; transform:rotateX(calc(var(--badge-y,0) * var(--ba-milestone-tilt) * -1)) rotateY(calc(var(--badge-x,0) * var(--ba-milestone-tilt))); }
+.unit-milestone__action img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; backface-visibility:hidden; }
+.unit-milestone__action img:nth-child(1) { transform:translate3d(calc(var(--badge-x,0) * var(--ba-milestone-back-travel)),calc(var(--badge-y,0) * var(--ba-milestone-back-travel)),var(--ba-milestone-back-depth)); }
+.unit-milestone__action img:nth-child(2) { transform:translate3d(calc(var(--badge-x,0) * var(--ba-milestone-front-travel)),calc(var(--badge-y,0) * var(--ba-milestone-front-travel)),var(--ba-path-badge-depth)); filter:drop-shadow(var(--ba-path-badge-shadow)); }
+.unit-milestone__action[data-disabled] { cursor:default; filter:grayscale(1); }
+.unit-milestone__action[data-focus-visible] { outline:var(--ba-focus-width,2px) solid var(--ba-color-action-primary); outline-offset:var(--ba-space-2); }
+/* The sweep's timeline never depends on pointer updates or React renders. */
+.unit-milestone__sheen { position:absolute; inset:0; pointer-events:none; overflow:hidden; mask:url('../../assets/review05/writing_milestone_1.1.webp') center / contain no-repeat; transform:translateZ(var(--ba-milestone-sheen-depth)); }
+.unit-milestone__sheen::after { content:''; position:absolute; inset:-25%; background:linear-gradient(110deg,transparent 36%,rgb(255 255 241 / 64%) 50%,transparent 64%); animation:ba-milestone-shine var(--ba-milestone-sweep-period) linear infinite; }
+@keyframes ba-milestone-shine { 0%,3%{transform:translateX(-110%)} 17%,100%{transform:translateX(110%)} }
+@media(prefers-reduced-motion:reduce) { .unit-milestone__action,.unit-milestone__action img {transform:none!important;} .unit-milestone__sheen{display:none;} }
 
-.unit-milestone[data-state='upcoming'] {
-  border-style: solid;
-  border-color: var(--ba-border-temporary, #d9cbb8);
-}
-
-.unit-milestone[data-state='newly-completed'] {
-  background: color-mix(in srgb, var(--ba-writing-accent, #b25415) 8%, var(--ba-paper, #ffffff));
-}
-
-.unit-milestone__kicker,
-.unit-milestone__title {
-  margin: 0;
-}
-
-.unit-milestone__kicker {
-  width: 100%;
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.unit-milestone__title {
-  flex: 1 1 auto;
-  font-family: "Dosis", "Arial Narrow", sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-}
-
-.unit-milestone__action {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0 16px;
-  border: 1px solid var(--ba-brand-dark, #133547);
-  border-radius: 999px;
-  background: var(--ba-paper, #ffffff);
-  color: var(--ba-brand-dark, #133547);
-  font: 700 15px/1 var(--ba-font-sans, sans-serif);
-  cursor: pointer;
-}
-
-.unit-milestone__action[data-disabled='true'] {
-  cursor: not-allowed;
-  color: var(--ba-muted, #4a5963);
-  border-color: #c4b8aa;
-}
-
-.unit-milestone__action[data-focus-visible='true'] {
-  outline: 2px solid var(--ba-brand-dark, #133547);
-  outline-offset: 2px;
-}
+.unit-milestone[data-motion='low'] .unit-milestone__action,
+.unit-milestone[data-motion='low'] .unit-milestone__action img { transform: none !important; }
+.unit-milestone[data-motion='low'] .unit-milestone__sheen { display: none; }

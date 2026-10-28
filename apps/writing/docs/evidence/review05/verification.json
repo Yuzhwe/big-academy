@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-27",
+  "timezone": "Asia/Shanghai",
+  "baseline": "044f4a6f91b13daf4d834e7b71bdebb62c7ed503",
+  "local": {
+    "docs": "passed",
+    "typecheck": "passed",
+    "unit": {
+      "passed": 125,
+      "failed": 0
+    },
+    "build": [
+      "design-system",
+      "Writing",
+      "Storybook",
+      "designer library"
+    ],
+    "chromium": {
+      "passed": 25,
+      "failed": 0,
+      "log": "ba-review05-frozen-browser.log"
+    },
+    "storybook": {
+      "rendered": 4,
+      "pageErrors": 0
+    },
+    "axe": [
+      {
+        "name": "path",
+        "violations": []
+      },
+      {
+        "name": "learn",
+        "violations": []
+      },
+      {
+        "name": "choice-correct",
+        "violations": []
+      }
+    ]
+  },
+  "notRun": [
+    "native Safari: remote automation disabled",
+    "physical tablet",
+    "audible voice quality",
+    "extended field GPU/battery"
+  ],
+  "designerReview": [
+    "Unit parallax/sheen and image edges",
+    "pole/cloth alignment",
+    "fixed G2-O layout",
+    "Coach and Activity spacing",
+    "gray Upcoming cloth embeds Completed text",
+    "reported sentence whitespace not reproduced"
+  ],
+  "preservedSource": {
+    "apps/writing/src/course/CloudShaderSky.tsx": "76383edd370bbaeac19d8b104d53f2ba32ab21729c3d19b2d45052ffc9ff00ba",
+    "apps/writing/src/course/cloudShaderM4.ts": "e2d5c035c42498a6aab326bb3eeac201c1f35a1a6d944bd3575baa22ae320ad0",
+    "apps/writing/src/course/StaircaseScene.tsx": "62dbf5c6dfab5f5f179d80b77a0a90f0c133361fcacbd77868d276af985e1256",
+    "apps/writing/src/components/writing/StairLessonCard.tsx": "c005b4f67f25a6c9134123e355080e8a1ecce51bedea73c1ad497a15106a645d",
+    "apps/writing/src/components/writing/StairLessonCard.css": "97a16896c4486d78b4985bdb61f3bf3b3eeb187adeeb1d168fd321db022b2026",
+    "apps/writing/src/components/writing/StairUnitCard.tsx": "59db0557963604abff74df08a0fa49bf69bede47083e1d7d5d9ae53cd7eedc3c",
+    "apps/writing/src/components/writing/WordGrid.tsx": "f2d647aa1625e87c638b6d9c948a6b4d3d40e11e756cc6746c80253fe3aaf6e0",
+    "apps/writing/src/components/writing/WordGrid.css": "42b415cecb8152300a46d3ef9fc5e3456fc77f97e5c5e53219e194d9976f7934",
+    "apps/writing/src/components/writing/SolarLessonPreview.tsx": "ab959804aa997651a4fad9a14620c7e7729f61582e17bd032d9cae48c67a51f7",
+    "apps/writing/src/components/writing/BAPageTransition.tsx": "f7076fa473401db30af536ce5d01328b3edb468ec063e1a2e853e8c9848bd1f6"
+  }
+}

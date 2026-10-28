@@ -1,0 +1,14 @@
+[
+  {
+    "candidate": "Original M4 Clear",
+    "renderer": "shader",
+    "fallback": null,
+    "timestamp": "2026-10-26T17:46:47.081Z"
+  },
+  {
+    "candidate": "Transparent M4 clouds over current CSS sky",
+    "renderer": "shader",
+    "fallback": null,
+    "timestamp": "2026-10-26T17:46:49.362Z"
+  }
+]

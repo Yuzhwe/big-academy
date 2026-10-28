@@ -1,7 +1,7 @@
-import { Button } from 'react-aria-components';
-import type { BALocale } from '@big-academy/design-system';
+import { BAButton, BAIcon, type BALocale } from '@big-academy/design-system';
 import './StairLessonCard.css';
 
+// Internal action states are retained for course progress; the card has three visual roles.
 export type StairLessonState = 'start' | 'continue' | 'review' | 'locked' | 'skipped';
 
 export interface StairLessonCardProps {
@@ -9,64 +9,84 @@ export interface StairLessonCardProps {
   number: number;
   title: string;
   state: StairLessonState;
+  minutes?: number;
+  current?: boolean;
+  titleLines?: 2 | 3;
+  /** Legacy supporting text: only shown when a duration was not supplied. */
   detail?: string;
   locale?: BALocale;
   onEnter?: (lessonId: string) => void;
+  onBlocked?: (lessonId: string) => void;
 }
 
 const actionLabel: Record<BALocale, Record<StairLessonState, string>> = {
-  en: {
-    start: 'Start',
-    continue: 'Continue',
-    review: 'Review',
-    locked: 'Locked',
-    skipped: 'Review',
-  },
-  zh: {
-    start: '开始',
-    continue: '继续',
-    review: '复习',
-    locked: '未解锁',
-    skipped: '复习',
-  },
+  en: { start: 'Enter', continue: 'Enter', review: 'Review', locked: 'Locked', skipped: 'Review' },
+  zh: { start: '进入', continue: '进入', review: '复习', locked: '未解锁', skipped: '复习' },
+};
+
+const statusLabel: Record<BALocale, Record<StairLessonState, string>> = {
+  en: { start: 'Available', continue: 'In progress', review: 'Completed', locked: 'Locked', skipped: 'Skipped' },
+  zh: { start: '可开始', continue: '进行中', review: '已完成', locked: '未解锁', skipped: '已跳过' },
 };
 
 /**
- * BA-WR-005 · path lesson card.
- * The lesson number stays in the top left for every state.
- * The card does not decide unlock. `onEnter` is the product session.
- * Candidate Warm Frame. Not validated.
+ * BA-WR-005 · reusable presentation, not progress authority.
+ * The product provides the real state and duration; it alone decides unlock.
+ * Geometry and seal details remain candidates until designer visual review.
  */
 export function StairLessonCard({
-  lessonId,
-  number,
-  title,
-  state,
-  detail,
-  locale = 'en',
-  onEnter,
+  lessonId, number, title, state, minutes, detail, locale = 'en', onEnter, onBlocked, current, titleLines = 3,
 }: StairLessonCardProps) {
+  const locked = state === 'locked';
+  const complete = state === 'review' || state === 'skipped';
+  const visualState = locked ? 'locked' : complete ? 'completed' : 'enterable';
   const label = actionLabel[locale][state];
-  const skipped = state === 'skipped';
+  const stateText = statusLabel[locale][state];
   return (
-    <article className="stair-lesson-card" data-component="BA-WR-005" data-state={state} data-lesson-id={lessonId}>
-      <p className="stair-lesson-card__number">{number}</p>
-      <div className="stair-lesson-card__body">
-        <h3 className="stair-lesson-card__title">{title}</h3>
-        {detail ? <p className="stair-lesson-card__detail">{detail}</p> : null}
-        {skipped ? (
-          <p className="stair-lesson-card__skip">{locale === 'zh' ? '已掌握 · 跳过' : 'Mastered · skipped'}</p>
+    <article
+      className="stair-lesson-card"
+      data-component="BA-WR-005"
+      data-state={state}
+      data-visual-state={visualState}
+      data-current={current ?? state === 'continue'}
+      data-title-lines={titleLines}
+      data-lesson-id={lessonId}
+      lang={locale === 'zh' ? 'zh-CN' : 'en'}
+      aria-label={(locale === 'zh' ? '第' + number + '课' : 'Lesson ' + number) + ': ' + title + ' · ' + stateText}
+      onPointerDownCapture={locked ? () => onBlocked?.(lessonId) : undefined}
+      onKeyDownCapture={locked ? (event) => {
+        if (event.key === 'Enter' || event.key === ' ') onBlocked?.(lessonId);
+      } : undefined}
+    >
+      <div className="stair-lesson-card__seal" aria-hidden="true">
+        <span className="stair-lesson-card__number">{number}</span>
+        {(locked || complete) ? (
+          <span className="stair-lesson-card__symbol">
+            {locked ? <BAIcon name="lock" size={14} strokeWidth={2} /> : <BAIcon name="check" size={15} strokeWidth={2.4} />}
+          </span>
         ) : null}
       </div>
-      <Button
+      <div className="stair-lesson-card__body">
+        <h3 className="stair-lesson-card__title" title={title}>{title}</h3>
+        {minutes !== undefined ? (
+          <p className="stair-lesson-card__duration">
+            <span className="stair-lesson-card__duration-number">{minutes}</span> {locale === 'zh' ? '分钟' : 'min'}
+          </p>
+        ) : detail ? <p className="stair-lesson-card__duration">{detail}</p> : null}
+      </div>
+      <BAButton
         className="stair-lesson-card__action"
-        data-testid="lesson-row"
-        data-state={state}
-        data-lesson-focus={lessonId}
-        onPress={() => onEnter?.(lessonId)}
+        size={70}
+        radius="full"
+        variant={state === 'start' || state === 'continue' ? 'primary' : 'secondary'}
+        locale={locale}
+        disabled={locked}
+        dataAttributes={{ 'data-testid': 'lesson-row', 'data-state': state, 'data-lesson-focus': lessonId }}
+        layout="full"
+        onPress={() => { if (!locked) onEnter?.(lessonId); }}
       >
         {label}
-      </Button>
+      </BAButton>
     </article>
   );
 }

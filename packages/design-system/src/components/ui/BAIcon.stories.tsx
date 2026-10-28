@@ -4,7 +4,7 @@ import { BAIcon, type BAIconName } from './BAIcon';
 const names: BAIconName[] = ['check','lock','arrow-left','menu','globe','book','warning-circle','info-circle'];
 
 const meta = {
-  title: 'Foundations/BAIcon · Iconoir',
+  title: 'Foundations/BAIcon',
   component: BAIcon,
   args: { name:'check', size:24 },
 } satisfies Meta<typeof BAIcon>;

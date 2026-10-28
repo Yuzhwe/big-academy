@@ -8,9 +8,9 @@ const tablet = getFixture('long', 'zh');
 const many = getFixture('many', 'en');
 
 const meta = {
-  title: 'Writing/LessonTopBar',
+  title: 'Writing/Shell/LessonTopBar',
   component: LessonTopBar,
-  parameters: { layout: 'fullscreen' },
+  parameters: { ba: { contractId: 'BA-WR-001', status: 'in-review', owner: 'Writing', purpose: 'Lesson identity, activity progress and path return' }, layout: 'fullscreen' },
   args: {
     lessonTitle: desktop.lessonTitle,
     lessonNumber: desktop.lessonNumber,

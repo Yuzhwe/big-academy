@@ -1,0 +1,4 @@
+/* Static original pole and original 4:3 cloth are independent layers. */
+.ba-flag.course-goal__flag { position:relative; display:block; width:var(--ba-flag-width); height:var(--ba-flag-height); max-width:100%; margin:0 auto; overflow:visible; }
+.ba-flag__pole { position:absolute; top:0; left:0; height:var(--ba-flag-pole-height); width:auto; max-width:none; object-fit:contain; pointer-events:none; }
+.ba-flag__canvas { position:absolute; top:var(--ba-flag-cloth-top); left:var(--ba-flag-cloth-left); width:var(--ba-flag-cloth-width); height:var(--ba-flag-cloth-height); display:block; pointer-events:none; }

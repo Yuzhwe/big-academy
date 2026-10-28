@@ -1,0 +1,91 @@
+name: Writing baseline regression (Review 05/06/Docs/Main)
+on:
+  push:
+    branches:
+      - feat/writing-review05-components-pages
+      - feat/writing-review06-refinement
+      - audit/writing-review06-documentation-sync-20261028
+      - chore/writing-baseline01-integration
+      - main
+  workflow_dispatch:
+concurrency:
+  group: writing-baseline01-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Git whitespace safety relative to main
+        run: git diff --check "$(git merge-base origin/main HEAD)" HEAD
+      - run: npm ci
+      - run: npm run check:docs
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: google-chrome --version
+      - run: npx playwright install ffmpeg
+      - run: npm run test:integration
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: review05-browser-evidence
+          path: |
+            apps/writing/docs/evidence/
+            apps/writing/test-results/
+          retention-days: 14
+
+  baseline-tag:
+    name: Annotated Writing Baseline 01 tag (main only)
+    if: github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create never-overwritten annotated tag on verified main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag=writing-baseline-01
+          git fetch origin main --tags
+          actual_main="$(git rev-parse origin/main)"
+          if [ "$actual_main" != "$GITHUB_SHA" ]; then
+            echo "::error::main advanced while releasing; refusing stale tag"
+            exit 1
+          fi
+          if git show-ref --verify --quiet "refs/tags/$tag"; then
+            target="$(git rev-parse "$tag^{}")"
+            if [ "$target" = "$GITHUB_SHA" ]; then
+              echo "Existing tag already points to the exact verified baseline SHA"
+              exit 0
+            fi
+            # Later main documentation/Review 07 work must not move the historical baseline tag.
+            if git merge-base --is-ancestor "$target" "$GITHUB_SHA"; then
+              echo "Baseline tag already exists on an earlier main ancestor; preserving it unchanged"
+              exit 0
+            fi
+            echo "::error::Baseline tag exists outside verified main ancestry: $target; never force/move"
+            exit 1
+          fi
+          git -c user.name='Big Academy CI' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' tag -a "$tag" -m 'Big Academy · Writing Baseline 01
+
+          Engineering baseline established.
+          Writing and designer Component Library integrated.
+          Documentation Sync Audit Phase B included.
+          Visual refinements deferred to Review 07.
+          Final designer visual approval pending.'
+          git push origin "refs/tags/$tag"
+          echo "Created annotated tag $tag at $GITHUB_SHA"
