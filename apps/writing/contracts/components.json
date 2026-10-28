@@ -3,9 +3,9 @@
   "project": "Big Academy Writing (pilot)",
   "status": "pilot-in-review",
   "sourceOfTruth": {
-    "product": "apps/writing/PRODUCT.md (v0.5 Review 06 current behavior)",
-    "design": "/DESIGN.md (v0.6 R3 current visual)",
-    "tokens": "packages/design-system/src/tokens.css (status and lesson-platform candidates; path art is v2-terraces)"
+    "product": "apps/writing/PRODUCT.md",
+    "design": "DESIGN.md",
+    "tokens": "packages/design-system/src/tokens.css"
   },
   "components": [
     {
@@ -170,8 +170,8 @@
         "Letter Dosis ExtraBold 800 18/20 nowrap; body Jost Medium 18px line-height 1.1",
         "Min-height stays 50px; one-line composition is 50px; wrapped rows grow and stay fully visible",
         "Row and text align flex-start so the icon stays with the first line",
-        "Before Check a row is default or selected only. After Check, the picked correct option is correct (green fill #14AE5C, leading check); a correct option the learner did not pick is correctUnselected (green outline #14AE5C, leading check, no solid green disc); a wrong option is wrong (fill #9B4F36, X). dim is graded chrome at opacity 0.4. disabled is a separate non-interactive state",
-        "default 默认: white, light border #C9B8B2, empty circle. selected 选中: selected fill #9B4F36 and a ring. correct 正确已选: green fill #14AE5C and a leading check. correctUnselected 正确未选: green outline #14AE5C and a leading check, no solid green disc. wrong 错误: fill #9B4F36 and an X. dim 变淡: graded chrome at opacity 0.4. #9B4F36 on selected and wrong is the selected fill, separate from the danger role of --ba-error. Aliases: idle is default, shown is correctUnselected",
+        "Before Check a row is default or selected; approved next-iteration target is clickable again to deselect and clear matching fill. Frozen BAChoice selected fill and native RadioGroup behavior are NOT yet validated against the target. After Check preserve the established graded, wrong, Correct, shown, and lock semantics; do not alter Alex grading.",
+        "default 默认: white, light border #C9B8B2, empty circle. selected 选中: white surface with deep-brown outline (same semantic warm-9 as WordGrid), selectable and reversible BEFORE Check; remove corresponding fill on deselect. correct 正确已选: green fill #14AE5C plus check. correctUnselected 正确未选: green outline #14AE5C plus check; wrong 错误: #9B4F36 fill plus X. dim remains graded chrome. New selected style and undo are Approved Design Requirements, not verified current implementation.",
         "Visible row is the letter, the body, and the leading status icon. correct and correctUnselected use the leading check only. The accessible name carries the state",
         "Border 1px solid",
         "Hover scale 1.02 and pressed scale 0.95, the same scale as the BAButton CTA. Reduced motion updates state immediately and does not scale",
@@ -194,9 +194,9 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
-      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
+      "visualStatus": "approved selected-outline target / implementation pending Review 07 visual + interaction QA",
       "visual": {
-        "status": "locked",
+        "status": "approved-design-target-implementation-pending",
         "approved": false,
         "authority": "DESIGN.md section Writing Choice option, BA-UI-003 / BAChoice",
         "radiusPx": 24,
@@ -248,12 +248,13 @@
           },
           "selected": {
             "name": "选中",
-            "when": "before Check",
-            "background": "#9B4F36",
-            "fillRole": "selected fill",
-            "border": "#FFFFFF",
-            "text": "#FFFFFF",
-            "icon": "ring"
+            "when": "before Check; repeated activation should deselect and clear matching fill",
+            "background": "#FFFFFF",
+            "fillRole": "none; dark brown outline, same design intent as WordGrid",
+            "border": "var(--ba-color-warm-9) (dark brown)",
+            "text": "#133547",
+            "icon": "leading ring; keep keyboard focus ring independent",
+            "treatment": "approved design target; frozen BAChoice runtime still uses dark filled selected style, pending Review 07 implementation/test"
           },
           "wrong": {
             "name": "错误",
@@ -274,7 +275,7 @@
           }
         }
       },
-      "notes": "Canonical states: default, selected, correct, correctUnselected, wrong, dim. Aliases: idle is default, shown is correctUnselected. selected and wrong use fill #9B4F36 as the selected fill, separate from the danger role of --ba-error. correct is green fill #14AE5C with a leading check. correctUnselected is a green outline #14AE5C with a leading check and no solid green disc. dim is graded chrome at opacity 0.4. disabled is a separate non-interactive state. Before Check a row is default or selected. The row shows the letter, the body, and the leading icon. Border is 1px. Hover 1.02 and pressed 0.95 match the BAButton CTA. Reduced motion does not scale. One-line and wrapped rows use align-items flex-start. Grading and Coach feedback stay in PRODUCT.md.",
+      "notes": "Review 06 freeze status: implemented component, but selected visual and pre-Check toggle/answer-fill synchronization are designer-approved TARGETS not yet implemented/verified in BAChoice (current CSS still paints selected #9B4F36; radio semantics need interaction QA). After Check keep existing correct green fill, correctUnselected green outline, wrong/error fill, dim and disabled semantics; do not change Alex grading or Next gates. Approved target uses deep-brown outline (warm-9) and white surface, can deselect before Check. See DESIGN.md and PRODUCT.md; implement and test in Review 07.",
       "reviewStatus": "Ready for Visual Review",
       "reviewEntry": "Primitives/BAChoice",
       "r2VisualStatus": "Updated symmetric inset and explicit disabled semantics / Pending Review; grading remains external"
@@ -623,7 +624,7 @@
         "Single group tab is configurable show/hide; auto keeps legacy hidden. Multiple groups use connected sticky tabs and horizontal overflow.",
         "Tabs switch authored vocabulary data only, no grader mutation",
         "Approved peach connected sticky tabs joined to the bank, and white pill cards",
-        "Ordered-build tabs are 本题词块, 观点, and 标点",
+        "Current Screen 04 Guided Build has one authored `set` group and NO decorative single-tab strip; Screen 05 Frame Fill has three real `task`, `opinion`, `marks` groups. Historical three-tab Guided Build illustration is not runtime authority.",
         "Apply tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点)",
         "Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match the Approved visuals wordgrid-ordered-build-approved and wordgrid-apply-approved",
         "Ordered-build bench underlines are the writing-area line. The WordGrid panel is the word-card palette. Each remaining blank is an underline, one horizontal line per word still to place. Screen controls are the word cards and the Coach-rail button group. A placed word stays in the line",
@@ -1031,13 +1032,16 @@
       "requirements": [
         "Light tinted decorative border visually distinguishes Level/Intro from Lesson action cards",
         "Level introduction typography 16px body",
-        "No Lesson CTA; complete card accessible at terminal pan bounds"
+        "No Lesson CTA; complete card accessible at terminal pan bounds",
+        "Approved target: place a separate orange Level Title Card ABOVE the existing Level Card; do not replace or overlay the lower Level Card.",
+        "Remove duplicate Level title only in lower card; preserve its content; both cards must share width. Title card wraps with content-driven height. Its arrow is decorative, never clickable.",
+        "Level and Unit card description regions have a minimum height of four text lines. Approved by designer; current code/composition is pending Review 07 implementation and browser verification."
       ],
       "requiredStories": [
         "LevelIntroDecorativeBorder",
         "LongLevelIntroAndGradient"
       ],
-      "notes": "Keep path navigation and lesson state separate."
+      "notes": "Approved future Level Title Card + Level Card composition and four-line minimum descriptions are pending implementation. Current CourseApp `.course-intro` is not evidence that a standalone LevelTitleCard is complete."
     },
     {
       "id": "BA-WR-009",
@@ -1083,9 +1087,9 @@
       "name": "LandscapeTerrace",
       "kind": "writing-presentation-composite",
       "contractVersion": "0.1.0-r3",
-      "status": "implemented-interim-scene-and-story-decoration",
-      "visualStatus": "in-review · Writing Hi-Fi Integration v1.0",
-      "implementation": "apps/writing/src/components/writing/LandscapeTerrace.css; apps/writing/src/components/writing/LandscapeTerrace.tsx; used by apps/writing/src/course/StaircaseScene.css",
+      "status": "historical-composition-integrated-in-scene",
+      "visualStatus": "historical Layered Landscape Terrace concept; current R2.12 cloud platform implementation in scene; not a reusable standalone import",
+      "implementation": "apps/writing/src/course/StaircaseScene.tsx; apps/writing/src/course/StaircaseScene.css",
       "props": {
         "nodeId": "string",
         "cameraPosition": "number"
@@ -1106,7 +1110,7 @@
         "FullComposition",
         "CardOnly"
       ],
-      "notes": "R2.12 supplied cloud-platform.webp replaces CSS green terrace. Decorative; no progress ownership. Scene and component library consume the same image and positioning CSS.",
+      "notes": "BA-WR-010 ID retained for history. Former standalone LandscapeTerrace.tsx/.css entrypoints are absent and must not be imported. Current StaircaseScene owns per-node composition and cloud-platform imagery; shared StairLessonCard + scene should be reviewed together, without pretending a separate LandscapeTerrace component exists.",
       "reviewStatus": "Ready for Visual Review",
       "reviewEntry": "Writing/Path/StairLessonCard",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx (FullComposition)",
