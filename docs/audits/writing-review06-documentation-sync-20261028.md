@@ -8,6 +8,32 @@
 **Read timestamp:** 2026-10-28T06:48:49Z
 **Scope/status:** **Phase A static remote audit delivered; Phase B BLOCKED pending stable, checked Review 06 integration checkpoint.** No Writing implementation, product rule, token, or core specification was modified by this audit. This report is evidence and recommendations, **not** product authority.
 
+## Phase B · Supervisor reconciliation (2026-10-28, remote Docs Audit PR)
+
+**Candidate only — not integrated into main.** Frozen Review 06 source remains `46e315b91aece8f839cd68011f78b86c3b6becc9`. Phase B changed documentation, metadata and the existing docs check on this stacked branch; **not** learning/scoring runtime or designer visuals. Current integration branch exact-SHA CI and main post-merge CI are required before any success declaration. Earlier Phase A statements remain historical observations at their recorded SHA.
+
+| Finding | Phase B disposition | Current boundary |
+| --- | --- | --- |
+| D06-001 P0 | **Docs corrected** | AGENTS.md says six runtime Activities, P2/P7 historical; check:docs now guards against current eight-screen regressions |
+| D06-002 P1 | **Docs corrected** | Root README scope and localhost caveat updated |
+| D06-003 P1 | **Docs corrected** | Root DESIGN.md current-state header supersedes historical Review 05 / early Grokbot information, while preserving normative design rules |
+| D06-004 P1 | **Docs corrected** | HANDOFF places latest candidate and superseded tree blocker above historical records |
+| D06-005 P1 | **Approved design recorded / implementation PENDING** | BAChoice white surface + dark-brown outline; undo before Check with matching fill; frozen BAChoice CSS and RadioGroup behavior not aligned/verified. No Alex grader change |
+| D06-006 P1 | **Approved design recorded / implementation PENDING** | Separate orange Level Title Card above lower card, equal width, wrapping, decorative arrow, min-four-line Level/Unit descriptions; not claimed present |
+| D06-007 P1 | **Contract + library docs corrected** | Screen 04 single `set` group, Screen 05 three authored groups; reversible cards before Check pending exact-SHA QA |
+| D06-008 P1 | **Metadata corrected** | BA-WR-010 ID retained but former LandscapeTerrace source paths no longer advertised as standalone existing files; actual scene paths referenced |
+| D06-009 P1 | **QA PENDING** | No CI was found directly associated with original frozen SHA. Integration CI must run and match tested HEAD; designer render acceptance is separate |
+| D06-010 P2 | **Metadata corrected** | `sourceOfTruth` contains canonical paths without stale version decorations |
+| D06-011 P2 | **Docs corrected** | Library README current catalog count, true boundaries and reversible-card notes; R2 record marked historical |
+| D06-012 P2 | **Check extended / CI PENDING** | Existing docs smoke script detects obsolete current eight-screen entrypoints, canonical contract paths, duplicate IDs and simple implemented-source files |
+| D06-013 P2 | **Current-first history improved** | DESIGN current header and historical markers; no bulk rewrite or new authorities. Longer historical material retained for traceability |
+
+**Remaining acceptance blockers:** current full integration candidate CI, inherited-commit scope audit before main, real-browser evidence or explicit unverified scope, normal GitHub merge checks/permissions. **Review 07 backlog**, not a block to *provisional* visual baseline by itself: BAChoice approved-but-unimplemented selection/undo, Level Title Card composition and minimum text height, tree appearance, layout refinements, and final designer review.
+
+**File ownership:** Review 06 Agent freezes source; Docs Audit Agent owns current authority docs and contracts; Supervisor owns PR integration, CI and version/tag checks. This table describes documentation completion, **not** proof of runtime implementation or final designer visual approval.
+
+---
+
 ## 1. Executive summary
 
 Review 06 is **not fully documentation-synchronized**. Current `apps/writing/PRODUCT.md` describes the authoritative six-Activity runtime, and root `DESIGN.md` is the only active design authority; `apps/writing/DESIGN.md` does not exist. However, agent entrypoints and older paragraphs still say eight screens or Review 05 is current. Old/current material coexist in DESIGN, HANDOFF, and library README. Certain component contract entries disagree with the designer's Review 06 requirements, and some previously marked "implemented" source references are no longer valid. The latest tree-swap commit contains deterministic code and tests, but no workflow run associated with that exact SHA was returned by GitHub during this audit; rendered designer approval is still pending.
