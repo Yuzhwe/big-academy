@@ -1,4 +1,4 @@
-> **Current implementation: Review 05 (2026-10-26).** Shared components serve both the designer library and real Writing pages. See [Review 05 delivery and evidence](docs/REVIEW_05.md). Rendered visual approval remains with the designer. Cloud M4 baseline `044f4a6` passed its engineering checks; original shader algorithms and approved scenery remain unchanged.
+> **Writing Baseline 01 — Engineering Baseline / Provisional Visual Baseline (integration candidate, 2026-10-28).** Frozen Review 06 source: `46e315b91aece8f839cd68011f78b86c3b6becc9` (PR #55); Documentation Sync Audit: PR #56. Current six Activity Screens; P2/P7 historical authored records only. Neither frozen source nor the selected visual refinements are final designer-approved. This is the sole current-state index; [Review 05](docs/REVIEW_05.md) and preceding pilots are historical engineering evidence. Exact-SHA CI and main-integration status must be read from [HANDOFF](docs/HANDOFF.md), never inferred from previous runs.
 
 # Big Academy — DESIGN.md
 
@@ -19,7 +19,7 @@ Big Academy is a K–12 learning ecosystem. Maintain coherent typography, spacin
 - **Theme:** product-owned accent/background mappings (e.g. Writing) and permitted decorative accents.
 - **Product-specific composition:** Writing's staircase, Coach, paper workspace, Word Grid and Hamburger are distinct components/patterns. Their **page-specific requirements and UX specifications live together in `apps/writing/PRODUCT.md`**, their Props/Events/States live in the Component Registry, and their shared design foundations live **here**. Do not duplicate detailed page requirements or learning/scoring rules inside this global document.
 - **Figma:** optional exploration, never a mandatory build input.
-- **Implementation status:** the shared library and Storybook pilot are on `feat/grokbot-writing-topbar`. The theme there is explicitly *temporary* and **not visually approved**.
+- **Historical implementation reference [R]:** the early `feat/grokbot-writing-topbar` Storybook pilot used temporary unapproved visual styling. It does not describe the current frozen Review 06 implementation.
 
 Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candidate; **[R]** reference-only; **[T]** working temporary implementation; **[Q]** open decision.
 
@@ -59,7 +59,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 
 **Scope / approval boundaries:** Theme B (accent + subtle tinted backgrounds) is approved [A]. The original P0 decision left exact CSS names, selector, color scales and individual tints open. The designer's later Color System v0.2 decision in §2.4 approves the new names, eight color scales, Writing selector and approved warm surface; Reading and new unlisted color values remain [Q]. Reading accent remains TBD. Shared focus, disabled and feedback semantics cannot silently change meaning when product theme changes. Validate computed foreground/background contrast and keyboard focus in each product theme.
 
-**Implementation handoff:** Grokbot pilot CSS on `feat/grokbot-writing-topbar` still directly uses `--ba-writing-accent` in shared BAButton. Migrate it to semantic aliases without intentional visual changes; add verification in stories and browser testing. That implementation branch was not modified by this architecture decision.
+**Historical implementation note [R]:** earlier Grokbot pilot CSS directly used `--ba-writing-accent` in BAButton. It is not an instruction to revert the current shared semantic-token implementation; confirm the current source before changing any token.
 
 ### 2.4 Color System v0.2 — designer-approved [A, 2026-10-19]
 
@@ -130,6 +130,8 @@ The UI/UX Designer approved a **4px base / 8px predominant spacing rhythm**, sup
 **Lesson Shell:** A · **Warm Frame + White Canvas**. White task/paper on left, Coach on right. Coach content scrolls independently. Previous and one contextual Check / Next / Hand in control sit at the bottom of the Coach rail, at the bottom-right of the lesson, outside the scrolling Coach transcript. Ordinary visual borders/dividers default **0.5 CSS px [A]**; thicker functional focus rings remain [T/Q] and must visibly distinguish focus.
 
 **BA-WR-001 LessonTopBar [A structure]:** icon-only 50×50 Back, then Lesson number, one-line flexible lesson title and exactly one fixed `G2-O` full-round pill. Short titles hug the pill; long titles ellipsize after reserving Back/number/pill/gaps and whole-header-centered progress. The identity never wraps or hides the pill. Narrow containers may place the centered progress rail on the original second row. Popover inset is 24px; no bottom divider. Permissions come from PRODUCT.md.
+
+**Level Title Card + Level Card [A target / implementation pending]:** an independent orange title card sits **above** the existing Level Card, same width, auto-height with long titles wrapping. The lower Level Card keeps its non-title content but removes the duplicate Level heading. Title-card arrow is decorative and non-interactive. Level/Unit card body description regions must show at least four lines of height. Demonstrate the composition in the Component Library, then integrate the same components in Writing; no current source is claimed approved or complete.
 
 **WordGrid [A]:** task-gated inside left writing area. Joe Approved the peach connected sticky-tab bank and the white pill cards. Current Lesson 1 Guided Build uses one authored `set` group and has no one-tab header; the historic three-tab illustration is not its runtime configuration. The Apply bank tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点). The active tab joins the peach bank. Tablet uses **on-demand overlay** in the left area, preserving the active caret and the final writing line, and leaves the Coach rail clear.
 
@@ -605,15 +607,15 @@ Board order is left to right. English ids are the BA-UI-003 contract ids.
 | 1 默认 | `default` / `idle` | `#FFFFFF` (`--ba-paper`) | `#C9B8B2` (`--ba-choice-border`) | `#133547` (`--ba-brand-dark`) | Empty circle, stroke about `#C9B8B2`, no fill |
 | 2 正确已选 | `correct` | Green fill `#14AE5C` (`--ba-success`) | `#FFFFFF` | `#FFFFFF` | Leading check |
 | 3 正确未选（Check 之后） | `correctUnselected` (alias `shown`) | `#FFFFFF` (`--ba-paper`) | Green outline `#14AE5C` (`--ba-success`) | `#133547` (`--ba-brand-dark`) | Leading check. No solid green disc |
-| 4 选中（Check 之前） | `selected` | Selected fill `#9B4F36` | `#FFFFFF` | `#FFFFFF` | Ring |
+| 4 选中（Check 之前） | `selected` | White `#FFFFFF` [A target] | Deep-brown outline `--ba-color-warm-9` [A target] | `#133547` | Ring. Before Check clicking again cancels selection and corresponding fill [A target / pending implementation] |
 | 5 错误 | `wrong` | `#9B4F36` | `#FFFFFF` | `#FFFFFF` | X |
 | 6 变淡 40% | `dim` | Same as `default` at opacity 0.4 | Same as `default` | Same as `default` | Same as `default` |
 
 `dim` is graded chrome at **opacity 0.4**. `disabled` is a separate non-interactive state.
 
-Before Check, a row is `default` or `selected`. `selected` uses the selected fill `#9B4F36` and a ring. After Check, the option the learner picked that is correct is `correct`: green fill `#14AE5C` and a leading check. A correct option the learner did not pick is `correctUnselected`: green outline `#14AE5C` and a leading check, with no solid green disc. A wrong option is `wrong`: `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state.
+Before Check, a row is `default` or `selected`. **Approved BAChoice target**: `selected` uses a white surface, deep-brown `--ba-color-warm-9` outline and a ring, and another click removes the selection and any matching fill. The frozen BAChoice CSS still shows a dark filled selection and its single-select React Aria undo behavior is unverified; **implementation and rendered verification remain Review 07 work**. After Check retain the existing grading and lock behavior: the option the learner picked that is correct is `correct`: green fill `#14AE5C` and a leading check. A correct option the learner did not pick is `correctUnselected`: green outline `#14AE5C` and a leading check, with no solid green disc. A wrong option is `wrong`: `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state.
 
-`#9B4F36` on these two rows is the selected fill. It is separate from the danger role of `--ba-error`.
+The older `#9B4F36` selected-fill design is superseded by the approved pre-Check outline target. Retain `#9B4F36` for the existing `wrong` state after Check; it is not the new selected appearance.
 
 The visible row is the letter, the body, and the leading icon. `correct` and `correctUnselected` use the leading check. The accessible name carries the state. Coach feedback stays in the feedback region.
 
@@ -674,7 +676,7 @@ Apply the following **one-name / one-role** vocabulary across all six current Le
 | **Writing canvas / Frame blanks / Build bench** | Distinct task-area composites. Reuse shared typography, focus cues and card spacing; input semantics remain different. | One universal text input |
 | **Historical P7 Question pager (Not in current runtime sequence)** | Four internal question positions retained only in the authored P7 template. | TopBar's six current Activity Screens |
 
-**Shared visual syntax [selected direction; exact sizes [E]]:** use a legible prompt heading followed by supporting instruction and the principal interactive region, in that consistent order. Keep the white reading/answer surface prominent, with restrained card edges, soft surfaces and deliberate whitespace. Short and long choice rows are both 24px. The choice row uses `align-items: flex-start` for one line and for wrapped lines, so the 36px status icon and the letter stay with the first line. Word tokens, word cards and inputs keep their own alignment and focus treatment. The same `default`, `selected`, `correct`, `correctUnselected`, `wrong`, `dim`, `disabled`, and `focus-visible` names mark the same distinctions. `idle` aliases `default`. `shown` aliases `correctUnselected`. On a choice option, the names are `default`, `selected`, `correct`, `correctUnselected`, `wrong`, and `dim`. Aliases are `idle` for `default` and `shown` for `correctUnselected`. Before Check a row is `default` or `selected` (selected fill `#9B4F36` and a ring). After Check, `correct` is a green fill and a leading check, `correctUnselected` is a green outline and a leading check with no solid green disc, and `wrong` is `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state. The row shows the letter, the body, and the leading icon. Semantic Coach feedback stays a distinct surface from the selection.
+**Shared visual syntax [selected direction; exact sizes [E]]:** use a legible prompt heading followed by supporting instruction and the principal interactive region, in that consistent order. Keep the white reading/answer surface prominent, with restrained card edges, soft surfaces and deliberate whitespace. Short and long choice rows are both 24px. The choice row uses `align-items: flex-start` for one line and for wrapped lines, so the 36px status icon and the letter stay with the first line. Word tokens, word cards and inputs keep their own alignment and focus treatment. The same `default`, `selected`, `correct`, `correctUnselected`, `wrong`, `dim`, `disabled`, and `focus-visible` names mark the same distinctions. `idle` aliases `default`. `shown` aliases `correctUnselected`. On a choice option, the names are `default`, `selected`, `correct`, `correctUnselected`, `wrong`, and `dim`. Aliases are `idle` for `default` and `shown` for `correctUnselected`. Before Check a row is `default` or `selected` (approved target: white fill, dark-brown outline and a ring; reversible until Check; frozen BAChoice implementation pending alignment). After Check, `correct` is a green fill and a leading check, `correctUnselected` is a green outline and a leading check with no solid green disc, and `wrong` is `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state. The row shows the letter, the body, and the leading icon. Semantic Coach feedback stays a distinct surface from the selection.
 
 **Activity variants use one shared language, not one identical layout:** P2 contrasts Not yet / Better teaching panels; P3 single and multi reuse the same list/card geometry with different choice semantics, while Tapword keeps text flowing as a sentence; P4 uses the same WordGrid anatomy for single Sentence set or multiple Frame Fill categories, but word-card insertion and grading gestures differ; P5 uses a spacious, subtly ruled (#EAEDEB at ~36px intervals) writing canvas plus a connected four-group WordGrid; P7 uses input appearances without practice hints or instant correctness markings. Do not insert a WordGrid on the P7 mastery screen to obtain visual uniformity.
 
@@ -708,7 +710,7 @@ The **Screen IDs and interaction requirements** are owned by `apps/writing/PRODU
 | `idle` / `default` / 默认 | White `#FFFFFF`, border `#C9B8B2`, text `#133547`, empty circle |
 | `correct` / 正确已选 | After Check, the option the learner picked that is correct. Green fill `#14AE5C`, leading check |
 | `correctUnselected` / 正确未选 (alias `shown`) | After Check, a correct option the learner did not pick. Green outline `#14AE5C`, leading check, no solid green disc |
-| `selected` / 选中 | Before Check. Selected fill `#9B4F36` and a ring |
+| `selected` / 选中 | Before Check. Approved white surface/deep-brown outline and a ring; reversible with matching fill. BAChoice runtime verification pending Review 07 |
 | `wrong` / 错误 | After Check. Fill `#9B4F36` and an X |
 | `dim` / 变淡 | Graded chrome at opacity 0.4 |
 | `disabled` | Separate non-interactive state |
@@ -812,6 +814,8 @@ Designer review remains required for rendered motion tuning, pole/cloth alignmen
 
 
 ## Review 06 · final visual refinement (2026-10-28)
+
+**Implementation-vs-design boundary:** WordGrid updated behavior and transparent tree assets are in the frozen Review 06 source. BAChoice outline/toggle, new Level Title Card composition and four-line descriptions are approved *targets*, not yet fully verified implementations. Keep source-code/test evidence and final designer acceptance separate.
 
 The approved A · Warm Frame + White Canvas remains the direction. The Activity workspace has a two-row page root (LessonTopBar and flexible Workspace); paper and Coach top-align below the bar and use independent internal scrolling. The right-side Previous/Next group stays outside the Coach scroll at the lower-right, including when the designer Reset Lesson control is visible. Desktop/tablet remain the primary layout; mobile keeps its existing responsive treatment.
 
