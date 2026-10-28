@@ -78,3 +78,51 @@ test('desktop/tablet/mobile path and first activity remain operable without hori
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   }
 });
+
+
+test('Writing Area and Coach begin together and the footer remains bottom anchored',async({page})=>{
+  for(const {width,height} of [{width:1440,height:900},{width:1024,height:768},{width:834,height:1112}]){
+    await page.setViewportSize({width,height});
+    await page.goto('/?start=lesson');
+    await expect(page.getByTestId('activity')).toBeVisible();
+    const before=await page.evaluate(()=>{
+      const box=(selector:string)=>document.querySelector(selector)!.getBoundingClientRect();
+      const paper=box('.lesson-workspace__paper');
+      const coach=box('.lesson-workspace__coach');
+      const footer=box('.lesson-workspace__footer');
+      const topbar=box('[data-component="BA-WR-001"]');
+      return {paper:{top:paper.top,height:paper.height},coach:{top:coach.top,height:coach.height},
+        footerBottom:footer.bottom,topbarBottom:topbar.bottom,viewport:innerHeight,scrollWidth:document.documentElement.scrollWidth};
+    });
+    expect(Math.abs(before.paper.top-before.coach.top)).toBeLessThanOrEqual(2);
+    expect(before.paper.top).toBeGreaterThanOrEqual(before.topbarBottom);
+    expect(before.paper.height).toBeGreaterThan(height*0.45);
+    expect(before.coach.height).toBeGreaterThan(height*0.3);
+    expect(before.viewport-before.footerBottom).toBeGreaterThanOrEqual(0);
+    expect(before.viewport-before.footerBottom).toBeLessThan(30);
+    expect(before.scrollWidth).toBeLessThanOrEqual(width+1);
+    const after=await page.evaluate(()=>{
+      const coach=document.querySelector<HTMLElement>('.lesson-workspace__coach')!;
+      const footer=document.querySelector<HTMLElement>('.lesson-workspace__footer')!;
+      const y=footer.getBoundingClientRect().bottom;
+      coach.insertAdjacentHTML('beforeend','<p>'+('Long Coach instruction. '.repeat(150))+'</p>');
+      coach.scrollTop=coach.scrollHeight;
+      return {scrolled:coach.scrollHeight>coach.clientHeight,footerY:footer.getBoundingClientRect().bottom,y};
+    });
+    expect(after.scrolled).toBe(true);
+    expect(Math.abs(after.y-after.footerY)).toBeLessThanOrEqual(1);
+  }
+});
+
+test('single valid Tapword Check reveals the other valid word as a hint, not a selection',async({page})=>{
+  await page.goto('/?start=lesson');
+  await options(page).nth(1).click();await next(page);await next(page);
+  await page.getByRole('button',{name:'should',exact:true}).click();
+  await expect(page.locator('.course-word[data-revealed="true"]')).toHaveCount(0);
+  await next(page);
+  const chosen=page.locator('.course-word').filter({hasText:/^should$/});
+  const alternative=page.locator('.course-word').filter({hasText:/^believe$/});
+  await expect(chosen).toHaveAttribute('data-correct','true');
+  await expect(alternative).toHaveAttribute('data-revealed','true');
+  await expect(alternative).not.toHaveAttribute('aria-pressed','true');
+});
