@@ -110,3 +110,11 @@ All results below are from run **40470164313** on `926224b`, not from Review 05 
 3. Run `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:integration`, `git diff --check`; investigate all failures, keep assertions intact.
 4. Verify 1440×900, 1024×768, 834px, 390px; confirm both internal scroll, bottom-right navigation, build/card undo, Check/Correct/Shown and full-page tree comparisons. Capture actual browser screenshots/video and attach to existing Draft PR #55.
 5. Only after those gates may engineering acceptance be reported; visual approval still belongs to the designer.
+
+## 2026-10-28 · Staircase tree swap — designer-review candidate
+
+- Source: the designer's two uploaded 1024×1024 transparent green/orange PNGs; full-res originals remain in the conversation, SHA-256 green `636c4b8963ac2a4b8409f87ce46592b545a453d064b2befd6df475b6d10d38c4`, orange `5de5c69d7d962f06094e1dd5b46bb3a05f5e60af8e1c150b8090d3ae545d7a04`.
+- Runtime: two 128×128 transparent WebP derivatives committed under `apps/writing/public/assets/trees/`. They are visual optimizations of supplied PNGs, not independently invented artwork. (The exact full-resolution PNG files were not committed.)
+- Replaced exactly five old `hill-front.svg` tree paths; position/height and transparent-margin corrected baseline are expressed in `staircaseTrees.ts`. Tree images inherit the existing hill-1 parallax layer; deterministic FNV-1a color is keyed by Level and stable anchor ID.
+- `staircaseTrees.test.ts` covers five anchors, per-Level repeated mappings and visible-baseline invariants; Playwright `review06.spec.ts` adds reload/Level-switch/scroll checks.
+- **Awaiting rendered designer approval**. No assertion that the owner's Mac preview ports are running; the branch must be pulled and served from its exact checkout for visual review. Do not merge `main` or deploy Vercel.

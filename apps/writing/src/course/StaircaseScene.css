@@ -167,6 +167,19 @@
   z-index: 1;
 }
 .path-hill-1 { z-index: 2; }
+/* Tree sprites inherit the hill-1 parallax transform and its ground baseline.
+ * In the supplied PNGs the visible silhouette is centered at x≈52.5%, not at
+ * the transparent canvas center. Width/height are inline from hillTreeStyle.
+ */
+.path-hill-1 .path-tree {
+  position: absolute;
+  max-width: none;
+  object-fit: contain;
+  transform: translateX(-52.5%);
+  pointer-events: none;
+  user-select: none;
+}
+
 .staircase-rail { z-index: 3; }
 /* Platforms reuse BA-WR-010 CSS, also shown in the component workbench. */
 .staircase-viewport:focus-visible { outline-color:var(--ba-color-focus); }

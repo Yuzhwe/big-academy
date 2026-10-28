@@ -6,6 +6,7 @@ import hillFront from '../assets/r2.12/hill-front.svg';
 import { BAButton, BAIcon } from '@big-academy/design-system';
 import { CloudShaderSky } from './CloudShaderSky';
 import { claimLevelIntro } from './staircaseMotion';
+import { HILL_FRONT_TREES, hillTreeColor, hillTreeStyle } from './staircaseTrees';
 
 const STEP_GAP = 290;
 const CARD_WIDTH = 260;
@@ -455,6 +456,15 @@ export function StaircaseScene({
       </div>
       <div className="path-layer path-hill path-hill-1" data-testid="path-hill-1" data-parallax={speedAttr(scenic.hill1)} style={hillLayer('hill1')} aria-hidden="true">
         <img src={hillFront} alt="" width={HILL_WIDTH} height={HILL_HEIGHT} />
+        {HILL_FRONT_TREES.map(tree => {
+          const color = hillTreeColor(levelId, tree.id);
+          return <img key={tree.id} className="path-tree"
+            src={color === 'green' ? '/assets/trees/tree-green.webp' : '/assets/trees/tree-orange.webp'}
+            alt="" aria-hidden="true" draggable={false}
+            data-testid="staircase-tree" data-tree-id={tree.id} data-tree-color={color}
+            data-anchor-x={tree.x} data-anchor-y={tree.baseline}
+            style={hillTreeStyle(tree, frame.height)} />;
+        })}
       </div>
       <div className="r2-sun" aria-hidden="true" />
       <div className="staircase-rail" data-parallax="1" style={style}>

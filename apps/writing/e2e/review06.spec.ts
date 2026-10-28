@@ -126,3 +126,32 @@ test('single valid Tapword Check reveals the other valid word as a hint, not a s
   await expect(alternative).toHaveAttribute('data-revealed','true');
   await expect(alternative).not.toHaveAttribute('aria-pressed','true');
 });
+
+test('Staircase tree PNG derivatives replace exactly five old SVG trees with stable anchors and colors', async ({page}) => {
+  await page.goto('/');
+  const trees=page.getByTestId('staircase-tree');
+  await expect(trees).toHaveCount(5);
+  const inspect=async()=>trees.evaluateAll(nodes=>nodes.map(node=>{
+    const el=node as HTMLImageElement;
+    return {id:el.dataset.treeId,color:el.dataset.treeColor,x:el.dataset.anchorX,y:el.dataset.anchorY,
+      width:Math.round(el.getBoundingClientRect().width),src:new URL(el.src).pathname};
+  }));
+  const l2=await inspect();
+  expect(new Set(l2.map(tree=>tree.color))).toEqual(new Set(['green','orange']));
+  expect(l2.every(tree=>tree.src.startsWith('/assets/trees/tree-'))).toBe(true);
+  await page.reload();
+  await expect(trees).toHaveCount(5);
+  expect(await inspect()).toEqual(l2);
+  await page.getByRole('tab').filter({hasText:/^L1$/}).click();
+  await expect(trees).toHaveCount(5);
+  const l1=await inspect();
+  expect(new Set(l1.map(tree=>tree.color))).toEqual(new Set(['green','orange']));
+  await page.getByRole('tab').filter({hasText:/^L2$/}).click();
+  await expect(trees).toHaveCount(5);
+  expect(await inspect()).toEqual(l2);
+  await page.locator('.staircase-viewport').hover();
+  await page.mouse.wheel(500,0);
+  await expect(trees).toHaveCount(5);
+  expect((await inspect()).map(tree=>[tree.id,tree.color,tree.x,tree.y]))
+    .toEqual(l2.map(tree=>[tree.id,tree.color,tree.x,tree.y]));
+});
