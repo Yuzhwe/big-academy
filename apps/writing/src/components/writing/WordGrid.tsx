@@ -3,7 +3,7 @@ import type { BALocale } from '@big-academy/design-system';
 import './WordGrid.css';
 
 export type WordSelection = 'default' | 'selected' | 'used';
-export type WordEvaluation = 'neutral' | 'correct' | 'incorrect' | 'hint' | 'shown';
+export type WordEvaluation = 'neutral' | 'correct' | 'correctUnselected' | 'incorrect' | 'hint' | 'shown';
 export interface WordGridWord {
   id: string;
   text: string;
@@ -31,8 +31,8 @@ export interface WordGridProps {
   onWordAction?: (word: WordGridWord, groupId: string) => void;
 }
 const labels = {
-  en: { selected:'Selected', used:'Used', correct:'Correct', incorrect:'Incorrect', hint:'Hint', shown:'Shown answer', disabled:'Unavailable' },
-  zh: { selected:'已选择', used:'已使用', correct:'正确', incorrect:'错误', hint:'提示', shown:'系统展示答案', disabled:'不可操作' },
+  en: { selected:'Selected', used:'Used', correct:'Correct', correctUnselected:'Also correct', incorrect:'Incorrect', hint:'Hint', shown:'Shown answer', disabled:'Unavailable' },
+  zh: { selected:'已选择', used:'已使用', correct:'正确', correctUnselected:'也是正确答案', incorrect:'错误', hint:'提示', shown:'系统展示答案', disabled:'不可操作' },
 };
 /** Approved neutral bank. R2 selection/evaluation extensions are candidates; the caller owns all grading. */
 export function WordGrid({ groups, activeGroup, presentation='docked', tabs='auto', tabAppearance='connected', locale='en', onGroupChange, onInsert, onWordAction }: WordGridProps) {
