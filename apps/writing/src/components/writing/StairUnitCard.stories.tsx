@@ -42,4 +42,3 @@ export const FourRoundedCornersR2:Story={
   args:{},
   parameters:{ba:{contractId:'BA-WR-007',status:'shared-hifi-integration',note:'16px all corners, brown 18px UNIT plus brown 16px full pill (9 lessons · 170 min), 24px heading. Staircase uses the same component.'}},
 };
-
