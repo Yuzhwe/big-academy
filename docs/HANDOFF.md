@@ -1,6 +1,22 @@
-# Big Academy · current handoff
+# Big Academy · Writing Baseline 01 — integration candidate
 
-Updated 2026-10-27 (Asia/Shanghai). Current work: Review 06 Final Fix & Acceptance, branch `feat/writing-review06-refinement`, Draft PR #55 targeting `feat/writing-review05-components-pages`.
+Updated 2026-10-28 (UTC). **Engineering Baseline / Provisional Visual Baseline — NOT final visual approval.**
+
+**Frozen Review 06 source:** `46e315b91aece8f839cd68011f78b86c3b6becc9` (Draft [PR #55](https://github.com/Yuzhwe/big-academy/pull/55)); Documentation Audit Phase A `dd86da075b5b754a08449c3eeb0076ff4debb479` (Draft [PR #56](https://github.com/Yuzhwe/big-academy/pull/56)). Phase B edits occur only on the stacked documentation PR. `main` integration SHA, QA results, and stable tag are **pending** until verified; do not infer completion from this handoff.
+
+**Branch topology:** `main` → Cloud Shader M4 → Review 05 (#54) → Review 06 (#55) → Documentation Audit (#56). The first comparison has 355 Review 06 commits beyond main; full ancestry and changed-file review are required before main integration, not a naïve three-PR merge. Designer approved *freezing the engineering work* and gated main integration; not a blanket visual signoff or permission to change Product Owner learning rules.
+
+**Current runtime:** Writing L2/G2-O Lesson 1 has **six** Activities, with P2/P7 authored records preserved only as history. A · Warm Frame + White Canvas remains approved. Current source includes the two WebP tree variants and WordGrid updates; real tree appearance still awaits designer acceptance. **Approved targets not yet verified as implementations** include BAChoice white/deep-brown-outline selection with pre-Check undo and matching fill reset, the independent orange Level Title Card above existing Level Card, and a four-line minimum Level/Unit description height. These belong to Review 07, not falsely marked Done.
+
+**QA:** GitHub Actions had no run directly associated with frozen `46e315b` when checked 2026-10-28. Earlier runs (including 127 unit tests / 27 integration tests) are historical evidence for older SHAs, not acceptance of current branch, documentation changes, integration SHA or main. The integration-branch workflow now includes docs branch and main; obtain exact SHA success evidence and state any skips before merging. Mac localhost 5184/6017/6006 and physical Safari/tablet are **NOT VERIFIED in this remote chat**. No Vercel deployment authorized.
+
+**Next:** finish Documentation Sync Audit · Phase B, execute remote CI on the full integration candidate, inspect the oversized ancestor diff for unrelated experiments, use normal reviewed PR integration only when safe; create annotated stable tag if a supported authenticated method exists. Do not rewrite local work, use force push, or start Review 07 visual implementation.
+
+---
+
+## Historical handoff snapshots (earlier SHA-specific results only)
+
+Updated 2026-10-27 (Asia/Shanghai). Earlier work: Review 06 Final Fix & Acceptance, branch `feat/writing-review06-refinement`, Draft PR #55 targeting Review 05. Dates/port claims and no-merge instructions below were the historical status **superseded by this gated Baseline 01 directive**.
 
 ## Authorities and scope
 
@@ -98,13 +114,13 @@ All results below are from run **40470164313** on `926224b`, not from Review 05 
 - Shared WordGrid and Writing use the same implementation; workbench and Storybook include selected/undo and correct-unselected examples.
 - Added Vitest and Playwright regression cases; PRODUCT.md, DESIGN.md, component Contracts updated.
 
-### Blocking resource / verification gaps
-- **Tree replacement BLOCKED**: the required approved `apps/writing/public/assets/trees/tree-green.png` and `tree-orange.png` return 404 on the remote branch. Existing code-drawn trees are embedded in `apps/writing/src/assets/r2.12/hill-front.svg`. Do not delete/replace these with guessed assets. Sync the designer's exact approved local PNG files into version control, then replace the SVG tree paths in place using the five original positions/baselines and deterministic per-Level assignment, calibrate alpha margins and verify parallax.
+### Historical resource / verification gaps (superseded by WebP tree commit)
+- **Earlier tree replacement BLOCKED; no longer the current source status**: the required approved `apps/writing/public/assets/trees/tree-green.png` and `tree-orange.png` return 404 on the remote branch. Existing code-drawn trees are embedded in `apps/writing/src/assets/r2.12/hill-front.svg`. Do not delete/replace these with guessed assets. Sync the designer's exact approved local PNG files into version control, then replace the SVG tree paths in place using the five original positions/baselines and deterministic per-Level assignment, calibrate alpha margins and verify parallax.
 - **CI and browser verification UNVERIFIED** for this newer iteration: prior full green runs belong to old HEAD `d816079`, not these changes. Unit tests, typecheck, build, Storybook, Playwright and screenshots need a fresh run; never mark them PASS based on earlier CI.
 - **Local Mac preview UNVERIFIED**: this remote GitHub-only execution had no access to `/Users/yuzhe/Documents/ChatGPT/Big Academy/review05`, port 5184 or port 6017. Do not advertise local services as running; verify their PID, cwd and latest checkout before designer review.
 - Physical Safari and tablet QA plus designer visual approval remain outstanding. Preserve untracked `review-evidence-review06-lesson1.png` in the actual Mac workspace.
 
-### Next execution steps
+### Historical next execution steps (superseded where completed)
 1. Reconcile remote branch with local worktree without force-reset; preserve all untracked/user changes.
 2. Add exact missing approved PNG resources and finish the stable one-for-one tree swap; no duplicate trees.
 3. Run `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:integration`, `git diff --check`; investigate all failures, keep assertions intact.
