@@ -86,3 +86,27 @@ All results below are from run **40470164313** on `926224b`, not from Review 05 
 - Extended real-device GPU/battery behavior and audible speech quality remain device/human checks. Existing shader fallback, visibility suspension and speech error paths are automated.
 - No unresolved Review 06 engineering blocker is known after the green run above.
 
+
+
+## Review 06 · Final Visual & Interaction Refinement (2026-10-28, new iteration)
+
+**Status: PARTIALLY IMPLEMENTED — not accepted.** This is separate from the prior green engineering acceptance at `d816079`. The new commits after that SHA are not covered by old CI runs. Recheck current HEAD and all results before declaring a pass. PR #55 remains Draft; do not merge main or deploy Vercel.
+
+### Implemented in the new remote branch
+- BA-WR-002: Designer Reset Lesson tool moved into an isolated non-scrolling Coach-rail slot, above Previous/Next. The root LessonTopBar + Workspace now remains two rows; paper and Coach align at their tops and share remaining 100dvh height. Existing internal Coach/paper scroll and responsive structure preserved.
+- BA-WR-003: Default pill dimensions 70px min / 20px / 28px / 12px×18px. Dark brown selected outline, no disabled-on-select. Stable per-card identity for ordered build; fill, select/undo and reselect maintain the same `TaskProgress.built` + `builtCardIds` record. Frame fill uses `frameCardPlacements` with stable ID, blank and exact character span; manual typing reconciles these selections. Tapword after Correct retains filled success for the selected answer and reveals other authored correct targets without setting selected. Existing wrong/shown/credit/Next gates preserved.
+- Shared WordGrid and Writing use the same implementation; workbench and Storybook include selected/undo and correct-unselected examples.
+- Added Vitest and Playwright regression cases; PRODUCT.md, DESIGN.md, component Contracts updated.
+
+### Blocking resource / verification gaps
+- **Tree replacement BLOCKED**: the required approved `apps/writing/public/assets/trees/tree-green.png` and `tree-orange.png` return 404 on the remote branch. Existing code-drawn trees are embedded in `apps/writing/src/assets/r2.12/hill-front.svg`. Do not delete/replace these with guessed assets. Sync the designer's exact approved local PNG files into version control, then replace the SVG tree paths in place using the five original positions/baselines and deterministic per-Level assignment, calibrate alpha margins and verify parallax.
+- **CI and browser verification UNVERIFIED** for this newer iteration: prior full green runs belong to old HEAD `d816079`, not these changes. Unit tests, typecheck, build, Storybook, Playwright and screenshots need a fresh run; never mark them PASS based on earlier CI.
+- **Local Mac preview UNVERIFIED**: this remote GitHub-only execution had no access to `/Users/yuzhe/Documents/ChatGPT/Big Academy/review05`, port 5184 or port 6017. Do not advertise local services as running; verify their PID, cwd and latest checkout before designer review.
+- Physical Safari and tablet QA plus designer visual approval remain outstanding. Preserve untracked `review-evidence-review06-lesson1.png` in the actual Mac workspace.
+
+### Next execution steps
+1. Reconcile remote branch with local worktree without force-reset; preserve all untracked/user changes.
+2. Add exact missing approved PNG resources and finish the stable one-for-one tree swap; no duplicate trees.
+3. Run `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:integration`, `git diff --check`; investigate all failures, keep assertions intact.
+4. Verify 1440×900, 1024×768, 834px, 390px; confirm both internal scroll, bottom-right navigation, build/card undo, Check/Correct/Shown and full-page tree comparisons. Capture actual browser screenshots/video and attach to existing Draft PR #55.
+5. Only after those gates may engineering acceptance be reported; visual approval still belongs to the designer.
