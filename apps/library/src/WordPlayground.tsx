@@ -11,19 +11,19 @@ export function WordPlayground({scene,update}:{scene:Scene;update?:(patch:Partia
   const stateSelection:WordSelection=['selected','used'].includes(scene.state)?scene.state as WordSelection:scene.wordSelection;
   const stateEvaluation:WordEvaluation=['correct','incorrect','hint','shown'].includes(scene.state)?scene.state as WordEvaluation:scene.wordEvaluation;
   const display=groups.map(g=>({...g,words:g.words.map((w,i)=>({...w,
-    selection:forced&&i===0?stateSelection:scene.wordAnswer.includes(w.id)?'used':scene.wordSelected.includes(w.id)?'selected':'default',
+    selection:forced&&i===0?stateSelection:scene.wordAnswer.includes(w.id)?'selected':scene.wordSelected.includes(w.id)?'selected':'default',
     evaluation:forced&&i===0?(build&&stateSelection==='used'&&['correct','incorrect'].includes(stateEvaluation)?'neutral':stateEvaluation):scene.wordResult==='hint'&&w.id==='g0-w0'?'hint':scene.wordResult==='shown'&&w.id==='g0-w0'?'shown':scene.wordScenario==='E'&&scene.wordSelected.includes(w.id)&&['correct','incorrect'].includes(scene.wordResult)?scene.wordResult as WordEvaluation:'neutral',
     disabled:scene.wordInteraction==='disabled'||(forced&&scene.state==='disabled'),
   }))}));
   const change=(id:string)=>{
-    if(build) { if(!scene.wordAnswer.includes(id)) update?.({wordAnswer:[...scene.wordAnswer,id],wordResult:'neutral'}); }
+    if(build) { update?.({wordAnswer:scene.wordAnswer.includes(id)?scene.wordAnswer.filter(card=>card!==id):[...scene.wordAnswer,id],wordResult:'neutral'}); }
     else update?.({wordSelected:scene.wordSelected.includes(id)?scene.wordSelected.filter(v=>v!==id):[...scene.wordSelected,id],wordResult:'neutral'});
   };
   const check=()=>{ const correct=build?scene.wordAnswer.join(',')==='g0-w0,g0-w1,g0-w2,g0-w3':scene.wordSelected.length===1&&scene.wordSelected[0]==='g0-w0';update?.({wordResult:correct?'correct':'incorrect'}); };
   return <div className="preview-example word-playground">
     <p className="demo-notice">{zh?'组件示例数据，不计学习成绩。新增反馈外观为 Candidate / Pending Approval。':'Component demo only · No learner score. New feedback visuals are candidates.'}</p>
     <section aria-label="WordGrid 原版" className="word-playground__baseline">
-      <h3>Approved baseline · 50px / 16px</h3>
+      <h3>Approved baseline · 70px / 20px</h3>
       <WordGrid groups={display} activeGroup={scene.wordGroup} tabs={scene.wordTabs}
         tabAppearance="connected" locale={scene.locale}
         onGroupChange={wordGroup=>update?.({wordGroup})} onWordAction={w=>change(w.id)}/>
@@ -35,7 +35,7 @@ export function WordPlayground({scene,update}:{scene:Scene;update?:(patch:Partia
         onGroupChange={wordGroup=>update?.({wordGroup})} onWordAction={w=>change(w.id)}/> : null}
     </details>
     {build&&<section className="answer-bench" aria-label={zh?'答案区域':'Answer area'} data-result={forced&&stateSelection==='used'?stateEvaluation:scene.wordResult}>
-      <h3>{zh?'自由拼句示例':'Free-build example'}</h3><p>{zh?'目标：We love gardens. 此示例允许撤销；Writing 第 5 屏的有序拼句不允许撤销。':'Target: We love gardens. Undo is allowed in this isolated free-build demo, not Writing screen 5.'}</p>
+      <h3>{zh?'自由拼句示例':'Free-build example'}</h3><p>{zh?'目标：We love gardens. Check 前可再次点击词卡撤销。':'Target: We love gardens. Select or tap again to undo before Check.'}</p>
       <div className="answer-tokens">{(forced&&stateSelection==='used'?all.slice(0,4):words).map((w,i)=><span key={`${w.id}-${i}`}>{w.text}<button aria-label={`${zh?'撤销':'Remove'} ${w.text}`} onClick={()=>update?.({wordAnswer:scene.wordAnswer.filter((_,n)=>n!==i),wordResult:'neutral'})}>×</button></span>)}</div>
       {forced&&stateSelection==='used'&&<p>{stateEvaluation==='correct'?'✓ Correct':stateEvaluation==='incorrect'?'× Incorrect':'Used'} · {zh?'整句反馈':'Sentence feedback'}</p>}
       <p>{zh?'反馈作用于整句，不给词库中的每个词独立判分。':'Feedback applies to the sentence, not each used word.'}</p>
