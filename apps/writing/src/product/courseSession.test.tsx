@@ -593,3 +593,56 @@ describe('Review 06 acceptance gates', () => {
     expect(course.inspect().checks['L2-04.check']?.passed).toBeUndefined();
   });
 });
+
+
+describe('Review 06 final refinement: reversible WordGrid and correct-target semantics', () => {
+  it('toggles a stable ordered-build tile without changing any other built words', () => {
+    const course = session();
+    reach(course, screen => screen.task === 'ss.L2-04');
+    const group = course.activity()?.wordGrid?.groups[0];
+    const our = group?.words.find(word => word.text === 'our');
+    const school = group?.words.find(word => word.text === 'school');
+    expect(our).toBeDefined();
+    expect(school).toBeDefined();
+    course.placeCard(our!.text, our!.id);
+    course.placeCard(school!.text, school!.id);
+    expect(course.activity()?.build?.bench).toMatch(/our school/i);
+    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(true);
+    course.placeCard(our!.text, our!.id);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['school']);
+    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(false);
+    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === school!.id)?.used).toBe(true);
+  });
+
+  it('removes only the corresponding frame fill when reselecting its stable card ID', () => {
+    const course = session();
+    reach(course, screen => screen.task === 'ts8');
+    const word = course.activity()?.wordGrid?.groups[0].words[0];
+    expect(word).toBeDefined();
+    course.focusBlank(0);
+    course.setCaret(0, 0);
+    course.placeCard(word!.text, word!.id);
+    expect(course.activity()?.frame?.blanks[0].value).toContain(word!.text);
+    expect(course.activity()?.wordGrid?.groups[0].words[0].used).toBe(true);
+    course.placeCard(word!.text, word!.id);
+    expect(course.activity()?.frame?.blanks[0].value).toBe('');
+    expect(course.activity()?.wordGrid?.groups[0].words[0].used).toBe(false);
+  });
+
+  it('reveals unpicked valid Tapword target only after successful Check', () => {
+    const course = session();
+    reach(course, screen => screen.task === 'ts4');
+    const task = course.task('ts4');
+    const tokens = course.engine.tokens(task.text ?? '');
+    const should = tokens.findIndex(token => token.w === 'should');
+    const believe = tokens.findIndex(token => token.w === 'believe');
+    expect(should).toBeGreaterThanOrEqual(0);
+    expect(believe).toBeGreaterThanOrEqual(0);
+    course.tapWord(should);
+    expect(course.activity()?.tapword?.words[believe].revealed).toBe(false);
+    course.pressPrimary();
+    expect(course.activity()?.tapword?.words[should].correct).toBe(true);
+    expect(course.activity()?.tapword?.words[believe].revealed).toBe(true);
+    expect(course.activity()?.tapword?.words[believe].selected).toBe(false);
+  });
+});
