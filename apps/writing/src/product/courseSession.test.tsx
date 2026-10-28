@@ -612,6 +612,10 @@ describe('Review 06 final refinement: reversible WordGrid and correct-target sem
     expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['school']);
     expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(false);
     expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === school!.id)?.used).toBe(true);
+    // Re-inserting an earlier removed tile does not discard or duplicate later tiles.
+    course.placeCard(our!.text, our!.id);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['our', 'school']);
+    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(true);
   });
 
   it('removes only the corresponding frame fill when reselecting its stable card ID', () => {
