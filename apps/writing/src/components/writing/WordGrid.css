@@ -54,13 +54,13 @@
 }
 
 .word-grid__card {
-  min-height: 50px;
-  padding: 10px 14px;
+  min-height: 70px;
+  padding: 12px 18px;
   border: 0;
   border-radius: 999px;
   background: #fff;
   color: var(--ba-brand-dark, #133547);
-  font: 600 16px/1.2 var(--ba-font-body-en, "Jost", sans-serif);
+  font: 600 20px/28px var(--ba-font-body-en, "Jost", sans-serif);
   cursor: pointer;
 }
 
@@ -97,12 +97,19 @@
 .word-grid__text { min-width:0; }
 .word-grid__card[data-kind='sentence'] { flex-basis:100%; width:100%; height:auto; border-radius:var(--ba-radius-24); text-align:left; justify-content:flex-start; line-height:1.5; }
 .word-grid__card:lang(zh-CN) { font-family:var(--ba-font-body-zh); }
-.word-grid__card[data-selection='selected'] { box-shadow:inset 0 0 0 2px var(--ba-color-action-primary); }
+.word-grid__card[data-selection='selected'] { box-shadow:inset 0 0 0 2px var(--ba-color-warm-9); }
 .word-grid__card[data-selection='used'] { background:var(--ba-color-neutral-2); }
 .word-grid__card[data-evaluation='correct'] { background:var(--ba-color-success-surface); color:var(--ba-color-success-text); box-shadow:inset 0 0 0 2px var(--ba-color-success-fill); }
 .word-grid__card[data-evaluation='incorrect'] { background:#fff; color:var(--ba-brand-dark); box-shadow:none; }
 .word-grid__card[data-evaluation='hint'] { background:var(--ba-color-warning-surface); color:var(--ba-color-warning-text); }
 .word-grid__card[data-evaluation='shown'] { background:var(--ba-color-info-surface); color:var(--ba-color-info-text); box-shadow:inset 0 0 0 2px var(--ba-color-info-fill); }
+/* Revealed alternative: selection geometry, but only the outline turns green.
+ * This does not mutate aria-pressed or the learner's actual selection. */
+.word-grid__card[data-evaluation='correctUnselected'] {
+  background: var(--ba-paper);
+  color: var(--ba-brand-dark);
+  box-shadow: inset 0 0 0 2px var(--ba-color-success-6);
+}
 .word-grid__card[data-disabled] { background:var(--ba-color-disabled-surface); color:var(--ba-color-disabled-content); box-shadow:inset 0 0 0 1px var(--ba-color-disabled-border); cursor:not-allowed; }
 .word-grid__card[data-hovered]:not([data-disabled]) { transform:scale(1.02); }
 .word-grid__card[data-pressed]:not([data-disabled]) { transform:scale(.95); }
