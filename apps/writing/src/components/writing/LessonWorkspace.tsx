@@ -18,6 +18,8 @@ export interface LessonWorkspaceProps {
   activity: ReactNode;
   coach: ReactNode;
   navigation: ReactNode;
+  /** Optional designer controls live outside the scrolling Coach and above navigation. */
+  tools?: ReactNode;
   /** Previous/Next is the 1:2 pair. Lesson end uses three full-width actions. */
   navigationLayout?: 'pair' | 'end';
 }
@@ -27,7 +29,7 @@ export interface LessonWorkspaceProps {
  * Previous and the primary action sit at the bottom of the Coach rail.
  * Visual treatment is a candidate Warm Frame. Not validated.
  */
-export function LessonWorkspace({ activity, coach, navigation, navigationLayout = 'pair' }: LessonWorkspaceProps) {
+export function LessonWorkspace({ activity, coach, navigation, tools, navigationLayout = 'pair' }: LessonWorkspaceProps) {
   return (
     <div className="lesson-workspace" data-component="BA-WR-002" data-layout="paper-coach">
       <main id="course-main" tabIndex={-1} className="lesson-workspace__paper" data-testid="activity">
@@ -37,6 +39,7 @@ export function LessonWorkspace({ activity, coach, navigation, navigationLayout 
         <div className="lesson-workspace__coach" data-testid="coach">
           {coach}
         </div>
+        {tools ? <div className="lesson-workspace__tools">{tools}</div> : null}
         <div className="lesson-workspace__footer" data-testid="lesson-footer" data-layout={navigationLayout} data-span="rail">
           {navigation}
         </div>
