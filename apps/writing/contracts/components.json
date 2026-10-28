@@ -194,7 +194,7 @@
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
-      "visualStatus": "approved selected-outline target / implementation pending Review 07 visual + interaction QA",
+      "visualStatus": "in-review · approved selected-outline design target; implementation pending Review 07 visual + interaction QA",
       "visual": {
         "status": "approved-design-target-implementation-pending",
         "approved": false,
