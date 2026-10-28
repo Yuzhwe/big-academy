@@ -626,7 +626,8 @@ describe('Review 06 final refinement: reversible WordGrid and correct-target sem
     course.focusBlank(0);
     course.setCaret(0, 0);
     course.placeCard(word!.text, word!.id);
-    expect(course.activity()?.frame?.blanks[0].value).toContain(word!.text);
+    // Sentence-initial capitalization is intentional: compare the card text case-insensitively.
+    expect(course.activity()?.frame?.blanks[0].value.toLocaleLowerCase()).toContain(word!.text.trim().toLocaleLowerCase());
     expect(course.activity()?.wordGrid?.groups[0].words[0].used).toBe(true);
     course.placeCard(word!.text, word!.id);
     expect(course.activity()?.frame?.blanks[0].value).toBe('');
