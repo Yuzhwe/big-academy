@@ -348,8 +348,8 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
     editor.current = el;
     session.setCaret(el.selectionStart ?? el.value.length, el.selectionEnd ?? el.value.length);
   };
-  const insert = (word: string) => {
-    session.placeCard(word);
+  const insert = (word: string, id?: string) => {
+    session.placeCard(word, id);
     requestAnimationFrame(() => {
       const el = editor.current;
       if (el && el.isConnected) { el.focus(); el.setSelectionRange(session.caret.start, session.caret.end); }
@@ -553,11 +553,11 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.wordGrid ? (
         <WordGrid
-          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, disabled: word.used || session.currentTaskClosed(), evaluation: word.hint ? 'hint' as const : undefined })) }))}
+          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? 'selected' as const : 'default' as const, disabled: session.currentTaskClosed(), evaluation: word.hint ? 'hint' as const : undefined })) }))}
           activeGroup={activity.wordGrid.active}
           locale={session.locale}
           onGroupChange={(key) => session.selectGrid(key)}
-          onInsert={insert}
+          onWordAction={(word) => insert(word.text, word.id)}
         />
       ) : null}
       {activity.check?.phase === 'results' && activity.check.tryNew && session.canNext(session.inspect().screen) ? (
