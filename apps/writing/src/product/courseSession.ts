@@ -1987,10 +1987,34 @@ export class CourseSession {
     this.emit();
   }
 
-  private buildTap(task: AlexTask, key: string, cellText: string): void {
+  /** Recover stable tile IDs from old text-only saved builds without changing the grader. */
+  private buildCardIds(task: AlexTask, taskState: TaskProgress): string[] {
+    const built = taskState.built ?? [];
+    if (taskState.builtCardIds?.length === built.length) return taskState.builtCardIds;
+    const available = this.setCards(task).map((text, index) => ({ text, id: `${text}-${index}` }));
+    return built.map((text, index) => {
+      const position = available.findIndex(card => card.text === text);
+      return position < 0 ? `legacy-${index}` : available.splice(position, 1)[0].id;
+    });
+  }
+
+  private buildTap(task: AlexTask, key: string, cellText: string, cardId?: string): void {
     const taskState = this.taskState(key);
     if (taskState.status !== 'open') return;
     taskState.built = taskState.built ?? [];
+    const ids = this.buildCardIds(task, taskState);
+    const selectedIndex = cardId ? ids.indexOf(cardId) : -1;
+    if (selectedIndex >= 0) {
+      // A selected tile remains operable until Check. Remove only its own slot.
+      taskState.built.splice(selectedIndex, 1);
+      ids.splice(selectedIndex, 1);
+      taskState.builtCardIds = ids;
+      this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
+      this.shakeCard = null;
+      this.save();
+      this.emit();
+      return;
+    }
     if (task.in_order) {
       const want = task.target?.[taskState.built.length];
       if (cellText !== want) {
@@ -2016,6 +2040,9 @@ export class CourseSession {
     }
     this.shakeCard = null;
     taskState.built.push(cellText);
+    const available = this.setCards(task).map((text, index) => ({ text, id: `${text}-${index}` }));
+    const nextId = cardId ?? available.find(card => card.text === cellText && !ids.includes(card.id))?.id ?? `legacy-${ids.length}`;
+    taskState.builtCardIds = [...ids, nextId];
     this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
     this.save();
     this.emit();
@@ -2039,6 +2066,53 @@ export class CourseSession {
     this.say(this.text(task.why));
     this.log('task_try');
     this.save();
+    this.emit();
+  }
+
+  /** Frame text and selected-card appearance share this one persisted task record.
+   * Each placement points to a stable card ID and exact current blank substring. */
+  private toggleFrameCard(key: string, cardId: string, text: string): void {
+    const state = this.taskState(key);
+    if (state.status !== 'open') return;
+    const blanks = state.blanks ?? [];
+    const placements = state.frameCardPlacements ?? [];
+    const existing = placements.find(card => card.id === cardId);
+    if (existing) {
+      const current = blanks[existing.blank] ?? '';
+      const valid = current.slice(existing.start, existing.end) === existing.text;
+      if (valid) {
+        blanks[existing.blank] = current.slice(0, existing.start) + current.slice(existing.end);
+        const removed = existing.end - existing.start;
+        this.caret = { start: existing.start, end: existing.start };
+        state.focusBlank = existing.blank;
+        state.frameCardPlacements = placements.filter(card => card.id !== cardId).map(card =>
+          card.blank === existing.blank && card.start >= existing.end
+            ? { ...card, start: card.start - removed, end: card.end - removed } : card);
+      } else {
+        // Manual edits invalidated the exact inserted span; never delete unrelated text.
+        state.frameCardPlacements = placements.filter(card => card.id !== cardId);
+      }
+    } else {
+      const blank = state.focusBlank ?? 0;
+      const current = blanks[blank] ?? '';
+      const from = Math.min(this.caret.start, current.length);
+      const to = Math.min(this.caret.end, current.length);
+      const next = this.engine.smartInsert(current, from, to, text, 'grid');
+      const inserted = next.value.slice(from, next.value.length - (current.length - to));
+      const delta = next.value.length - current.length;
+      state.frameCardPlacements = [
+        ...placements.flatMap(card => {
+          if (card.blank !== blank || card.end <= from) return [card];
+          if (card.start >= to) return [{ ...card, start: card.start + delta, end: card.end + delta }];
+          return [];
+        }),
+        { id: cardId, blank, start: from, end: from + inserted.length, text: inserted },
+      ];
+      blanks[blank] = next.value;
+      this.caret = { start: next.caret, end: next.caret };
+    }
+    state.blanks = blanks;
+    this.save(true);
     this.emit();
   }
 
