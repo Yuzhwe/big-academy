@@ -180,4 +180,3 @@ export function BAChoice({
     </RadioGroup>
   );
 }
-
