@@ -48,6 +48,13 @@
   border-radius: 16px;
 }
 
+.lesson-workspace__tools {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
 .lesson-workspace__footer {
   flex: 0 0 auto;
   display: flex;
