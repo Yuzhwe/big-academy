@@ -1,9 +1,11 @@
-name: Writing Review 05 regression (draft only)
+name: Writing baseline regression (Review 05/06/Docs/Main)
 on:
   push:
     branches:
       - feat/writing-review05-components-pages
       - feat/writing-review06-refinement
+      - audit/writing-review06-documentation-sync-20261028
+      - main
   workflow_dispatch:
 concurrency:
   group: review05-${{ github.ref }}
