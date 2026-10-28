@@ -43,3 +43,44 @@ jobs:
             apps/writing/docs/evidence/
             apps/writing/test-results/
           retention-days: 14
+
+  baseline-tag:
+    name: Annotated Writing Baseline 01 tag (main only)
+    if: github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create never-overwritten annotated tag on verified main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag=writing-baseline-01
+          git fetch origin main --tags
+          actual_main="$(git rev-parse origin/main)"
+          if [ "$actual_main" != "$GITHUB_SHA" ]; then
+            echo "::error::main advanced while releasing; refusing stale tag"
+            exit 1
+          fi
+          if git show-ref --verify --quiet "refs/tags/$tag"; then
+            target="$(git rev-parse "$tag^{}")"
+            if [ "$target" != "$GITHUB_SHA" ]; then
+              echo "::error::Baseline tag exists at another SHA: $target; never force/move"
+              exit 1
+            fi
+            echo "Existing tag already points to the exact verified main SHA"
+            exit 0
+          fi
+          git -c user.name='Big Academy CI' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' tag -a "$tag" -m 'Big Academy · Writing Baseline 01
+
+          Engineering baseline established.
+          Writing and designer Component Library integrated.
+          Documentation Sync Audit Phase B included.
+          Visual refinements deferred to Review 07.
+          Final designer visual approval pending.'
+          git push origin "refs/tags/$tag"
+          echo "Created annotated tag $tag at $GITHUB_SHA"
