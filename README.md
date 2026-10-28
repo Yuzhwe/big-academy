@@ -1,10 +1,10 @@
-# Writing Hi-Fi Integration v1.0
+# Big Academy · Writing Baseline 01 — integration candidate
 
-Mac：双击根目录 `Start Big Academy.command`，打开 http://127.0.0.1:5174/ 。
+K–12 code-first design ecosystem. Writing is the pilot: E-01 Staircase and L2/G2-O Lesson 1 **six current Activity Screens**. Historical P2/P7 authored records are retained, not routed as standalone screens. Engineering integration and documentation are in progress; the current UI is **not final designer-approved**.
 
-[完整交付、验收证据与已知限制](apps/writing/docs/INTEGRATION_V1.md)。本次只实现 L2 / G2-O / Lesson 1 的八屏完整流程，等待一次性设计验收。
+Historic Writing Integration v1 evidence: [archived implementation notes](apps/writing/docs/INTEGRATION_V1.md). The Mac launcher and local URLs require independent verification; they are not proof that the current remote SHA is running.
 
-# Big Academy — baseline v0.1
+## Project overview
 
 Code-first K–12 education product workspace. Writing is the active pilot.
 
@@ -27,15 +27,12 @@ npm test
 npm run dev
 ```
 
-Writing uses React Aria Components and a shared Big Academy design-system package. The active implementation target is eight Activity Screens in L2/G2-O Lesson 1. Existing UI/code is a prototype and **does not imply the new written contracts are implemented or visually approved**.
+Writing uses React Aria Components and a shared Big Academy design-system package. The active implementation target is six Activity Screens in L2/G2-O Lesson 1; P2/P7 are historical only. Existing UI/code is a prototype and **does not imply the new written contracts are implemented or visually approved**.
 
 New development should branch from `main`, update contracts/tokens when required, run checks and submit a PR. Prior experimental branches are not authorities.
 
-## 固定本地网址
+## Previews and local development
 
-这台 Mac 已配置后台启动：
+Run `npm run dev` for Writing, `npm run dev:library` for the interactive designer Component Library, and `npm run storybook` for Storybook. Read the actual terminal output for the bound port; any older `localhost` URL may point to a different checkout or stopped server. `Start Big Academy.command` and `npm run local-sites:install` are optional Mac utilities, not remote CI evidence.
 
-- 组件库：http://localhost:6007/
-- 高保真 Writing UI：http://localhost:5174/
-
-登录后自动启动，关闭终端不受影响。电脑开机、已登录且没有睡眠时即可访问。页面来自当前构建的验收版本；修改源码后，需要重新构建并执行 `npm run local-sites:install` 更新，网址保持不变。
+The [HANDOFF](docs/HANDOFF.md) records the frozen candidate SHA, GitHub CI evidence when available, historical verification, unapproved visual details, and Review 07 starting conditions.
