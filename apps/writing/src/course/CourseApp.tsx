@@ -276,9 +276,9 @@ function LessonView({ session,lowMotion,onResetLesson }: { session: CourseSessio
         onBack={() => (lessonEnd ? session.leaveLesson('path') : session.backToPath())}
         onNavigate={(index) => session.navigateLocal(index)}
       />
-      {onResetLesson ? <div className="course-lesson__tools"><LessonTestTools onReset={onResetLesson} zh={session.zh}/></div> : null}
       <LessonWorkspace
         navigationLayout={lessonEnd ? 'end' : 'pair'}
+        tools={onResetLesson ? <LessonTestTools onReset={onResetLesson} zh={session.zh}/> : null}
         activity={<BAPageTransition viewKey={String(bar.current)} duration={300} maxBlur={6} reducedMotion={lowMotion}
           renderView={()=> <ActivityBody session={session} activity={activity}/>}/> }
         coach={
