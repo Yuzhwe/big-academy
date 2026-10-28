@@ -12,6 +12,22 @@ Updated 2026-10-28 (UTC). **Engineering Baseline / Provisional Visual Baseline �
 
 **Next:** finish Documentation Sync Audit · Phase B, execute remote CI on the full integration candidate, inspect the oversized ancestor diff for unrelated experiments, use normal reviewed PR integration only when safe; create annotated stable tag if a supported authenticated method exists. Do not rewrite local work, use force push, or start Review 07 visual implementation.
 
+## Review 07 preparation · initial backlog (NOT started)
+
+Create `feat/writing-review07-visual-refinement` **only from the verified, merged main** after Baseline 01 is tagged. These are visual refinement and designer-acceptance tasks, not new Writing lesson or product logic.
+
+| Priority | Component IDs · surfaces | Approved target / current source status | Designer acceptance evidence |
+| --- | --- | --- | --- |
+| P1 | BA-UI-003 BAChoice · Library + Writing list options/fills | **Approved / pending implementation**: selected white background with deep brown warm-9 outline, pre-Check second click cancels selection and corresponding answer fill; frozen CSS still dark-fills selected, single-radio undo unverified. Preserve current After-Check grading/locks | Storybook + real page, single/multi + keyboard/touch, selection/reselection and Check/Correct/Shown, screenshots; update DESIGN/contracts only if interface/approved rule actually changes |
+| P1 | BA-WR-008 StairLevelIntroCard + BA-WR-007 StairUnitCard · Staircase + Library | **Approved / pending implementation**: distinct orange Level Title Card above existing Level Card; same widths, auto-wrapping title, lower duplicate removed, decorative nonclickable arrow, Level/Unit description minimum four lines | Library composition states (short/long EN/ZH), Writing 1440/834, no overlap or click target; update component contract when implemented |
+| P1 | BA-WR-009 LandscapeBackdrop, BA-WR-010 historical scene composition · Staircase | **Source committed / designer visual acceptance pending**: five stable tree anchors and deterministic per-Level green/orange variant, preserve hill-1 parallax and image provenance | Browser compare initial/reload/switch Level/scroll, verify same positions/colors, real designer signoff; no new asset styling without approval |
+| P2 | BA-WR-003 WordGrid · Library + Screens 04–06 | **Engineering source implemented / visual acceptance pending**: 70px pills, 20px/28px type, warm-9 outline and pre-Check card undo; distinct Screen 04 single set, Screen 05 three groups, Apply four groups | Shared component parity at 1440/1024/834/390, selection/undo, matching blank/bench, graded states, no accidental Next |
+| P2 | BA-WR-002 LessonWorkspace + BA-WR-014 CoachMessage · Activity pages | **Source implemented / layout visual acceptance pending**: paper and Coach top align, independent internal scroll, bottom-right Previous/Next outside Coach scroll | Actual browser screenshots and keyboard/zoom/responsive checks for long Coach and long Writing content |
+| P2 | BA-WR-001 LessonTopBar, BA-WR-005 StairLessonCard, BA-WR-006 UnitMilestone, BA-WR-011 LevelRewardFlag · Library + Writing | **Existing interim implementation / final visual review pending** | Confirm stable six-step indicator/popover, card state visuals, flag/milestone framing and readable colors in real page and workbench |
+| P2 | Library / Storybook vs real Writing | **Shared implementation exists / remaining design QA**; do not fork equivalent visual components | Validate identical state examples/props at same viewport, record approved vs temporary per Component ID and attached review evidence |
+
+No task above may silently change Alex-authored grading, Apply/Skip progression, saved state or curriculum rules. Ordinary pixel tweaks within the approved visual direction need not trigger a full redesign of normative documentation.
+
 ---
 
 ## Historical handoff snapshots (earlier SHA-specific results only)
