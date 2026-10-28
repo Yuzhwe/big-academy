@@ -10,7 +10,7 @@
 Do not use old branches, historical prompts, demos, abandoned PRs or duplicate design files as product/design authority. One root DESIGN.md, one PRODUCT.md per product. There is no `apps/writing/DESIGN.md`.
 
 ## Scope
-Writing v1 target: **L2/G2-O Lesson 1, eight Activity Screens**, E-01 Staircase entry/return and Lesson End. No obligation to build all 52 screens. Existing source code is a reusable pilot, not proven parity with the current contracts.
+Writing Baseline 01 scope: **L2/G2-O Lesson 1, six current Activity Screens**, E-01 Staircase entry/return and Lesson End. P2/P7 authored template data are retained for historical reference but are **not** standalone runtime screens. Current implementation is an engineering baseline; unresolved visual refinements are tracked for Review 07. No obligation to build all 52 screens. Existing source code is a reusable pilot, not proven parity with the current contracts.
 
 ## Roles and boundaries
 - UI/UX Designer: final visual and major UX approval.
@@ -28,4 +28,4 @@ Start each feature from the latest `main`. Use an isolated branch. Read canonica
 Checks: `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, applicable Playwright/Storybook and browser accessibility/responsive evidence. Record not-run or failing checks instead of claiming success. Update `docs/HANDOFF.md` when changing integration state.
 
 ## Visual state
-A component may be `implemented` yet `temporary` or `in-review` visually. The new ActivityScreenIndicator and Unit folded-corner treatment require rendered comparison and designer approval. Never treat successful compilation as approval.
+A component may be `implemented` yet `temporary` or `in-review` visually. The current six-screen ActivityScreenIndicator, Staircase scenery and unapproved component refinements require separate rendered designer acceptance; legacy folded-corner proposals do not supersede the current Unit card. Never treat successful compilation as approval.
