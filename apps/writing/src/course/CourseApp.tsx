@@ -722,4 +722,3 @@ function ChoiceGallery({ zh }: { zh: boolean }) {
     </main>
   );
 }
-
