@@ -6,4 +6,3 @@ import './LandscapeTerrace.css';
 export function LandscapeTerrace() {
   return <div className="landscape-terrace" data-component="BA-WR-010" aria-hidden="true" />;
 }
-
