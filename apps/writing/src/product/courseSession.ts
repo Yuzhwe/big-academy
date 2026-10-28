@@ -61,6 +61,10 @@ export interface TaskProgress {
   /** Ordered-build wrong taps, one count per word tile. */
   wrongTaps?: Record<string, number>;
   built?: string[];
+  /** Stable card identity aligns with built, including duplicate text. */
+  builtCardIds?: string[];
+  /** Editable frame word placements are answer data, not a separate UI selection. */
+  frameCardPlacements?: { id: string; blank: number; start: number; end: number; text: string }[];
   blanks?: string[];
   focusBlank?: number;
 }
@@ -1042,7 +1046,9 @@ export class CourseSession {
               selected: taskState.sel === index,
               correct: taskState.status === 'done' && taskState.sel === index,
               wrong: taskState.status !== 'done' && taskState.bad === index,
-              revealed: taskState.status === 'shown' && (task.targets ?? []).some((target) => this.engine.locate(task.text ?? '', target) === index),
+              revealed: (taskState.status === 'shown' || taskState.status === 'done') &&
+                !(taskState.status === 'done' && taskState.sel === index) &&
+                (task.targets ?? []).some((target) => this.engine.locate(task.text ?? '', target) === index),
             })),
           },
         };
@@ -1353,13 +1359,17 @@ export class CourseSession {
     return focus;
   }
 
-  placeCard(text: string): void {
+  placeCard(text: string, cardId?: string): void {
     const screen = this.screens[this.state.screen]?.screen;
     if (!screen) return;
     if (screen.kind === 'task' && screen.task) {
       const task = this.task(screen.task);
       if (task.type === 'build') {
-        this.buildTap(task, this.taskKey(screen), text);
+        this.buildTap(task, this.taskKey(screen), text, cardId);
+        return;
+      }
+      if (task.frameFill && cardId) {
+        this.toggleFrameCard(this.taskKey(screen), cardId, text);
         return;
       }
     }
@@ -1374,6 +1384,7 @@ export class CourseSession {
     const taskState = this.taskState(this.taskKey(screen));
     if (taskState.status !== 'open') return;
     taskState.built = [];
+    taskState.builtCardIds = [];
     delete this.state.regions[this.taskKey(screen)];
     this.shakeCard = null;
     this.save();
@@ -1386,6 +1397,20 @@ export class CourseSession {
     const taskState = this.taskState(this.taskKey(screen));
     if (taskState.status !== 'open') return;
     const blanks = taskState.blanks ?? [];
+    const previous = blanks[index] ?? '';
+    // Preserve unaffected card provenance when a learner types before/after a token.
+    let prefix = 0;
+    while (prefix < previous.length && prefix < value.length && previous[prefix] === value[prefix]) prefix++;
+    let suffix = 0;
+    while (suffix < previous.length - prefix && suffix < value.length - prefix &&
+      previous[previous.length - 1 - suffix] === value[value.length - 1 - suffix]) suffix++;
+    const oldEnd = previous.length - suffix;
+    const delta = value.length - previous.length;
+    taskState.frameCardPlacements = (taskState.frameCardPlacements ?? []).flatMap(placement => {
+      if (placement.blank !== index || placement.end <= prefix) return [placement];
+      if (placement.start >= oldEnd) return [{ ...placement, start: placement.start + delta, end: placement.end + delta }];
+      return []; // Manually edited card content is no longer a selected card.
+    });
     blanks[index] = value;
     taskState.blanks = blanks;
     taskState.focusBlank = index;
@@ -1537,20 +1562,13 @@ export class CourseSession {
   private buildModel(task: AlexTask, taskState: TaskProgress): Pick<ActivityModel, 'build' | 'wordGrid'> {
     const built = taskState.built ?? [];
     const bench = this.benchFrom(built);
-    const cards = this.setCards(task).map((text) => ({
+    const selectedIds = new Set(this.buildCardIds(task, taskState));
+    const cards = this.setCards(task).map((text, index) => ({
       text,
-      used: false,
+      used: selectedIds.has(`${text}-${index}`),
       hint: !!task.in_order && (taskState.wrongTaps?.[text] ?? 0) >= 2,
       shake: this.shakeCard === text,
     }));
-    const used = built.slice();
-    for (const card of cards) {
-      const found = used.indexOf(card.text);
-      if (found >= 0) {
-        card.used = true;
-        used.splice(found, 1);
-      }
-    }
     const taskWords = cards.map((card, index) => ({
       id: `${card.text}-${index}`,
       text: card.text,
@@ -1588,12 +1606,18 @@ export class CourseSession {
         blanks,
         focus: taskState.focusBlank ?? 0,
       },
-      wordGrid: this.trioGrid(
-        key,
-        (task.cells ?? []).map((cell, index) => ({ id: `task-${index}-${this.cellText(cell)}`, text: this.cellText(cell) })),
-        level,
-        task,
-      ),
+      wordGrid: (() => {
+        const grid = this.trioGrid(
+          key,
+          (task.cells ?? []).map((cell, index) => ({ id: `task-${index}-${this.cellText(cell)}`, text: this.cellText(cell) })),
+          level,
+          task,
+        );
+        const used = new Set((taskState.frameCardPlacements ?? []).map(placement => placement.id));
+        return { ...grid, groups: grid.groups.map(group => ({
+          ...group, words: group.words.map(word => ({ ...word, used: used.has(word.id) })),
+        })) };
+      })(),
     };
   }
 
@@ -1715,7 +1739,8 @@ export class CourseSession {
             text: token.w,
             selected: taskState.sel === index,
             wrong: graded && taskState.sel === index && !targets.includes(index),
-            revealed: graded && targets.includes(index),
+            correct: graded && !!correct && taskState.sel === index && targets.includes(index),
+            revealed: graded && targets.includes(index) && !(correct && taskState.sel === index),
           })),
         },
       };
