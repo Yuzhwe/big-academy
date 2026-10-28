@@ -535,7 +535,8 @@
       "props": {
         "activity": "ReactNode",
         "coach": "ReactNode",
-        "navigation": "ReactNode"
+        "navigation": "ReactNode",
+        "tools": "ReactNode (optional; designer-only Reset Lesson control, outside scrollable Coach)"
       },
       "events": {},
       "states": [
@@ -548,6 +549,7 @@
       "requirements": [
         "Warm Frame + White Canvas",
         "Coach independently scrolls",
+        "Writing Area and Coach top-align immediately below LessonTopBar, fill remaining viewport height with internal scroll and without page-bottom empty space",
         "Previous and the primary action sit at the bottom of the Coach rail, bottom-right, outside the scrolling transcript",
         "Coach-rail Previous and primary actions use height 70px, gap 8px, flex proportions 1:2",
         "Coach independently scrolls; each feedback message is its own card",
@@ -564,7 +566,7 @@
         "Only P5 Apply Textarea uses low-contrast 36px horizontally lined paper and omits the duplicate visible Write each sentence on a new line tip. P7 remains plain.",
         "Coach Need a hint/Another hint only reveal authored teaching messages; the final hint never calls finish(shown), auto-fills, grades or consumes a formal attempt.",
         "Coach secondary action buttons render after all orientation, hint and feedback cards",
-        "Reset Lesson belongs in the Lesson top tool area, outside the Coach transcript"
+        "Reset Lesson is a non-scrolling control between Coach transcript and footer; it must never create a third main grid row or push the Workspace below LessonTopBar"
       ],
       "requiredStories": [
         "Desktop",
@@ -594,7 +596,7 @@
       "implementation": "apps/writing/src/components/writing/WordGrid.tsx",
       "story": "apps/writing/src/components/writing/WordGrid.stories.tsx",
       "props": {
-        "groups": "WordGridGroup[]; word has optional selection(default|selected|used), evaluation(neutral|correct|incorrect|hint|shown), disabled, kind(word|punctuation|emoji|sentence), lang; legacy used/hint/shake supported",
+        "groups": "WordGridGroup[]; word has optional selection(default|selected|used), evaluation(neutral|correct|correctUnselected|incorrect|hint|shown), disabled, kind(word|punctuation|emoji|sentence), lang; legacy used/hint/shake supported",
         "activeGroup": "string",
         "presentation": "docked | overlay",
         "tabs": "auto | show | hide; auto preserves legacy single hidden / multiple shown",
@@ -617,7 +619,7 @@
         "Task-gated visibility",
         "Tablet on-demand only within writing area",
         "Preserve caret",
-        "Pill word options min 50px high and wrap in rows",
+        "Approved WordGrid pill options are min 70px high, 20px text / 28px line height, 12px vertical / 18px horizontal padding; wrap in rows without distortion",
         "Single group tab is configurable show/hide; auto keeps legacy hidden. Multiple groups use connected sticky tabs and horizontal overflow.",
         "Tabs switch authored vocabulary data only, no grader mutation",
         "Approved peach connected sticky tabs joined to the bank, and white pill cards",
@@ -625,13 +627,14 @@
         "Apply tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点)",
         "Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match the Approved visuals wordgrid-ordered-build-approved and wordgrid-apply-approved",
         "Ordered-build bench underlines are the writing-area line. The WordGrid panel is the word-card palette. Each remaining blank is an underline, one horizontal line per word still to place. Screen controls are the word cards and the Coach-rail button group. A placed word stays in the line",
-        "Used never implies disabled; product explicitly marks consumed ordered-build words disabled. The component never grades.",
+        "Selected or used never implies disabled before Check. A selected card has a deep brown outline and remains clickable for undo by stable card ID, synchronizing the exact answer/blank placement. After Check, product-owned grading may lock it. The component never grades.",
         "Sentence cards fill their row and wrap; word/punctuation/emoji keep complete content and touch targets. New selection/evaluation chrome is candidate only.",
         "On P5 Apply Writing, the parent paper layout docks this same WordGrid at the bottom under a flexing Textarea; WordGrid itself does not own height or authoring/grade logic.",
         "R04 final: bank panel always has four outward-convex identical 16px corners regardless of selected tab; no inverted radial-gradient corners, no underlay patch, and no Slanted; preserve original peach rounded tabs and grade/insertion logic.",
         "Real Writing keeps the peach bank’s four complete outward corners; multi-tab strip is inset so the upper-left corner is never clipped",
-        "56px minimum cards / 18px text are Workbench-only candidates until visual approval; real page defaults remain unchanged",
-        "Incorrect word feedback preserves neutral card colors and uses the existing shake animation; reduced motion removes the animation"
+        "Historical 56px/18px Workbench candidate remains unapproved; real page and shared library default now use approved 70px / 20px and 28px line height. Non-WordGrid sentence-inline blocks preserve their own contract.",
+        "Incorrect word feedback preserves neutral card colors and uses the existing shake animation; reduced motion removes the animation",
+        "correctUnselected reveals another authored valid answer after Correct: keep the Selected base surface and geometry, replace only its outline with Success-6 green; do not add it to the learner selection. Second wrong Shown retains blocked Next until a later correct Check for Tapword."
       ],
       "requiredStories": [
         "MultiGroup",
@@ -641,7 +644,9 @@
         "OneGroupNoTab",
         "MultipleStickyTabs",
         "WordWrapTablet",
-        "RoundedSeamFix"
+        "RoundedSeamFix",
+        "CorrectAndAlternative",
+        "ReversibleSelection"
       ],
       "figma": null,
       "runtimeEvidence": "apps/writing/docs/INTEGRATION_V1.md",
