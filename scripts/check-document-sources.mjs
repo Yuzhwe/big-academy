@@ -56,9 +56,11 @@ if (existsSync(contractPath)) {
       seen.add(component.id);
       // Validate unambiguous implementation paths for current implemented components;
       // multi-path legacy commentary and historical composites are reviewed separately.
-      if (component.status === 'implemented' && typeof component.implementation === 'string'
-          && /^[\\w/.-]+\\.(tsx|ts|css)$/.test(component.implementation)
-          && !existsSync(resolve(root, component.implementation))) {
+      const source = component.implementation;
+      const simpleSource = typeof source === 'string' && !source.includes(';') && !source.includes(' ')
+        && ['.tsx', '.ts', '.css'].some(ext => source.endsWith(ext));
+      if (component.status === 'implemented' && simpleSource
+          && !existsSync(resolve(root, source))) {
         errors.push('Missing implemented Component path ' + component.id + ': ' + component.implementation);
       }
     }
