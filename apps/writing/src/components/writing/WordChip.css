@@ -19,6 +19,15 @@
   transition: transform 200ms cubic-bezier(.2, 0, 0, 1);
 }
 
+/* R10-04: only unevaluated, unselected, usable Neutral cards.
+   * Compensate the 0.5px stroke in padding so intrinsic card geometry stays put.
+   * Selected/used/graded/hint/shown keep their existing visual precedence. */
+.word-chip[data-selection='default'][data-evaluation='neutral']:not(:disabled):not([data-disabled='true']):not([data-used='true']) {
+  background: #ffffff;
+  border: 0.5px solid #d9cbb8;
+  padding: 11.5px 17.5px;
+}
+
 .word-chip__text {
   min-width: 0;
 }
