@@ -1017,12 +1017,14 @@
       "name": "StairLevelIntroCard",
       "kind": "writing-product-composite",
       "contractVersion": "0.4.0-r3",
-      "status": "specified-not-implemented",
+      "status": "implemented",
       "visualStatus": "pending-review",
-      "implementation": "apps/writing/src/course/CourseApp.tsx (.course-intro)",
+      "implementation": "apps/writing/src/components/writing/StairLevelIntroCard.tsx",
       "props": {
-        "level": "PathLevel",
-        "locale": "Locale"
+        "title": "string optional; localized Level heading currently rendered inside card (distinct approved future separate orange title-card target)",
+        "intro": "string; localized level introduction",
+        "locale": "en | zh",
+        "className": "string optional"
       },
       "events": [],
       "states": [
@@ -1041,7 +1043,7 @@
         "LevelIntroDecorativeBorder",
         "LongLevelIntroAndGradient"
       ],
-      "notes": "Approved future Level Title Card + Level Card composition and four-line minimum descriptions are pending implementation. Current CourseApp `.course-intro` is not evidence that a standalone LevelTitleCard is complete. Library 6008: StairLevelIntroCard catalog key `level`; `composition=combo` overlays Start Point on Level card top edge (tilt −6°, Level top padding 48px). Writing CourseApp still uses inline .course-intro until assembly brief."
+      "notes": "BA-WR-008 actual runtime is StairLevelIntroCard rendered inside StartPointLevelCombo on the Writing Staircase. Current card includes the title and intro. Standalone orange Level Title Card ABOVE lower card, removal of duplicate lower title, and four-line Level/Unit descriptions are separately approved design targets and NOT yet implemented/visually accepted. Library composition and real scene are candidates for Joe review."
     },
     {
       "id": "BA-WR-009",
@@ -1088,12 +1090,9 @@
       "kind": "writing-presentation-composite",
       "contractVersion": "0.1.0-r3",
       "status": "historical-composition-integrated-in-scene",
-      "visualStatus": "historical Layered Landscape Terrace concept; current R2.12 cloud platform implementation in scene; not a reusable standalone import",
-      "implementation": "apps/writing/src/course/StaircaseScene.tsx; apps/writing/src/course/StaircaseScene.css",
-      "props": {
-        "nodeId": "string",
-        "cameraPosition": "number"
-      },
+      "visualStatus": "historical decorative composition; pending Joe visual review",
+      "implementation": "apps/writing/src/components/writing/LandscapeTerrace.tsx (existing decorative helper); apps/writing/src/components/writing/LandscapeTerrace.css (current Staircase scene ::before styling)",
+      "props": {},
       "events": [],
       "states": [
         "default",
@@ -1110,7 +1109,7 @@
         "FullComposition",
         "CardOnly"
       ],
-      "notes": "BA-WR-010 ID retained for history. Former standalone LandscapeTerrace.tsx/.css entrypoints are absent and must not be imported. Current StaircaseScene owns per-node composition and cloud-platform imagery; shared StairLessonCard + scene should be reviewed together, without pretending a separate LandscapeTerrace component exists.",
+      "notes": "Historical ID retained. A standalone no-props decorative LandscapeTerrace.tsx and its CSS DO exist at PR #60. The Staircase typically uses the same cloud-platform styling via scene node pseudo-elements rather than mounting the helper; neither is an independent grass-platform business component. This is source-backed implementation evidence, not final appearance approval.",
       "reviewStatus": "Ready for Visual Review",
       "reviewEntry": "Writing/Path/StairLessonCard",
       "story": "apps/writing/src/components/writing/StairLessonCard.stories.tsx (FullComposition)",
@@ -1157,7 +1156,7 @@
       "figma": null,
       "runtimeEvidence": null,
       "reviewStatus": "Pending Designer Review",
-      "notes": "Original files and SHA-256 provenance in assets/review05/manifest.json. Edge-connected neutral backdrop removed only on pole/badge derivatives; source files preserved. No SVG pole or temporary flag art in final rendering."
+      "notes": "Original files and SHA-256 provenance in assets/review05/manifest.json. Edge-connected neutral backdrop removed only on pole/badge derivatives; source files preserved. No SVG pole or temporary flag art in final rendering. Phase 2 increment at PR #62 `af1a6d4`: `.ba-flag[data-state=\"upcoming\"] .ba-flag__cloth` adds `translate:10px 0` (Upcoming static cloth only). Pole, pedestal group and Completed animated flag unchanged by this delta. Implemented / Pending Joe visual review, not approved."
     },
     {
       "id": "BA-WR-012",
@@ -1287,7 +1286,8 @@
         "Toggle stops; another card or prompt takes ownership; Activity, path exit, Test Mode entry/exit, pagehide and hidden page stop speech.",
         "Only body text is spoken. CJK selects zh-CN, English selects en-US. End/error/unsupported never changes answer, tries, hints, grade or progression."
       ],
-      "layoutOwner": "Coach card owns body clearance and audio target; app owns rail placement."
+      "layoutOwner": "Coach card owns body clearance and audio target; app owns rail placement.",
+      "notes": " The Library Coach Cards specimen groups CoachMessage and CoachNote, but this is a presentation grouping, not a single grading owner."
     },
     {
       "id": "BA-WR-015",
@@ -1318,12 +1318,12 @@
         "Preserve HTML SVG path families parameterized by split X = measured text width W; decorations translate(W,0) with fixed local coords.",
         "When left text changes, measure (canvas/DOM) and drive left container width + SVG split; total width = W + 91; height 82.",
         "Defaults: fill #ffc24e, stroke #715146, ink #2f0f04; font 800 var(--ba-writing-lesson-card-title-size)/var(--ba-writing-lesson-title-line-height) (24px/30px) Dosis / heading-zh; geometry CSS-scales 0.8 vs original 30px silhouette (paths not redrawn); label padding scales with geometry; radius 20px 0 0 20px native.",
-        "Library catalog + preview only for Review 07; Level combo lives on BA-WR-008 catalog key (?component=level&composition=combo). Do not assemble into Writing course pages / staircase runtime."
+        "Library specimen and Writing E-01 runtime currently share StartPoint via StartPointLevelCombo; preserve the actual mounting. The separately approved orange Level Title Card + body-card treatment is still pending."
       ],
       "requiredStories": [],
       "figma": "27:273",
       "runtimeEvidence": null,
-      "notes": "Provisional Review 07 library-gate draft. Visual authority: design-preview/start-point-preview.html and start-point-geometry-check.html. Library combo is Start Point × Level card (?component=level&composition=combo on BA-WR-008); Unit combo mistarget removed. Not wired into Writing staircase. Implementation pending designer visual Review 07."
+      "notes": "Implemented in the Library AND mounted in Writing CourseApp via StartPointLevelCombo on E-01. Current combo joins the StartPoint and Level intro (with an in-card title); it does not implement the approved separate orange Level Title Card. Joe visual review pending. Original supplied HTML/Figma source remains design provenance, not final acceptance."
     },
     {
       "id": "BA-WR-016",
@@ -1332,18 +1332,15 @@
       "contractVersion": "0.7.0-review07-draft",
       "status": "implemented",
       "visualStatus": "pending-review",
-      "implementation": "apps/writing/src/components/writing/NotebookShell.tsx (primary chrome); apps/writing/src/components/writing/NotebookEditor.tsx (legacy lined editor compare)",
+      "implementation": "apps/writing/src/components/writing/NotebookShell.tsx (shared outer shell); apps/writing/src/course/CourseApp.tsx (Q6 runtime assembly); apps/writing/src/components/writing/NotebookEditor.tsx (legacy comparison only)",
       "story": null,
       "props": {
-        "orientation": "portrait | landscape; default portrait. Portrait = top binding; landscape = left binding with bind-inner -90°. Controlled by Library Scene / URL / R2Controls — component must NOT render demo toolbar pills.",
-        "value": "string, controlled textarea value",
-        "defaultValue": "string, uncontrolled initial value",
-        "placeholder": "string, default 在这里开始写…",
-        "onChange": "(value: string) => void",
-        "onBindCountChange": "(count: number) => void, optional"
+        "children": "ReactNode optional; editor, heading, WordGrid and other content supplied by parent",
+        "className": "string optional",
+        "orientation": "portrait | landscape optional; defaults portrait; no in-component orientation toolbar",
+        "onBindCountChange": "(count: number) => void optional"
       },
       "events": {
-        "onChange": "(value: string) => void",
         "onBindCountChange": "(count: number) => void"
       },
       "states": [
@@ -1354,15 +1351,15 @@
         "NO in-component orientation toolbar (竖本/横本 pills). Orientation only via props from Library Preview / Scene / URL (?orientation=landscape) / R2Controls.",
         "Holes + U-ring coils: pitch-first (--bind-pitch / --ne-bind-pitch: 38); hole/coil count adapts with span (clamp 3–24); algorithm identical to _incoming-assets/notebook-editor-demo.html bindCount.",
         "Portrait = top binding; Landscape = left binding with bind-inner rotate(-90deg) translateX(-100%).",
-        "Lined paper tokens from HTML: font-size 24, leading 1.5, line-h 46, first-line-extra 20; colors and coil SVG match HTML.",
-        "Editable textarea that auto-grows with content (min 600 portrait / 520 landscape).",
-        "Scope CSS under .notebook-editor — do not reset html/body for Library chrome.",
-        "Library catalog + preview only for Review 07; do not assemble into Writing course pages / CourseApp."
+        "CSS source at this SHA uses --ns-font-size:24px, --ns-line-leading:1.8, computed 43.2px ruled pitch, --ns-content-pad-x:20px; do not replace with older NotebookEditor line 46/leading 1.5 values.",
+        "No built-in textarea: supplied children own editing, scrolling and data; outer shell fills available parent space with a 240px source-defined paper minimum.",
+        "Scope shared shell styling under .notebook-shell; separate legacy NotebookEditor retains .notebook-editor CSS.",
+        "NotebookShell is mounted in Writing CourseApp Q6 and Library preview; runtime owner of content is CourseApp, and Joe approval remains pending."
       ],
       "requiredStories": [],
       "figma": null,
       "runtimeEvidence": null,
-      "notes": "Provisional Review 07 library-gate draft. Visual authority: _incoming-assets/notebook-editor-demo.html. Product delta vs demo: remove .toolbar; orientation via Library chrome. Implementation pending designer visual Review 07."
+      "notes": "Implemented in Library and in Writing Q6 Apply at PR #60. Shell owns holes/U-ring coils/ruled paper and children slot but NO textarea value/onChange API. Writing CourseApp owns ActivityHeading+speaker, textarea and four-group WordGrid inside portrait NotebookShell. NotebookEditor is separate historic compare only. PR #62 modifies Q6 outer wrapper margin-top from -10px to -51px (41px additional upward alignment trial against Coach top). Implemented / Pending Joe visual review; shared NotebookShell props/children API is unchanged."
     },
     {
       "id": "BA-WR-017",
@@ -1391,12 +1388,12 @@
         "highlight: sage green border + green title (Joe sample #a5d0ba / #50ab64).",
         "improvement: warm grey-brown border (warm-4) + brown title (warm-6).",
         "Library catalog key coach-note; specimen stacks both tones vertically (~12px gap).",
-        "Review 07 library gate: do not invent Q6 course assembly beyond migrating interim course-apply-coach-note chrome onto this component."
+        "Q6 runtime uses CoachNote for post-Check Highlight/Improvement; no independent grading, safety rule or transcript behavior is owned by this visual component."
       ],
       "requiredStories": [],
       "figma": null,
       "runtimeEvidence": null,
-      "notes": "Visual authority: Joe Apply Check Highlight/Improvement screenshot (joe-highlight-improvement-ref.png). Migrated from interim .course-apply-coach-note in course.css."
+      "notes": "Shared CoachNote is rendered by Q6 Apply results in CourseApp and the Library Coach Cards specimen; separate from CoachMessage audio cards. Exact rendered visual approval remains Pending Joe."
     },
     {
       "id": "BA-WR-018",
@@ -1434,7 +1431,7 @@
       "kind": "composite",
       "contractVersion": "0.7.0-review07-draft",
       "status": "exploration",
-      "visualStatus": "pending-review",
+      "visualStatus": "pending-review; library exploration only",
       "implementation": "apps/library/src/PathBackToCurrentPlayground.tsx (Library preview layer only)",
       "story": null,
       "props": {
@@ -1459,7 +1456,7 @@
       "requiredStories": [],
       "figma": null,
       "runtimeEvidence": null,
-      "notes": "Joe-locked library specimen for Review 07 visual gate. Writing integration deferred."
+      "notes": "At PR #62 SHA this remains a Library-only exploration; demo Solar fit=control keeps capsule rim while BAButton assembly stroke is transparent and bottom border width 1px, removing inconsistent double-stroke. Mock scroll does not control Writing path. Implemented specimen / Pending Joe visual review; not approved/integrated."
     }
   ],
   "currentDirection": {
