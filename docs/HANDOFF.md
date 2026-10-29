@@ -1,3 +1,19 @@
+# Big Academy · Writing canonical documentation — Phase 2 review checkpoint
+
+> **Coverage / not final:** This documentation branch (`docs/writing-phase2-canonical-sync-20261029`) audits **PR #60 at exact SHA `3300151d08706ec91a7719f072e9717b853e7e4d`**, not latest local `review07-preview-wt`, not the separate Review 07 Refinement 08 commits, and not current main. The branch contains document/contract audit edits only. Joe must review and explicitly approve before it is considered final or archived; Alex retains product-business authority.
+
+**GitHub baseline:** `feat/writing-review07-preview-upload-20261029`, Draft [PR #60](https://github.com/Yuzhwe/big-academy/pull/60); 77 source paths relative to its main-era parent `dced3968462ef531c3ce96d0a5632d4c15741e2b`. Follow-on GitHub branch `feat/writing-review07-refinement08-20261029` has independent newer commits but is **not selected as this audit baseline**. Subsequent local Upcoming Flag, Q6 paper lift/alignment and BackToCurrent effects are **unsynced / not approved** by this checkpoint. A later agent-supplied SHA requires a targeted incremental diff, not a repeat of full Phase 2.
+
+**Current code evidence at PR #60:** L2/G2-O Lesson 1 six Activities; Screen 04 single `set` group, Screen 05 three groups, Q6 four groups inside NotebookShell with title/audio and textarea; CoachNote Apply Highlight/Improvement; StartPointLevelCombo already mounted on E-01; Solar current Lesson Card; BackToCurrent only in the Library. Approved future standalone orange Level Title Card and BAChoice pre-Check white/outlined selection are still pending verified implementation/visual acceptance.
+
+**Verification boundary:** Docs integrity was audited by GitHub source inspection. The available `review05-qa.yml` triggers on named historical push branches and main, **not** this standalone docs branch or a PR to PR #60. Therefore a new exact-SHA CI run must be confirmed before declaring docs/typecheck/test/build green. Existing registry test still assumes obsolete component status coverage; this is a known preexisting QA risk, not something to conceal by treating prior green SHAs as current evidence.
+
+**Pending:** Joe — NotebookShell geometry/shadow, Upcoming Flag vs Completed Flag, BackToCurrent Solar/fallback, Level Title, BAChoice selected, and overall visual signoff; Alex — Apply counted CJK and safety/move-on edge and hard-reload Coach feedback intent. No auto-merge/main update/Vercel deployment. See `docs/audits/writing-phase2-canonical-sync-20261029.md` for source-by-source dispositions.
+
+---
+
+## Historical Baseline 01 handoff (2026-10-28 — preserved, not the Phase 2 source)
+
 # Big Academy · Writing Baseline 01 — integrated engineering baseline
 
 Updated 2026-10-28 (UTC). **Engineering Baseline / Provisional Visual Baseline — NOT final visual approval.**

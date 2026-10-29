@@ -1,4 +1,23 @@
-> **Writing Baseline 01 — Engineering Baseline / Provisional Visual Baseline (integration candidate, 2026-10-28).** Frozen Review 06 source: `46e315b91aece8f839cd68011f78b86c3b6becc9` (PR #55); Documentation Sync Audit: PR #56. Current six Activity Screens; P2/P7 historical authored records only. Neither frozen source nor the selected visual refinements are final designer-approved. This is the sole current-state index; [Review 05](docs/REVIEW_05.md) and preceding pilots are historical engineering evidence. Exact-SHA CI and main-integration status must be read from [HANDOFF](docs/HANDOFF.md), never inferred from previous runs.
+> **Writing Review 07 · Phase 2 canonical design checkpoint — documentation candidate, not sign-off (2026-10-29).** Source snapshot: [PR #60](https://github.com/Yuzhwe/big-academy/pull/60), `3300151d08706ec91a7719f072e9717b853e7e4d`. The Review 06 Baseline 01 record remains a **historical engineering/provisional-visual checkpoint**, not the current Review 07 source. This file is the **only** active DESIGN.md; do not create `apps/writing/DESIGN.md`. The local `review07-preview-wt` Upcoming Flag / Q6 41px alignment trial / BackToCurrent visual changes remain outside this pinned GitHub snapshot, are unsynced at this checkpoint and are **Pending Joe**.
+
+**Read this first — executable design protocol and review status.**
+
+| Design layer | Current rule / checked location | Approval boundary |
+| --- | --- | --- |
+| Philosophy and direction | **A · Warm Frame + White Canvas**, avoid decorative duplicate labels; §1 and §9 | **Approved direction**, not blanket rendered approval |
+| Typography | Dosis ExtraBold for English headings and UI numerals; Jost body; Douyin Chinese heading; Noto Sans SC body; §3 | **Approved roles**; individual loading, fallback and measurements remain testable |
+| Color + CSS tokens | Primitive → semantic → optional component; `packages/design-system/src/tokens.css` is the executable source; §2 | **Approved architecture/anchors**; do not invent absent values or additional theme palettes |
+| Layout/shape | 4px base, 8px predominant rhythm, shared responsive constraints; §4–6 | **Approved principles**; values marked [E] remain candidates |
+| Motion/accessibility | Input state feedback, reduced-motion priority and React Aria semantics; §7–9 | Implemented effects require browser, keyboard and motion QA |
+| E-01 and Start Point × Level | Current `StartPointLevelCombo`, `StairLevelIntroCard`, Staircase scenery/cards; §9 | **Implemented / Pending Review**; distinct orange Level Title Card and four-line description goal remain **approved targets, not verified runtime** |
+| Activity workspace | `LessonWorkspace`, `WordGrid`/`WordChip`, `CoachMessage`/`CoachNote`; §9 | **Implemented / Pending Review** for precise visuals and accessibility |
+| Q6 notebook | `NotebookShell.tsx` + `CourseApp.tsx`, title/audio/textarea/WordGrid inside one portrait paper shell; see Review 07 checkpoint below | **Implemented / Pending Review**; NotebookEditor is only a comparison |
+| Solar / BackToCurrent | Solar on current Lesson Card; BackToCurrent in `apps/library/src/PathBackToCurrentPlayground.tsx` | Solar **implemented / Pending Review**; BackToCurrent **Library exploration**, not Writing runtime |
+
+**Authority:** Joe approves visual direction and final rendered design; Alex owns authored curriculum, assessment, retry, progress and navigation gates in `apps/writing/PRODUCT.md`. The code and Library are implementation evidence, not independent design approval. The component registry owns API/state provenance. **Status vocabulary:** Approved (explicit designer decision), Implemented / Pending Review (real code without sign-off), Exploration (noncanonical specimen), and Pending Alex (unresolved business authority). Historic Review 05/06 annotations below are retained for traceability, not instructions to regress current code.
+
+> **Historical Baseline 01 (2026-10-28):** Review 06 source `46e315b91aece8f839cd68011f78b86c3b6becc9` (PR #55), Docs audit PR #56. Six runtime Activities and P2/P7 historical records remain true, but current Review 07 component assembly must be read from the pinned PR #60 SHA and [HANDOFF](docs/HANDOFF.md).
+
 
 # Big Academy — DESIGN.md
 
@@ -63,7 +82,7 @@ Status legend: **[A]** explicitly designer-approved; **[E]** exploration/candida
 
 ### 2.4 Color System v0.2 — designer-approved [A, 2026-10-19]
 
-**Direct approval recorded:** the UI/UX Designer requested that the remaining Big Academy palette be completed using the Geist-inspired ten-step role structure and approved without a separate testing/review round. This approves the **color architecture, eight solid-color scales, anchor values and role maps** described in `docs/design-system/COLOR_SYSTEM_v0.2.md`. It does **not** certify engineering behavior or production accessibility.
+**Direct approval recorded:** the UI/UX Designer requested that the remaining Big Academy palette be completed using the Geist-inspired ten-step role structure and approved without a separate testing/review round. This approves the **color architecture, eight solid-color scales, anchor values and role maps** described in this §2.4 and the executable `packages/design-system/src/tokens.css` (the former companion `docs/design-system/COLOR_SYSTEM_v0.2.md` is not present in this audited tree). It does **not** certify engineering behavior or production accessibility.
 
 - Families: `neutral`, `warm`, `brand`, `writing`, `success`, `danger`, `warning`, `info`.
 - Unified roles: 1–3 component background (default/hover/active); 4–6 border (default/hover/active); 7–8 strong fill (default/hover); 9–10 text/icon (secondary/primary).
@@ -556,7 +575,7 @@ Scene visible viewport: background fills the entire available stage; controls re
 
 ### Writing Activity layout — restrained separation and rhythm
 
-**One boundary, one primary separator** [A]. For adjacent functional regions use either a distinct surface fill, a border, or a divider as the primary separation method; do not stack all three on the same structural seam. Multiple treatments require a documented different functional purpose (e.g. active focus ring). General container border is one semantic step quieter than current warm-stroke candidate; keep strong **selected/correct/wrong/focus** borders unchanged on controls that use a border to show those states. Writing Choice options are specified separately. `default` is white with a light border. `selected` is the brown fill `#9B4F36` with a ring. `correct` is a green fill. `correctUnselected` (alias `shown`) is a green outline with a leading check and no solid green disc. `wrong` uses `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state. Keep contrast on controls and keep accessibility semantics.
+**One boundary, one primary separator** [A]. For adjacent functional regions use either a distinct surface fill, a border, or a divider as the primary separation method; do not stack all three on the same structural seam. Multiple treatments require a documented different functional purpose (e.g. active focus ring). General container border is one semantic step quieter than current warm-stroke candidate; keep strong **selected/correct/wrong/focus** borders unchanged on controls that use a border to show those states. Writing Choice options are specified separately. `default` is white with a light border. the **approved selected target** is a white surface with a dark-brown `--ba-color-warm-9` outline and ring; PR #60 still renders the historical `#9B4F36` brown selected fill and requires implementation/visual review. `correct` is a green fill. `correctUnselected` (alias `shown`) is a green outline with a leading check and no solid green disc. `wrong` uses `#9B4F36` and an X. `dim` is graded chrome at opacity 0.4. `disabled` is a separate non-interactive state. Keep contrast on controls and keep accessibility semantics.
 
 Reduce **peer content-container gaps by one existing spacing-token step**, consistently for horizontal and vertical layout as applicable; leave text line-height, minimum control heights, touch areas and meaningful internal content padding alone. Never invent an arbitrary px offset. Audit each current gap's token and select the immediate next smaller existing spacing step; at smallest valid step keep unchanged and document exception.
 
@@ -822,3 +841,27 @@ The approved A · Warm Frame + White Canvas remains the direction. The Activity 
 WordGrid's approved current default is **70px minimum pill height, 20px type, 28px line height, 12px block and 18px inline padding**. Selected is the existing shared WordGrid pill with a 2px dark brown `--ba-color-warm-9` outline; selection itself is not disabled and clicking again may undo before Check. `correctUnselected` is a hint for a valid unpicked answer: retain white/neutral Selected base geometry and typography but replace the outline with `--ba-color-success-6`. A genuinely picked correct item retains its existing filled success treatment. Do not use a green fill to style the unselected alternative, and do not change the selection record. First wrong Check does not reveal all answers; second wrong Tapword Shown reveals targets with green borders but does not unlock Next or celebrate.
 
 Staircase trees now use transparent 128px WebP runtime derivatives of the designer's supplied green/orange PNGs. The five original SVG tree shapes are removed and replaced 1:1 at their original coordinates and ground baseline, within the hill-1 parallax layer. A per-Level stable FNV-1a mapping controls color. The original full-resolution PNGs remain attached to the design handoff, while the runtime assets are smaller lossily optimized copies. Rendered visual review remains pending.
+
+## Review 07 · Source-verified design assemblies and outstanding review (2026-10-29, Phase 2)
+
+**Coverage:** PR #60 exact SHA `3300151d08706ec91a7719f072e9717b853e7e4d`. These notes clarify already-existing design protocol; they **do not** approve the rendered screens or change any CSS/token value.
+
+### E-01 Staircase, Start Point and flags
+
+- **Implemented / Pending Review:** `CourseApp.tsx` mounts `StartPointLevelCombo` with the existing Level intro card. The current combo puts the Start Point artwork at the top of a card that still contains its title; this is **not equivalent** to the approved future standalone orange Level Title Card above a separate body card. The minimum four-line Level/Unit description target also needs actual visual verification.
+- **Implemented / Pending Review:** current Lesson Card uses `SolarLessonPreview` for the active/current state. Flag and tree artwork remain tied to scene CSS/assets. Review 07 local Upcoming Flag placement refinements are excluded until GitHub synchronization and Joe acceptance; do **not** infer a new default from local screenshots or a later unverified branch.
+- **Exploration / Library only:** BA-WR-019 `BackToCurrent` shows the fully offscreen-current condition, center-scroll mock action, fit=control Solar and static fallback in the Library. PR #60 `StaircaseScene` still has its existing navigation; the Library specimen is not an approved Writing runtime control.
+
+### Writing Workspace, NotebookShell and Coach
+
+- **Implemented / Pending Review:** `LessonWorkspace` owns white task area and independent Coach rail, with Previous/contextual action bottom-right *outside* the scrollable Coach transcript. Writing and Coach align under LessonTopBar. Preserve desktop/tablet primary review and responsive mobile support.
+- **Implemented / Pending Review:** Q6 uses shared BA-WR-016 `NotebookShell` as an outer paper-only component with U-ring/holes/ruled lines; the Activity title, play-audio, textarea and four-group WordGrid are passed as children. The shell itself does **not** expose `value`, `defaultValue`, `onChange` or placeholder props. `NotebookEditor` remains a separate legacy compare specimen. CSS at the pinned SHA uses Jost / Noto Sans SC for body, 24px paper line base with 180% leading, 20px content inset and a Q6 page lift; these are source-observed implementation values, not new token approvals.
+- **Implemented / Pending Review:** BA-WR-014 CoachMessage handles lesson teaching/feedback and speech; BA-WR-017 CoachNote renders Highlight/Improvement after Apply. BA-WR-018 CoachChat remains an experimental Library scrolling list, not a live CourseApp replacement.
+- **Implemented / Pending Review:** WordGrid/WordChip card selection and evaluation are separate. Screen 04 uses one authored `set` bank with no redundant tabs; Screen 05 uses `task → opinion → marks`; Q6 uses `opinion → nouns → adjectives → marks`. For reversible pre-Check selections, unselecting a frame card must remove only its matching answer span. The guided ordered-build `used` state remains non-reversible. Neither visual state may silently alter grading.
+
+### Choice, motion and responsive state boundaries
+
+- **Approved target / implementation gap:** BAChoice pre-Check `selected` should be a white card with warm-9 outline and repeated-click undo linked to its answer field. The shared PR #60 CSS still paints `selected` as a dark fill; native single-radio re-click undo is not established. After Check, retain authored correctness and distinct `correct`, `correctUnselected`, `wrong`, `dim` and `disabled` semantics. Do not mark this target implemented.
+- **Approved principles / Pending Review:** reduced-motion overrides selected High/Low mode; preserve equivalent static correctness and focus feedback. Focus/keyboard/touch, narrow widths, NotebookShell shadow/clipping, flag placement and BackToCurrent Solar matching all require exact-version browser evidence and designer review.
+
+**Deferred incremental audit:** when the Writing Agent publishes a new GitHub SHA for `review07-preview-wt`, compare that SHA to `3300151d08706ec91a7719f072e9717b853e7e4d`; update only affected sections and component contracts. Do not silently transfer Preview/Refinement acceptance to this baseline or auto-archive the specifications.
