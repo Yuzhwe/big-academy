@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from '@testing-library/react';
+import type { CSSProperties } from 'react';
 import { StaircaseScene } from './StaircaseScene';
 
 // Only the entrance/lifecycle is under test. WebGL sky is unrelated.
@@ -9,9 +10,9 @@ function enterLevel(levelId: string, motionMode: 'high' | 'low' = 'high') {
   return render(
     <StaircaseScene levelId={levelId} locale="en" motionMode={motionMode} count={3} focusIndex={0}>
       <ol className="course-nodes">
-        <li data-node-kind="lesson" style={{ '--step-index': 0 } as React.CSSProperties}>A</li>
-        <li data-node-kind="lesson" style={{ '--step-index': 1 } as React.CSSProperties}>B</li>
-        <li data-node-kind="lesson" style={{ '--step-index': 2 } as React.CSSProperties}>C</li>
+        <li data-node-kind="lesson" style={{ '--step-index': 0 } as CSSProperties}>A</li>
+        <li data-node-kind="lesson" style={{ '--step-index': 1 } as CSSProperties}>B</li>
+        <li data-node-kind="lesson" style={{ '--step-index': 2 } as CSSProperties}>C</li>
       </ol>
     </StaircaseScene>,
   );
