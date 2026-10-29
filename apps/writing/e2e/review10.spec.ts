@@ -1,5 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 
+// Half-pixel CSS borders are quantized to a full device pixel on DPR=1.
+// Inspect the approved 0.5 CSS-pixel stroke on a DPR=2 browser.
+test.use({ deviceScaleFactor: 2 });
+
 const lib = 'http://127.0.0.1:6007/?view=components&component=words';
 const primary = (page: Page) => page.getByTestId('lesson-footer').getByRole('button').last();
 const options = (page: Page) => page.locator('.ba-choice__option');
@@ -14,8 +18,7 @@ async function reachBuild(page: Page) {
   await advance(page); await advance(page);
   await expect(page.getByTestId('build-bench')).toBeVisible();
 }
-async function reachFrame(page: Page) {
-  await reachBuild(page);
+async function finishBuildToFrame(page: Page) {
   for (const word of ['our','school','should','have','a','garden','for','two','big','reasons','.']) {
     // Current shared WordChip renders its word text directly, without the
     // historical .word-grid__text child wrapper used by old E2E specs.
@@ -25,6 +28,10 @@ async function reachFrame(page: Page) {
   }
   await advance(page); await advance(page);
   await expect(page.getByTestId('frame')).toBeVisible();
+}
+async function reachFrame(page: Page) {
+  await reachBuild(page);
+  await finishBuildToFrame(page);
 }
 async function reachNotebook(page: Page) {
   await reachFrame(page);
@@ -57,7 +64,7 @@ test('R10-05: Activity 4 and 5 answer text and input are Jost 24px/36px', async 
   const bench = page.getByTestId('build-bench');
   await expect(bench).toHaveCSS('font-size', '24px');
   await expect(bench).toHaveCSS('line-height', '36px');
-  await reachFrame(page);
+  await finishBuildToFrame(page);
   const frame = page.getByTestId('frame');
   await expect(frame).toHaveCSS('font-size', '24px');
   await expect(frame).toHaveCSS('line-height', '36px');
