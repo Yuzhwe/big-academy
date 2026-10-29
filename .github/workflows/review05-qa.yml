@@ -4,6 +4,7 @@ on:
     branches:
       - feat/writing-review05-components-pages
       - feat/writing-review06-refinement
+      - feat/writing-review07-refinement09
       - audit/writing-review06-documentation-sync-20261028
       - chore/writing-baseline01-integration
       - main
