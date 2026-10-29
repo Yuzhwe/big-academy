@@ -70,6 +70,8 @@
   );
   top: calc(6px - var(--ba-flag-upcoming-content-top) * var(--ba-flag-upcoming-size));
   object-fit: contain;
+  /* Refinement 08: static Upcoming cloth only; pole/cloud/Completed unchanged. */
+  translate: 10px 0;
 }
 
 /* Pedestal cloud under Level flag. Full under-flag width ~250px; was ~0.82 → 205px; now 0.8× → 164px.
