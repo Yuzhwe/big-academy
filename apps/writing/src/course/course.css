@@ -213,13 +213,7 @@
   gap: 8px;
 }
 
-/* Writing-only temporary: light tinted neutral WordChip under .course-words.
-   Shared WordChip.css / Library unevaluated specimens stay white.
-   WordChip always writes data-evaluation="neutral" for unevaluated chips. */
-.course-words .word-chip[data-evaluation='neutral']:not([data-selected='true']):not([data-disabled='true']):not(:disabled),
-.course-words .word-chip[data-selection='default']:not([data-evaluation]):not([data-selected='true']):not([data-disabled='true']):not(:disabled) {
-  background: color-mix(in srgb, var(--ba-writing-accent, #b25415) 10%, #ffffff);
-}
+/* R10-04: Neutral WordChip styling is owned by the shared WordChip.css. */
 
 .course-feedback {
   margin: 12px 0 0;
@@ -341,10 +335,13 @@
   color: var(--ba-brand-dark, #133547);
 }
 
-/* Frame Fill: fixed sentence copy matches student-entry input scale (24px). */
+/* R10-05: Q4 assembled answer + Q5 fixed sentence/input share 24px / 36px.
+   Local to these two activity answer areas; never alter headings or Coach. */
+.course-bench,
 .course-frame {
+  font-family: var(--ba-font-body-en, "Jost", sans-serif);
   font-size: var(--ba-writing-input-font-size, 24px);
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .course-frame input {
@@ -570,7 +567,10 @@
  * Page textarea is a transparent child — do not keep a hand-rolled paper face. */
 
 /* Review 06: student-entered text has a deliberately larger reading scale. */
-.course-frame input,
+.course-frame input {
+  font-size: var(--ba-writing-input-font-size, 24px);
+  line-height: 1.5;
+}
 .course-canvas textarea { font-size: var(--ba-writing-input-font-size, 24px); line-height: 1.45; }
 .course-frame input {
   /* Grow the underline with typed/inserted content; JSX sets width in ch (+ size= fallback). */
