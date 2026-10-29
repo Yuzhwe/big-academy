@@ -98,6 +98,7 @@ test('R10-06/07/08: Q6 alignment, single scroll owner, moving rules, dock and dy
       const coach = document.querySelector('.lesson-workspace__coach')!.getBoundingClientRect();
       return {sheetTop:sheet.top,coachTop:coach.top};
     });
+    console.log(`R10 geometry ${width}x${height}: sheetY=${actual.sheetTop.toFixed(2)}, coachY=${actual.coachTop.toFixed(2)}, delta=${(actual.sheetTop-actual.coachTop).toFixed(2)}px`);
     expect(Math.abs(actual.sheetTop - actual.coachTop), `paper/Coach drift at ${width}`).toBeLessThanOrEqual(2);
   }
 
