@@ -10,6 +10,27 @@
 
 **Pending:** Joe — NotebookShell geometry/shadow, Upcoming Flag vs Completed Flag, BackToCurrent Solar/fallback, Level Title, BAChoice selected, and overall visual signoff; Alex — Apply counted CJK and safety/move-on edge and hard-reload Coach feedback intent. No auto-merge/main update/Vercel deployment. See `docs/audits/writing-phase2-canonical-sync-20261029.md` for source-by-source dispositions.
 
+
+## Default design review delivery — GitHub Codespaces + Browser Preview (2026-10-29)
+
+**Workflow authority:** Joe confirmed this as the default collaboration and visual/interaction acceptance workflow for Writing and the designer-facing Component Library. This changes **engineering review delivery only**; it does not change PRODUCT.md learning logic, root DESIGN.md visual requirements, CSS Tokens, component contracts, or any component's visual approval status.
+
+1. **Engineering delivery:** Implementation Agent pushes the candidate to its isolated feature branch and supplies a Draft PR with the exact head SHA. Keep `main` protected; never equate compile success with designer acceptance.
+2. **Preview preparation:** Prefer reusing an existing GitHub Codespace. Protect any uncommitted edits before switching branches. Check the actual workspace branch and `git rev-parse HEAD` against the review PR SHA; a Codespace name or PR link alone is not proof of the checkout. Start both Vite apps and keep forwarded port visibility **Private**.
+3. **Verified starting example (PR #60, not necessarily the current checkout):** Codespace `fearsome-spooky-coffin`; Writing port **5173**, designer Component Library port **6007**. From `/workspaces/big-academy`:
+   ```sh
+   (cd apps/writing && npx vite --host 0.0.0.0 --port 5173 --strictPort) & (cd apps/library && npx vite --host 0.0.0.0 --port 6007 --strictPort) & wait
+   ```
+   Initial PR #60 source anchor: `feat/writing-review07-preview-upload-20261029` at `3300151d08706ec91a7719f072e9717b853e7e4d`; confirm any future checkout separately. Ports and forwarded URLs may change.
+4. **Browser validation:** Separately report (a) both servers started, (b) both private forwarded links were actually opened in a browser, (c) fonts/images/icons/background assets loaded, (d) primary interactions and browser console contain no blocking errors, and (e) running code corresponds to the asserted SHA. Never invent forwarded links or silently present an unverified localhost or permanent deployment link.
+5. **Designer review:** Provide Joe the two real browser URLs (Writing and Component Library), Review/PR, head branch, actual SHA, Codespace name, server/browser verification, and outstanding issues. Joe alone approves visual design; service readiness is not approval.
+6. **Feedback loop:** Supervisor/Design Coordinator captures Joe's observations in a scoped incremental brief. Implementation Agent updates its Draft PR, then repeats the exact-SHA browser preview verification. Do not approve or merge on behalf of Joe.
+7. **Baseline + docs:** After the applicable engineering and designer gates, freeze the approved version; synchronize PRODUCT.md, root DESIGN.md, Component Contracts and HANDOFF.md only as actually affected; integrate only with explicit authorization. Keep unapproved visual candidates labeled **Implemented / Pending Visual Review** or **Exploration**.
+
+**Environment policy:** Cloud browser preview is the default; Joe's Mac environment is **not** required. Vercel is **not** the default review path. The Codespace may pause; restarting the services is acceptable. Do not treat a temporary forwarded URL as permanent. A future Codespace may optionally use a **240-minute idle timeout**, but this setting is not asserted to be active. Neither this protocol nor the verified PR #60 startup proves that PR #62 is currently checked out or that its private forwarded links have been independently tested.
+
+**Agent handoff:** Implementation, audit and documentation agents must check this section when preparing or evaluating a Review delivery. Audit agents validate evidence and SHA provenance without claiming designer approval. Documentation agents preserve the distinction between source implementation and approved visual design. The reviewer can always request an older pinned PR (e.g., #60) using an isolated checkout; do not overwrite newer work.
+
 ---
 
 ## Historical Baseline 01 handoff (2026-10-28 — preserved, not the Phase 2 source)
