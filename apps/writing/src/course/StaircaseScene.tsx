@@ -5,7 +5,7 @@ import hillMid from '../assets/r2.12/hill-mid.svg';
 import hillFront from '../assets/r2.12/hill-front.svg';
 import { BAButton, BAIcon } from '@big-academy/design-system';
 import { CloudShaderSky } from './CloudShaderSky';
-import { claimLevelIntro } from './staircaseMotion';
+import { shouldStartStaircaseIntro } from './staircaseMotion';
 import { HILL_FRONT_TREES, hillTreeColor, hillTreeStyle } from './staircaseTrees';
 
 const STEP_GAP = 290;
@@ -298,10 +298,13 @@ export function StaircaseScene({
   const [cameraX, setCameraX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [cardHeights, setCardHeights] = useState<number[]>([]);
-  const [introActive, setIntroActive] = useState(false);
-  // Claim before paint: this is a session-only UI receipt, not Alex progress.
+  // Each newly mounted Staircase replays the original stagger. Init before paint
+  // so repeated navigation cannot briefly show settled cards or reuse old receipts.
+  const [introActive, setIntroActive] = useState(() => shouldStartStaircaseIntro(motionMode));
   useLayoutEffect(() => {
-    if (claimLevelIntro(levelId) && motionMode === 'high') setIntroActive(true);
+    setIntroActive(shouldStartStaircaseIntro(motionMode));
+    // A Level change starts a fresh entrance; a High/Low toggle does not
+    // accidentally replay an entrance that has already settled.
   }, [levelId]);
   useEffect(() => {
     if (!introActive) return;

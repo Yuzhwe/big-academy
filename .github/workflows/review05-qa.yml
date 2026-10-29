@@ -4,6 +4,7 @@ on:
     branches:
       - feat/writing-review05-components-pages
       - feat/writing-review06-refinement
+      - feat/writing-review07-refinement09
       - audit/writing-review06-documentation-sync-20261028
       - chore/writing-baseline01-integration
       - main
@@ -25,8 +26,18 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - name: Git whitespace safety relative to main
-        run: git diff --check "$(git merge-base origin/main HEAD)" HEAD
+      - name: Git whitespace safety (stacked Review 09 vs PR #62)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF_NAME}" == "feat/writing-review07-refinement09" ]]; then
+            # Review 09 is stacked on #62; do not fail on inherited baseline lint.
+            git fetch origin feat/writing-review07-refinement08-20261029
+            base="$(git merge-base origin/feat/writing-review07-refinement08-20261029 HEAD)"
+          else
+            base="$(git merge-base origin/main HEAD)"
+          fi
+          git diff --check "$base" HEAD
       - run: npm ci
       - run: npm run check:docs
       - run: npm run typecheck

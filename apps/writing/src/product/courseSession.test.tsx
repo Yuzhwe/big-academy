@@ -213,11 +213,14 @@ describe('course slice UI', () => {
     expect(lessonOne).toHaveAttribute('data-state', 'continue');
     expect(lessonOne?.querySelector('[data-testid="lesson-row"]')).toHaveTextContent('Enter');
 
+    // Review 09 replays the stagger on every return, not only on first entry.
+    // Wait for the entrance to settle before testing locked-lesson product gating.
+    await waitFor(() => expect(document.querySelector('.staircase-viewport')).toHaveAttribute('data-intro', 'settled'), { timeout: 18000 });
     await user.click(document.querySelector('[data-lesson-focus="G2-O:2"]') as HTMLElement);
     expect(screen.getByTestId('locked-note')).toHaveTextContent(/Lesson 1/);
     expect(screen.getByRole('heading', { name: /Level 2/ })).toBeInTheDocument();
     expect(course.inspect().screen).toBe(0);
-  }, 20000);
+  }, 35000);
 });
 
 function reach(course: Session, match: (screen: Session['screens'][number]['screen']) => boolean) {
