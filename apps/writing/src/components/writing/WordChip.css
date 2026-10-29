@@ -19,6 +19,18 @@
   transition: transform 200ms cubic-bezier(.2, 0, 0, 1);
 }
 
+/* R10-04: only unevaluated, unselected, usable Neutral cards.
+   * Compensate the 0.5px stroke in padding so intrinsic card geometry stays put.
+   * Selected/used/graded/hint/shown keep their existing visual precedence. */
+.word-chip[data-selection='default'][data-evaluation='neutral']:not(:disabled):not([data-disabled='true']):not([data-used='true']) {
+  --ba-wordchip-neutral-stroke: 0.5px;
+  background: #ffffff;
+  border: var(--ba-wordchip-neutral-stroke) solid #d9cbb8;
+  /* Blink rasterizes the 0.5px CSS stroke to a 1px layout border; offset
+   * the actual box thickness so selected/unselected pills do not jump. */
+  padding: 11px 17px;
+}
+
 .word-chip__text {
   min-width: 0;
 }
