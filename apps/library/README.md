@@ -37,3 +37,5 @@ See `public/review/r2/verification.md` for R2 checks, screenshots, scene URLs an
 - Current Writing Screen 04 Guided Build and Screen 05 Frame Fill preserve their authored groups and support stable-card selection/undo before Check where implemented. Grading/locking after Check remains product-owned. Historical no-undo demos are not current authority.
 
 Review screenshots are local-only by user decision. They are excluded from the review commit. The site detects their presence at build/dev startup and shows the text report without broken image placeholders in other checkouts.
+
+

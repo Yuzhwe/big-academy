@@ -290,7 +290,7 @@ describe('default L0/L1 display-only completion', () => {
 });
 
 describe('Lesson 1 screens 5–8', () => {
-  it('shows one word hint after two wrong taps and keeps the placed word', async () => {
+  it('shows next-target hint after three wrong taps, clears streak, and keeps the placed word', async () => {
     const user = userEvent.setup();
     const course = session();
     reach(course, (screen) => screen.task === 'ss.L2-04');
@@ -302,19 +302,49 @@ describe('Lesson 1 screens 5–8', () => {
     expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
     expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
     const garden = screen.getByRole('button', { name: /^garden(?: ·.*)?$/ });
+    const taskKey = 'L2-04.skill:ss.L2-04';
+    // Tap 1–2: shake only, no hint yet (threshold is 3).
     await user.click(garden);
     expect(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ })).not.toHaveAttribute('data-hint', 'true');
+    expect(screen.getByRole('button', { name: /^our(?: ·.*)?$/ })).not.toHaveAttribute('data-hint', 'true');
+    expect(course.inspect().tasks[taskKey]?.buildMissStreak).toBe(1);
     expect(screen.getAllByTestId('bench-blank')).toHaveLength(11);
     await user.click(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ }));
-    expect(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ })).toHaveAttribute('data-hint', 'true');
-    expect(screen.getByRole('button', { name: 'school' })).not.toHaveAttribute('data-hint', 'true');
+    expect(screen.getByRole('button', { name: /^our(?: ·.*)?$/ })).not.toHaveAttribute('data-hint', 'true');
+    expect(course.inspect().tasks[taskKey]?.buildMissStreak).toBe(2);
+    expect(course.inspect().tasks[taskKey]?.buildHint).toBeFalsy();
+    // Tap 3: hint on correct next target ("our"); streak clears.
+    await user.click(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ }));
+    expect(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ })).not.toHaveAttribute('data-hint', 'true');
+    expect(screen.getByRole('button', { name: /^our(?: ·.*)?$/ })).toHaveAttribute('data-hint', 'true');
+    expect(screen.getByRole('button', { name: /^school(?: ·.*)?$/ })).not.toHaveAttribute('data-hint', 'true');
     expect(screen.getByTestId('feedback')).toHaveAttribute('data-outcome', 'wrong');
-    await user.click(screen.getByRole('button', { name: 'our' }));
+    expect(course.feedback).toMatch(/Start with who|先说谁|Which word comes next|下一个词是什么/);
+    expect(course.inspect().tasks[taskKey]?.buildMissStreak).toBe(0);
+    expect(course.inspect().tasks[taskKey]?.buildHint).toBe(true);
+    // After hint, two more wrongs do not re-fire; streak is 2, hint flag still on.
+    await user.click(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ }));
+    await user.click(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ }));
+    expect(course.inspect().tasks[taskKey]?.buildMissStreak).toBe(2);
+    expect(course.feedback).toMatch(/does not come next|不是下一个/);
+    expect(screen.getByRole('button', { name: /^our(?: ·.*)?$/ })).toHaveAttribute('data-hint', 'true');
+    // Third wrong again → coach hint can replay; streak clears again.
+    await user.click(screen.getByRole('button', { name: /^garden(?: ·.*)?$/ }));
+    expect(course.inspect().tasks[taskKey]?.buildMissStreak).toBe(0);
+    expect(course.inspect().tasks[taskKey]?.buildHint).toBe(true);
+    expect(course.feedback).toMatch(/Start with who|先说谁|Which word comes next|下一个词是什么/);
+    expect(screen.getByRole('button', { name: /^our(?: ·.*)?$/ })).toHaveAttribute('data-hint', 'true');
+    await user.click(screen.getByRole('button', { name: /^our(?: ·.*)?$/ }));
     expect(screen.getByTestId('bench-text')).toHaveTextContent(/our/i);
     expect(screen.getAllByTestId('bench-blank')).toHaveLength(10);
     expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
-    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.wrongTaps?.garden).toBe(2);
-    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['our']);
+    expect(course.inspect().tasks[taskKey]?.built).toEqual(['our']);
+    expect(course.inspect().tasks[taskKey]?.buildHint).toBe(false);
+    expect(course.inspect().tasks[taskKey]?.buildMissStreak).toBe(0);
+    // Used-lock: placed "our" is used; hint does not stick onto the new next without another 3 misses.
+    expect(screen.getByRole('button', { name: /^our(?: ·.*)?$/ })).toHaveAttribute('data-used', 'true');
+    expect(screen.getByRole('button', { name: /^our(?: ·.*)?$/ })).not.toHaveAttribute('data-hint', 'true');
+    expect(screen.getByRole('button', { name: /^school(?: ·.*)?$/ })).not.toHaveAttribute('data-hint', 'true');
     expect(course.screenDone(course.inspect().screen)).toBe(false);
   });
 
@@ -565,12 +595,87 @@ describe('Review 05 isolated lesson tests',()=>{
     expect(test.inspect().regions['L2-05.apply']).toEqual([{t:'Other lesson',s:'typed'}]);
     expect(test.inspect().checks['L2-05.check'].q).toBe(2);
   });
-  it('never derives Level flag completion from the display-only L0/L1 examples',()=>{
+  it('shows Level flag completed for display-only L0/L1 preview without writing progress',()=>{
     const course=session();expect(course.pathNodes('L1').filter(n=>n.milestone).every(n=>n.milestone?.completed)).toBe(true);
-    expect(course.levelRewardDone('L1')).toBe(false);expect(course.levelRewardDone('L2')).toBe(false);
+    expect(course.levelRewardDone('L0')).toBe(true);
+    expect(course.levelRewardDone('L1')).toBe(true);
+    // L2 remains real completion only — empty fixtures stay upcoming
+    expect(course.levelRewardDone('L2')).toBe(false);
   });
 });
 
+
+describe('Reset confirm-formal',()=>{
+  it('clears formal lesson answers and restarts at question 1 without Test Mode isolation',()=>{
+    const storage=createMemoryStorage({unrelated:'keep'}),formal=session('',storage);
+    formal.openLesson('G2-O',1);formal.pressPrimary();formal.pick(0);formal.pressPrimary();formal.openHint();
+    formal.inspect().regions['L2-05.apply']=[{t:'Other lesson',s:'typed'}];
+    expect(formal.inspect().tasks['L2-04.skill:ts1'].tries).toBe(1);
+    expect(Object.keys(formal.inspect().tasks).length).toBeGreaterThan(0);
+    formal.resetCurrentLesson();
+    expect(formal.view).toBe('lesson');
+    expect(formal.inspect().screen).toBe(0);
+    expect(formal.inspect().tasks).toEqual({});
+    expect(formal.canOpen(1)).toBe(false);
+    expect(formal.inspect().regions['L2-05.apply']).toEqual([{t:'Other lesson',s:'typed'}]);
+    expect(storage.getItem('unrelated')).toBe('keep');
+    // Same formal session persists cleared state to formal storage (not a Test Mode clone)
+    formal.flush();
+    const restored=session('',storage);restored.openLesson('G2-O',1);
+    expect(restored.inspect().screen).toBe(0);
+    expect(restored.inspect().tasks).toEqual({});
+  });
+
+  it('clears this lesson practice receipts so finish(done) celebrates again after Reset',()=>{
+    const storage=createMemoryStorage();
+    // Seed an unrelated lesson practice receipt that must survive Reset.
+    storage.setItem(CELEBRATION_KEY, JSON.stringify({
+      initialized: true,
+      seenDone: {},
+      celebrated: {},
+      practice: { 'item:other-lesson-task': true, 'lesson:L2-05.check': true },
+    }));
+    const course = session('', storage);
+    course.openLesson('G2-O', 1);
+    course.pressPrimary();
+    course.pick(1); // ts1 correct
+    course.pressPrimary();
+    expect(course.practiceBurst).toEqual({ id: 'ts1', lesson: false });
+    const afterFirst = JSON.parse(storage.getItem(CELEBRATION_KEY) ?? '{}') as { practice?: Record<string, boolean> };
+    expect(afterFirst.practice?.['item:ts1']).toBe(true);
+    expect(afterFirst.practice?.['item:other-lesson-task']).toBe(true);
+    expect(afterFirst.practice?.['lesson:L2-05.check']).toBe(true);
+
+    course.resetCurrentLesson();
+    expect(course.practiceBurst).toBeNull();
+    const afterReset = JSON.parse(storage.getItem(CELEBRATION_KEY) ?? '{}') as { practice?: Record<string, boolean> };
+    expect(afterReset.practice?.['item:ts1']).toBeUndefined();
+    expect(afterReset.practice?.['item:other-lesson-task']).toBe(true);
+    expect(afterReset.practice?.['lesson:L2-05.check']).toBe(true);
+
+    // Answer Q1 correctly again — celebration must fire like first time.
+    course.pressPrimary();
+    course.pick(1);
+    course.pressPrimary();
+    expect(course.practiceBurst).toEqual({ id: 'ts1', lesson: false });
+    const afterSecond = JSON.parse(storage.getItem(CELEBRATION_KEY) ?? '{}') as { practice?: Record<string, boolean> };
+    expect(afterSecond.practice?.['item:ts1']).toBe(true);
+  });
+
+  it('lists every correct option in coach copy after a multi-pick finish(done)',()=>{
+    const course = session();
+    reach(course, s => s.task === 'ts3');
+    course.pick(0);
+    course.pick(2);
+    course.pick(4);
+    course.pressPrimary();
+    expect(course.feedback).toMatch(/Right\. You chose A and C and E/);
+    expect(course.feedback).toMatch(/The right answer is A and C and E/);
+    const options = course.activity()?.pick?.options ?? [];
+    expect(options.filter(o => o.state === 'correct').map(o => o.letter)).toEqual(['A', 'C', 'E']);
+    expect(course.practiceBurst).toEqual({ id: 'ts3', lesson: false });
+  });
+});
 
 describe('Review 06 acceptance gates', () => {
   it('keeps every runtime lesson free from standalone P2/P7 while preserving all nine lesson records', () => {
@@ -596,7 +701,7 @@ describe('Review 06 acceptance gates', () => {
 
 
 describe('Review 06 final refinement: reversible WordGrid and correct-target semantics', () => {
-  it('toggles a stable ordered-build tile without changing any other built words', () => {
+  it('locks used ordered-build tiles before Check (re-tap is a no-op)', () => {
     const course = session();
     reach(course, screen => screen.task === 'ss.L2-04');
     const group = course.activity()?.wordGrid?.groups[0];
@@ -608,14 +713,11 @@ describe('Review 06 final refinement: reversible WordGrid and correct-target sem
     course.placeCard(school!.text, school!.id);
     expect(course.activity()?.build?.bench).toMatch(/our school/i);
     expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(true);
-    course.placeCard(our!.text, our!.id);
-    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['school']);
-    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(false);
-    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === school!.id)?.used).toBe(true);
-    // Re-inserting an earlier removed tile does not discard or duplicate later tiles.
+    // Re-tap used chip must NOT retract from the bench.
     course.placeCard(our!.text, our!.id);
     expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['our', 'school']);
     expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(true);
+    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === school!.id)?.used).toBe(true);
   });
 
   it('removes only the corresponding frame fill when reselecting its stable card ID', () => {
@@ -649,5 +751,77 @@ describe('Review 06 final refinement: reversible WordGrid and correct-target sem
     expect(course.activity()?.tapword?.words[should].correct).toBe(true);
     expect(course.activity()?.tapword?.words[believe].revealed).toBe(true);
     expect(course.activity()?.tapword?.words[believe].selected).toBe(false);
+  });
+});
+
+
+
+
+describe('Q5 frame fill ts8 (Joe-confirmed brief)', () => {
+  it('rejects vagueLast on Check once (hint), then shows reference on the second wrong Check', () => {
+    const course = session();
+    reach(course, (screen) => screen.task === 'ts8');
+    const key = 'L2-04.skill:ts8';
+    course.setBlank(0, 'be longer');
+    // Three tokens so min_words passes; phrase still matches vagueLast.
+    course.setBlank(1, 'it is fun');
+    course.pressPrimary();
+    expect(course.inspect().tasks[key]?.status).toBe('open');
+    expect(course.inspect().tasks[key]?.tries).toBe(1);
+    expect(course.feedback).toMatch(/doesn.?t tell me why|没有告诉我为什么|fun/i);
+    course.setBlank(1, 'it is nice');
+    course.pressPrimary();
+    expect(course.inspect().tasks[key]?.status).toBe('shown');
+    expect(course.inspect().tasks[key]?.tries).toBe(2);
+    expect(course.feedback).toMatch(/Here is the answer|答案在这里|because/i);
+    expect(course.screenDone(course.inspect().screen)).toBe(true);
+  });
+
+  it('appends a WordGrid chip into the current focused blank', () => {
+    const course = session();
+    reach(course, (screen) => screen.task === 'ts8');
+    course.focusBlank(1);
+    course.setBlank(1, 'kids');
+    course.setCaret(4, 4);
+    const word = course.activity()?.wordGrid?.groups.flatMap((g) => g.words).find((w) => /need/i.test(w.text));
+    expect(word).toBeDefined();
+    course.placeCard(word!.text, word!.id);
+    expect(course.activity()?.frame?.blanks[1].value.toLocaleLowerCase()).toContain('kids');
+    expect(course.activity()?.frame?.blanks[1].value.toLocaleLowerCase()).toContain('need');
+    expect(course.activity()?.frame?.focus).toBe(1);
+  });
+
+  it('passes when both blanks meet minima with a non-vague reason', () => {
+    const course = session();
+    reach(course, (screen) => screen.task === 'ts8');
+    course.setBlank(0, 'be longer');
+    course.setBlank(1, 'kids need time to run');
+    course.pressPrimary();
+    expect(course.inspect().tasks['L2-04.skill:ts8']?.status).toBe('done');
+    expect(course.feedback).toMatch(/Yes\.|对。/);
+  });
+
+  it('moves focus to the next blank on Tab and widens the underline size with content', async () => {
+    const user = userEvent.setup();
+    const course = session();
+    reach(course, (screen) => screen.task === 'ts8');
+    render(<CourseApp session={course} />);
+    const frame = screen.getByTestId('frame');
+    expect(frame).toBeInTheDocument();
+    const first = screen.getByTestId('frame-blank-0') as HTMLInputElement;
+    const second = screen.getByTestId('frame-blank-1') as HTMLInputElement;
+    expect(first.size).toBeGreaterThanOrEqual(8);
+    first.focus();
+    await user.type(first, 'be longer');
+    expect(first.size).toBeGreaterThanOrEqual('be longer'.length);
+    await user.keyboard('{Tab}');
+    expect(document.activeElement).toBe(second);
+    expect(course.activity()?.frame?.focus).toBe(1);
+    // jsdom does not resolve CSS variables; assert the Writing token is wired on the frame + input.
+    expect(frame.className).toContain('course-frame');
+    expect(first.size).toBeGreaterThanOrEqual(8);
+    // Presence of data attributes + size growth covers the interaction brief; 24px is verified on 5173.
+    expect(first.getAttribute('data-frame-blank')).toBe('0');
+    expect(second.getAttribute('data-frame-blank')).toBe('1');
   });
 });

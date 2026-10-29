@@ -1,12 +1,14 @@
 import {useEffect,useRef} from 'react';
 import completedCloth from '../assets/review05/writing_flag_1.5.png';
-import upcomingCloth from '../assets/review05/writing_flag_1.png';
+import upcomingCloth from '../assets/review05/writing_flag_uncompleted.webp';
 import pole from '../assets/review05/writing_flag_2.cutout.png';
 import './LevelRewardFlag.css';
 
 /** Adapted from yarden's Flutter algorithm to browser Canvas.
  * https://stackoverflow.com/a/78383275 · retrieved 2026-10-26 · CC BY-SA 4.0.
  * Original source imagery retained in assets/review05, no redrawn pole or cloth.
+ * Upcoming/uncompleted uses static writing_flag_uncompleted.webp (no canvas wave).
+ * Completed keeps writing_flag_1.5.png with the column-slice wave.
  */
 export const FLAG_DEFAULTS={period:3,waves:5,amplitude:3} as const;
 export function flagPhase(elapsedSeconds:number,period:number){return 2*Math.PI*elapsedSeconds/Math.max(.1,period);}
@@ -23,6 +25,7 @@ export function LevelRewardFlag({completed=false,label,period=FLAG_DEFAULTS.peri
   const src=imageSrc||(completed?completedCloth:upcomingCloth);
   useEffect(()=>{phaseRef.current=0;},[resetKey]);
   useEffect(()=>{
+    if(!completed)return;
     const element=canvas.current;if(!element)return;
     const context=element.getContext('2d');if(!context)return;
     const css=getComputedStyle(element),w=parseFloat(css.getPropertyValue('--ba-flag-cloth-width'))||200,h=parseFloat(css.getPropertyValue('--ba-flag-cloth-height'))||150;
@@ -58,11 +61,32 @@ export function LevelRewardFlag({completed=false,label,period=FLAG_DEFAULTS.peri
     const visibility=typeof IntersectionObserver!=='undefined'?new IntersectionObserver(entries=>{onScreen=entries[0]?.isIntersecting??true;element.dataset.onScreen=String(onScreen);wake();}):null;
     visibility?.observe(element);
     return()=>{disposed=true;wakeRef.current=null;cancelAnimationFrame(frame);media?.removeEventListener('change',wake);document.removeEventListener('visibilitychange',wake);visibility?.disconnect();image.onload=null;image.onerror=null;};
-  },[amplitude,waves,period,src,resetKey]);
+  },[amplitude,waves,period,src,resetKey,completed]);
   // Repaint the decoded image on High/Low switch; never reload the cloth asset.
-  useEffect(()=>{wakeRef.current?.();},[playing]);
+  useEffect(()=>{if(completed)wakeRef.current?.();},[playing,completed]);
   return <span className="course-goal__flag ba-flag" role="img" data-component="BA-WR-011" data-playing={playing} data-state={completed?'completed':'upcoming'} aria-label={label??`Level reward · ${completed?'Completed':'Upcoming'}`}>
+    {/* Pedestal cloud under Level flagpole — static; image mid aligned to pole mid; ~0.82 of full under-flag width. */}
+    <img
+      className="ba-flag__pedestal-cloud"
+      src="/assets/clouds/writing_cloud_1.webp"
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      data-testid="level-flag-pedestal-cloud"
+    />
     <img className="ba-flag__pole" src={pole} alt="" draggable={false}/>
-    <canvas ref={canvas} className="ba-flag__canvas" data-cloth={src} aria-hidden="true"/>
+    {completed ? (
+      <canvas ref={canvas} className="ba-flag__canvas" data-cloth={src} aria-hidden="true"/>
+    ) : (
+      <img
+        className="ba-flag__cloth"
+        src={src}
+        alt=""
+        draggable={false}
+        data-cloth={src}
+        data-testid="level-flag-cloth-static"
+        aria-hidden="true"
+      />
+    )}
   </span>;
 }

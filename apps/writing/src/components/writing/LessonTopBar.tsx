@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { I18nProvider } from 'react-aria-components';
 import { BAButton, BAIcon, BATaskProgress, localeTag, taskChrome } from '@big-academy/design-system';
 import type { BALocale, TaskProgressItem } from '@big-academy/design-system';
@@ -21,12 +22,14 @@ export interface LessonTopBarProps {
   tags?: readonly string[];
   /** Chrome language only. Lesson title and task labels are already localized by the caller. */
   locale?: BALocale;
+  /** Optional top-right controls (e.g. designer Reset Lesson). Empty by default. */
+  end?: ReactNode;
 }
 
 /**
  * BA-WR-001 · lesson header.
  * The task group is absolutely centered on this header, so a long title
- * cannot push it into leftover space. The end slot is intentionally empty.
+ * cannot push it into leftover space. The end slot holds optional tools.
  */
 export function LessonTopBar({
   lessonTitle,
@@ -38,6 +41,7 @@ export function LessonTopBar({
   onNavigate,
   tags: _tags,
   locale = 'en',
+  end,
 }: LessonTopBarProps) {
   const copy = taskChrome(locale);
   const fullTitle = `${lessonNumber} ${lessonTitle}`;
@@ -80,7 +84,9 @@ export function LessonTopBar({
             label={locale === 'zh' ? `${lessonNumber}的任务` : `Tasks in ${lessonNumber}`}
           />
         </div>
-        <div className="lesson-topbar__end" data-slot="end" aria-hidden="true" />
+        <div className="lesson-topbar__end" data-slot="end" {...(end ? {} : { 'aria-hidden': true as const })}>
+          {end}
+        </div>
       </header>
     </I18nProvider>
   );

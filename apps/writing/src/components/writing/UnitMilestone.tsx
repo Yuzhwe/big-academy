@@ -53,6 +53,15 @@ export function UnitMilestone({unitId,title,completed,celebrationEligible,motion
       const width=action?.offsetWidth||box.width,height=action?.offsetHeight||box.height;
       target(Math.max(-1,Math.min(1,(event.clientX-box.left-box.width/2)/(width/2))),Math.max(-1,Math.min(1,(event.clientY-box.top-box.height/2)/(height/2))));
     }} onPointerLeave={()=>target(0,0,true)}>
+    {/* Pedestal cloud: static decoration under medal; outside __action so no 3D / pointer follow. */}
+    <img
+      className="unit-milestone__pedestal-cloud"
+      src="/assets/clouds/writing_cloud_2.webp"
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      data-testid="milestone-pedestal-cloud"
+    />
     <Button className="unit-milestone__action" data-testid="milestone" data-done={completed?'1':'0'}
       data-shine={completed?'true':undefined} isDisabled={!completed}
       aria-label={`${title} · ${completed?(zh?'已完成 · 再看一次':'Completed · Play again'):(zh?'未完成':'Upcoming')}`}

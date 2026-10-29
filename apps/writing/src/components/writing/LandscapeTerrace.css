@@ -1,10 +1,15 @@
-/* Designer-supplied R2.12 cloud; shared by real scene and library composition. */
+/* Designer-supplied R2.12 cloud; shared by real scene and library composition.
+   2026-10-28 Writing: lift +20px; soft multi-layer scenic drop-shadow (token shadow was single 8px).
+   2026-10-29: lift another +10px (total −30px vs overlap-only). */
 .staircase-rail .course-nodes > li:not([data-node-kind='milestone']):not([data-node-kind='goal'])::before,
 .landscape-terrace {
   content:''; position:absolute; z-index:0; pointer-events:none;
-  top:calc(100% - var(--ba-cloud-platform-overlap));
-  left:var(--ba-cloud-platform-left); width:var(--ba-cloud-platform-width); height:var(--ba-cloud-platform-height);
-  background:url('../../assets/r2.12/cloud-platform.webp') center / 100% 100% no-repeat;
-  filter:drop-shadow(var(--ba-path-cloud-shadow));
+  top:calc(100% - var(--ba-cloud-platform-overlap) - 30px);
+  left:var(--ba-cloud-platform-left); width:var(--ba-cloud-platform-width); height:var(--ba-cloud-platform-height); /* height token = canvas AR */
+  background:url('../../assets/r2.12/cloud-platform.webp') center / contain no-repeat;
+  filter:drop-shadow(0 4px 12px rgb(55 95 115 / 16%)) drop-shadow(0 1px 3px rgb(55 95 115 / 10%));
 }
-.staircase-rail .course-nodes > li:has([data-state='locked'])::before { opacity:var(--ba-path-cloud-opacity); filter:grayscale(.16) drop-shadow(var(--ba-path-locked-cloud-shadow)); }
+.staircase-rail .course-nodes > li:has([data-state='locked'])::before {
+  opacity:var(--ba-path-cloud-opacity);
+  filter:grayscale(.16) drop-shadow(0 4px 12px rgb(55 95 115 / 14%)) drop-shadow(0 1px 3px rgb(55 95 115 / 9%));
+}

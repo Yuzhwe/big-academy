@@ -628,7 +628,7 @@
         "Apply tabs are Opinion, Nouns, Adjectives, and Marks (观点, 名词, 形容词, 标点)",
         "Storybook fixtures MultipleStickyTabs, MultiGroup, Chinese, and WordWrapTablet match the Approved visuals wordgrid-ordered-build-approved and wordgrid-apply-approved",
         "Ordered-build bench underlines are the writing-area line. The WordGrid panel is the word-card palette. Each remaining blank is an underline, one horizontal line per word still to place. Screen controls are the word cards and the Coach-rail button group. A placed word stays in the line",
-        "Selected or used never implies disabled before Check. A selected card has a deep brown outline and remains clickable for undo by stable card ID, synchronizing the exact answer/blank placement. After Check, product-owned grading may lock it. The component never grades.",
+        "Selected or used never implies disabled before Check. Selected (retractable, e.g. Frame Fill) keeps a deep brown outline and remains clickable for undo by stable card ID. Used (ordered-build placed) is a locked placement chrome: re-tap is a no-op and the word stays on the bench. After Check, product-owned grading may lock further. The component never grades.",
         "Sentence cards fill their row and wrap; word/punctuation/emoji keep complete content and touch targets. New selection/evaluation chrome is candidate only.",
         "On P5 Apply Writing, the parent paper layout docks this same WordGrid at the bottom under a flexing Textarea; WordGrid itself does not own height or authoring/grade logic.",
         "R04 final: bank panel always has four outward-convex identical 16px corners regardless of selected tab; no inverted radial-gradient corners, no underlay patch, and no Slanted; preserve original peach rounded tabs and grade/insertion logic.",
@@ -1041,7 +1041,7 @@
         "LevelIntroDecorativeBorder",
         "LongLevelIntroAndGradient"
       ],
-      "notes": "Approved future Level Title Card + Level Card composition and four-line minimum descriptions are pending implementation. Current CourseApp `.course-intro` is not evidence that a standalone LevelTitleCard is complete."
+      "notes": "Approved future Level Title Card + Level Card composition and four-line minimum descriptions are pending implementation. Current CourseApp `.course-intro` is not evidence that a standalone LevelTitleCard is complete. Library 6008: StairLevelIntroCard catalog key `level`; `composition=combo` overlays Start Point on Level card top edge (tilt −6°, Level top padding 48px). Writing CourseApp still uses inline .course-intro until assembly brief."
     },
     {
       "id": "BA-WR-009",
@@ -1288,6 +1288,178 @@
         "Only body text is spoken. CJK selects zh-CN, English selects en-US. End/error/unsupported never changes answer, tries, hints, grade or progression."
       ],
       "layoutOwner": "Coach card owns body clearance and audio target; app owns rail placement."
+    },
+    {
+      "id": "BA-WR-015",
+      "name": "StartPoint",
+      "kind": "composite",
+      "contractVersion": "0.7.0-review07-draft",
+      "status": "implemented",
+      "visualStatus": "pending-review",
+      "implementation": "apps/writing/src/components/writing/StartPoint.tsx",
+      "story": null,
+      "props": {
+        "text": "string, optional; defaults EN Start Point / ZH 开始学习啦！",
+        "locale": "en | zh",
+        "fill": "CSS color, default #ffc24e",
+        "stroke": "CSS color, default #715146",
+        "ink": "CSS color, default #2f0f04",
+        "onTextChange": "(text: string) => void, optional editable mode"
+      },
+      "events": {
+        "onTextChange": "(text: string) => void"
+      },
+      "states": [
+        "default"
+      ],
+      "layoutOwner": "Component owns left text panel width (measured) and right decoration translate; app owns placement. Not wired into Writing CourseApp / staircase in Review 07.",
+      "requirements": [
+        "No mid vertical divider or diagonal slash decorations; left outline open on the right; right body has no left edge.",
+        "Preserve HTML SVG path families parameterized by split X = measured text width W; decorations translate(W,0) with fixed local coords.",
+        "When left text changes, measure (canvas/DOM) and drive left container width + SVG split; total width = W + 91; height 82.",
+        "Defaults: fill #ffc24e, stroke #715146, ink #2f0f04; font 800 var(--ba-writing-lesson-card-title-size)/var(--ba-writing-lesson-title-line-height) (24px/30px) Dosis / heading-zh; geometry CSS-scales 0.8 vs original 30px silhouette (paths not redrawn); label padding scales with geometry; radius 20px 0 0 20px native.",
+        "Library catalog + preview only for Review 07; Level combo lives on BA-WR-008 catalog key (?component=level&composition=combo). Do not assemble into Writing course pages / staircase runtime."
+      ],
+      "requiredStories": [],
+      "figma": "27:273",
+      "runtimeEvidence": null,
+      "notes": "Provisional Review 07 library-gate draft. Visual authority: design-preview/start-point-preview.html and start-point-geometry-check.html. Library combo is Start Point × Level card (?component=level&composition=combo on BA-WR-008); Unit combo mistarget removed. Not wired into Writing staircase. Implementation pending designer visual Review 07."
+    },
+    {
+      "id": "BA-WR-016",
+      "name": "NotebookShell",
+      "kind": "composite",
+      "contractVersion": "0.7.0-review07-draft",
+      "status": "implemented",
+      "visualStatus": "pending-review",
+      "implementation": "apps/writing/src/components/writing/NotebookShell.tsx (primary chrome); apps/writing/src/components/writing/NotebookEditor.tsx (legacy lined editor compare)",
+      "story": null,
+      "props": {
+        "orientation": "portrait | landscape; default portrait. Portrait = top binding; landscape = left binding with bind-inner -90°. Controlled by Library Scene / URL / R2Controls — component must NOT render demo toolbar pills.",
+        "value": "string, controlled textarea value",
+        "defaultValue": "string, uncontrolled initial value",
+        "placeholder": "string, default 在这里开始写…",
+        "onChange": "(value: string) => void",
+        "onBindCountChange": "(count: number) => void, optional"
+      },
+      "events": {
+        "onChange": "(value: string) => void",
+        "onBindCountChange": "(count: number) => void"
+      },
+      "states": [
+        "default"
+      ],
+      "layoutOwner": "NotebookShell owns paper frame + holes/U-ring coils and children slot (Adaptation A flex fill). Legacy NotebookEditor still owns lined sheet + auto-growing textarea. Library Preview/Scene owns orientation. Not wired into Writing CourseApp / routes in Review 07.",
+      "requirements": [
+        "NO in-component orientation toolbar (竖本/横本 pills). Orientation only via props from Library Preview / Scene / URL (?orientation=landscape) / R2Controls.",
+        "Holes + U-ring coils: pitch-first (--bind-pitch / --ne-bind-pitch: 38); hole/coil count adapts with span (clamp 3–24); algorithm identical to _incoming-assets/notebook-editor-demo.html bindCount.",
+        "Portrait = top binding; Landscape = left binding with bind-inner rotate(-90deg) translateX(-100%).",
+        "Lined paper tokens from HTML: font-size 24, leading 1.5, line-h 46, first-line-extra 20; colors and coil SVG match HTML.",
+        "Editable textarea that auto-grows with content (min 600 portrait / 520 landscape).",
+        "Scope CSS under .notebook-editor — do not reset html/body for Library chrome.",
+        "Library catalog + preview only for Review 07; do not assemble into Writing course pages / CourseApp."
+      ],
+      "requiredStories": [],
+      "figma": null,
+      "runtimeEvidence": null,
+      "notes": "Provisional Review 07 library-gate draft. Visual authority: _incoming-assets/notebook-editor-demo.html. Product delta vs demo: remove .toolbar; orientation via Library chrome. Implementation pending designer visual Review 07."
+    },
+    {
+      "id": "BA-WR-017",
+      "name": "CoachNote",
+      "kind": "composite",
+      "contractVersion": "0.7.0-review07-draft",
+      "status": "implemented",
+      "visualStatus": "pending-review",
+      "implementation": "apps/writing/src/components/writing/CoachNote.tsx",
+      "story": null,
+      "props": {
+        "tone": "highlight | improvement (required)",
+        "title": "string optional; default Highlight / Improvement",
+        "children": "ReactNode, note body",
+        "className": "string optional"
+      },
+      "events": {},
+      "states": [
+        "highlight",
+        "improvement"
+      ],
+      "layoutOwner": "CoachNote owns card chrome (fill, border, radius, title+body type). Parent owns stack gap and rail placement.",
+      "requirements": [
+        "Reusable Highlight / Improvement margin note; not a CoachMessage audio card.",
+        "White fill, 12px radius, thin border; title small bold top-left; body regular dark text.",
+        "highlight: sage green border + green title (Joe sample #a5d0ba / #50ab64).",
+        "improvement: warm grey-brown border (warm-4) + brown title (warm-6).",
+        "Library catalog key coach-note; specimen stacks both tones vertically (~12px gap).",
+        "Review 07 library gate: do not invent Q6 course assembly beyond migrating interim course-apply-coach-note chrome onto this component."
+      ],
+      "requiredStories": [],
+      "figma": null,
+      "runtimeEvidence": null,
+      "notes": "Visual authority: Joe Apply Check Highlight/Improvement screenshot (joe-highlight-improvement-ref.png). Migrated from interim .course-apply-coach-note in course.css."
+    },
+    {
+      "id": "BA-WR-018",
+      "name": "CoachChat",
+      "kind": "composite",
+      "contractVersion": "0.7.0-review07-draft",
+      "status": "exploration",
+      "visualStatus": "pending-review",
+      "implementation": "apps/library/src/CoachChatPlayground.tsx (Library preview layer only)",
+      "story": null,
+      "props": {
+        "scene": "Library Scene (locale). Turns are demo-local state."
+      },
+      "events": {},
+      "states": [
+        "default"
+      ],
+      "layoutOwner": "Library CoachChatPlayground owns viewport height, item stack, stick/jump chrome. Reuses CoachMessage + CoachNote card chrome.",
+      "requirements": [
+        "Catalog key coach-chat; do not overwrite coach (BA-WR-014) or coach-note (BA-WR-017).",
+        "Pure minimal DIY MessageScroller-like behavior in Library preview — no new packages (@base-ui, shadcn message-scroller, etc.).",
+        "Height-limited Viewport; Content + Items (turns); new turn anchors near top of viewport when appended while at live edge.",
+        "Auto-follow only while user is at live edge; stop if they scroll up; Jump to latest when not at bottom; optional prepend-history demo control.",
+        "Demo content includes orientation / Highlight / Improvement / Hint turns using CoachMessage + CoachNote.",
+        "Review 07 library gate: do not wire this chat list into Writing CourseApp / lesson pages."
+      ],
+      "requiredStories": [],
+      "figma": null,
+      "runtimeEvidence": null,
+      "notes": "Exploration specimen for coach turn scrolling. Visual/behavior authority: MessageScroller interaction pattern (DIY). Not product-assembled."
+    },
+    {
+      "id": "BA-WR-019",
+      "name": "BackToCurrent",
+      "kind": "composite",
+      "contractVersion": "0.7.0-review07-draft",
+      "status": "exploration",
+      "visualStatus": "pending-review",
+      "implementation": "apps/library/src/PathBackToCurrentPlayground.tsx (Library preview layer only)",
+      "story": null,
+      "props": {
+        "scene": "Library Scene (locale, pathCurrentView, pathSolarFallback, motion, solar*). Demo-local viewport only."
+      },
+      "events": {
+        "onPress": "Specimen mock-centers Current in the demo scroll stage; does not drive Writing camera."
+      },
+      "states": [
+        "default"
+      ],
+      "layoutOwner": "Library PathBackToCurrentPlayground owns path-controls specimen geometry (L / Back to current / R), show-hide motion, and Solar control-fit wrap. Writing StaircaseScene path-controls remain L/R only until a later phase.",
+      "requirements": [
+        "Catalog key path-back; insert Back to current between path-controls L/R arrows at height 50.",
+        "Copy: 「回到当前」 / Back to current (locale).",
+        "Show only when Current is fully off-screen; hide when any part returns to viewport; light scale+fade pop.",
+        "Solar: prefer full WebGL same as lesson-card Current via SolarLessonPreview fit=control; low-perf/fallback = stroke border (same card fallback colors).",
+        "Do not change Writing StaircaseScene off-screen detection / cameraForStep this phase.",
+        "Click may mock center in specimen only; must look like a finished button.",
+        "Reuse/thin-wrap SolarLessonPreview without breaking existing lesson-card Current glow (fit=card default)."
+      ],
+      "requiredStories": [],
+      "figma": null,
+      "runtimeEvidence": null,
+      "notes": "Joe-locked library specimen for Review 07 visual gate. Writing integration deferred."
     }
   ],
   "currentDirection": {

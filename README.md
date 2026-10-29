@@ -36,3 +36,5 @@ New development should branch from `main`, update contracts/tokens when required
 Run `npm run dev` for Writing, `npm run dev:library` for the interactive designer Component Library, and `npm run storybook` for Storybook. Read the actual terminal output for the bound port; any older `localhost` URL may point to a different checkout or stopped server. `Start Big Academy.command` and `npm run local-sites:install` are optional Mac utilities, not remote CI evidence.
 
 The [HANDOFF](docs/HANDOFF.md) records the frozen candidate SHA, GitHub CI evidence when available, historical verification, unapproved visual details, and Review 07 starting conditions.
+
+

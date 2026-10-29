@@ -1,5 +1,5 @@
 .unit-milestone { position:relative; box-sizing:border-box; display:grid; place-items:center; width:var(--ba-path-badge-size); height:var(--ba-path-badge-size); margin:0; padding:0; background:transparent; border:0; perspective:var(--ba-milestone-perspective); }
-.unit-milestone__action { position:relative; width:var(--ba-path-badge-size); height:var(--ba-path-badge-size); padding:0; border:0; background:transparent; border-radius:var(--ba-radius-circle); cursor:pointer; transform-style:preserve-3d; transform:rotateX(calc(var(--badge-y,0) * var(--ba-milestone-tilt) * -1)) rotateY(calc(var(--badge-x,0) * var(--ba-milestone-tilt))); }
+.unit-milestone__action { position:relative; z-index:1; width:var(--ba-path-badge-size); height:var(--ba-path-badge-size); padding:0; border:0; background:transparent; border-radius:var(--ba-radius-circle); cursor:pointer; transform-style:preserve-3d; transform:rotateX(calc(var(--badge-y,0) * var(--ba-milestone-tilt) * -1)) rotateY(calc(var(--badge-x,0) * var(--ba-milestone-tilt))); }
 .unit-milestone__action img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none; backface-visibility:hidden; }
 .unit-milestone__action img:nth-child(1) { transform:translate3d(calc(var(--badge-x,0) * var(--ba-milestone-back-travel)),calc(var(--badge-y,0) * var(--ba-milestone-back-travel)),var(--ba-milestone-back-depth)); }
 .unit-milestone__action img:nth-child(2) { transform:translate3d(calc(var(--badge-x,0) * var(--ba-milestone-front-travel)),calc(var(--badge-y,0) * var(--ba-milestone-front-travel)),var(--ba-path-badge-depth)); filter:drop-shadow(var(--ba-path-badge-shadow)); }
@@ -14,3 +14,23 @@
 .unit-milestone[data-motion='low'] .unit-milestone__action,
 .unit-milestone[data-motion='low'] .unit-milestone__action img { transform: none !important; }
 .unit-milestone[data-motion='low'] .unit-milestone__sheen { display: none; }
+
+/* Pedestal cloud under medal (both completed + upcoming). Static; no pointer/3D.
+   Horizontal center = medal center; cloud top hugs medal bottom (slight press-in).
+   Asset is 1024² with ~30% transparent top pad — overlap clears pad + ~16px press.
+   2026-10-28: lift +40px (overlap 104→144); soft scenic drop-shadow.
+   2026-10-29: lift another +10px (overlap 144→154). */
+.unit-milestone__pedestal-cloud {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: calc(100% - var(--ba-milestone-pedestal-overlap, 154px));
+  width: var(--ba-milestone-pedestal-width, 290px);
+  height: auto;
+  max-width: none;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 4px 12px rgb(55 95 115 / 16%)) drop-shadow(0 1px 3px rgb(55 95 115 / 10%));
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}

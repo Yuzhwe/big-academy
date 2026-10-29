@@ -304,7 +304,7 @@
   --ba-writing-unit-fold-face-dark: #e7d6c9; /* [E] */
   --ba-writing-p2-better-surface: #eaf7ef; /* [E] */
   --ba-writing-editor-ruled-line: #eaedeb; /* [E] subtle Activity 7 only */
-  --ba-writing-input-font-size: 22px; /* [A] Review 06 student entry scale */
+  --ba-writing-input-font-size: 24px; /* [A] Review 06 student entry scale */
   --ba-writing-apply-input-font-size: 24px; /* [A] Review 06 Apply Writing */
   --ba-writing-p2-better-border: #12ad5c; /* [E] */
   --ba-writing-p2-weak-border: #d7c7bd; /* [E] */
@@ -458,9 +458,9 @@
   --ba-wordgrid-tab-radius: 14px;
   --ba-wordgrid-tab-gap: var(--ba-space-1);
   --ba-cloud-platform-width: 300px;
-  --ba-cloud-platform-height: 94px;
+  --ba-cloud-platform-height: 192px; /* canvas AR 1600×1024 @ 300w; was 94 for tight 1141×358 */
   --ba-cloud-platform-left: -20px;
-  --ba-cloud-platform-overlap: 49px;
+  --ba-cloud-platform-overlap: 69px; /* pad-top≈53 @192h + ~16px press under card; was 49 for tight crop */
   --ba-path-arrow-size: 56px;
   --ba-path-badge-size: 190px;
   --ba-lesson-current-shadow: 0 0 0 2px var(--ba-color-action-primary);

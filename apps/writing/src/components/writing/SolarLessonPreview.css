@@ -57,6 +57,33 @@
   17% { transform: translateX(155%); }
   17.01%, 100% { transform: translateX(155%); }
 }
+
+/* Control fit: thin-wrap path-controls pills without changing card Current glow. */
+.solar-lesson-preview[data-solar-fit='control'] {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+.solar-lesson-preview[data-solar-fit='control'] [data-solar-target] {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  border-radius: 999px;
+}
+.solar-lesson-preview[data-solar-fit='control'][data-solar-status='fallback'] [data-solar-target] .ba-button__assembly {
+  box-shadow: 0 0 0 3px #743c1e;
+}
+.solar-lesson-preview[data-solar-fit='control'][data-solar-status='active'] [data-solar-target] .ba-button__assembly {
+  box-shadow: 0 0 0 2px var(--ba-solar-border-color, #b25415);
+}
+@media(prefers-reduced-motion: reduce){
+  .solar-lesson-preview[data-solar-fit='control'] [data-solar-target] .ba-button__assembly {
+    box-shadow: 0 0 0 3px #743c1e;
+  }
+}
+
 @media(prefers-reduced-motion: reduce){
   .solar-border-canvas { display:none; }
   .solar-lesson-preview .stair-lesson-card { border-color:#743c1e;box-shadow:0 0 0 3px #743c1e; }
