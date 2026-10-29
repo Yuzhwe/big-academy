@@ -60,8 +60,14 @@ test('R10-04: shared Library and Writing Neutral cards have white 0.5px warm str
   await expect(writingWord).toHaveCSS('--ba-wordchip-neutral-stroke', '0.5px');
   expect(Number.parseFloat(await writingWord.evaluate(el => getComputedStyle(el).borderTopWidth))).toBeLessThanOrEqual(1);
   await expect(writingWord).toHaveCSS('border-top-color', 'rgb(217, 203, 184)');
+  const selectedText = (await writingWord.innerText()).trim();
+  const neutralBox = await writingWord.boundingBox();
   await writingWord.click();
-  await expect(writingWord).toHaveAttribute('data-selection', 'selected');
+  // Do not keep locating by data-selection='default' after it becomes Selected.
+  const selectedWord = page.locator('.course-words .word-chip').filter({ hasText: selectedText }).first();
+  await expect(selectedWord).toHaveAttribute('data-selection', 'selected');
+  await page.mouse.move(0, 0);
+  await expect.poll(async () => (await selectedWord.boundingBox())!.width).toBeCloseTo(neutralBox!.width, 0);
 });
 
 test('R10-05: Activity 4 and 5 answer text and input are Jost 24px/36px', async ({ page }) => {
