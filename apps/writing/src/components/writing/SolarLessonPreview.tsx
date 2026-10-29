@@ -163,9 +163,17 @@ function SolarBorderCanvas({params,enabled,onRuntime,fit}:{
       gpu.uniform1f(uniforms.time,(now-start)/1000);
       gpu.uniform2f(uniforms.resolution,canvas.width,canvas.height);
       const root=canvas.parentElement;
-      const target=root?.querySelector<HTMLElement>('[data-solar-target]')
-        ?? root?.querySelector<HTMLElement>('.stair-lesson-card');
-      const tw=target?.offsetWidth??260, th=target?.offsetHeight??310;
+      // Control fit: BAButton's outer hit target has transparent inline padding.
+      // The light must hug the *visible* capsule shell, including its press/hover
+      // scale, rather than outlining that larger invisible hit target.
+      // The Current lesson card path remains untouched.
+      const target=fit==='control'
+        ? root?.querySelector<HTMLElement>('[data-solar-target] .ba-button__assembly')
+        : root?.querySelector<HTMLElement>('[data-solar-target]')
+          ?? root?.querySelector<HTMLElement>('.stair-lesson-card');
+      const box=target?.getBoundingClientRect();
+      const tw=box?.width || target?.offsetWidth || 260;
+      const th=box?.height || target?.offsetHeight || 310;
       gpu.uniform2f(uniforms.cardSize,tw,th);
       // Card keeps the locked 55px aura radius; control fit uses a full-pill radius.
       gpu.uniform1f(uniforms.cornerRadius, fit==='control' ? Math.max(1, Math.min(tw, th) * 0.5) : 55);
