@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useState, useRef, type CSSProperties, type ReactNode } from 'react';
 import { useSyncExternalStore } from 'react';
 import { BAButton, BAChoice, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
@@ -378,6 +378,153 @@ function ActivityHeading({ title, speaker }: { title: string; speaker: ReactNode
   </div>;
 }
 
+/** R10-06/07/08 · Activity 6 only. The paper is fixed; the heading, editable
+ * textarea and lines share one scroll viewport, with WordGrid docked outside it.
+ * Does not alter NotebookShell's default Library behavior or Alex grading.
+ */
+function CourseApplyNotebook({
+  title, speaker, label, value, readOnly, onCaret, onPaste, onChange, wordGrid,
+}: {
+  title: string;
+  speaker: ReactNode;
+  label: string;
+  value: string;
+  readOnly: boolean;
+  onCaret: (element: HTMLTextAreaElement) => void;
+  onPaste: () => void;
+  onChange: (value: string) => void;
+  wordGrid: ReactNode;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const fieldRef = useRef<HTMLLabelElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const updateFade = () => {
+    const viewport = scrollRef.current;
+    if (!viewport) return;
+    const overflow = viewport.scrollHeight - viewport.clientHeight > 2;
+    viewport.dataset.fadeTop = String(overflow && viewport.scrollTop > 2);
+    viewport.dataset.fadeBottom = String(
+      overflow && viewport.scrollTop + viewport.clientHeight < viewport.scrollHeight - 2,
+    );
+  };
+
+  const resizeEditor = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    // No textarea scroll owner: its full natural line height becomes the height
+    // of the single parent scroll viewport. No remount or value replacement.
+    textarea.style.height = '0px';
+    const minLineHeight = Number.parseFloat(getComputedStyle(textarea).lineHeight) || 43.2;
+    textarea.style.height = `${Math.max(minLineHeight, textarea.scrollHeight)}px`;
+    updateFade();
+  };
+
+  const revealCaret = () => {
+    const viewport = scrollRef.current;
+    const textarea = textareaRef.current;
+    const field = fieldRef.current;
+    if (!viewport || !textarea || !field) return;
+    // A typography-matched, hidden measuring probe gives a wrapped caret Y.
+    // This works for typing, selection replacement and WordGrid insertion
+    // without introducing a second editable/scrollable element.
+    const measure = document.createElement('div');
+    measure.className = 'course-answer-notebook__caret-probe';
+    const textStyle = getComputedStyle(textarea);
+    measure.style.width = `${textarea.clientWidth}px`;
+    measure.style.font = textStyle.font;
+    measure.style.letterSpacing = textStyle.letterSpacing;
+    measure.style.lineHeight = textStyle.lineHeight;
+    measure.style.tabSize = textStyle.tabSize;
+    measure.textContent = textarea.value.slice(0, textarea.selectionStart ?? 0);
+    const marker = document.createElement('span');
+    marker.textContent = '\u200b';
+    measure.append(marker);
+    field.append(measure);
+    const top = field.offsetTop + marker.offsetTop;
+    measure.remove();
+
+    const lineHeight = Number.parseFloat(textStyle.lineHeight) || 43.2;
+    const safeGap = 12;
+    if (top < viewport.scrollTop + safeGap) {
+      viewport.scrollTop = Math.max(0, top - safeGap);
+    } else if (top + lineHeight > viewport.scrollTop + viewport.clientHeight - safeGap) {
+      viewport.scrollTop = top + lineHeight - viewport.clientHeight + safeGap;
+    }
+    updateFade();
+  };
+
+  useLayoutEffect(() => {
+    resizeEditor();
+    // React state can update after native edits; keep the current insertion
+    // line visible instead of resetting the entire notebook to the top.
+    if (document.activeElement === textareaRef.current) {
+      const frame = window.requestAnimationFrame(revealCaret);
+      return () => window.cancelAnimationFrame(frame);
+    }
+  }, [value]);
+
+  useEffect(() => {
+    const viewport = scrollRef.current;
+    const textarea = textareaRef.current;
+    if (!viewport || !textarea) return;
+    let disposed = false;
+    const refresh = () => { if (!disposed) { resizeEditor(); updateFade(); } };
+    const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(refresh);
+    resizeObserver?.observe(viewport);
+    // Changes in WordGrid size resize the scroll viewport through flex sizing.
+    document.fonts?.ready.then(refresh);
+    const onReveal = () => window.requestAnimationFrame(revealCaret);
+    textarea.addEventListener('course:reveal-caret', onReveal);
+    window.addEventListener('resize', refresh);
+    refresh();
+    return () => {
+      disposed = true;
+      resizeObserver?.disconnect();
+      textarea.removeEventListener('course:reveal-caret', onReveal);
+      window.removeEventListener('resize', refresh);
+    };
+  }, []);
+
+  const rememberAndReveal = (element: HTMLTextAreaElement) => {
+    onCaret(element);
+    window.requestAnimationFrame(revealCaret);
+  };
+
+  return (
+    <NotebookShell className="course-answer-notebook" orientation="portrait">
+      <div
+        ref={scrollRef}
+        className="course-answer-notebook__scroll"
+        data-testid="notebook-scroll"
+        data-fade-top="false"
+        data-fade-bottom="false"
+        onScroll={updateFade}
+      >
+        <ActivityHeading title={title} speaker={speaker} />
+        <label className="course-canvas course-answer-notebook__field" ref={fieldRef}>
+          <span className="course-sr">{label}</span>
+          <textarea
+            ref={textareaRef}
+            lang="en"
+            rows={1}
+            className="course-answer-notebook__input"
+            data-testid="writing-canvas"
+            aria-label={label}
+            value={value}
+            readOnly={readOnly}
+            onFocus={event => rememberAndReveal(event.currentTarget)}
+            onSelect={event => rememberAndReveal(event.currentTarget)}
+            onPaste={onPaste}
+            onChange={event => onChange(event.target.value)}
+          />
+        </label>
+      </div>
+      {wordGrid ? <div className="course-answer-notebook__words">{wordGrid}</div> : null}
+    </NotebookShell>
+  );
+}
+
 function ActivityBody({ session, activity }: { session: CourseSession; activity: ActivityModel }) {
   const editor = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const rememberCaret = (el: HTMLInputElement | HTMLTextAreaElement) => {
@@ -388,7 +535,15 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
     session.placeCard(word, id);
     requestAnimationFrame(() => {
       const el = editor.current;
-      if (el && el.isConnected) { el.focus(); el.setSelectionRange(session.caret.start, session.caret.end); }
+      if (el && el.isConnected) {
+        el.focus();
+        el.setSelectionRange(session.caret.start, session.caret.end);
+        // Writing Q6 has a single parent scroll owner: reveal inserted caret
+        // after the original product placement/selection logic has run.
+        if (el instanceof HTMLTextAreaElement && el.classList.contains('course-answer-notebook__input')) {
+          el.dispatchEvent(new Event('course:reveal-caret'));
+        }
+      }
     });
   };
   const speaker = activity.check?.phase === 'results' ? null : (
@@ -598,35 +753,25 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
             Do NOT mount NotebookEditor wholesale. Padding owned by shell only.
           */}
           <div className="course-answer-region" data-testid="answer-region">
-            <NotebookShell className="course-answer-notebook" orientation="portrait">
-              <ActivityHeading title={activity.ask} speaker={speaker} />
-              <label className="course-canvas course-answer-notebook__field">
-                <span className="course-sr">{activity.canvas.label}</span>
-                <textarea
-                  lang="en"
-                  className="course-answer-notebook__input"
-                  data-testid="writing-canvas"
-                  aria-label={activity.canvas.label}
-                  value={activity.canvas.text}
-                  readOnly={activity.check?.phase === 'graded'}
-                  onFocus={(event) => rememberCaret(event.currentTarget)}
-                  onSelect={(event) => rememberCaret(event.currentTarget)}
-                  onPaste={() => session.markPaste()}
-                  onChange={(event) => session.setCanvas(event.target.value)}
+            <CourseApplyNotebook
+              title={activity.ask}
+              speaker={speaker}
+              label={activity.canvas.label}
+              value={activity.canvas.text}
+              readOnly={activity.check?.phase === 'graded'}
+              onCaret={rememberCaret}
+              onPaste={() => session.markPaste()}
+              onChange={text => session.setCanvas(text)}
+              wordGrid={activity.wordGrid ? (
+                <WordGrid
+                  groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() })) }))}
+                  activeGroup={activity.wordGrid.active}
+                  locale={session.locale}
+                  onGroupChange={key => session.selectGrid(key)}
+                  onWordAction={word => insert(word.text, word.id)}
                 />
-              </label>
-              {activity.wordGrid ? (
-                <div className="course-answer-notebook__words">
-                  <WordGrid
-                    groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() })) }))}
-                    activeGroup={activity.wordGrid.active}
-                    locale={session.locale}
-                    onGroupChange={(key) => session.selectGrid(key)}
-                    onWordAction={(word) => insert(word.text, word.id)}
-                  />
-                </div>
               ) : null}
-            </NotebookShell>
+            />
           </div>
         </div>
       ) : null}
