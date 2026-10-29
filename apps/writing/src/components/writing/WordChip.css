@@ -26,7 +26,9 @@
   --ba-wordchip-neutral-stroke: 0.5px;
   background: #ffffff;
   border: var(--ba-wordchip-neutral-stroke) solid #d9cbb8;
-  padding: 11.5px 17.5px;
+  /* Blink rasterizes the 0.5px CSS stroke to a 1px layout border; offset
+   * the actual box thickness so selected/unselected pills do not jump. */
+  padding: 11px 17px;
 }
 
 .word-chip__text {
