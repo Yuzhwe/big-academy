@@ -128,6 +128,11 @@
   background: var(--ba-tabs-glass-surface, rgb(255 255 255 / 72%));
   padding-inline: 18px;
   white-space: nowrap;
+  /* Refinement 08: Solar owns the capsule rim; suppress BAButton's asymmetric
+     1px sides / 3px bottom only for this Library specimen. Keep the native
+     50px geometry, hover, press, focus ring and Solar active/fallback glow. */
+  border-color: transparent;
+  border-bottom-width: 1px;
 }
 
 .path-back-caption {
