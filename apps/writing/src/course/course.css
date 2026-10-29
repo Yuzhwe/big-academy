@@ -670,7 +670,7 @@
   border: 0;
   border-radius: 0;
   box-sizing: border-box;
-  padding: 28px 0 56px;
+  padding: 0 0 56px; /* the notebook's paper edge, not the coil, aligns to Coach top */
 }
 .lesson-workspace__paper:has(.course-activity[data-kind='apply']) > .ba-page-transition,
 .lesson-workspace__paper:has(.course-activity[data-kind='apply']) .ba-page-transition__content,
@@ -726,9 +726,10 @@
   background: transparent;
   border: 0;
 }
-/* Shell fills answer region as the outer visual container.
- * Joe: lift whole shell 10px (U-ring vs coach height). margin-top only —
- * does not touch shell content pad / ruled metrics. */
+/* R10-06: paper top and Coach top share the same workspace grid datum.
+ * Portrait binding = stage top pad (20px) + bind band (24px) = 44px.
+ * Express that offset in NotebookShell tokens instead of stacking historical
+ * -10px/-41px guesses. The coil stays above the paper by its original amount. */
 .course-answer-region > .course-answer-notebook.notebook-shell,
 .course-answer-region > .notebook-shell.course-answer-notebook {
   flex: 1 1 auto;
@@ -737,101 +738,188 @@
   max-width: none;
   width: 100%;
   margin: 0;
-  margin-top: -51px; /* Refinement 08: existing -10px + Joe's additional -41px */
+  margin-top: calc(var(--ns-coil-nudge) - var(--ns-coil-h) - var(--ns-hole) / 2);
+}
+
+/* R10-08 only: Library NotebookShell keeps its own ruled background and
+ * default scroll layout. Q6 moves rules inside the editor in the one scroll
+ * viewport, while the WordGrid dock remains a non-scrolling flex sibling. */
+.course-activity[data-kind='apply'] .course-answer-notebook .notebook-shell__ruled {
+  display: none;
 }
 .course-activity[data-kind='apply'] .course-answer-notebook .notebook-shell__content {
-  overflow: hidden; /* textarea scrolls; WordGrid stays pinned */
-}
-/*
- * Title + audio inside shell: use shell line metrics so line-boxes stay on the
- * ruled grid. Speaker is out-of-flow so its 50px hit target does not skew height.
- * No margin/padding that would stack on shell content pad.
- */
-.course-activity[data-kind='apply'] .course-answer-notebook .course-activity__heading {
-  position: relative;
-  display: block;
-  margin: 0;
+  overflow: hidden;
   padding: 0;
-  padding-right: 62px; /* clear absolute 50px speaker + gap; not shell pad */
-  column-gap: 0;
-  grid-template-columns: none;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.course-answer-notebook__scroll {
+  --ba-notebook-edge-fade: 26px; /* candidate for Joe's visual review */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  padding: var(--ns-content-pad-y) var(--ns-content-pad-x) 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #c6bfae transparent;
+}
+.course-answer-notebook__scroll[data-fade-top='true'][data-fade-bottom='true'] {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--ba-notebook-edge-fade), #000 calc(100% - var(--ba-notebook-edge-fade)), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--ba-notebook-edge-fade), #000 calc(100% - var(--ba-notebook-edge-fade)), transparent 100%);
+}
+.course-answer-notebook__scroll[data-fade-top='true'][data-fade-bottom='false'] {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--ba-notebook-edge-fade), #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--ba-notebook-edge-fade), #000 100%);
+}
+.course-answer-notebook__scroll[data-fade-top='false'][data-fade-bottom='true'] {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - var(--ba-notebook-edge-fade)), transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - var(--ba-notebook-edge-fade)), transparent 100%);
+}
+.course-answer-notebook__scroll[data-fade-top='false'][data-fade-bottom='false'] {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* R10-07: original 32px Dosis ExtraBold Activity Heading, with the same
+ * 50px audio control and wrapping behavior as all other Activities.
+ * Scrolls together with the writing area. Never place ruled lines here. */
+.course-activity[data-kind='apply'] .course-answer-notebook .course-activity__heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 50px;
+  column-gap: 12px;
+  align-items: start;
   flex: 0 0 auto;
-  /* Match shell line box so title rows land on ruled strokes. */
-  font-size: var(--ns-font-size, 24px);
-  line-height: var(--ns-line-h, 43.2px);
-  color: var(--ns-ink, #2c2920);
+  margin: 0 0 12px;
+  padding: 0;
 }
 .course-activity[data-kind='apply'] .course-answer-notebook .course-activity__heading > .course-title {
   margin: 0;
   padding: 0;
-  font-family: "Jost", var(--ba-font-body-zh), sans-serif;
+  font-family: var(--ba-font-en-title, "Dosis", sans-serif);
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+.course-app[lang='zh-CN'] .course-activity[data-kind='apply'] .course-answer-notebook .course-activity__heading > .course-title {
+  font-family: var(--ba-font-zh-title);
   font-weight: 700;
-  font-size: var(--ns-font-size, 24px);
-  line-height: var(--ns-line-h, 43.2px);
-  color: var(--ns-ink, #2c2920);
 }
 .course-activity[data-kind='apply'] .course-answer-notebook .course-activity__heading .course-listen {
-  position: absolute;
-  top: 0;
-  right: 0;
-  float: none;
+  position: relative;
+  top: auto;
+  right: auto;
   margin: 0;
   width: 50px;
   height: 50px;
-  justify-self: auto;
-  align-self: auto;
+  justify-self: end;
+  align-self: start;
 }
+
+/* The writing field owns both editable content and its lines. Its flex-grow
+ * fills short pages; the auto-height textarea expands it on long pages.
+ * One line starts exactly at the first 43.2px line box bottom. */
 .course-activity[data-kind='apply'] .course-answer-notebook__field.course-canvas,
 .course-answer-notebook__field {
   display: flex;
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 1 0 auto;
   flex-direction: column;
-  margin: 0 !important; /* beat .course-canvas { margin-top: 12px } — no stacked gap before input */
+  position: relative;
+  min-height: var(--ns-line-h);
+  margin: 0 !important;
   padding: 0;
   gap: 0;
-  position: relative; /* anchor absolute .course-sr */
+  overflow: visible;
+}
+.course-activity[data-kind='apply'] .course-answer-notebook__field::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: calc(var(--ns-line-h) - var(--ns-line-width));
+  bottom: 0;
+  left: calc(-1 * var(--ns-content-pad-x));
+  right: calc(-1 * var(--ns-content-pad-x));
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--ns-line) 0,
+    var(--ns-line) var(--ns-line-width),
+    transparent var(--ns-line-width),
+    transparent var(--ns-line-h)
+  );
+  background-size: 100% var(--ns-line-h);
+  background-repeat: repeat-y;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 14px, #000 14px, #000 calc(100% - 14px), transparent calc(100% - 14px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, transparent 14px, #000 14px, #000 calc(100% - 14px), transparent calc(100% - 14px), transparent 100%);
 }
 .course-activity[data-kind='apply'] .course-answer-notebook__input,
 .course-activity[data-kind='apply'] textarea.course-answer-notebook__input {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
-  flex: 1 1 auto;
-  min-height: 0;
-  height: 100%;
-  box-sizing: border-box;
-  resize: none;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  border: 0 !important;
-  border-radius: 0;
-  background: transparent !important;
-  background-image: none !important;
-  /* Zero child pad — shell content pad is the only inset. */
+  height: var(--ns-line-h);
+  min-height: var(--ns-line-h);
+  max-height: none;
+  flex: 0 0 auto;
   padding: 0 !important;
   margin: 0;
+  border: 0 !important;
+  border-radius: 0;
+  resize: none;
+  overflow-y: hidden !important;
+  overflow-x: hidden;
+  overscroll-behavior: auto;
+  background: transparent !important;
+  background-image: none !important;
   font-family: "Jost", var(--ba-font-body-zh), sans-serif;
   font-weight: 600;
   font-size: var(--ns-font-size, 24px);
   line-height: var(--ns-line-h, 43.2px);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
   color: var(--ns-ink, #2c2920);
   box-shadow: none;
   -webkit-appearance: none;
   appearance: none;
 }
 .course-activity[data-kind='apply'] .course-answer-notebook__input:focus,
-.course-activity[data-kind='apply'] .course-answer-notebook__input:focus-visible,
-.course-activity[data-kind='apply'] textarea.course-answer-notebook__input:focus,
-.course-activity[data-kind='apply'] textarea.course-answer-notebook__input:focus-visible {
+.course-activity[data-kind='apply'] textarea.course-answer-notebook__input:focus {
   outline: none !important;
-  outline-offset: 0 !important;
   box-shadow: none !important;
+}
+.course-activity[data-kind='apply'] .course-answer-notebook__field:focus-within {
+  outline: 2px solid var(--ba-color-focus, #2364db);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+/* A temporary, visually hidden text mirror for accurate wrapped caret
+ * reveal; never a second editor or scrolling owner. */
+.course-answer-notebook__caret-probe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  visibility: hidden;
+  pointer-events: none;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .course-answer-notebook__words {
   flex: 0 0 auto;
+  min-width: 0;
   margin: 0;
-  padding: 0;
-  padding-top: 24px; /* separation above WordGrid only; not shell content pad */
+  padding: 24px var(--ns-content-pad-x) var(--ns-content-pad-y);
 }
 .course-activity[data-kind='apply'] .course-answer-notebook__words .word-grid {
   margin-top: 0;
