@@ -17,8 +17,119 @@ async function reachBuild(page: Page) {
 async function reachFrame(page: Page) {
   await reachBuild(page);
   for (const word of ['our','school','should','have','a','garden','for','two','big','reasons','.']) {
+    // Current shared WordChip renders its word text directly, without the
+    // historical .word-grid__text child wrapper used by old E2E specs.
     await page.locator('.word-grid__card').filter({
-      has: page.locator('.word-grid__text', { hasText: new RegExp('^' + word.replace('.', '\\.') + '$') }),
+      hasText: new RegExp('^' + word.replace('.', '\\.') + '
+  }
+  await advance(page); await advance(page);
+  await expect(page.getByTestId('frame')).toBeVisible();
+}
+async function reachNotebook(page: Page) {
+  await reachFrame(page);
+  const fields = page.getByTestId('frame').locator('input');
+  await fields.nth(0).fill('be longer');
+  await fields.nth(1).fill('kids need time to run');
+  await advance(page); await advance(page);
+  await expect(page.getByTestId('notebook-scroll')).toBeVisible();
+}
+
+test('R10-04: shared Library and Writing Neutral cards have white 0.5px warm stroke', async ({ page }) => {
+  await page.goto(lib);
+  const libraryWord = page.locator('.word-chip[data-selection="default"][data-evaluation="neutral"]').first();
+  await expect(libraryWord).toBeVisible();
+  await expect(libraryWord).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(libraryWord).toHaveCSS('border-top-width', '0.5px');
+  await expect(libraryWord).toHaveCSS('border-top-color', 'rgb(217, 203, 184)');
+  await page.goto('/?start=lesson');
+  await options(page).nth(1).click(); await advance(page); await advance(page);
+  const writingWord = page.locator('.course-words .word-chip[data-selection="default"][data-evaluation="neutral"]').first();
+  await expect(writingWord).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(writingWord).toHaveCSS('border-top-width', '0.5px');
+  await expect(writingWord).toHaveCSS('border-top-color', 'rgb(217, 203, 184)');
+  await writingWord.click();
+  await expect(writingWord).toHaveAttribute('data-selection', 'selected');
+});
+
+test('R10-05: Activity 4 and 5 answer text and input are Jost 24px/36px', async ({ page }) => {
+  await reachBuild(page);
+  const bench = page.getByTestId('build-bench');
+  await expect(bench).toHaveCSS('font-size', '24px');
+  await expect(bench).toHaveCSS('line-height', '36px');
+  await reachFrame(page);
+  const frame = page.getByTestId('frame');
+  await expect(frame).toHaveCSS('font-size', '24px');
+  await expect(frame).toHaveCSS('line-height', '36px');
+  for (const input of await frame.locator('input').all()) {
+    await expect(input).toHaveCSS('font-size', '24px');
+    await expect(input).toHaveCSS('line-height', '36px');
+  }
+});
+
+test('R10-06/07/08: Q6 alignment, single scroll owner, moving rules, dock and dynamic fades', async ({ page }) => {
+  test.setTimeout(180_000);
+  await reachNotebook(page);
+  const scroll = page.getByTestId('notebook-scroll');
+  const textarea = page.getByTestId('writing-canvas');
+  const field = page.locator('.course-answer-notebook__field');
+  const dock = page.locator('.course-answer-notebook__words');
+
+  await expect(textarea).toHaveCSS('font-size', '24px');
+  await expect(textarea).toHaveCSS('line-height', '43.2px');
+  await expect(textarea).toHaveCSS('overflow-y', 'hidden');
+  await expect(scroll).toHaveCSS('overflow-y', 'auto');
+  await expect(page.locator('.course-answer-notebook .course-title')).toHaveCSS('font-size', '32px');
+  await expect(page.locator('.course-answer-notebook .course-title')).toHaveCSS('line-height', '36.8px');
+  await expect(page.locator('.course-answer-notebook .notebook-shell__ruled')).toHaveCSS('display','none');
+
+  for (const [width,height] of [[1440,900], [1024,768], [834,1112]]) {
+    await page.setViewportSize({width,height});
+    await page.evaluate(() => document.fonts.ready);
+    const actual = await page.evaluate(() => {
+      const sheet = document.querySelector('.notebook-shell__sheet')!.getBoundingClientRect();
+      const coach = document.querySelector('.lesson-workspace__coach')!.getBoundingClientRect();
+      return {sheetTop:sheet.top,coachTop:coach.top};
+    });
+    expect(Math.abs(actual.sheetTop - actual.coachTop), `paper/Coach drift at ${width}`).toBeLessThanOrEqual(2);
+  }
+
+  const baseline = await field.evaluate(el => ({
+    fieldTop: el.getBoundingClientRect().top,
+    ruleTop: Number.parseFloat(getComputedStyle(el,'::before').top),
+    textareaTop: el.querySelector('textarea')!.getBoundingClientRect().top,
+  }));
+  expect(Math.abs(baseline.fieldTop + baseline.ruleTop + 0.5 - (baseline.textareaTop + 43.2))).toBeLessThanOrEqual(1);
+
+  const text = Array.from({length:70},(_,i)=>`Sentence ${i+1}: I believe our school garden makes learning better.`).join('\n');
+  await textarea.fill(text);
+  await expect.poll(async()=>scroll.evaluate(el => el.scrollHeight > el.clientHeight)).toBe(true);
+  const dockTop = (await dock.boundingBox())!.y;
+  await scroll.evaluate(el => { el.scrollTop=0;el.dispatchEvent(new Event('scroll')); });
+  await expect(scroll).toHaveAttribute('data-fade-top','false');
+  await expect(scroll).toHaveAttribute('data-fade-bottom','true');
+  await scroll.evaluate(el => { el.scrollTop=(el.scrollHeight-el.clientHeight)/2;el.dispatchEvent(new Event('scroll')); });
+  await expect(scroll).toHaveAttribute('data-fade-top','true');
+  await expect(scroll).toHaveAttribute('data-fade-bottom','true');
+  await scroll.evaluate(el => { el.scrollTop=el.scrollHeight;el.dispatchEvent(new Event('scroll')); });
+  await expect(scroll).toHaveAttribute('data-fade-top','true');
+  await expect(scroll).toHaveAttribute('data-fade-bottom','false');
+  expect((await dock.boundingBox())!.y).toBeCloseTo(dockTop,0);
+
+  // The textarea remains one stable editable element when content shrinks.
+  await textarea.fill('Short.');
+  await expect.poll(async()=>textarea.evaluate(el=>el.scrollHeight <= el.clientHeight+2)).toBe(true);
+  await scroll.evaluate(el => {el.scrollTop=0;el.dispatchEvent(new Event('scroll'));});
+  const fade = await scroll.evaluate(el=>({
+    overflow:el.scrollHeight>el.clientHeight+2,
+    top:el.getAttribute('data-fade-top'),bottom:el.getAttribute('data-fade-bottom'),
+  }));
+  if(!fade.overflow) expect([fade.top,fade.bottom]).toEqual(['false','false']);
+  expect(await textarea.evaluate(el=>el.isSameNode(document.querySelector('[data-testid="writing-canvas"]')))).toBe(true);
+  await textarea.focus();
+  await textarea.press('End');
+  await expect(textarea).toBeFocused();
+});
+),
     }).click();
   }
   await advance(page); await advance(page);
