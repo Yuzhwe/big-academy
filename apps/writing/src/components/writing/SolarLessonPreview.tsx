@@ -171,9 +171,9 @@ function SolarBorderCanvas({params,enabled,onRuntime,fit}:{
         ? root?.querySelector<HTMLElement>('[data-solar-target] .ba-button__assembly')
         : root?.querySelector<HTMLElement>('[data-solar-target]')
           ?? root?.querySelector<HTMLElement>('.stair-lesson-card');
-      const box=target?.getBoundingClientRect();
-      const tw=box?.width || target?.offsetWidth || 260;
-      const th=box?.height || target?.offsetHeight || 310;
+      const box=fit==='control'?target?.getBoundingClientRect():null;
+      const tw=fit==='control' ? (box?.width || target?.offsetWidth || 260) : (target?.offsetWidth ?? 260);
+      const th=fit==='control' ? (box?.height || target?.offsetHeight || 310) : (target?.offsetHeight ?? 310);
       gpu.uniform2f(uniforms.cardSize,tw,th);
       // Card keeps the locked 55px aura radius; control fit uses a full-pill radius.
       gpu.uniform1f(uniforms.cornerRadius, fit==='control' ? Math.max(1, Math.min(tw, th) * 0.5) : 55);
