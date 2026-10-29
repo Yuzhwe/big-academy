@@ -737,7 +737,7 @@
   max-width: none;
   width: 100%;
   margin: 0;
-  margin-top: -10px; /* up 10px as a whole */
+  margin-top: -51px; /* Refinement 08: existing -10px + Joe's additional -41px */
 }
 .course-activity[data-kind='apply'] .course-answer-notebook .notebook-shell__content {
   overflow: hidden; /* textarea scrolls; WordGrid stays pinned */

@@ -1156,7 +1156,7 @@
       "figma": null,
       "runtimeEvidence": null,
       "reviewStatus": "Pending Designer Review",
-      "notes": "Original files and SHA-256 provenance in assets/review05/manifest.json. Edge-connected neutral backdrop removed only on pole/badge derivatives; source files preserved. No SVG pole or temporary flag art in final rendering. Phase 2: PR #60 implements flag art on E-01; later local Upcoming Flag 10px offset change is outside this pinned SHA and has no Joe approval. Completed animated flag must not be inferred changed by the local request."
+      "notes": "Original files and SHA-256 provenance in assets/review05/manifest.json. Edge-connected neutral backdrop removed only on pole/badge derivatives; source files preserved. No SVG pole or temporary flag art in final rendering. Phase 2 increment at PR #62 `af1a6d4`: `.ba-flag[data-state=\"upcoming\"] .ba-flag__cloth` adds `translate:10px 0` (Upcoming static cloth only). Pole, pedestal group and Completed animated flag unchanged by this delta. Implemented / Pending Joe visual review, not approved."
     },
     {
       "id": "BA-WR-012",
@@ -1359,7 +1359,7 @@
       "requiredStories": [],
       "figma": null,
       "runtimeEvidence": null,
-      "notes": "Implemented in Library and in Writing Q6 Apply at PR #60. Shell owns holes/U-ring coils/ruled paper and children slot but NO textarea value/onChange API. Writing CourseApp owns ActivityHeading+speaker, textarea and four-group WordGrid inside portrait NotebookShell. NotebookEditor is separate historic compare only. Visual alignment, shadow and later unsynced local lift changes remain Pending Joe."
+      "notes": "Implemented in Library and in Writing Q6 Apply at PR #60. Shell owns holes/U-ring coils/ruled paper and children slot but NO textarea value/onChange API. Writing CourseApp owns ActivityHeading+speaker, textarea and four-group WordGrid inside portrait NotebookShell. NotebookEditor is separate historic compare only. PR #62 modifies Q6 outer wrapper margin-top from -10px to -51px (41px additional upward alignment trial against Coach top). Implemented / Pending Joe visual review; shared NotebookShell props/children API is unchanged."
     },
     {
       "id": "BA-WR-017",
@@ -1456,7 +1456,7 @@
       "requiredStories": [],
       "figma": null,
       "runtimeEvidence": null,
-      "notes": "At audited PR #60 SHA this is an exploration in the Component Library ONLY; Solar controls/fallback and mock camera action do not exist as integrated Writing path navigation. A later local adjustment is not part of this documentation baseline and is Pending Joe."
+      "notes": "At PR #62 SHA this remains a Library-only exploration; demo Solar fit=control keeps capsule rim while BAButton assembly stroke is transparent and bottom border width 1px, removing inconsistent double-stroke. Mock scroll does not control Writing path. Implemented specimen / Pending Joe visual review; not approved/integrated."
     }
   ],
   "currentDirection": {
