@@ -38,3 +38,7 @@ Run. The workflow resolves the actual GitHub PR head, checks out that single SHA
 - The GitHub Pages deployment has no server/API and must not publish sensitive source data or credentials.
 
 Do not auto-merge main, deploy Vercel, change Codespaces, or approve component visuals by implication. Pages is publicly accessible, unlike Private Codespaces ports.
+
+## Initial approved candidate
+
+The first deployment is pinned to PR #65, commit `a83a63597e0fd5b3617e4a2c9cc311a60f1847cc`; later product revisions require deliberate manual publication. No existing Codespace will be changed.
