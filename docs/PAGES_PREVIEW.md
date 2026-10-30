@@ -28,6 +28,20 @@ Run. The workflow resolves the actual GitHub PR head, checks out that single SHA
 
 **Publishing replaces the currently visible contents of both stable Pages URLs.** Before pressing Run workflow, confirm Joe is not showing or reviewing the current published version. Approval to publish is a separate, deliberate step from merging or completing a product PR.
 
+## Agent-operated publication via GitHub comments (no terminal / Codespaces)
+
+Once this infrastructure PR #66 has been explicitly approved and merged into `main`, the authorized owner may trigger a deployment **without any product merge or changes to main** by posting a single PR Conversation comment on #66:
+
+```text
+/pages-publish pr=65 sha=a83a63597e0fd5b3617e4a2c9cc311a60f1847cc
+```
+
+The default-branch GitHub Actions workflow listens for `issue_comment.created` only on issue/PR **#66**, requires actor **Yuzhwe**, and requires the strict command format. The PR number must resolve to an open same-repository PR, and the supplied full SHA must match its live HEAD exactly. A failed guard aborts without publishing.
+
+The connected GitHub agent may post that command **only after Joe expressly requests release or says the current review is complete**. The PR comment is the deliberate publish authorization and audit trail. This does not give the agent permission to merge any PR.
+
+The ordinary Actions **Run workflow** option above remains an alternative. Neither product branch commits nor ordinary comments can replace published pages.
+
 ## Build and runtime path compatibility
 
 - Writing uses Vite CLI `--base=/big-academy/writing/`.
