@@ -19,6 +19,12 @@ on:
   # Only repository-owner comments on this infrastructure PR qualify.
   issue_comment:
     types: [created]
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-pages-preview.yml'
+      - 'scripts/pages/**'
+      - 'docs/PAGES_PREVIEW.md'
   push:
     branches: [feat/pages-preview-infrastructure]
 
@@ -29,6 +35,7 @@ concurrency:
 jobs:
   build:
     if: >-
+      github.event_name == 'pull_request' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'issue_comment' &&
        github.event.issue.number == 66 &&
@@ -138,12 +145,15 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - uses: actions/configure-pages@v5
+        if: github.event_name != 'pull_request'
       - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
         with:
           path: pages-site
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -158,6 +168,7 @@ jobs:
 
   live-verify:
     needs: [build, deploy]
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
