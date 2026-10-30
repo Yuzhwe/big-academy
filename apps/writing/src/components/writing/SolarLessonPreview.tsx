@@ -33,7 +33,7 @@ const fragment = [
   'varying vec2 vUv;',
   'uniform float uTime,uRayIntensity,uRayLength,uRayCount,uBokehAmt,uRimBoost,uGlowSpread,uBrightness;',
   'uniform vec2 uResolution,uCardSize;',
-  'uniform float uCornerRadius;',
+  'uniform float uCornerRadius,uControlRaysOnly;',
   'uniform vec3 uBaseColor,uGlowColor;',
   'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
   'float roundBox(vec2 p,vec2 halfSize,float r){vec2 q=abs(p)-halfSize+vec2(r);return length(max(q,0.0))+min(max(q.x,q.y),0.0)-r;}',
@@ -71,6 +71,9 @@ const fragment = [
   '}',
   'bokeh*=max(uBokehAmt,0.0);',
   'float glow=(rim*0.65+halo*(0.20+0.30*rays+0.16*bokeh))*outer*max(uRimBoost,0.0)*max(uBrightness,0.0);',
+  // R11: Library-only hybrid control uses CSS for the physical rim; GPU emits
+  // radial rays/bokeh only, never a continuous second pill halo/rim.
+  'if(uControlRaysOnly>0.5) glow=(0.30*rays+0.12*bokeh)*exp(-max(d,0.0)/max(uGlowSpread*2.6,1.0))*outer*max(uBrightness,0.0)*0.36;',
   'vec3 col=mix(uBaseColor,uGlowColor,clamp(.45+rays*.42+bokeh*.08,0.0,1.0));',
   'col+=uGlowColor*clamp(rim+bokeh*0.45,0.0,1.0)*0.18;',
   'gl_FragColor=vec4(col,clamp(glow,0.0,0.94));',
@@ -92,8 +95,8 @@ function shader(gl:WebGLRenderingContext,type:number,src:string){
   }
   return handle;
 }
-function SolarBorderCanvas({params,enabled,onRuntime,fit}:{
-  params:SolarParameters; enabled:boolean; onRuntime:(state:SolarRuntime)=>void; fit:'card'|'control';
+function SolarBorderCanvas({params,enabled,onRuntime,fit,hybridControlGlow}:{
+  params:SolarParameters; enabled:boolean; onRuntime:(state:SolarRuntime)=>void; fit:'card'|'control'; hybridControlGlow:boolean;
 }){
   const canvasRef=useRef<HTMLCanvasElement>(null);
   const options=useRef(params);
@@ -129,7 +132,7 @@ function SolarBorderCanvas({params,enabled,onRuntime,fit}:{
     const gpu=gl as WebGLRenderingContext,linked=program as WebGLProgram;
     const u=(name:string)=>gpu.getUniformLocation(linked,name);
     const uniforms={
-      time:u('uTime'),resolution:u('uResolution'),cardSize:u('uCardSize'),cornerRadius:u('uCornerRadius'),
+      time:u('uTime'),resolution:u('uResolution'),cardSize:u('uCardSize'),cornerRadius:u('uCornerRadius'),controlRaysOnly:u('uControlRaysOnly'),
       rayIntensity:u('uRayIntensity'),rayLength:u('uRayLength'),rayCount:u('uRayCount'),
       bokeh:u('uBokehAmt'),rimBoost:u('uRimBoost'),glowSpread:u('uGlowSpread'),brightness:u('uBrightness'),
       baseColor:u('uBaseColor'),glowColor:u('uGlowColor'),
@@ -177,6 +180,7 @@ function SolarBorderCanvas({params,enabled,onRuntime,fit}:{
       gpu.uniform2f(uniforms.cardSize,tw,th);
       // Card keeps the locked 55px aura radius; control fit uses a full-pill radius.
       gpu.uniform1f(uniforms.cornerRadius, fit==='control' ? Math.max(1, Math.min(tw, th) * 0.5) : 55);
+      gpu.uniform1f(uniforms.controlRaysOnly,hybridControlGlow&&fit==='control'?1:0);
       gpu.uniform1f(uniforms.rayIntensity,p.rayIntensity);
       gpu.uniform1f(uniforms.rayLength,p.rayLength);
       gpu.uniform1f(uniforms.rayCount,p.rayCount);
@@ -197,16 +201,18 @@ function SolarBorderCanvas({params,enabled,onRuntime,fit}:{
       if(buffer)gpu.deleteBuffer(buffer);
       gpu.deleteProgram(linked);if(vs)gpu.deleteShader(vs);if(fs)gpu.deleteShader(fs);
     };
-  },[enabled,fit]);
+  },[enabled,fit,hybridControlGlow]);
   return <canvas className="solar-border-canvas" ref={canvasRef} aria-hidden="true"/>;
 }
 
-export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled=true,fit='card',forceFallback=false}:{
+export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled=true,fit='card',forceFallback=false,hybridControlGlow=false}:{
   children:ReactNode;params?:SolarParameters;motionEnabled?:boolean;
   /** card = lesson Current glow (default). control = path-controls pill / button wrap. */
   fit?:'card'|'control';
   /** Specimen/demo: force stroke-border fallback without touching WebGL eligibility. */
   forceFallback?:boolean;
+  /** R11 · library-only candidate. Never enabled by the Writing page before Joe approval. */
+  hybridControlGlow?:boolean;
 }){
   const [runtime,setRuntime]=useState<SolarRuntime>('paused');
   const [systemReduced,setSystemReduced]=useState(()=>typeof window!=='undefined'&&
@@ -222,9 +228,10 @@ export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled
   const shineOn=enabled&&fit==='card';
   return <div className="solar-lesson-preview" data-current="true" data-solar-fit={fit}
     style={{'--ba-solar-border-color':params.borderColor} as CSSProperties}
+    data-solar-hybrid-control={fit==='control'&&hybridControlGlow?'true':'false'}
     data-solar-status={runtime==='active'&&enabled?'active':'fallback'}
     data-shine={shineOn?'on':'off'}>
       {children}
-      <SolarBorderCanvas params={params} enabled={enabled} onRuntime={setRuntime} fit={fit}/>
+      <SolarBorderCanvas params={params} enabled={enabled} onRuntime={setRuntime} fit={fit} hybridControlGlow={hybridControlGlow}/>
     </div>;
 }
