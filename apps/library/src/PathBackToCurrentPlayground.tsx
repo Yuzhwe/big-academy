@@ -132,6 +132,7 @@ export function PathBackToCurrentPlayground({ scene, update }: {
           >
             <SolarLessonPreview
               fit="control"
+              hybridControlGlow
               forceFallback={forceFallback}
               motionEnabled={scene.motion === 'system' && !forceFallback}
               params={solarParams}
