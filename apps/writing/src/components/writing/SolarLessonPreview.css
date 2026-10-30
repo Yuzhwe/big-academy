@@ -78,6 +78,20 @@
 .solar-lesson-preview[data-solar-fit='control'][data-solar-status='active'] [data-solar-target] .ba-button__assembly {
   box-shadow: 0 0 0 2px var(--ba-solar-border-color, #b25415);
 }
+/* R11-02 Library opt-in only: CSS owns the border + edge glow. The glow
+ * begins immediately at the physical BAButton capsule outline; no separate
+ * solid outer capsule. WebGL is rays-only when data-solar-hybrid-control=true.
+ * Box-shadow follows native :hover/:active/press geometry without new hit area. */
+.solar-lesson-preview[data-solar-fit='control'][data-solar-hybrid-control='true'][data-solar-status='active'] [data-solar-target] .ba-button__assembly {
+  border-color: var(--ba-solar-border-color, #b25415);
+  box-shadow:
+    0 0 0 2px var(--ba-solar-border-color, #b25415),
+    0 0 7px 2px rgb(255 168 46 / 42%),
+    0 0 18px 5px rgb(255 168 46 / 16%);
+}
+/* Fallback retains the existing static border; no GPU or second glow shell.
+ * Only the button assembly paints and handles pointer/focus. */
+
 @media(prefers-reduced-motion: reduce){
   .solar-lesson-preview[data-solar-fit='control'] [data-solar-target] .ba-button__assembly {
     box-shadow: 0 0 0 3px #743c1e;
