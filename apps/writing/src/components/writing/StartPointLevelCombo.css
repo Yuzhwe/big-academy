@@ -1,0 +1,44 @@
+/* Start Point × StairLevelIntroCard / Level card combo — Writing staircase.
+   Mirrors apps/library/src/library.css .start-point-level-combo (Library 6008).
+   Kept Writing-local so Library preview CSS is not required at runtime. */
+.start-point-level-combo {
+  --sp-combo-tilt: -6deg;
+  --sp-combo-scale: 0.75;
+  --sp-combo-shift-x: -10px;
+  --sp-combo-shift-y: 10px;
+  /* Level card top padding in combo — clearance so SP does not crush body copy. */
+  --sp-level-combo-padding-top: 48px;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  /* Room above card so SP can ride/overlap the top border. */
+  padding-top: 36px;
+  box-sizing: border-box;
+}
+
+.start-point-level-combo__level {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+/* Extra top padding on the Level card itself (default .course-intro is 16px). */
+.start-point-level-combo__level .course-intro {
+  padding-top: var(--sp-level-combo-padding-top);
+  box-sizing: border-box;
+}
+
+.start-point-level-combo__sp {
+  position: absolute;
+  z-index: 2;
+  top: var(--sp-combo-shift-y);
+  left: 10px;
+  /* Combo-only: 0.75× prior wrapper size; +10px left via translateX; +10px down via --sp-combo-shift-y. */
+  --sp-combo-scale: 0.75;
+  --sp-combo-shift-x: -10px;
+  --sp-combo-shift-y: 10px;
+  /* Tip toward upper-right: CCW tilt lifts the right end. */
+  transform: translateX(var(--sp-combo-shift-x)) rotate(var(--sp-combo-tilt)) scale(var(--sp-combo-scale));
+  transform-origin: 18% 60%;
+  pointer-events: none;
+}

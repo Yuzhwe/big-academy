@@ -108,7 +108,7 @@ function Detail({ scene, update, openEntry }: { scene: Scene; update: (patch: Pa
         <BAButton size={36} variant="secondary" onPress={() => void copy(`${entry.name} · ${entry.id}\n合同基线视觉状态：${statusFor(entry).source}\nR2 变更：Updated / Pending Review；新增候选尚未批准\n场景：${url}\n已检查：${checked.join('、') || '未勾选'}\n反馈：${notes || '未填写'}\n此摘要不是设计批准记录。`)}>复制反馈摘要</BAButton>
       </div></details>
     </div>
-    <section className="related"><div className="section-heading"><h2>继续探索</h2><span>同一套设计语言，相互配合。</span></div><div className="related-links">{catalog.filter(c => c.key !== entry.key).slice(0, 3).map(c => <button key={c.key} onClick={() => openEntry(c)}><span>{c.name}<small>{c.en}</small></span><span aria-hidden="true">↗</span></button>)}</div></section>
+    <section className="related"><div className="section-heading"><h2>继续探索</h2><span>同一套设计语言，相互配合。</span></div><div className="related-links">{catalog.filter(c => c.key !== 'coach' && c.key !== entry.key).slice(0, 3).map(c => <button key={c.key} onClick={() => openEntry(c)}><span>{c.name}<small>{c.en}</small></span><span aria-hidden="true">↗</span></button>)}</div></section>
   </>;
 }
 function Foundations() {
@@ -138,7 +138,9 @@ export function App() {
   const openEntry = (entry: Entry) => update({ ...defaultScene, component: entry.key, state: entry.states[0] }, true);
   const entry = catalog.find(c => c.key === scene.component)!;
   useEffect(() => { document.title = `${scene.view === 'components' ? entry.name : { overview: '概览', foundations: '设计基础', review: '待评审' }[scene.view]} · Big Academy 组件库`; }, [entry.name, scene.view]);
-  const results = catalog.filter(c => `${c.name} ${c.en} ${c.id}`.toLowerCase().includes(query.trim().toLowerCase()));
+  /** Legacy CoachMessage list item hidden; Coach Cards (coach-note) remains. Key/alias still resolve. */
+  const navCatalog = catalog.filter(c => c.key !== 'coach');
+  const results = navCatalog.filter(c => `${c.name} ${c.en} ${c.id}`.toLowerCase().includes(query.trim().toLowerCase()));
   const views = [{ key: 'overview', label: '概览' }, { key: 'components', label: '组件' }, { key: 'foundations', label: '设计基础' }, { key: 'review', label: '待评审' }] as const;
   return <div className="library" data-ba-product="writing">
     <a className="skip-link" href="#main">跳到主要内容</a>
@@ -148,7 +150,7 @@ export function App() {
     </header>
     <aside id="component-nav" className="sidebar" data-open={menu}>
       <label className="search"><span>查找组件</span><input type="search" placeholder="名称、英文名或 ID" value={query} onChange={e => setQuery(e.target.value)} /></label>
-      <p className="sidebar-caption">COMPONENTS <span>{catalog.length}</span></p>
+      <p className="sidebar-caption">COMPONENTS <span>{navCatalog.length}</span></p>
       <nav aria-label="组件目录">{['基础交互', 'Writing'].map(category => <div className="nav-group" key={category}><h2>{category}</h2>{results.filter(c => c.category === category).map(c => <a key={c.key} href={sceneSearch({ ...defaultScene, component: c.key, state: c.states[0] })} aria-current={scene.view === 'components' && c.key === scene.component ? 'page' : undefined} onClick={e => { if (!e.metaKey && !e.ctrlKey) { e.preventDefault(); openEntry(c); } }}><span>{c.name}<small>{c.en}</small></span>{statusFor(c).approved ? <BAIcon name="check" size={15}/> : <span className="status-dot" />}</a>)}</div>)}</nav>
       {!results.length && <p role="status">没有匹配的组件。试试 BAChoice 或选择题。</p>}
       <div className="sidebar-note"><BAIcon name="book" size={20}/><p>同一批真实组件。<br/>从设计到实现。</p><span>React Aria · Shared Tokens</span></div>
@@ -159,8 +161,8 @@ export function App() {
         <div className="eyebrow">BIG ACADEMY / {scene.view === 'review' ? 'DESIGN REVIEW' : 'COMPONENT LIBRARY'}</div>
         <h1>{scene.view === 'review' ? '让每个细节，经得起检查。' : <>为学习而设计。<br/>为协作而构建。</>}</h1>
         <p className="lead">{scene.view === 'review' ? '从待评审组件进入，检查状态与交互，再复制带场景的反馈。批准记录以现有合同为准。' : '浏览真实组件，探索每一种状态。在同一个地方，对齐设计与实现。'}</p>
-        <div className="catalog-bar"><h2>{scene.view === 'review' ? '待视觉评审' : '组件目录'}</h2><span>{scene.view === 'review' ? catalog.filter(c => !statusFor(c).approved || c.key === 'words').length : catalog.length} 个组件</span></div>
-        <div className="catalog-grid">{catalog.filter(c => scene.view !== 'review' || !statusFor(c).approved || c.key === 'words').map(c => <a className="catalog-card" key={c.key} href={sceneSearch({ ...defaultScene, component: c.key, state: c.states[0] })} onClick={e => { if (!e.metaKey && !e.ctrlKey) { e.preventDefault(); openEntry(c); } }}><div className="catalog-specimen" aria-hidden="true"><span>{c.en}</span><small>{c.id}</small></div><div className="catalog-card-content"><Badge entry={c}/><h3>{c.name}<span>↗</span></h3><p>{c.description}</p></div></a>)}</div>
+        <div className="catalog-bar"><h2>{scene.view === 'review' ? '待视觉评审' : '组件目录'}</h2><span>{scene.view === 'review' ? navCatalog.filter(c => !statusFor(c).approved || c.key === 'words').length : navCatalog.length} 个组件</span></div>
+        <div className="catalog-grid">{navCatalog.filter(c => scene.view !== 'review' || !statusFor(c).approved || c.key === 'words').map(c => <a className="catalog-card" key={c.key} href={sceneSearch({ ...defaultScene, component: c.key, state: c.states[0] })} onClick={e => { if (!e.metaKey && !e.ctrlKey) { e.preventDefault(); openEntry(c); } }}><div className="catalog-specimen" aria-hidden="true"><span>{c.en}</span><small>{c.id}</small></div><div className="catalog-card-content"><Badge entry={c}/><h3>{c.name}<span>↗</span></h3><p>{c.description}</p></div></a>)}</div>
       </>}
       <footer className="site-footer"><span>Big Academy <span className="subtle">/ Design Library</span></span><span>真实组件 · 共享规范 · 持续评审</span></footer>
     </main>

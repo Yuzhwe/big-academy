@@ -150,3 +150,5 @@ All results below are from run **40470164313** on `926224b`, not from Review 05 
 - Replaced exactly five old `hill-front.svg` tree paths; position/height and transparent-margin corrected baseline are expressed in `staircaseTrees.ts`. Tree images inherit the existing hill-1 parallax layer; deterministic FNV-1a color is keyed by Level and stable anchor ID.
 - `staircaseTrees.test.ts` covers five anchors, per-Level repeated mappings and visible-baseline invariants; Playwright `review06.spec.ts` adds reload/Level-switch/scroll checks.
 - **Awaiting rendered designer approval**. No assertion that the owner's Mac preview ports are running; the branch must be pulled and served from its exact checkout for visual review. Do not merge `main` or deploy Vercel.
+
+

@@ -3,6 +3,7 @@ import { BAButton, BAIcon, BAChoice, BATabs, BATabList, BATabPanel, type ChoiceV
 import { LessonTopBar } from '../../writing/src/components/writing/LessonTopBar';
 import { StairLessonCard, type StairLessonState } from '../../writing/src/components/writing/StairLessonCard';
 import { StairUnitCard } from '../../writing/src/components/writing/StairUnitCard';
+import { StairLevelIntroCard } from '../../writing/src/components/writing/StairLevelIntroCard';
 import { UnitMilestone } from '../../writing/src/components/writing/UnitMilestone';
 import { BAPageTransition } from '../../writing/src/components/writing/BAPageTransition';
 import { LandscapeTerrace } from '../../writing/src/components/writing/LandscapeTerrace';
@@ -12,7 +13,13 @@ import { CloudShaderSky, type CloudRenderer } from '../../writing/src/course/Clo
 import { SolarLessonPreview } from './SolarLessonPreview';
 import './Review04Preview.css';
 import { CoachMessage } from '../../writing/src/components/writing/LessonWorkspace';
+import { CoachNote } from '../../writing/src/components/writing/CoachNote';
 import { WordPlayground } from './WordPlayground';
+import { CoachChatPlayground } from './CoachChatPlayground';
+import { PathBackToCurrentPlayground } from './PathBackToCurrentPlayground';
+import { StartPoint, defaultStartPointText, START_POINT_LEVEL_COMBO_TILT_DEG } from '../../writing/src/components/writing/StartPoint';
+import { NotebookEditor } from '../../writing/src/components/writing/NotebookEditor';
+import { NotebookShellDemo } from './NotebookShellDemo';
 import { choiceOptions, type Scene } from './catalog';
 
 export function Preview({ scene, onSelected, update }: { scene: Scene; onSelected?: (keys: string[]) => void; update?: (patch: Partial<Scene>) => void }) {
@@ -130,6 +137,51 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
     </div>;
   }
 
+  if (scene.component === 'level') {
+    const intro = (scene.sample === 'long' || state === 'long')
+      ? (zh
+        ? '在第 2 级，你会学写一个好段落：说出你的想法，用例子说明理由，再好好结尾。你还会学写“怎么做”的说明，和讲一个小故事。之后还会练习更长一点的段落，让读者跟着你的思路走。'
+        : 'In Level 2 you learn to write one good paragraph: say what you think, give reasons with examples, and finish well. You will also explain how to do something and tell a short story. Later you practice slightly longer paragraphs so readers can follow your thinking.')
+      : (zh
+        ? '在第 2 级，你会学写一个好段落：说出你的想法，用例子说明理由，再好好结尾。你还会学写“怎么做”的说明，和讲一个小故事。'
+        : 'In Level 2 you learn to write one good paragraph: say what you think, give reasons with examples, and finish well. You will also explain how to do something and tell a short story.');
+    const levelCard = <StairLevelIntroCard locale={scene.locale} intro={intro} />;
+    if (scene.composition === 'combo') {
+      const label = scene.startPointText || defaultStartPointText(scene.locale);
+      const sp = (
+        <StartPoint
+          locale={scene.locale}
+          text={label}
+          fill={scene.startPointFill}
+          stroke={scene.startPointStroke}
+          ink={scene.startPointInk}
+          onTextChange={(next) => update?.({ startPointText: next })}
+        />
+      );
+      return <div className="preview-example preview-example--center" data-testid="start-point-level-combo" style={{padding:'56px 24px 32px',background:'#a9e3f3'}}>
+        <div className="start-point-level-combo" data-ba-product="writing" style={{['--sp-combo-tilt' as string]: `${START_POINT_LEVEL_COMBO_TILT_DEG}deg`}}>
+          <div className="start-point-level-combo__sp" data-tilt-deg={START_POINT_LEVEL_COMBO_TILT_DEG}>
+            {sp}
+          </div>
+          <div className="start-point-level-combo__level">
+            {levelCard}
+          </div>
+        </div>
+        <p className="review04-caption">{zh
+          ? `组合：Start Point 叠在 Level 卡（BA-WR-008 / .course-intro）顶边，倾斜 ${START_POINT_LEVEL_COMBO_TILT_DEG}°（tip 朝右上）。Level 卡顶 padding 48px 给 overlay 留空。字号 = 标题 tokens 24/800/30；Level 正文 16px。未接入 Writing 阶梯页。`
+          : `Combo: Start Point rides the Level card (BA-WR-008 / .course-intro) top edge, tilted ${START_POINT_LEVEL_COMBO_TILT_DEG}° (tip upper-right). Level card top padding 48px for overlay clearance. SP type = title tokens 24/800/30; Level body 16px. Not wired into Writing staircase.`}</p>
+      </div>;
+    }
+    return <div className="preview-example preview-example--center" data-testid="level-intro-preview">
+      <div data-ba-product="writing" style={{ width: 320, maxWidth: '100%', background:'#a9e3f3', padding:20, boxSizing:'border-box', borderRadius:16 }}>
+        {levelCard}
+      </div>
+      <p className="review04-caption">{zh
+        ? 'BA-WR-008 StairLevelIntroCard · 现有 .course-intro Level 卡。橙色 Level Title Card 组合仍待实现。'
+        : 'BA-WR-008 StairLevelIntroCard · existing .course-intro Level card. Orange Level Title Card composition still pending.'}</p>
+    </div>;
+  }
+
   if (scene.component === 'milestone') {
     const done=scene.mode==='state' ? state==='completed' : true;
     return <div className="preview-example preview-example--center review04-milestone-stage">
@@ -168,11 +220,68 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
     </div>;
   }
   if (scene.component === 'coach') {
-    return <div className="preview-example" style={{width:'min(100%,420px)'}}>
-      {(['orientation','hint','correct','wrong'] as const).filter(tone=>scene.mode!=='state'||tone===state).map(tone=><CoachMessage key={tone} tone={tone} locale={scene.locale}>
+    return <div className="preview-example" style={{width:'min(100%,420px)'}} data-testid="coach-message-preview">
+      {(['orientation','hint','correct','wrong'] as const).filter(tone=>scene.mode!=='state'||tone===state).map(tone=><CoachMessage key={tone} tone={tone} locale={scene.locale} data-testid={`coach-message-${tone}`}>
         {zh?({orientation:'读一读题目，再选出你的答案。',hint:'找出表达作者观点的词。',correct:'你找到了主题句。',wrong:'再想一想，哪一句表达了观点？'}[tone]):({orientation:'Read the question and choose your answer.',hint:'Look for the word that shows an opinion.',correct:'You found the topic sentence.',wrong:'Look again for a sentence that shows an opinion.'}[tone])}
       </CoachMessage>)}
+      <p className="review04-caption">{zh
+        ? <>已并入 <a href="?component=coach-note">Coach Cards</a>（coach-note / coach-cards）。</>
+        : <>Merged into <a href="?component=coach-note">Coach Cards</a> (coach-note / coach-cards).</>}</p>
     </div>;
+  }
+  if (scene.component === 'coach-note') {
+    // Combined review always shows message tones; note tones still respect state mode.
+    const messageTones = (['orientation','hint','correct','wrong'] as const);
+    const noteTones = (['highlight', 'improvement'] as const).filter(tone => scene.mode !== 'state' || tone === state);
+    const messages = zh
+      ? {orientation:'读一读题目，再选出你的答案。',hint:'找出表达作者观点的词。',correct:'你找到了主题句。',wrong:'再想一想，哪一句表达了观点？'}
+      : {orientation:'Read the question and choose your answer.',hint:'Look for the word that shows an opinion.',correct:'You found the topic sentence.',wrong:'Look again for a sentence that shows an opinion.'};
+    const copy = zh
+      ? {
+          highlight: '有力的主题句：‘我认为学校应该有一座花园。’',
+          improvement: '每一句都表达了你的看法吗？用 think、believe 或 should。另外：每句话都围绕学校花园。',
+          highlightTitle: '亮点',
+          improvementTitle: '改进',
+        }
+      : {
+          highlight: "Strong topic sentence: 'I believe should not believe believe believe think seeds garden.'",
+          improvement: 'Does every sentence tell me what you think? Use think, believe or should. Also: Keep every sentence about a school garden.',
+          highlightTitle: 'Highlight',
+          improvementTitle: 'Improvement',
+        };
+    // Combined visual review page: CoachMessage (BA-WR-014) above CoachNote (BA-WR-017).
+    // Catalog key remains coach-note; standalone key `coach` is kept.
+    return <div className="preview-example coach-combined-preview" style={{width:'min(100%,420px)'}} data-testid="coach-note-preview" data-coach-cards="true">
+      <section className="coach-combined-preview__section" data-testid="coach-message-section" aria-label={zh ? 'Coach 文字卡' : 'Coach message cards'}>
+        <h3 className="coach-combined-preview__heading">{zh ? 'Coach Cards · 文字卡 BA-WR-014' : 'Coach Cards · Message BA-WR-014'}</h3>
+        <div className="coach-combined-preview__messages" data-testid="coach-message-stack">
+          {messageTones.map(tone => (
+            <CoachMessage key={tone} tone={tone} locale={scene.locale} data-testid={`coach-message-${tone}`}>
+              {messages[tone]}
+            </CoachMessage>
+          ))}
+        </div>
+      </section>
+      <section className="coach-combined-preview__section" data-testid="coach-note-section" aria-label={zh ? 'Coach 批注卡' : 'Coach note cards'}>
+        <h3 className="coach-combined-preview__heading">{zh ? 'Coach Cards · 批注卡 BA-WR-017' : 'Coach Cards · Note BA-WR-017'}</h3>
+        <div className="coach-note-stack">
+          {noteTones.map(tone => (
+            <CoachNote key={tone} tone={tone} title={tone === 'highlight' ? copy.highlightTitle : copy.improvementTitle}>
+              {copy[tone]}
+            </CoachNote>
+          ))}
+        </div>
+      </section>
+      <p className="review04-caption">{zh
+        ? 'Coach Cards 合页：上 CoachMessage（orientation / hint / correct / wrong），下 CoachNote Highlight（浅绿）→ Improvement（暖灰棕，间距 12px）。别名 ?component=coach-cards；旧 ?component=coach 重定向至此。'
+        : 'Coach Cards: CoachMessage tones above; CoachNote Highlight (sage) then Improvement (warm taupe, 12px gap). Alias ?component=coach-cards; legacy ?component=coach redirects here.'}</p>
+    </div>;
+  }
+  if (scene.component === 'coach-chat') {
+    return <CoachChatPlayground scene={scene} />;
+  }
+  if (scene.component === 'path-back') {
+    return <PathBackToCurrentPlayground scene={scene} update={update} />;
   }
   if (scene.component === 'flag') {
     return <div className="preview-example preview-example--center review04-flag-stage">
@@ -189,6 +298,41 @@ export function Preview({ scene, onSelected, update }: { scene: Scene; onSelecte
       </label>
       <p className="review04-caption">Canvas · Period {scene.flagPeriod}s · Waves {scene.flagWaves} × π · Amplitude {scene.flagAmplitude}px · {scene.flagPlaying?'Playing':'Paused'}</p>
       <p className="review04-caption">来源 yarden，Stack Overflow answer 78383275，CC BY-SA 4.0。已改编为浏览器 Canvas。本轮指定黄／灰旗布与原图旗杆；灰旗布的 Completed 文字待视觉审核。</p>
+    </div>;
+  }
+
+
+  if (scene.component === 'notebook') {
+    return <div className="preview-example preview-example--center preview-example--notebook" data-testid="notebook-shell-preview" style={{padding:'16px 16px 28px',background:'transparent',width:'100%',boxSizing:'border-box'}}>
+      <div className="notebook-shell-frame" data-orientation={scene.orientation}>
+        {/* Library-only interactive specimen: multi-tab WordGrid + editable area; Writing course does not assemble this. */}
+        <NotebookShellDemo orientation={scene.orientation} locale={scene.locale === 'zh' ? 'zh' : 'en'} />
+      </div>
+      <details className="notebook-editor-compare" data-testid="notebook-editor-compare">
+        <summary>{scene.locale === 'zh' ? '对照：旧 NotebookEditor（横线 + textarea）' : 'Compare: legacy NotebookEditor (ruled + textarea)'}</summary>
+        <div data-testid="notebook-editor-preview" style={{padding:'16px 0 0',width:'100%',boxSizing:'border-box'}}>
+          <NotebookEditor orientation={scene.orientation} />
+        </div>
+      </details>
+    </div>;
+  }
+  if (scene.component === 'start-point') {
+    const label = scene.startPointText || defaultStartPointText(scene.locale);
+    const sp = (
+      <StartPoint
+        locale={scene.locale}
+        text={label}
+        fill={scene.startPointFill}
+        stroke={scene.startPointStroke}
+        ink={scene.startPointInk}
+        onTextChange={(next) => update?.({ startPointText: next })}
+      />
+    );
+    return <div className="preview-example preview-example--center" data-testid="start-point-preview" style={{padding:'48px 24px',background:'#fff'}}>
+      {sp}
+      <p className="review04-caption">{zh
+        ? '左侧文案可编辑；宽度随文字测量，右侧装饰相对 split 锚定。无中缝斜线。字号 = 标题 tokens（24/30）。与 Level 组合见 level&composition=combo。未接入 Writing 阶梯页。'
+        : 'Left text is editable; width is measured and the right cut stays anchored to the split. No mid slash. Type = title tokens (24/30). Level combo: ?component=level&composition=combo. Library preview only — not wired into Writing staircase.'}</p>
     </div>;
   }
   if (scene.component === 'words') return <WordPlayground scene={scene} update={update}/>;

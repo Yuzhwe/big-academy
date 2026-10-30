@@ -61,6 +61,63 @@ export function R2Controls({scene,update}:{scene:Scene;update:(patch:Partial<Sce
         <p>每列约 1 个物理像素，仅竖直位移。使用设计师提供的原始黄／灰旗布与静止旗杆。</p>
         <p>算法来源：yarden · Stack Overflow a/78383275 · CC BY-SA 4.0；已改编为浏览器 Canvas。</p>
       </section>}
+
+    {scene.component==='level'&&field('composition','展示组合',[['card','独立 Level 卡'],['solo','独立 Level 卡'],['combo','Start Point 叠顶边'],['terrace','独立 Level 卡']])}
+    {scene.component==='level'&&scene.composition==='combo'&&
+      <section className="review04-solar-controls" aria-label="Start Point × Level 控制">
+        <h3>Start Point × Level · 文案与颜色</h3>
+        <label className="field">文本
+          <input type="text" maxLength={28} aria-label="Start Point text"
+            value={scene.startPointText || (scene.locale==='zh'?'开始学习啦！':'Start Point')}
+            onChange={e=>update({startPointText:e.target.value})}/>
+        </label>
+        <div className="review04-color-pickers">
+          <label>填充色 Fill <input type="color" aria-label="Start Point fill" value={scene.startPointFill} onChange={e=>update({startPointFill:e.target.value})}/><code>{scene.startPointFill}</code></label>
+          <label>描边色 Stroke <input type="color" aria-label="Start Point stroke" value={scene.startPointStroke} onChange={e=>update({startPointStroke:e.target.value})}/><code>{scene.startPointStroke}</code></label>
+          <label>文字色 Ink <input type="color" aria-label="Start Point ink" value={scene.startPointInk} onChange={e=>update({startPointInk:e.target.value})}/><code>{scene.startPointInk}</code></label>
+        </div>
+        <button type="button" onClick={()=>update({startPointText:'',startPointFill:'#ffc24e',startPointStroke:'#715146',startPointInk:'#2f0f04'})}>恢复 Figma 默认</button>
+        <p>SP 字号 = 标题 tokens（Dosis 800 / 24 / 30）。Level 正文 16px（BA-WR-008）。combo：叠 Level 顶边、tilt −6° tip 右上；Level 卡顶 padding 48px。</p>
+      </section>}
+
+
+    {scene.component==='path-back'&&
+      <section className="review04-solar-controls" aria-label="Back to current 标本控制">
+        <h3>回到当前 · path-controls 标本</h3>
+        <p>夹在左右箭头中间，高度 50。Current 完全离屏显示；回视口隐藏。Solar 与课卡 Current 同源；可强制描边回退。</p>
+        {field('pathCurrentView','Current 视口',[['auto','自动 · IntersectionObserver'],['off','强制离屏 · 显示按钮'],['in','强制在视口 · 隐藏按钮']])}
+        <label className="field"><span>Solar 描边回退</span>
+          <select aria-label="Solar 描边回退" value={scene.pathSolarFallback?'true':'false'}
+            onChange={e=>update({pathSolarFallback:e.target.value==='true'})}>
+            <option value="false">Auto / WebGL</option>
+            <option value="true">Force stroke fallback</option>
+          </select>
+        </label>
+        <p>也可切顶部「动态」为减少动态，或使用预览内按钮切换。不改 Writing StaircaseScene。</p>
+      </section>}
+
+    {scene.component==='notebook'&&
+      <section className="review04-solar-controls" aria-label="Notebook 方向">
+        <h3>NotebookShell · 本子方向</h3>
+        {field('orientation','方向 Orientation',[['portrait','竖本 · 顶装订'],['landscape','横本 · 左装订']])}
+        <p>主标本为 NotebookShell（无横线/无内置 textarea，children 演示）。方向由 Scene / URL（?component=notebook&amp;orientation=landscape）控制。孔+U 环间距优先（--ns-bind-pitch: 38），孔数 3–24。旧 NotebookEditor 在预览底部对照。</p>
+      </section>}
+    {scene.component==='start-point'&&
+      <section className="review04-solar-controls" aria-label="Start Point 控制">
+        <h3>Start Point · 文案与颜色</h3>
+        <label className="field">文本
+          <input type="text" maxLength={28} aria-label="Start Point text"
+            value={scene.startPointText || (scene.locale==='zh'?'开始学习啦！':'Start Point')}
+            onChange={e=>update({startPointText:e.target.value})}/>
+        </label>
+        <div className="review04-color-pickers">
+          <label>填充色 Fill <input type="color" aria-label="Start Point fill" value={scene.startPointFill} onChange={e=>update({startPointFill:e.target.value})}/><code>{scene.startPointFill}</code></label>
+          <label>描边色 Stroke <input type="color" aria-label="Start Point stroke" value={scene.startPointStroke} onChange={e=>update({startPointStroke:e.target.value})}/><code>{scene.startPointStroke}</code></label>
+          <label>文字色 Ink <input type="color" aria-label="Start Point ink" value={scene.startPointInk} onChange={e=>update({startPointInk:e.target.value})}/><code>{scene.startPointInk}</code></label>
+        </div>
+        <button type="button" onClick={()=>update({startPointText:'',startPointFill:'#ffc24e',startPointStroke:'#715146',startPointInk:'#2f0f04'})}>恢复 Figma 默认</button>
+        <p>字号 = 标题 tokens（Dosis 800 / 24 / 30）。左宽测量；几何 0.8 缩放不重绘切图。与 Level 组合见 component=level&composition=combo。</p>
+      </section>}
     {scene.component==='words'&&<>
       <p className="review04-caption">Rounded Connected Tabs · 左侧局部底色桥接（Slanted 已废弃）</p>
       <Select label="使用情景" value={scene.wordScenario} items={scenarios.map(([id,name])=>[id,`${id} · ${name}`])} onChange={v=>update(scenarioPatch(v as Scene['wordScenario']))}/>
@@ -68,6 +125,7 @@ export function R2Controls({scene,update}:{scene:Scene;update:(patch:Partial<Sce
       {field('wordCount','词组数量',[['1','1 组'],['4','4 组'],['10','10 组']])}{field('wordTabs','标签栏',[['auto','自动'],['show','显示（包括单 Tab）'],['hide','隐藏（显示当前组）']])}
       {field('wordInteraction','交互能力',[['enabled','Enabled'],['disabled','Disabled']])}
       {scene.mode==='state'&&<>{field('wordSelection','首词使用状态',[['default','Default'],['selected','Selected'],['used','Used']])}{field('wordEvaluation','首词评价',[['neutral','Neutral'],['correct','Correct'],['incorrect','Incorrect'],['hint','Hint'],['shown','Shown Answer']])}</>}
+      {scene.wordScenario==='B'&&<p className="review04-caption">造句词块：live 点入即 selected+disabled（略灰、不可撤销）。查看状态时切「Selected」+「Disabled」可对照该视觉。</p>}
     </>}
   </>;
 }

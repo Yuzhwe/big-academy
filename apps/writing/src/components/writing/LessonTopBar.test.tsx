@@ -56,6 +56,26 @@ describe('LessonTopBar', () => {
     expect(header.querySelector('.lesson-topbar__name')).toHaveTextContent(LONG_TITLE_ZH);
   });
 
+
+  it('renders optional end-slot tools top-right', () => {
+    const fixture = getFixture('mixed', 'en');
+    render(
+      <LessonTopBar
+        lessonTitle={fixture.lessonTitle}
+        lessonNumber={fixture.lessonNumber}
+        tasks={fixture.tasks}
+        current={fixture.current}
+        canOpen={fixture.canOpen}
+        tags={fixture.tags}
+        locale="en"
+        end={<button type="button">Reset Lesson</button>}
+      />,
+    );
+    const end = screen.getByRole('banner').querySelector('[data-slot="end"]');
+    expect(end).not.toHaveAttribute('aria-hidden', 'true');
+    expect(within(end as HTMLElement).getByRole('button', { name: 'Reset Lesson' })).toBeInTheDocument();
+  });
+
   it('blocks locked tasks and emits navigate for an open task in a long list', async () => {
     const user = userEvent.setup();
     const onNavigate = vi.fn();

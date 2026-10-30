@@ -1,0 +1,158 @@
+/* Shared word pill — WordGrid cards + Library / Tapword specimens. */
+.word-chip {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ba-space-1);
+  min-height: 70px;
+  min-width: var(--ba-hit-min, 44px);
+  max-width: 100%;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ba-brand-dark, #133547);
+  font: 600 20px/28px var(--ba-font-body-en, "Jost", sans-serif);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  transition: transform 200ms cubic-bezier(.2, 0, 0, 1);
+}
+
+.word-chip__text {
+  min-width: 0;
+}
+
+.word-chip:lang(zh-CN) {
+  font-family: var(--ba-font-body-zh);
+}
+
+.word-chip[data-kind='sentence'] {
+  flex-basis: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: var(--ba-radius-24, 24px);
+  text-align: left;
+  justify-content: flex-start;
+  line-height: 1.5;
+}
+
+/* Selection / interaction */
+.word-chip[data-selected='true'],
+.word-chip[data-selection='selected'] {
+  box-shadow: inset 0 0 0 2px var(--ba-color-warm-9, #b25415);
+}
+
+/* used ≈ disabled lock grey */
+.word-chip[data-used='true'],
+.word-chip[data-selection='used'],
+.word-chip[data-disabled='true'],
+.word-chip:disabled {
+  background: var(--ba-color-neutral-2, #ececec);
+  color: var(--ba-color-content-muted, var(--ba-color-neutral-7, #656565));
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* B lock: selected + disabled keeps warm-9 inset on grey wash */
+.word-chip[data-selection='selected'][data-disabled='true'],
+.word-chip[data-selected='true'][data-disabled='true'],
+.word-chip[data-selected='true']:disabled,
+.word-chip[data-selection='selected']:disabled {
+  background: var(--ba-color-neutral-2, #ececec);
+  color: var(--ba-color-content-muted, var(--ba-color-neutral-7, #656565));
+  box-shadow: inset 0 0 0 2px var(--ba-color-warm-9, #b25415);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* Evaluation */
+.word-chip[data-evaluation='correct'] {
+  background: var(--ba-color-success-6, var(--ba-success, #14ae5c));
+  color: var(--ba-color-surface-canvas, var(--ba-paper, #ffffff));
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* incorrect = same visual as selected */
+.word-chip[data-evaluation='incorrect'] {
+  background: #fff;
+  color: var(--ba-brand-dark, #133547);
+  box-shadow: inset 0 0 0 2px var(--ba-color-warm-9, #b25415);
+}
+
+.word-chip[data-evaluation='shown'] {
+  background: var(--ba-color-info-surface);
+  color: var(--ba-color-info-text);
+  box-shadow: inset 0 0 0 2px var(--ba-color-info-fill);
+}
+
+.word-chip[data-evaluation='correctUnselected'] {
+  background: var(--ba-paper, #fff);
+  color: var(--ba-brand-dark, #133547);
+  box-shadow: inset 0 0 0 2px var(--ba-color-success-6, #14ae5c);
+  animation: word-chip-reveal 800ms ease-in-out 2;
+}
+
+.word-chip[data-evaluation='hint'],
+.word-chip[data-hint='true'] {
+  background: #fff;
+  color: var(--ba-brand-dark, #133547);
+  box-shadow: inset 0 0 0 1px var(--ba-brand-dark, #133547);
+  outline: none;
+  animation: word-chip-hint-reveal 800ms ease-in-out 2;
+}
+
+/* Hover / pressed / focus via CSS (not RAC data-*) */
+.word-chip:hover:not(:disabled):not([data-disabled='true']):not([data-used='true']):not([data-shake='true']):not(.shake) {
+  transform: scale(1.02);
+}
+
+.word-chip:active:not(:disabled):not([data-disabled='true']):not([data-used='true']) {
+  transform: scale(0.95);
+}
+
+.word-chip:focus-visible {
+  outline: 2px solid var(--ba-color-focus, var(--ba-focus-ring, #133547));
+  outline-offset: 2px;
+}
+
+/* Shake: ±5px + rotate(±2deg), one-shot */
+.word-chip.shake,
+.word-chip[data-shake='true'] {
+  animation: word-chip-shake 280ms linear;
+}
+
+@keyframes word-chip-shake {
+  25% { transform: translateX(-5px) rotate(-2deg); }
+  75% { transform: translateX(5px) rotate(2deg); }
+}
+
+@keyframes word-chip-reveal {
+  0%, 100% { box-shadow: inset 0 0 0 1px var(--ba-color-success-6, #14ae5c); }
+  50% { box-shadow: inset 0 0 0 4px var(--ba-color-success-6, #14ae5c); }
+}
+
+@keyframes word-chip-hint-reveal {
+  0%, 100% { box-shadow: inset 0 0 0 1px var(--ba-brand-dark, #133547); }
+  50% { box-shadow: inset 0 0 0 4px var(--ba-brand-dark, #133547); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word-chip {
+    transform: none !important;
+    transition: none;
+  }
+  .word-chip[data-evaluation='correctUnselected'],
+  .word-chip[data-evaluation='hint'],
+  .word-chip[data-hint='true'],
+  .word-chip.shake,
+  .word-chip[data-shake='true'] {
+    animation: none;
+  }
+  .word-chip.shake,
+  .word-chip[data-shake='true'] {
+    transform: none;
+  }
+}

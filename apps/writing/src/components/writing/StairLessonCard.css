@@ -61,7 +61,7 @@
   border: 0;
 }
 .stair-lesson-card[data-state='locked'] {
-  background: var(--ba-surface-warm, #fef9ef);
+  background: var(--ba-color-surface-canvas, #fff);
 }
 .stair-lesson-card[data-state='locked'] .stair-lesson-card__seal {
   color: var(--ba-color-content-secondary, #6f747c);
@@ -116,6 +116,6 @@
 .stair-lesson-card { max-width:100%; }
 .stair-lesson-card[data-title-lines='3'] { min-height:310px; }
 .stair-lesson-card[data-title-lines='3'] .stair-lesson-card__title { -webkit-line-clamp:var(--ba-lesson-r2-title-lines); line-clamp:var(--ba-lesson-r2-title-lines); height:calc(var(--ba-writing-lesson-title-line-height) * var(--ba-lesson-r2-title-lines)); }
-.stair-lesson-card[data-state='locked'][data-title-lines='3'] { background:var(--ba-color-disabled-surface); color:var(--ba-color-disabled-content); border-color:var(--ba-color-disabled-border); }
+.stair-lesson-card[data-state='locked'][data-title-lines='3'] { background:var(--ba-color-surface-canvas, #fff); color:var(--ba-color-disabled-content); border-color:var(--ba-color-disabled-border); }
 
 /* Three visual roles only. Skipped remains in saved learning state, not as a visual card variant. */

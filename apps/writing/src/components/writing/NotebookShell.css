@@ -1,0 +1,288 @@
+/* NotebookShell — holes + U-coils + paper + background ruled lines. No textarea.
+   Adaptation A: width 100% + max-width; notebook/sheet/content flex:1; min-height:0.
+   Tokens mirror NotebookEditor (--ne-*) as --ns-* so shells can diverge later. */
+
+.notebook-shell {
+  --ns-paper: #ffffff;
+  --ns-line: #c6bfae;
+  --ns-line-width: 0.5px;
+  /* Pitch from Library demo: 24px × 180% line-height → 43.2px. */
+  --ns-font-size: 24px;
+  --ns-line-leading: 1.8;
+  --ns-line-h: calc(var(--ns-font-size) * var(--ns-line-leading)); /* 43.2 */
+  --ns-ink: #2c2920;
+  --ns-side: 28px;
+  --ns-hole: 16px;
+  --ns-coil-w: 12px;
+  --ns-coil-h: 40px;
+  --ns-bind-slot: 16px;
+  --ns-bind-pad-top: 8px;
+  --ns-coil-nudge: 4px;
+  --ns-bind-pitch: 38px; /* 孔心距：间距优先 */
+  --ns-page-max: 560px;
+  /* Content inset — ruled first stroke = pad-y + line-h (bottom of first line box). */
+  --ns-content-pad-y: 14px;
+  --ns-content-pad-x: 20px;
+
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--ns-page-max);
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  /* Paper body: Latin → Jost (--ba-font-body-en), CJK → Noto Sans SC (--ba-font-body-zh). No serif / no Douyin. */
+  font-family: "Jost", var(--ba-font-body-zh), sans-serif;
+  color: var(--ns-ink);
+}
+
+.notebook-shell *,
+.notebook-shell *::before,
+.notebook-shell *::after {
+  box-sizing: border-box;
+}
+
+.notebook-shell__stage {
+  width: 100%;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Portrait: binding on top ===== */
+.notebook-shell__stage.is-portrait {
+  padding-top: calc(var(--ns-coil-h) - var(--ns-bind-pad-top) - (var(--ns-hole) / 2) - var(--ns-coil-nudge));
+}
+
+.notebook-shell__stage.is-portrait .notebook-shell__notebook {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.notebook-shell__stage.is-portrait .notebook-shell__bind {
+  position: relative;
+  flex: 0 0 auto;
+  height: calc(var(--ns-bind-pad-top) + var(--ns-hole));
+  z-index: 5;
+}
+
+.notebook-shell__stage.is-portrait .notebook-shell__holes,
+.notebook-shell__stage.is-portrait .notebook-shell__coils {
+  position: absolute;
+  left: var(--ns-side);
+  right: var(--ns-side);
+  display: flex;
+  justify-content: center; /* leftover margins even-split; do NOT stretch pitch */
+  gap: calc(var(--ns-bind-pitch) - var(--ns-bind-slot)); /* center-to-center = pitch */
+  pointer-events: none;
+}
+
+.notebook-shell__stage.is-portrait .notebook-shell__holes {
+  top: var(--ns-bind-pad-top);
+  height: var(--ns-hole);
+  z-index: 2;
+}
+
+.notebook-shell__stage.is-portrait .notebook-shell__coils {
+  top: calc(var(--ns-bind-pad-top) + (var(--ns-hole) / 2) - var(--ns-coil-h) + var(--ns-coil-nudge));
+  height: var(--ns-coil-h);
+  z-index: 6;
+}
+
+/* ===== Landscape: binding on left (band rotated -90deg) ===== */
+.notebook-shell__stage.is-landscape {
+  padding-left: calc(var(--ns-coil-h) - var(--ns-bind-pad-top) - (var(--ns-hole) / 2) - var(--ns-coil-nudge));
+}
+
+.notebook-shell__stage.is-landscape .notebook-shell__notebook {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: calc(var(--ns-bind-pad-top) + var(--ns-hole)) 1fr;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.notebook-shell__stage.is-landscape .notebook-shell__bind {
+  position: relative;
+  width: calc(var(--ns-bind-pad-top) + var(--ns-hole));
+  height: 100%;
+  min-height: 0;
+  z-index: 5;
+}
+
+.notebook-shell__stage.is-landscape .notebook-shell__bind-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--ns-bind-span); /* set by JS = sheet height */
+  height: calc(var(--ns-bind-pad-top) + var(--ns-hole));
+  transform-origin: left top;
+  transform: rotate(-90deg) translateX(-100%);
+}
+
+.notebook-shell__stage.is-landscape .notebook-shell__holes,
+.notebook-shell__stage.is-landscape .notebook-shell__coils {
+  position: absolute;
+  left: var(--ns-side);
+  right: var(--ns-side);
+  display: flex;
+  justify-content: center;
+  gap: calc(var(--ns-bind-pitch) - var(--ns-bind-slot));
+  pointer-events: none;
+}
+
+.notebook-shell__stage.is-landscape .notebook-shell__holes {
+  top: var(--ns-bind-pad-top);
+  height: var(--ns-hole);
+  z-index: 2;
+}
+
+.notebook-shell__stage.is-landscape .notebook-shell__coils {
+  top: calc(var(--ns-bind-pad-top) + (var(--ns-hole) / 2) - var(--ns-coil-h) + var(--ns-coil-nudge));
+  height: var(--ns-coil-h);
+  z-index: 6;
+}
+
+.notebook-shell__notebook {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 20%),
+    var(--ns-paper);
+  border-radius: 0 0 18px 18px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28) inset,
+    0 18px 40px rgba(60, 52, 30, 0.12),
+    0 4px 10px rgba(60, 52, 30, 0.08),
+    0 0 0 1px rgba(120, 110, 85, 0.08);
+  overflow: visible;
+  /* Soft floor only — parent height wins via flex; no aspect-ratio lock. */
+  min-height: 240px;
+  z-index: 1;
+}
+
+.notebook-shell__stage.is-landscape .notebook-shell__notebook {
+  border-radius: 0 18px 18px 0;
+}
+
+.notebook-shell__hole {
+  width: var(--ns-bind-slot);
+  height: var(--ns-hole);
+  flex: 0 0 var(--ns-bind-slot);
+  display: grid;
+  place-items: center;
+}
+
+.notebook-shell__hole i {
+  display: block;
+  width: var(--ns-hole);
+  height: var(--ns-hole);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 40% 32%, rgba(255, 255, 255, 0.14) 0 12%, transparent 16%),
+    radial-gradient(circle at 50% 58%, #5a554a 0 38%, #2c2922 72%, #1a1814 100%);
+  box-shadow:
+    0 0 0 1.2px rgba(90, 80, 60, 0.14),
+    inset 0 2px 2.5px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.notebook-shell__coil {
+  width: var(--ns-bind-slot);
+  height: var(--ns-coil-h);
+  flex: 0 0 var(--ns-bind-slot);
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 2px 1.5px rgba(40, 34, 20, 0.2));
+}
+
+.notebook-shell__coil svg {
+  display: block;
+  width: var(--ns-coil-w);
+  height: var(--ns-coil-h);
+  overflow: visible;
+}
+
+.notebook-shell__sheet {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 0 0 18px 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.notebook-shell__stage.is-landscape .notebook-shell__sheet {
+  border-radius: 0 18px 18px 0;
+  min-height: 0;
+}
+
+
+/* Background ruled lines — period = line box; first 0.5px stroke at pad-y+line-h (no rule above first row).
+   Top of layer starts at first stroke so upward-repeat cannot paint a ghost line above row 1.
+   L/R stay 0 (full paper width) — content pad-x does not inset ruled. */
+.notebook-shell__ruled {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Anchor top to first stroke Y (= bottom of first line box, minus stroke width). */
+  top: calc(var(--ns-content-pad-y) + var(--ns-line-h) - var(--ns-line-width));
+  z-index: 0;
+  pointer-events: none;
+  /* Stroke at start of each tile; layer top = first stroke so no prior-tile ghost above row 1. */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--ns-line) 0,
+    var(--ns-line) var(--ns-line-width),
+    transparent var(--ns-line-width),
+    transparent var(--ns-line-h)
+  );
+  background-size: 100% var(--ns-line-h);
+  background-position: 0 0;
+  background-repeat: repeat-y;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    transparent 14px,
+    #000 14px,
+    #000 calc(100% - 14px),
+    transparent calc(100% - 14px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    transparent 14px,
+    #000 14px,
+    #000 calc(100% - 14px),
+    transparent calc(100% - 14px),
+    transparent 100%
+  );
+}
+
+.notebook-shell__content {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  /* Content inset pad-x=20 (Joe); ruled L/R stay 0 (full paper width) — pad does not shrink lines. */
+  padding: var(--ns-content-pad-y) var(--ns-content-pad-x);
+}
+
+@media (max-width: 480px) {
+  .notebook-shell {
+    --ns-side: 16px;
+    --ns-content-pad-y: 12px;
+    --ns-content-pad-x: 20px;
+  }
+}

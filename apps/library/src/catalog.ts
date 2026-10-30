@@ -8,11 +8,17 @@ export const catalog = [
   { key: 'topbar', id: 'BA-WR-001', name: '课程顶栏', en: 'LessonTopBar', category: 'Writing', description: '把课程身份、当前进度与返回路径放在一个清晰的框架中。', anatomy: '左侧返回与课程标题；居中 Activity Screen 进度；右侧留空。', states: ['default', 'long', 'done', 'locked', 'skipped'], story: 'writing-shell-lessontopbar--desktop' },
   { key: 'lesson', id: 'BA-WR-005', name: '课程卡片', en: 'StairLessonCard', category: 'Writing', description: '学习路径卡片统一为可进入、已完成和未解锁三种视觉状态。', anatomy: '课号印章 → 标题与时长 → 共享 BAButton。解锁与课程数据由产品提供。', states: ['start', 'current', 'review', 'locked'], story: 'writing-path-stairlessoncard--enterable' },
   { key: 'unit', id: 'BA-WR-007', name: '单元卡片', en: 'StairUnitCard', category: 'Writing', description: '统一四角 16px，UNIT 18px、全圆角课时标签，与高保真阶梯页共用。', anatomy: 'UNIT 编号与课时 Pill 同行 → 标题 → 目标段落。', states: ['default','long'], story: 'writing-path-stairunitcard--default' },
+  { key: 'level', id: 'BA-WR-008', name: '级别介绍卡', en: 'StairLevelIntroCard', category: 'Writing', description: '现有 .course-intro Level 卡（BA-WR-008）；composition=combo 时 Start Point 叠在顶边并微倾。橙色 Level Title Card 仍为待实现目标。', anatomy: 'Level 介绍正文（16px body）→ composition=combo 时 Start Point overlay 在顶边、tip 朝右上。', states: ['default','long'], story: null },
   { key: 'hamburger', id: 'BA-WR-004', name: '汉堡包组合', en: 'HamburgerComposition', category: 'Writing', description: '三层教学示意，可独立调整文字与宽度；Top / Bottom bun 窄于中间 Reason。', anatomy: 'Top bun → Reason → Bottom bun；每层标题与示例句子垂直居中。', states: ['default', 'long'], story: 'writing-activities-hamburgercomposition--all-three-layers' },
-  { key: 'coach', id: 'BA-WR-014', name: 'Coach 文字卡片', en: 'CoachMessage', category: 'Writing', description: '指导、提示与反馈共享 36px 音频控制；单一朗读通道。', anatomy: '教学正文 → 右上角音频按钮。', states: ['orientation','hint','correct','wrong'], story:'writing-shell-coachmessage--all-states' },
+  { key: 'coach', id: 'BA-WR-014', name: 'Coach 文字卡片', en: 'CoachMessage', category: 'Writing', description: 'CoachMessage 文字卡（BA-WR-014）。侧栏/目录不单独展示；URL ?component=coach 重定向到 Coach Cards 合页（coach-note / coach-cards）；组件本身保留复用。', anatomy: '教学正文 → 右上角音频按钮。', states: ['orientation','hint','correct','wrong'], story:'writing-shell-coachmessage--all-states' },
+  { key: 'coach-note', id: 'BA-WR-017', name: 'Coach Cards', en: 'Coach Cards', category: 'Writing', description: 'Coach Cards 合页标本（alias: coach-cards）：上 CoachMessage（BA-WR-014），下 CoachNote Highlight / Improvement（BA-WR-017）。旧 ?component=coach 重定向至此。', anatomy: 'Coach Cards → CoachMessage tones → CoachNote highlight|improvement。', states: ['highlight','improvement'], story: null },
+  { key: 'coach-chat', id: 'BA-WR-018', name: 'Coach 对话列表', en: 'CoachChat', category: 'Writing', description: 'Library 探索标本：限高 Viewport 内滚动 Coach 轮次（CoachMessage + CoachNote）。新 turn 在 live edge 时锚到视口顶部附近；上滑停跟；Jump to latest；可选前置历史。纯自研最小 MessageScroller 行为，不接入 Writing 课程页。', anatomy: 'Viewport → Content → Items（orientation / Highlight / Improvement / Hint…）→ Jump control。', states: ['default'], story: null },
+  { key: 'path-back', id: 'BA-WR-019', name: '回到当前', en: 'BackToCurrent', category: 'Writing', description: 'Library 标本：阶梯 path-controls 中间「回到当前」/ Back to current。Current 完全离屏才显示，回视口后隐藏，轻量 scale+fade；Solar 复用课卡 Current WebGL，低性能/回退为描边边框。不改 Writing StaircaseScene。', anatomy: 'path-controls → L arrow → Solar-wrapped Back to current (h=50) → R arrow；视口离屏检测 / 强制演示开关。', states: ['default'], story: null },
   { key: 'flag', id: 'BA-WR-011', name: 'Level 奖励旗帜', en: 'LevelRewardFlag', category: 'Writing', description: '使用逐列 Canvas 竖向正弦波；默认 3s、5 波数、3px 振幅，本地可替换图片。', anatomy: '静态旗杆 + Canvas 图像布料；逐物理像素切片，竖直位移，不添加透视与光照。', states: ['upcoming','completed'], story: 'writing-path-levelrewardflag--completed' },
   { key: 'milestone', id: 'BA-WR-006', name: 'Unit 里程碑', en: 'UnitMilestone', category: 'Writing', description: '绿色底层与金色对勾完成态，银灰未完成态的两层徽章，扫光仅完成状态启用。', anatomy: '徽章 + 对勾 + 7 秒扫光 + 点击重播。', states: ['upcoming','completed'], story: 'writing-path-unitmilestone--first-return' },
   { key: 'transition', id: 'BA-WR-012', name: '页面转场', en: 'BAPageTransition', category: 'Writing', description: 'Cross Blur 已在 Writing 路由与活动页接入，两种速度与模糊强度可调整。', anatomy: '旧画面模糊 → 中点切换 → 新画面清晰。', states: ['default'], story: 'writing-transitions-bapagetransition--staircase-to-lesson' },
+  { key: 'start-point', id: 'BA-WR-015', name: '开始点', en: 'StartPoint', category: 'Writing', description: '课程开始点标牌：标题 tokens（Dosis 800 / 24 / 30）；独立预览。与 Level 卡组合见 level&composition=combo。', anatomy: '左侧圆角文案面板（右缘开放）→ 右侧切图主体与装饰组。Unit 组合已撤；Level 组合在 BA-WR-008 catalog key。', states: ['default'], story: 'writing-path-startpoint--default' },
+  { key: 'notebook', id: 'BA-WR-016', name: '笔记本壳', en: 'NotebookShell', category: 'Writing', description: '竖本顶装订 / 横本左装订的笔记本外壳（NotebookShell）：仅线圈/装订孔 + 纸张框，children 填内容。主标本为壳；旧 NotebookEditor（横线+textarea）作次要对照。方向由 Library Scene 控制。', anatomy: '装订孔 + U 环线圈 → 纸张框 → children（示意：占位输入 + WordGrid）。对照：NotebookEditor 横线 + textarea。', states: ['default'], story: null },
   { key: 'words', id: 'BA-WR-003', name: '词卡面板', en: 'WordGrid', category: 'Writing', description: '按类别找到表达所需的词，让写作一步一步展开。', anatomy: '连接式分类标签 → 词卡区域。切换类别不执行插入，点击词卡才发出插入事件。', states: ['default', 'selected', 'used', 'disabled', 'correct', 'incorrect', 'hint', 'shown', 'hover', 'pressed', 'focus'], story: 'writing-activities-wordgrid--multi-group' },
 ] as const;
 export type Entry = typeof catalog[number];
@@ -38,6 +44,7 @@ export const stateNames: Record<string, string> = {
   continue: 'Enterable · 可进入', current:'Current · Solar 强调（已接入待验收）', review: 'Completed · 已完成', locked: '未解锁', skipped: '已跳过',
   long: '长标题', single: '单组词卡', used: '词卡已使用',
   upcoming:'未完成 · 灰色', completed:'已完成 · 金色',
+  highlight:'Highlight · 亮点', improvement:'Improvement · 改进',
 };
 export type Scene = {
   component: ComponentKey; view: 'components' | 'overview' | 'foundations' | 'review';
@@ -45,7 +52,7 @@ export type Scene = {
   size: 36 | 50 | 70 | 90; choice: 'single' | 'multiple'; sample: 'standard' | 'long';
   variant: 'primary' | 'secondary' | 'tertiary' | 'outline' | 'ghost'; motion: 'system' | 'reduce'; selected: string[];
   buttonContent:'text'|'icon'|'leading'|'trailing'; layout:'hug'|'fixed'|'full'; background:'light'|'dark'|'glass';
-  tabCount:'1'|'2'|'4'|'10'; tabActive:string; composition:'card'|'terrace'; currentAction:'start'|'continue'; material:'en'|'zh'; answerPhase:'open'|'checked';
+  tabCount:'1'|'2'|'4'|'10'; tabActive:string; composition:'card'|'terrace'|'solo'|'combo'; currentAction:'start'|'continue'; material:'en'|'zh'; answerPhase:'open'|'checked';
   wordScenario:'A'|'B'|'C'|'D'|'E'|'F'|'G'|'H'; wordContent:'word'|'punctuation'|'emoji'|'sentence'|'mixed';
   wordTabs:'auto'|'show'|'hide'; wordCount:'1'|'4'|'10'; wordSelection:'default'|'selected'|'used'; wordEvaluation:'neutral'|'correct'|'incorrect'|'hint'|'shown'; wordInteraction:'enabled'|'disabled';
   wordSelected:string[]; wordAnswer:string[]; wordGroup:string; wordResult:'neutral'|'correct'|'incorrect'|'hint'|'shown';
@@ -57,6 +64,10 @@ export type Scene = {
   cloudRenderMode:'auto'|'shader'|'lightweight';cloudPreset:'clear'|'staircase';
   skyTop:string;skyBottom:string;cloudColor:string;cloudCount:number;driftSpeed:number;parallaxStrength:number;cloudCameraX:number;cloudPaused:boolean;cloudSimulateUnavailable:boolean;
   transitionDuration:number;transitionBlur:number;transitionPage:'staircase'|'lesson';
+  startPointText:string;startPointFill:string;startPointStroke:string;startPointInk:string;
+  orientation:'portrait'|'landscape';
+  pathCurrentView:'auto'|'off'|'in';
+  pathSolarFallback:boolean;
 };
 export const defaultScene: Scene = {
   component: 'choice', view: 'components', mode: 'live', state: 'default', locale: 'en', width: 'fit',
@@ -68,13 +79,26 @@ export const defaultScene: Scene = {
   solarPreset:'custom',solarBorderColor:'#FFA82E',solarGlowColor:'#FFA82E',
   cloudRenderMode:'auto',cloudPreset:'staircase',skyTop:'#85DBF9',skyBottom:'#F8F4ED',cloudColor:'#FBF8F2',cloudCount:5,driftSpeed:0.8,parallaxStrength:0.06,cloudCameraX:0,cloudPaused:false,cloudSimulateUnavailable:false,
   wordTabAppearance:'connected',transitionDuration:500,transitionBlur:12,transitionPage:'staircase',
+  startPointText:'',startPointFill:'#ffc24e',startPointStroke:'#715146',startPointInk:'#2f0f04',
+  orientation:'portrait',
+  pathCurrentView:'auto',
+  pathSolarFallback:false,
 };
 function oneOf<T extends string>(value: string | null, options: readonly T[], fallback: T): T {
   return options.includes(value as T) ? value as T : fallback;
 }
+/** URL aliases → catalog keys. coach-cards and legacy coach open Coach Cards合页 (coach-note). */
+export const componentAliases: Record<string, ComponentKey> = {
+  'coach-cards': 'coach-note',
+  'coach': 'coach-note',
+};
+export function resolveComponentKey(raw: string | null): ComponentKey {
+  const mapped = raw && componentAliases[raw] ? componentAliases[raw] : raw;
+  return oneOf(mapped, catalog.map(c => c.key), 'choice');
+}
 export function readScene(search: string): Scene {
   const p = new URLSearchParams(search);
-  const component = oneOf(p.get('component'), catalog.map(c => c.key), 'choice');
+  const component = resolveComponentKey(p.get('component'));
   const entry = catalog.find(c => c.key === component)!;
   const choice = oneOf(p.get('choice'), ['single', 'multiple'], 'single');
   const selected = [...new Set((p.get('selected') ?? '').split(',').filter(s => ['a', 'b', 'c'].includes(s)))];
@@ -98,7 +122,7 @@ export function readScene(search: string): Scene {
     buttonContent:oneOf(p.get('buttonContent'),['text','icon','leading','trailing'],'text'),
     layout:oneOf(p.get('layout'),['hug','fixed','full'],'hug'), background:oneOf(p.get('background'),['light','dark','glass'],'light'),
     tabCount:oneOf(p.get('tabCount'),['1','2','4','10'],'4'), tabActive:oneOf(p.get('tabActive'),Array.from({length:10},(_,i)=>`L${i}`),'L2'),
-    composition:oneOf(p.get('composition'),['card','terrace'],'card'),currentAction:oneOf(p.get('currentAction'),['start','continue'],'start'),
+    composition:oneOf(p.get('composition'),['card','terrace','solo','combo'],'card'),currentAction:oneOf(p.get('currentAction'),['start','continue'],'start'),
     material:oneOf(p.get('material'),['en','zh'],'en'),answerPhase:oneOf(p.get('answerPhase'),['open','checked'],'open'),
     wordScenario:oneOf(p.get('wordScenario'),['A','B','C','D','E','F','G','H'],'A'), wordContent:oneOf(p.get('wordContent'),['word','punctuation','emoji','sentence','mixed'],'word'),
     wordTabs:oneOf(p.get('wordTabs'),['auto','show','hide'],'auto'),wordCount:oneOf(p.get('wordCount'),['1','4','10'],'1'),
@@ -135,6 +159,13 @@ export function readScene(search: string): Scene {
     transitionDuration:Math.round(num('transitionDuration',500,0,1200)),
     transitionBlur:num('transitionBlur',12,0,30),
     transitionPage:oneOf(p.get('transitionPage'),['staircase','lesson'],'staircase'),
+    startPointText:(p.get('startPointText')??'').slice(0,28),
+    startPointFill:color('startPointFill','#ffc24e'),
+    startPointStroke:color('startPointStroke','#715146'),
+    startPointInk:color('startPointInk','#2f0f04'),
+    orientation:oneOf(p.get('orientation'),['portrait','landscape'],'portrait'),
+    pathCurrentView:oneOf(p.get('pathCurrentView'),['auto','off','in'],'auto'),
+    pathSolarFallback:oneOf(p.get('pathSolarFallback'),['true','false'],'false')==='true',
   };
 }
 export function sceneSearch(scene: Scene): string {

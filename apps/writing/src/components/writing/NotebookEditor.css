@@ -1,0 +1,297 @@
+/* NotebookEditor — tokens from _incoming-assets/notebook-editor-demo.html
+   Scoped under .notebook-editor so Library chrome is not polluted by html/body resets.
+   NO demo .toolbar (竖本/横本 pills); orientation comes from props / Library Scene. */
+
+.notebook-editor {
+  --ne-bg: #f6f4ee;
+  --ne-paper: #e8e4d6;
+  --ne-line: #c6bfae;
+  --ne-ink: #2c2920;
+  --ne-ink-muted: #8a8476;
+  --ne-font-size: 24px;
+  --ne-line-leading: 1.5; /* 字盒 150% → 36 */
+  --ne-text-lh: calc(var(--ne-font-size) * var(--ne-line-leading)); /* 字盒 36 */
+  /* 8/2 scale with font size; resolve to 8px / 2px at font-size 24 */
+  --ne-line-gap-above: calc(var(--ne-font-size) * 8 / 24); /* 上线 → 字顶 */
+  --ne-line-gap-below: calc(var(--ne-font-size) * 2 / 24); /* 字底 → 下线 */
+  --ne-line-h: calc(var(--ne-text-lh) + var(--ne-line-gap-above) + var(--ne-line-gap-below)); /* 46 = 36+8+2 */
+  --ne-first-line-extra: 20px; /* 首行顶空 +20 */
+  --ne-pad-x: 28px;
+  --ne-page-min: 320px;
+  --ne-page-max: 560px;
+  --ne-page-w: clamp(var(--ne-page-min), 100%, var(--ne-page-max));
+  --ne-side: 28px;
+  --ne-hole: 16px;
+  --ne-coil-w: 12px;
+  --ne-coil-h: 40px;
+  --ne-bind-slot: 16px;
+  --ne-bind-pad-top: 8px;
+  --ne-coil-nudge: 4px;
+  --ne-bind-pitch: 38px; /* 孔心距：间距优先 */
+
+  box-sizing: border-box;
+  width: var(--ne-page-w);
+  max-width: 100%;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti SC", "Noto Serif SC", Georgia, serif;
+  color: var(--ne-ink);
+}
+
+.notebook-editor *,
+.notebook-editor *::before,
+.notebook-editor *::after {
+  box-sizing: border-box;
+}
+
+.notebook-editor__stage {
+  width: 100%;
+  position: relative;
+}
+
+/* ===== Portrait: binding on top ===== */
+.notebook-editor__stage.is-portrait {
+  padding-top: calc(var(--ne-coil-h) - var(--ne-bind-pad-top) - (var(--ne-hole) / 2) - var(--ne-coil-nudge));
+}
+
+.notebook-editor__stage.is-portrait .notebook-editor__notebook {
+  width: 100%;
+}
+
+.notebook-editor__stage.is-portrait .notebook-editor__bind {
+  position: relative;
+  height: calc(var(--ne-bind-pad-top) + var(--ne-hole));
+  z-index: 5;
+}
+
+.notebook-editor__stage.is-portrait .notebook-editor__holes,
+.notebook-editor__stage.is-portrait .notebook-editor__coils {
+  position: absolute;
+  left: var(--ne-side);
+  right: var(--ne-side);
+  display: flex;
+  justify-content: center; /* leftover margins even-split; do NOT stretch pitch */
+  gap: calc(var(--ne-bind-pitch) - var(--ne-bind-slot)); /* center-to-center = pitch */
+  pointer-events: none;
+}
+
+.notebook-editor__stage.is-portrait .notebook-editor__holes {
+  top: var(--ne-bind-pad-top);
+  height: var(--ne-hole);
+  z-index: 2;
+}
+
+.notebook-editor__stage.is-portrait .notebook-editor__coils {
+  top: calc(var(--ne-bind-pad-top) + (var(--ne-hole) / 2) - var(--ne-coil-h) + var(--ne-coil-nudge));
+  height: var(--ne-coil-h);
+  z-index: 6;
+}
+
+/* ===== Landscape: binding on left (band rotated -90deg) ===== */
+.notebook-editor__stage.is-landscape {
+  padding-left: calc(var(--ne-coil-h) - var(--ne-bind-pad-top) - (var(--ne-hole) / 2) - var(--ne-coil-nudge));
+}
+
+.notebook-editor__stage.is-landscape .notebook-editor__notebook {
+  width: 100%;
+  display: grid;
+  grid-template-columns: calc(var(--ne-bind-pad-top) + var(--ne-hole)) 1fr;
+}
+
+.notebook-editor__stage.is-landscape .notebook-editor__bind {
+  position: relative;
+  width: calc(var(--ne-bind-pad-top) + var(--ne-hole));
+  height: 100%;
+  min-height: 520px;
+  z-index: 5;
+}
+
+.notebook-editor__stage.is-landscape .notebook-editor__bind-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--ne-bind-span); /* set by JS = sheet height */
+  height: calc(var(--ne-bind-pad-top) + var(--ne-hole));
+  transform-origin: left top;
+  transform: rotate(-90deg) translateX(-100%);
+}
+
+.notebook-editor__stage.is-landscape .notebook-editor__holes,
+.notebook-editor__stage.is-landscape .notebook-editor__coils {
+  position: absolute;
+  left: var(--ne-side);
+  right: var(--ne-side);
+  display: flex;
+  justify-content: center; /* leftover margins even-split; do NOT stretch pitch */
+  gap: calc(var(--ne-bind-pitch) - var(--ne-bind-slot)); /* center-to-center = pitch */
+  pointer-events: none;
+}
+
+.notebook-editor__stage.is-landscape .notebook-editor__holes {
+  top: var(--ne-bind-pad-top);
+  height: var(--ne-hole);
+  z-index: 2;
+}
+
+.notebook-editor__stage.is-landscape .notebook-editor__coils {
+  top: calc(var(--ne-bind-pad-top) + (var(--ne-hole) / 2) - var(--ne-coil-h) + var(--ne-coil-nudge));
+  height: var(--ne-coil-h);
+  z-index: 6;
+}
+
+.notebook-editor__notebook {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 20%),
+    var(--ne-paper);
+  border-radius: 0 0 18px 18px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28) inset,
+    0 18px 40px rgba(60, 52, 30, 0.12),
+    0 4px 10px rgba(60, 52, 30, 0.08),
+    0 0 0 1px rgba(120, 110, 85, 0.08);
+  overflow: visible;
+  min-height: 640px;
+  z-index: 1;
+}
+
+.notebook-editor__stage.is-landscape .notebook-editor__notebook {
+  border-radius: 0 18px 18px 0;
+}
+
+.notebook-editor__hole {
+  width: var(--ne-bind-slot);
+  height: var(--ne-hole);
+  flex: 0 0 var(--ne-bind-slot);
+  display: grid;
+  place-items: center;
+}
+
+.notebook-editor__hole i {
+  display: block;
+  width: var(--ne-hole);
+  height: var(--ne-hole);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 40% 32%, rgba(255, 255, 255, 0.14) 0 12%, transparent 16%),
+    radial-gradient(circle at 50% 58%, #5a554a 0 38%, #2c2922 72%, #1a1814 100%);
+  box-shadow:
+    0 0 0 1.2px rgba(90, 80, 60, 0.14),
+    inset 0 2px 2.5px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.notebook-editor__coil {
+  width: var(--ne-bind-slot);
+  height: var(--ne-coil-h);
+  flex: 0 0 var(--ne-bind-slot);
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 2px 1.5px rgba(40, 34, 20, 0.2));
+}
+
+.notebook-editor__coil svg {
+  display: block;
+  width: var(--ne-coil-w);
+  height: var(--ne-coil-h);
+  overflow: visible;
+}
+
+.notebook-editor__sheet {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0 0 18px 18px;
+  min-height: 600px;
+}
+
+.notebook-editor__stage.is-landscape .notebook-editor__sheet {
+  border-radius: 0 18px 18px 0;
+  min-height: 520px;
+}
+
+.notebook-editor__ruled {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* 从首行字下方才开始画线，避免 repeat 向上漏出顶线 */
+  top: calc(var(--ne-first-line-extra) + var(--ne-line-h));
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--ne-line) 0,
+    var(--ne-line) 1px,
+    transparent 1px,
+    transparent var(--ne-line-h)
+  );
+  background-size: 100% var(--ne-line-h);
+  background-position: 0 0;
+  background-repeat: repeat-y;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    transparent 18px,
+    #000 18px,
+    #000 calc(100% - 18px),
+    transparent calc(100% - 18px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    transparent 18px,
+    #000 18px,
+    #000 calc(100% - 18px),
+    transparent calc(100% - 18px),
+    transparent 100%
+  );
+}
+
+/* Higher specificity than Library `.library textarea` (padding/border/resize). */
+.notebook-editor textarea.notebook-editor__editor {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 600px;
+  /* Gaps live inside each line-h row (8 above / 2 below the text-lh box) — not in padding. */
+  padding: var(--ne-first-line-extra) var(--ne-pad-x) 48px;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--ne-ink);
+  font: inherit;
+  font-size: var(--ne-font-size);
+  line-height: var(--ne-line-h);
+  letter-spacing: 0.01em;
+  caret-color: #9b4f36;
+  /* Remove old centering (text-lh - line-h)/2 → ~5/5.
+     Shift from CSS half-leading center so text-lh box sits at +gap-above within line-h
+     → gap above 8, gap below 2, ruled line under the 2. Portrait & landscape same. */
+  transform: translateY(calc(var(--ne-line-gap-above) - (var(--ne-line-h) - var(--ne-text-lh)) / 2));
+}
+
+.notebook-editor__stage.is-landscape textarea.notebook-editor__editor {
+  min-height: 520px;
+}
+
+.notebook-editor textarea.notebook-editor__editor::placeholder {
+  color: var(--ne-ink-muted);
+  opacity: 0.65;
+}
+
+.notebook-editor__hint {
+  margin-top: 14px;
+  text-align: center;
+  font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif;
+  font-size: 12px;
+  color: #9a9486;
+}
+
+@media (max-width: 480px) {
+  .notebook-editor {
+    --ne-pad-x: 20px;
+    --ne-side: 16px;
+    --ne-page-min: 280px;
+  }
+}

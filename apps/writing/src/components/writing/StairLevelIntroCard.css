@@ -1,0 +1,27 @@
+/* BA-WR-008 Level intro card — body 16px; optional Level title mirrors Unit h2 scale.
+   Writing staircase passes product level.name as title (color #B25415 per brief). */
+.stair-level-intro-card.course-intro {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.stair-level-intro-card__title {
+  margin: 0 0 8px;
+  font-family: var(--ba-font-heading-en, "Dosis", "Arial Narrow", sans-serif);
+  font-size: var(--ba-writing-lesson-card-title-size, 24px);
+  font-weight: 800;
+  line-height: var(--ba-writing-lesson-title-line-height, 30px);
+  color: #B25415;
+}
+
+.course-app[lang='zh-CN'] .stair-level-intro-card__title {
+  font-family: var(--ba-font-zh-title);
+  font-weight: 700;
+}
+
+.stair-level-intro-card__body {
+  margin: 0;
+  font-size: var(--ba-writing-description-font-size, 16px);
+  line-height: 1.4;
+  color: var(--ba-brand-dark, #133547);
+}

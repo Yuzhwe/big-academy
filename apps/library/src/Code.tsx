@@ -6,19 +6,29 @@ import lessonSource from '../../writing/src/components/writing/StairLessonCard.t
 import solarSource from '../../writing/src/components/writing/SolarLessonPreview.tsx?raw';
 import hamburgerSource from '../../writing/src/components/writing/HamburgerComposition.tsx?raw';
 import coachSource from '../../writing/src/components/writing/LessonWorkspace.tsx?raw';
+import coachNoteSource from '../../writing/src/components/writing/CoachNote.tsx?raw';
+import coachChatSource from './CoachChatPlayground.tsx?raw';
+import pathBackSource from './PathBackToCurrentPlayground.tsx?raw';
 import flagSource from '../../writing/src/course/LevelRewardFlag.tsx?raw';
 import wordsSource from '../../writing/src/components/writing/WordGrid.tsx?raw';
 import unitSource from '../../writing/src/components/writing/StairUnitCard.tsx?raw';
 import milestoneSource from '../../writing/src/components/writing/UnitMilestone.tsx?raw';
 import transitionSource from '../../writing/src/components/writing/BAPageTransition.tsx?raw';
 import cloudSource from '../../writing/src/course/CloudShaderSky.tsx?raw';
+import startPointSource from '../../writing/src/components/writing/StartPoint.tsx?raw';
+import levelSource from '../../writing/src/components/writing/StairLevelIntroCard.tsx?raw';
+import notebookSource from '../../writing/src/components/writing/NotebookShell.tsx?raw';
+import notebookEditorSource from '../../writing/src/components/writing/NotebookEditor.tsx?raw';
 import originalM4ShaderSource from '../../writing/src/course/cloudShaderM4.ts?raw';
 import { choiceOptions, type Scene, type Entry } from './catalog';
 const sources = { coach:coachSource, button: buttonSource, choice: choiceSource, tabs: tabsSource, topbar: topbarSource,
   lesson: lessonSource + '\n\n/* Shared Current Solar overlay (same source used in Writing page): */\n' + solarSource,
   unit: unitSource, hamburger: hamburgerSource, flag: flagSource, words: wordsSource,
   milestone:milestoneSource, transition:transitionSource,
-  cloud: cloudSource + '\n\n/* Original M4 GLSL and transparent derivative source: */\n' + originalM4ShaderSource };
+  cloud: cloudSource + '\n\n/* Original M4 GLSL and transparent derivative source: */\n' + originalM4ShaderSource,
+  'start-point': startPointSource, level: levelSource, notebook: notebookSource + '\n\n/* Legacy NotebookEditor (ruled + textarea) for compare: */\n' + notebookEditorSource,
+  'coach-note': coachNoteSource, 'coach-chat': coachChatSource,
+  'path-back': pathBackSource + '\n\n/* Shared Solar control-fit wrap: */\n' + solarSource };
 export function Code({ scene, entry }: { scene: Scene; entry: Entry }) {
   const props = scene.component === 'choice' ? {
     choiceMode: scene.choice,

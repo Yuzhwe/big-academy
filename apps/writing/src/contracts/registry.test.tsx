@@ -43,3 +43,5 @@ describe('component registry', () => {
     }
   });
 });
+
+

@@ -30,3 +30,8 @@ SOFTWARE.
 ## Supplied Staircase R2.12 reference attribution
 
 The designer-supplied HTML credits “GooeyNav source © Rare UI” at https://rareui.com. That attribution is retained here with the reference provenance. The integrated navigation uses the existing Big Academy BATabs / React Aria implementation rather than copying the reference's navigation engine. The supplied flag-path wind animation is described in the reference as original SVG animation, not ProDesigner's proprietary engine.
+
+## DouyinSans (抖音美好体)
+
+Font file: `fonts/DouyinSansBold.ttf` (family registered as `DouyinSans` in `fonts/douyin-sans.css`; not wired to UI this round).
+License: SIL Open Font License 1.1 — see `fonts/OFL-DouyinSans.txt`.

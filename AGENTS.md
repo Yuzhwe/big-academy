@@ -29,3 +29,5 @@ Checks: `npm run check:docs`, `npm run typecheck`, `npm test`, `npm run build`, 
 
 ## Visual state
 A component may be `implemented` yet `temporary` or `in-review` visually. The current six-screen ActivityScreenIndicator, Staircase scenery and unapproved component refinements require separate rendered designer acceptance; legacy folded-corner proposals do not supersede the current Unit card. Never treat successful compilation as approval.
+
+

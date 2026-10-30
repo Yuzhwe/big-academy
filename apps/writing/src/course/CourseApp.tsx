@@ -3,12 +3,16 @@ import { useSyncExternalStore } from 'react';
 import { BAButton, BAChoice, BATabs, BATabList, BATabPanel, localeTag } from '@big-academy/design-system';
 import { LessonTopBar } from '../components/writing/LessonTopBar';
 import { CoachMessage, LessonWorkspace } from '../components/writing/LessonWorkspace';
+import { CoachNote } from '../components/writing/CoachNote';
 import { StairLessonCard, type StairLessonState } from '../components/writing/StairLessonCard';
 import { UnitMilestone } from '../components/writing/UnitMilestone';
 import { HamburgerComposition } from '../components/writing/HamburgerComposition';
 import { WordGrid } from '../components/writing/WordGrid';
+import { NotebookShell } from '../components/writing/NotebookShell';
+import { WordChip, type WordEvaluation } from '../components/writing/WordChip';
 import { StaircaseScene } from './StaircaseScene';
 import { StairUnitCard } from '../components/writing/StairUnitCard';
+import { StartPointLevelCombo } from '../components/writing/StartPointLevelCombo';
 import alexHtml from '../../source/alex-original.html?raw';
 import { CourseSession, type ActivityModel } from '../product/courseSession';
 import './course.css';
@@ -31,6 +35,15 @@ function cardState(courseState: string, action: string): StairLessonState {
   if (action === 'start' || action === 'continue' || action === 'review' || action === 'locked') return action;
   return 'locked';
 }
+
+
+function tapwordEvaluation(word: { wrong?: boolean; correct?: boolean; revealed?: boolean }): WordEvaluation | undefined {
+  if (word.wrong) return 'incorrect';
+  if (word.correct) return 'correct';
+  if (word.revealed) return 'correctUnselected';
+  return undefined;
+}
+
 
 export function CourseApp({ session: provided, enableLessonTestTools = true }: { session?: CourseSession; enableLessonTestTools?: boolean }) {
   const [formalSession] = useState(() => provided ?? new CourseSession({ html: alexHtml, search: window.location.search }));
@@ -105,7 +118,7 @@ export function CourseApp({ session: provided, enableLessonTestTools = true }: {
         duration={500} maxBlur={12} reducedMotion={lowMotion}
         onSettled={target=>{if(target==='path')restorePathFocus();}}
         renderView={key=>key==='path'?<PathView session={session} motionMode={motionMode} effectiveMotion={effectiveMotion} systemReduced={systemReduced} onMotionModeChange={setMotionMode}/>:key==='lesson'?<LessonView session={session} lowMotion={lowMotion}
-          onResetLesson={enableLessonTestTools?()=>{lessonSpeech.stop();setTestSession(session.createLessonTestSession());}:undefined}/>:<PreviewView session={session}/>}/>
+          onResetLesson={enableLessonTestTools?()=>{lessonSpeech.stop();setTestSession(null);formalSession.resetCurrentLesson();}:undefined}/>:<PreviewView session={session}/>}/>
       {session.celebration ? <Celebration session={session} lowMotion={lowMotion} /> : null}
       {session.practiceBurst ? <PracticeBurst session={session} lowMotion={lowMotion} /> : null}
     </div>
@@ -167,9 +180,7 @@ function PathView({ session, motionMode, effectiveMotion, systemReduced, onMotio
             if (node.kind === 'intro') {
               return (
                 <li key={node.id} data-node-kind={node.kind} style={{ '--step-index': index } as CSSProperties}>
-                  <p className="course-intro" data-testid="level-intro">
-                    {node.intro}
-                  </p>
+                  <StartPointLevelCombo locale={session.locale} title={session.text(level.name)} intro={node.intro ?? ''} />
                 </li>
               );
             }
@@ -275,10 +286,10 @@ function LessonView({ session,lowMotion,onResetLesson }: { session: CourseSessio
         locale={session.locale}
         onBack={() => (lessonEnd ? session.leaveLesson('path') : session.backToPath())}
         onNavigate={(index) => session.navigateLocal(index)}
+        end={onResetLesson ? <LessonTestTools onReset={onResetLesson} zh={session.zh}/> : undefined}
       />
       <LessonWorkspace
         navigationLayout={lessonEnd ? 'end' : 'pair'}
-        tools={onResetLesson ? <LessonTestTools onReset={onResetLesson} zh={session.zh}/> : null}
         activity={<BAPageTransition viewKey={String(bar.current)} duration={300} maxBlur={6} reducedMotion={lowMotion}
           renderView={()=> <ActivityBody session={session} activity={activity}/>}/> }
         coach={
@@ -289,8 +300,33 @@ function LessonView({ session,lowMotion,onResetLesson }: { session: CourseSessio
             {activity.hints.map((hint, index) => (
               <CoachMessage key={index} tone="hint" locale={session.locale} data-testid="hint">{hint}</CoachMessage>
             ))}
-            {activity.feedback ? (
+            {activity.feedback && activity.kind !== 'apply' ? (
               <CoachMessage tone={activity.feedbackTone} locale={session.locale} role="status" data-testid="feedback" data-outcome={activity.feedbackTone}>{activity.feedback}</CoachMessage>
+            ) : null}
+            {activity.kind === 'apply' && (activity.applyNotes?.highlight || activity.applyNotes?.improvement) ? (
+              <div className="course-apply-coach-notes coach-note-stack" data-testid="apply-coach-notes" role="status">
+                {activity.applyNotes?.highlight ? (
+                  <CoachNote
+                    tone="highlight"
+                    title={session.zh ? '亮点' : 'Highlight'}
+                    className="course-apply-coach-note"
+                    data-testid="apply-note-highlight"
+                  >
+                    {activity.applyNotes.highlight}
+                  </CoachNote>
+                ) : null}
+                {activity.applyNotes?.improvement ? (
+                  <CoachNote
+                    tone="improvement"
+                    title={session.zh ? '改进' : 'Improvement'}
+                    className="course-apply-coach-note"
+                    data-testid="apply-note-improvement"
+                    data-outcome={activity.feedbackTone}
+                  >
+                    {activity.applyNotes.improvement}
+                  </CoachNote>
+                ) : null}
+              </div>
             ) : null}
             <div className="lesson-workspace__coach-actions">
               {activity.coachMore ? (
@@ -464,23 +500,25 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
         <>
           <ActivityHeading title={activity.ask} speaker={speaker} />
           <p className="course-words" lang="en">
-            {activity.tapword.words.map((word) => (
-              <button
-                key={word.index}
-                type="button"
-                className="course-word"
-                disabled={activity.tapword?.locked}
-                data-selected={word.selected ? 'true' : undefined}
-                data-wrong={word.wrong ? 'true' : undefined}
-                data-revealed={word.revealed ? 'true' : undefined}
-                data-correct={word.correct ? 'true' : undefined}
-                aria-pressed={word.selected}
-                aria-label={word.revealed ? `${word.text} · ${session.zh ? '展示答案' : 'Shown answer'}` : word.correct ? `${word.text} · ${session.zh ? '正确' : 'Correct'}` : undefined}
-                onClick={() => session.tapWord(word.index)}
-              >
-                {word.text}
-              </button>
-            ))}
+            {activity.tapword.words.map((word) => {
+              const evaluation = tapwordEvaluation(word);
+              // WordChip.css: disabled/selected+disabled wash overrides evaluation chrome.
+              // Keep lock on neutral chips only; graded chips show evaluation (session.tapWord already no-ops when locked).
+              const locked = Boolean(activity.tapword?.locked);
+              return (
+                <WordChip
+                  key={word.index}
+                  selected={word.selected}
+                  evaluation={evaluation}
+                  disabled={locked && !evaluation}
+                  aria-pressed={word.selected}
+                  aria-label={word.revealed ? `${word.text} · ${session.zh ? '展示答案' : 'Shown answer'}` : word.correct ? `${word.text} · ${session.zh ? '正确' : 'Correct'}` : undefined}
+                  onClick={() => session.tapWord(word.index)}
+                >
+                  {word.text}
+                </WordChip>
+              );
+            })}
           </p>
         </>
       ) : null}
@@ -519,12 +557,32 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
                 {part}
                 {index < activity.frame!.blanks.length ? (
                   <input
+                    data-testid={`frame-blank-${index}`}
+                    data-frame-blank={index}
                     aria-label={activity.frame!.blanks[index].label || (session.zh ? `空 ${index + 1}` : `Blank ${index + 1}`)}
                     value={activity.frame!.blanks[index].value}
+                    size={Math.max(8, (activity.frame!.blanks[index].value.length || 0) + 2)}
+                    style={{ width: `${Math.max(8, (activity.frame!.blanks[index].value.length || 0) + 2)}ch` }}
                     readOnly={session.currentTaskClosed()}
                     onFocus={(event) => { session.focusBlank(index); rememberCaret(event.currentTarget); }}
                     onSelect={(event) => rememberCaret(event.currentTarget)}
                     onChange={(event) => session.setBlank(index, event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key !== 'Tab' || event.altKey || event.ctrlKey || event.metaKey) return;
+                      const blankCount = activity.frame!.blanks.length;
+                      const next = event.shiftKey ? index - 1 : index + 1;
+                      if (next < 0 || next >= blankCount) return;
+                      event.preventDefault();
+                      session.focusBlank(next);
+                      const root = event.currentTarget.closest('[data-testid="frame"]');
+                      const target = root?.querySelector<HTMLInputElement>(`[data-frame-blank="${next}"]`);
+                      if (target) {
+                        target.focus();
+                        const caret = target.value.length;
+                        target.setSelectionRange(caret, caret);
+                        rememberCaret(target);
+                      }
+                    }}
                   />
                 ) : null}
               </span>
@@ -532,7 +590,47 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
           </p>
         </>
       ) : null}
-      {activity.canvas && activity.check?.phase !== 'results' ? (
+      {activity.kind === 'apply' && activity.canvas && activity.check?.phase !== 'results' ? (
+        <div className="course-apply" data-testid="apply-layout">
+          {/*
+            Q6 Apply: NotebookShell is the outer container (Joe).
+            Title + play-audio + textarea + WordGrid all live on the same paper.
+            Do NOT mount NotebookEditor wholesale. Padding owned by shell only.
+          */}
+          <div className="course-answer-region" data-testid="answer-region">
+            <NotebookShell className="course-answer-notebook" orientation="portrait">
+              <ActivityHeading title={activity.ask} speaker={speaker} />
+              <label className="course-canvas course-answer-notebook__field">
+                <span className="course-sr">{activity.canvas.label}</span>
+                <textarea
+                  lang="en"
+                  className="course-answer-notebook__input"
+                  data-testid="writing-canvas"
+                  aria-label={activity.canvas.label}
+                  value={activity.canvas.text}
+                  readOnly={activity.check?.phase === 'graded'}
+                  onFocus={(event) => rememberCaret(event.currentTarget)}
+                  onSelect={(event) => rememberCaret(event.currentTarget)}
+                  onPaste={() => session.markPaste()}
+                  onChange={(event) => session.setCanvas(event.target.value)}
+                />
+              </label>
+              {activity.wordGrid ? (
+                <div className="course-answer-notebook__words">
+                  <WordGrid
+                    groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() })) }))}
+                    activeGroup={activity.wordGrid.active}
+                    locale={session.locale}
+                    onGroupChange={(key) => session.selectGrid(key)}
+                    onWordAction={(word) => insert(word.text, word.id)}
+                  />
+                </div>
+              ) : null}
+            </NotebookShell>
+          </div>
+        </div>
+      ) : null}
+      {activity.kind !== 'apply' && activity.canvas && activity.check?.phase !== 'results' ? (
         <>
           <ActivityHeading title={activity.ask} speaker={speaker} />
           <label className="course-canvas">
@@ -548,12 +646,12 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
               onChange={(event) => session.setCanvas(event.target.value)}
             />
           </label>
-          {activity.kind !== 'apply' && activity.canvas.tip ? <p>{activity.canvas.tip}</p> : null}
+          {activity.canvas.tip ? <p>{activity.canvas.tip}</p> : null}
         </>
       ) : null}
-      {activity.wordGrid ? (
+      {activity.kind !== 'apply' && activity.wordGrid ? (
         <WordGrid
-          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? 'selected' as const : 'default' as const, disabled: session.currentTaskClosed(), evaluation: word.hint ? 'hint' as const : undefined })) }))}
+          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() })) }))}
           activeGroup={activity.wordGrid.active}
           locale={session.locale}
           onGroupChange={(key) => session.selectGrid(key)}
@@ -648,60 +746,48 @@ function PracticeBurst({ session, lowMotion = false }: { session: CourseSession;
   );
 }
 
+/** Milestone receipt: Confetti only. No Milestone / Small Moment Story dialog. */
 function Celebration({ session, lowMotion = false }: { session: CourseSession; lowMotion?: boolean }) {
   const reduced = lowMotion || prefersReducedMotion();
-  const title = session.celebration?.title ?? '';
   const unitId = session.celebration?.unitId ?? '';
   useEffect(() => {
-    if (reduced || !unitId) return;
-    const flag = document.querySelector<HTMLElement>(`[data-unit="${unitId}"] [data-testid="milestone"]`);
-    const rect = flag?.getBoundingClientRect();
-    if (!rect || rect.width === 0) return;
-    const x = ((rect.left + rect.width / 2) / window.innerWidth) * 100;
-    const y = ((rect.top + rect.height / 2) / window.innerHeight) * 100;
-    let handle: { destroy: () => void } | undefined;
-    let cancel = false;
-    void import('../celebration/particleRuntime')
-      .then((runtime) => runtime.startMilestoneConfetti(x, y))
-      .then((next) => {
-        if (cancel) next.destroy();
-        else handle = next;
-      })
-      .catch(() => undefined);
+    if (!unitId) return;
+    let cancelled = false;
+    // Kick Confetti immediately; one-shot life.count 1 must outlive this mount.
+    if (!reduced) {
+      const flag = document.querySelector<HTMLElement>(`[data-unit="${unitId}"] [data-testid="milestone"]`);
+      const rect = flag?.getBoundingClientRect();
+      if (rect && rect.width !== 0) {
+        const x = ((rect.left + rect.width / 2) / window.innerWidth) * 100;
+        const y = ((rect.top + rect.height / 2) / window.innerHeight) * 100;
+        void import('../celebration/particleRuntime')
+          .then((runtime) => runtime.startMilestoneConfetti(x, y))
+          .catch(() => undefined);
+      }
+    }
+    // Two rAFs so Confetti kickoff schedules/paints before clearing the invisible receipt marker.
+    // Still auto-dismiss; still NO dialog / card / OK.
+    const raf1 = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (!cancelled) session.dismissCelebration();
+      });
+    });
     return () => {
-      cancel = true;
-      handle?.destroy();
+      cancelled = true;
+      window.cancelAnimationFrame(raf1);
     };
   }, [reduced, unitId]);
+  // Invisible marker only — no dialog / modal / story card.
   return (
     <div
-      className="course-celebration"
-      role="dialog"
-      aria-modal="false"
-      aria-label={title}
+      className="course-celebration course-celebration--confetti-only"
+      aria-hidden="true"
       data-testid="celebration"
       data-preset={reduced ? 'off' : 'confetti'}
       data-start-count={reduced ? undefined : '50'}
       data-rate-quantity={reduced ? undefined : '0'}
       data-life-count={reduced ? undefined : '1'}
-    >
-      <div className="course-celebration__card">
-        <p>{session.zh ? '里程碑' : 'Milestone'}</p>
-        <h2>{title}</h2>
-        <p>
-          {reduced
-            ? session.zh
-              ? '已达成。减少动效时不播放彩纸。'
-              : 'Reached. Confetti stays off when motion is reduced.'
-            : session.zh
-              ? '达成了。彩纸只是提示，不改变课程进度。'
-              : 'Reached. Confetti is only a receipt. It does not change course progress.'}
-        </p>
-        <BAButton variant="primary" locale={session.locale} onPress={() => session.dismissCelebration()}>
-          {session.zh ? '好' : 'OK'}
-        </BAButton>
-      </div>
-    </div>
+    />
   );
 }
 
@@ -722,3 +808,5 @@ function ChoiceGallery({ zh }: { zh: boolean }) {
     </main>
   );
 }
+
+
