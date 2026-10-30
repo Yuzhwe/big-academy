@@ -1,0 +1,207 @@
+name: Big Academy · Publish selected Draft PR to GitHub Pages
+
+# Manual after merge; one deliberate bootstrap push before infrastructure approval.
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Open Draft PR to publish (both apps from its HEAD SHA)'
+        type: number
+        required: true
+        default: 65
+      expected_sha:
+        description: 'Optional 40-character SHA guard'
+        type: string
+        required: false
+        default: ''
+  # Authorized PR conversation command, handled by the default-branch
+  # workflow, lets the connected GitHub agent publish without touching main.
+  # Only repository-owner comments on this infrastructure PR qualify.
+  issue_comment:
+    types: [created]
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-pages-preview.yml'
+      - 'scripts/pages/**'
+      - 'docs/PAGES_PREVIEW.md'
+  push:
+    branches: [feat/pages-preview-infrastructure]
+
+concurrency:
+  group: big-academy-pages-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: >-
+      github.event_name == 'pull_request' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.number == 66 &&
+       github.actor == 'Yuzhwe' &&
+       startsWith(github.event.comment.body, '/pages-publish ')) ||
+      (github.event_name == 'push' &&
+       contains(github.event.head_commit.message, '[pages-bootstrap]'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      candidate_sha: ${{ steps.resolve.outputs.sha }}
+      candidate_pr: ${{ steps.resolve.outputs.pr }}
+    steps:
+      - name: Checkout independent Pages infrastructure
+        uses: actions/checkout@v4
+        with:
+          path: infra
+          persist-credentials: false
+      - name: Resolve and lock chosen open PR HEAD
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_PR: ${{ inputs.pr_number || '65' }}
+          EXPECTED_SHA: ${{ inputs.expected_sha || '' }}
+          EVENT: ${{ github.event_name }}
+          RELEASE_COMMAND: ${{ github.event.comment.body || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR="$REQUESTED_PR"
+          if [[ "$EVENT" == "issue_comment" ]]; then
+            # Never execute user text. Only parse an exact, owner-authored
+            # command with a numeric PR and full immutable expected SHA.
+            if [[ "$RELEASE_COMMAND" =~ ^/pages-publish[[:space:]]+pr=([1-9][0-9]*)[[:space:]]+sha=([a-f0-9]{40})$ ]]; then
+              PR="${BASH_REMATCH[1]}"
+              EXPECTED_SHA="${BASH_REMATCH[2]}"
+            else
+              echo "::error::Invalid release comment"; exit 1
+            fi
+          fi
+          [[ "$PR" =~ ^[1-9][0-9]*$ ]] || { echo "::error::Invalid PR number"; exit 1; }
+          RESULT="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR")"
+          CANDIDATE_SHA="$(jq -r '.head.sha' <<< "$RESULT")"
+          HEAD_REPO="$(jq -r '.head.repo.full_name' <<< "$RESULT")"
+          PR_STATE="$(jq -r '.state' <<< "$RESULT")"
+          if [[ "$HEAD_REPO" != "$GITHUB_REPOSITORY" || "$PR_STATE" != "open" ]]; then
+            echo "::error::Only an open PR branch in this repository is allowed"; exit 1
+          fi
+          if [[ -n "$EXPECTED_SHA" && "$EXPECTED_SHA" != "$CANDIDATE_SHA" ]]; then
+            echo "::error::Expected SHA differs from current PR HEAD ($CANDIDATE_SHA)"; exit 1
+          fi
+          if [[ "$EVENT" == "push" && "$CANDIDATE_SHA" != "a83a63597e0fd5b3617e4a2c9cc311a60f1847cc" ]]; then
+            echo "::error::Bootstrap PR #65 has changed; new review required"; exit 1
+          fi
+          echo "sha=$CANDIDATE_SHA" >> "$GITHUB_OUTPUT"
+          echo "pr=$PR" >> "$GITHUB_OUTPUT"
+          echo "Source: PR #$PR @ $CANDIDATE_SHA"
+
+      - name: Checkout candidate (same immutable SHA for both sites)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.resolve.outputs.sha }}
+          path: source
+          persist-credentials: false
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+      - name: Install candidate dependencies
+        working-directory: source
+        run: npm ci
+      - name: Build design system
+        working-directory: source
+        run: npm run build --workspace @big-academy/design-system
+      - name: Build Writing at GitHub Pages base
+        working-directory: source
+        run: npm run build --workspace @big-academy/writing -- --base=/big-academy/writing/
+      - name: Build Component Library at GitHub Pages base
+        working-directory: source
+        run: npm run build --workspace @big-academy/library -- --base=/big-academy/library/
+      - name: Package both sites, public assets and SHA manifest
+        env:
+          WRITING_PUBLIC_DIR: ${{ github.workspace }}/source/apps/writing/public
+        run: |
+          node infra/scripts/pages/package-pages.mjs \
+            source/apps/writing/dist source/apps/library/dist \
+            pages-site "${{ steps.resolve.outputs.sha }}" "${{ steps.resolve.outputs.pr }}"
+          test -f pages-site/writing/index.html
+          test -f pages-site/library/index.html
+          test -f pages-site/library/assets/clouds/writing_cloud_1.webp
+          test -f pages-site/writing/assets/trees/tree-green.webp
+      - name: Run Chrome smoke against production-style routes
+        env:
+          PAGES_SITE_DIR: ${{ github.workspace }}/pages-site
+          PAGES_EXPECTED_SHA: ${{ steps.resolve.outputs.sha }}
+          PAGES_SMOKE_DIR: ${{ github.workspace }}/source/pages-smoke-evidence
+        run: |
+          cp infra/scripts/pages/smoke-pages.mjs source/.pages-smoke.mjs
+          node source/.pages-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pages-local-browser-${{ steps.resolve.outputs.sha }}
+          path: source/pages-smoke-evidence/
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/configure-pages@v5
+        if: github.event_name != 'pull_request'
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: pages-site
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy frozen two-site artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  live-verify:
+    needs: [build, deploy]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: infra
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.build.outputs.candidate_sha }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+      - name: Install browser dependencies
+        working-directory: source
+        run: npm ci
+      - name: Open actual github.io Writing + Library in Chromium
+        env:
+          PAGES_PUBLIC_BASE: https://yuzhwe.github.io
+          PAGES_EXPECTED_SHA: ${{ needs.build.outputs.candidate_sha }}
+          PAGES_SMOKE_DIR: ${{ github.workspace }}/source/pages-live-evidence
+        run: |
+          cp infra/scripts/pages/smoke-pages.mjs source/.pages-smoke.mjs
+          node source/.pages-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pages-live-browser-${{ needs.build.outputs.candidate_sha }}
+          path: source/pages-live-evidence/
+          if-no-files-found: ignore
+          retention-days: 14
