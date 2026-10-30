@@ -105,12 +105,14 @@ test('R10-06/07/08: Q6 alignment, single scroll owner, moving rules, dock and dy
     await page.setViewportSize({width,height});
     await page.evaluate(() => document.fonts.ready);
     const actual = await page.evaluate(() => {
-      const sheet = document.querySelector('.notebook-shell__sheet')!.getBoundingClientRect();
+      // R11 supersedes R10's inner-sheet check: the visible paper starts at
+      // .notebook-shell__notebook, above the inner sheet's binding band.
+      const paper = document.querySelector('.course-answer-notebook .notebook-shell__notebook')!.getBoundingClientRect();
       const coach = document.querySelector('.lesson-workspace__coach')!.getBoundingClientRect();
-      return {sheetTop:sheet.top,coachTop:coach.top};
+      return {paperTop:paper.top,coachTop:coach.top};
     });
-    console.log(`R10 geometry ${width}x${height}: sheetY=${actual.sheetTop.toFixed(2)}, coachY=${actual.coachTop.toFixed(2)}, delta=${(actual.sheetTop-actual.coachTop).toFixed(2)}px`);
-    expect(Math.abs(actual.sheetTop - actual.coachTop), `paper/Coach drift at ${width}`).toBeLessThanOrEqual(2);
+    console.log(`R11 visible paper ${width}x${height}: paperY=${actual.paperTop.toFixed(2)}, coachY=${actual.coachTop.toFixed(2)}, delta=${(actual.paperTop-actual.coachTop).toFixed(2)}px`);
+    expect(Math.abs(actual.paperTop - actual.coachTop), `visible paper/Coach drift at ${width}`).toBeLessThanOrEqual(1);
   }
 
   const baseline = await field.evaluate(el => ({

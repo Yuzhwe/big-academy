@@ -1,0 +1,50 @@
+name: Writing Review 07 · Refinement 11 QA
+on:
+  push:
+    branches:
+      - feat/writing-review07-refinement11
+  workflow_dispatch:
+
+concurrency:
+  group: writing-r11-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: R11 TypeScript, units, build and Chromium regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Verify diff only vs stacked PR #64
+        run: |
+          git fetch origin feat/writing-review07-refinement10
+          git diff --check "$(git merge-base origin/feat/writing-review07-refinement10 HEAD)" HEAD
+      - run: npm ci
+      - run: npm run check:docs
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: google-chrome --version
+      - run: npx playwright install ffmpeg
+      - name: Chromium R10 + R11 visual geometry and interaction
+        run: npx playwright test -c apps/writing/playwright.integration.config.ts apps/writing/e2e/review10.spec.ts apps/writing/e2e/review11.spec.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: writing-r11-browser-evidence
+          path: |
+            apps/writing/docs/evidence/review11/
+            apps/writing/docs/evidence/integration-v1/playwright-results.json
+            apps/writing/test-results/
+          retention-days: 14
+          if-no-files-found: ignore

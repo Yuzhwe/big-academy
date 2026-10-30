@@ -526,7 +526,14 @@
   column-gap: 12px;
   margin-bottom: 12px;
 }
-.course-activity__heading > .course-title { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+/* R11-03/05: only ordinary Activity title text moves 16px; speaker stays anchored.
+ * Q4 bench and revealed answer, Q5 frame retain their existing 16px inset. */
+.course-activity__heading > .course-title {
+  min-width: 0;
+  margin: 0;
+  padding-left: 16px;
+  overflow-wrap: anywhere;
+}
 .course-activity__heading .course-listen {
   float: none;
   margin: 0;
@@ -583,10 +590,14 @@
   border-radius: 0;
   background: transparent;
 }
-.course-frame input:focus-visible {
-  outline: 2px solid var(--ba-color-focus, #2364db);
-  outline-offset: 4px;
-  border-bottom-color: var(--ba-color-writing-7, #b25415);
+/* R11-04: retained 2px underline is the entire visual keyboard focus cue.
+ * Scope only to Activity 5; never disable global focus treatments. */
+.course-activity .course-frame input:focus,
+.course-activity .course-frame input:focus-visible {
+  outline: none;
+  outline-offset: 0;
+  border-bottom-color: #b25415;
+  box-shadow: none;
 }
 /* Apply input type scale owned by .course-answer-notebook__input (shell children). */
 
@@ -726,10 +737,11 @@
   background: transparent;
   border: 0;
 }
-/* R10-06: paper top and Coach top share the same workspace grid datum.
- * Portrait binding = stage top pad (20px) + bind band (24px) = 44px.
- * Express that offset in NotebookShell tokens instead of stacking historical
- * -10px/-41px guesses. The coil stays above the paper by its original amount. */
+/* R11-06: visible notebook paper (.notebook-shell__notebook), not its inner sheet,
+ * must align with Coach. R10 aligned the inner sheet and left the paper 24px high.
+ * Add the existing binding band (8px pad + 16px hole) back to the R10 offset.
+ * This moves the whole shell; coil/paper internal geometry, width and shadow stay.
+ * Browser QA must verify the actual visible paper and Coach bounding boxes. */
 .course-answer-region > .course-answer-notebook.notebook-shell,
 .course-answer-region > .notebook-shell.course-answer-notebook {
   flex: 1 1 auto;
@@ -738,7 +750,7 @@
   max-width: none;
   width: 100%;
   margin: 0;
-  margin-top: calc(var(--ns-coil-nudge) - var(--ns-coil-h) - var(--ns-hole) / 2);
+  margin-top: calc(var(--ns-coil-nudge) - var(--ns-coil-h) - var(--ns-hole) / 2 + var(--ns-bind-pad-top) + var(--ns-hole));
 }
 
 /* R10-08 only: Library NotebookShell keeps its own ruled background and
