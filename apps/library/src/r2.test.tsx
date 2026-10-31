@@ -16,13 +16,14 @@ it('selects, unselects and retains WordGrid selection across tabs and reload par
   expect(readScene(window.location.search).wordSelected).toEqual(['g0-w0','g1-w0']);
   await user.click(screen.getByRole('button',{name:'We · Selected'}));expect(readScene(window.location.search).wordSelected).toEqual(['g1-w0']);
 });
-it('builds and undoes words with sentence-level correct/incorrect feedback',async()=>{
+it('builds words with lock-after-select and sentence-level correct/incorrect feedback',async()=>{
   const user=userEvent.setup();render(<App/>);await user.click(screen.getByRole('button',{name:'B · 造句词块'}));
   for(const name of ['We','love','gardens','.']) await user.click(screen.getByRole('button',{name}));
   await user.click(screen.getByRole('button',{name:'Check demo'}));expect(screen.getByText('✓ Demo: correct')).toBeVisible();
-  // Review 06 keeps an inserted word selected and actionable before Check; Used no longer means disabled.
-  expect(screen.getByRole('button',{name:'We · Selected'})).toBeEnabled();expect(screen.getByRole('button',{name:'We · Selected'})).toHaveAttribute('data-evaluation','neutral');
-  await user.click(screen.getByRole('button',{name:'Remove love'}));await user.click(screen.getByRole('button',{name:'Check demo'}));expect(screen.getByText('× Demo: incorrect; edit and retry')).toBeVisible();
+  // B 造句：点入后 selected+disabled，不可撤销；仅 Reset 清空。
+  const locked=screen.getByRole('button',{name:/We · Selected/});
+  expect(locked).toBeDisabled();expect(locked).toHaveAttribute('data-selection','selected');expect(locked).toHaveAttribute('data-evaluation','neutral');
+  expect(screen.queryByRole('button',{name:'Remove love'})).toBeNull();
   await user.click(screen.getByRole('button',{name:'Reset demo'}));expect(readScene(window.location.search).wordAnswer).toEqual([]);
 });
 it('shows system answers without crediting the learner and restores the full scene URL',async()=>{
@@ -86,3 +87,5 @@ it('gives completed and skipped the same visual role, with no visible Skipped la
   expect(screen.queryByText('Mastered · skipped')).toBeNull();
   expect(screen.getByRole('button',{name:'Review'})).toBeEnabled();
 });
+
+

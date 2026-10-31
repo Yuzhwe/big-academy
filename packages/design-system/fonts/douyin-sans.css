@@ -1,0 +1,10 @@
+/* DouyinSans Bold — asset registered only. Do not import into UI this round.
+   Family: DouyinSans (TTF PostScript DOUYINSANSBOLD-GB / 抖音美好体).
+   Token --ba-font-heading-zh still names "Douyin Sans"; wiring heading consumers is out of scope. */
+@font-face {
+  font-family: "DouyinSans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./DouyinSansBold.ttf") format("truetype");
+}

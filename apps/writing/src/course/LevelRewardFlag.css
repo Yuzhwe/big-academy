@@ -1,4 +1,96 @@
-/* Static original pole and original 4:3 cloth are independent layers. */
-.ba-flag.course-goal__flag { position:relative; display:block; width:var(--ba-flag-width); height:var(--ba-flag-height); max-width:100%; margin:0 auto; overflow:visible; }
-.ba-flag__pole { position:absolute; top:0; left:0; height:var(--ba-flag-pole-height); width:auto; max-width:none; object-fit:contain; pointer-events:none; }
-.ba-flag__canvas { position:absolute; top:var(--ba-flag-cloth-top); left:var(--ba-flag-cloth-left); width:var(--ba-flag-cloth-width); height:var(--ba-flag-cloth-height); display:block; pointer-events:none; }
+/* Static original pole and original 4:3 cloth are independent layers.
+   2026-10-29 Joe layout: group nudged right; upcoming cloth enlarged & centered on pole/cloud axis. */
+.ba-flag.course-goal__flag {
+  position: relative;
+  display: block;
+  width: var(--ba-flag-width);
+  height: var(--ba-flag-height);
+  max-width: 100%;
+  margin: 0 auto;
+  overflow: visible;
+  /* Whole group (pole + cloth + cloud) slightly to the right vs prior. */
+  left: var(--ba-flag-group-nudge-x, 42px);
+}
+.ba-flag__pole {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  height: var(--ba-flag-pole-height);
+  width: auto;
+  max-width: none;
+  object-fit: contain;
+  pointer-events: none;
+}
+.ba-flag__canvas {
+  position: absolute;
+  z-index: 1;
+  top: var(--ba-flag-cloth-top);
+  left: var(--ba-flag-cloth-left);
+  width: var(--ba-flag-cloth-width);
+  height: var(--ba-flag-cloth-height);
+  display: block;
+  pointer-events: none;
+}
+/* Upcoming/uncompleted cloth: static img — default box matches canvas; state rule below enlarges/centers. */
+.ba-flag__cloth {
+  position: absolute;
+  z-index: 1;
+  top: var(--ba-flag-cloth-top);
+  left: var(--ba-flag-cloth-left);
+  width: var(--ba-flag-cloth-width);
+  height: var(--ba-flag-cloth-height);
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/*
+  Upcoming webp is 1024² with tall pennant content bbox ≈ (392,135)-(686,958).
+  object-fit:contain in the 4:3 cloth box made it tiny and sat far right of the pole.
+  Enlarge to 340²; pin alpha-lum centroid (~541/1024) on the pole/cloud axis (≈4.1px);
+  pin content top near the pole top so the pennant hangs from the mast.
+  Completed keeps the shared group nudge + original cloth-right-of-pole canvas layout.
+*/
+.ba-flag[data-state="upcoming"] {
+  /* Tall pennant in padded 1024² — enlarge so opaque cloth reads near completed scale. */
+  --ba-flag-upcoming-size: 340px;
+  --ba-flag-pole-mid-x: 4.1px;
+  /* Alpha-luminance centroid ≈ 541/1024 — centers cloth+pole+cloud on one axis. */
+  --ba-flag-upcoming-content-mid-x: 0.5285176081;
+  --ba-flag-upcoming-content-top: 0.1318359375; /* 135/1024 */
+}
+.ba-flag[data-state="upcoming"] .ba-flag__cloth {
+  width: var(--ba-flag-upcoming-size);
+  height: var(--ba-flag-upcoming-size);
+  left: calc(
+    var(--ba-flag-pole-mid-x) - var(--ba-flag-upcoming-content-mid-x) * var(--ba-flag-upcoming-size)
+  );
+  top: calc(6px - var(--ba-flag-upcoming-content-top) * var(--ba-flag-upcoming-size));
+  object-fit: contain;
+  /* Refinement 08: static Upcoming cloth only; pole/cloud/Completed unchanged. */
+  translate: 10px 0;
+}
+
+/* Pedestal cloud under Level flag. Full under-flag width ~250px; was ~0.82 → 205px; now 0.8× → 164px.
+   Horizontal: cloud image midline (left + width/2) sits on flagpole box midline — NOT flag/cloth center.
+   Pole intrinsic 41×1000 at --ba-flag-pole-height 200px → rendered ~8.2px wide → mid ≈ 4.1px from flag left.
+   translateX(-50%) keeps mid on anchor after width change.
+   2026-10-28: scale 0.8× (205→164); soft scenic drop-shadow.
+   2026-10-29: nudge down 20px (overlap 86→66); X / 0.8× / soft shadow unchanged. */
+.ba-flag__pedestal-cloud {
+  position: absolute;
+  z-index: 0;
+  left: var(--ba-flag-pedestal-anchor-x, 4.1px);
+  top: calc(100% - var(--ba-flag-pedestal-overlap, 66px));
+  width: var(--ba-flag-pedestal-width, 164px);
+  height: auto;
+  max-width: none;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 4px 12px rgb(55 95 115 / 16%)) drop-shadow(0 1px 3px rgb(55 95 115 / 10%));
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}

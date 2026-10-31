@@ -167,17 +167,41 @@
   z-index: 1;
 }
 .path-hill-1 { z-index: 2; }
-/* Tree sprites inherit the hill-1 parallax transform and its ground baseline.
+/* Tree wrappers inherit the hill-1 parallax transform and its ground baseline.
  * In the supplied PNGs the visible silhouette is centered at x≈52.5%, not at
  * the transparent canvas center. Width/height are inline from hillTreeStyle.
+ * Ground ellipse is a child of .path-tree so it tracks the same anchor/scale.
  */
 .path-hill-1 .path-tree {
   position: absolute;
+  display: block;
   max-width: none;
-  object-fit: contain;
   transform: translateX(-52.5%);
   pointer-events: none;
   user-select: none;
+}
+.path-hill-1 .path-tree__sprite {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+}
+/* Horizontal dark-green ellipse; ~60% of visible canopy width (canvas≈52% opaque). */
+.path-hill-1 .path-tree-shadow {
+  position: absolute;
+  left: 52.5%;
+  bottom: 4.8%;
+  z-index: 0;
+  width: 32%;
+  height: 3.2%;
+  transform: translate(-50%, 40%);
+  border-radius: 50%;
+  background: #234f28;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .staircase-rail { z-index: 3; }

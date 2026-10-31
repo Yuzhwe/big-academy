@@ -33,12 +33,13 @@ const fragment = [
   'varying vec2 vUv;',
   'uniform float uTime,uRayIntensity,uRayLength,uRayCount,uBokehAmt,uRimBoost,uGlowSpread,uBrightness;',
   'uniform vec2 uResolution,uCardSize;',
+  'uniform float uCornerRadius;',
   'uniform vec3 uBaseColor,uGlowColor;',
   'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
   'float roundBox(vec2 p,vec2 halfSize,float r){vec2 q=abs(p)-halfSize+vec2(r);return length(max(q,0.0))+min(max(q.x,q.y),0.0)-r;}',
   'void main(){',
   'vec2 px=(vUv-0.5)*uResolution;',
-  'float d=roundBox(px,uCardSize*0.5,55.0);',
+  'float d=roundBox(px,uCardSize*0.5,max(uCornerRadius,1.0));',
   'if(d < -0.7) discard;', // no effect may cover the card content
   'float outer=smoothstep(-0.7,1.0,d);',
   'float halo=exp(-max(d,0.0)/max(uGlowSpread,1.0));',
@@ -91,8 +92,8 @@ function shader(gl:WebGLRenderingContext,type:number,src:string){
   }
   return handle;
 }
-function SolarBorderCanvas({params,enabled,onRuntime}:{
-  params:SolarParameters; enabled:boolean; onRuntime:(state:SolarRuntime)=>void;
+function SolarBorderCanvas({params,enabled,onRuntime,fit}:{
+  params:SolarParameters; enabled:boolean; onRuntime:(state:SolarRuntime)=>void; fit:'card'|'control';
 }){
   const canvasRef=useRef<HTMLCanvasElement>(null);
   const options=useRef(params);
@@ -128,7 +129,7 @@ function SolarBorderCanvas({params,enabled,onRuntime}:{
     const gpu=gl as WebGLRenderingContext,linked=program as WebGLProgram;
     const u=(name:string)=>gpu.getUniformLocation(linked,name);
     const uniforms={
-      time:u('uTime'),resolution:u('uResolution'),cardSize:u('uCardSize'),
+      time:u('uTime'),resolution:u('uResolution'),cardSize:u('uCardSize'),cornerRadius:u('uCornerRadius'),
       rayIntensity:u('uRayIntensity'),rayLength:u('uRayLength'),rayCount:u('uRayCount'),
       bokeh:u('uBokehAmt'),rimBoost:u('uRimBoost'),glowSpread:u('uGlowSpread'),brightness:u('uBrightness'),
       baseColor:u('uBaseColor'),glowColor:u('uGlowColor'),
@@ -161,8 +162,13 @@ function SolarBorderCanvas({params,enabled,onRuntime}:{
       gpu.clearColor(0,0,0,0);gpu.clear(gpu.COLOR_BUFFER_BIT);gpu.useProgram(linked);
       gpu.uniform1f(uniforms.time,(now-start)/1000);
       gpu.uniform2f(uniforms.resolution,canvas.width,canvas.height);
-      const card=canvas.parentElement?.querySelector<HTMLElement>('.stair-lesson-card');
-      gpu.uniform2f(uniforms.cardSize,card?.offsetWidth??260,card?.offsetHeight??310);
+      const root=canvas.parentElement;
+      const target=root?.querySelector<HTMLElement>('[data-solar-target]')
+        ?? root?.querySelector<HTMLElement>('.stair-lesson-card');
+      const tw=target?.offsetWidth??260, th=target?.offsetHeight??310;
+      gpu.uniform2f(uniforms.cardSize,tw,th);
+      // Card keeps the locked 55px aura radius; control fit uses a full-pill radius.
+      gpu.uniform1f(uniforms.cornerRadius, fit==='control' ? Math.max(1, Math.min(tw, th) * 0.5) : 55);
       gpu.uniform1f(uniforms.rayIntensity,p.rayIntensity);
       gpu.uniform1f(uniforms.rayLength,p.rayLength);
       gpu.uniform1f(uniforms.rayCount,p.rayCount);
@@ -183,12 +189,16 @@ function SolarBorderCanvas({params,enabled,onRuntime}:{
       if(buffer)gpu.deleteBuffer(buffer);
       gpu.deleteProgram(linked);if(vs)gpu.deleteShader(vs);if(fs)gpu.deleteShader(fs);
     };
-  },[enabled]);
+  },[enabled,fit]);
   return <canvas className="solar-border-canvas" ref={canvasRef} aria-hidden="true"/>;
 }
 
-export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled=true}:{
+export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled=true,fit='card',forceFallback=false}:{
   children:ReactNode;params?:SolarParameters;motionEnabled?:boolean;
+  /** card = lesson Current glow (default). control = path-controls pill / button wrap. */
+  fit?:'card'|'control';
+  /** Specimen/demo: force stroke-border fallback without touching WebGL eligibility. */
+  forceFallback?:boolean;
 }){
   const [runtime,setRuntime]=useState<SolarRuntime>('paused');
   const [systemReduced,setSystemReduced]=useState(()=>typeof window!=='undefined'&&
@@ -200,12 +210,13 @@ export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled
     media.addEventListener('change',update);
     return()=>media.removeEventListener('change',update);
   },[]);
-  const enabled=motionEnabled&&!systemReduced&&runtime!=='fallback';
-  return <div className="solar-lesson-preview" data-current="true"
+  const enabled=motionEnabled&&!forceFallback&&!systemReduced&&runtime!=='fallback';
+  const shineOn=enabled&&fit==='card';
+  return <div className="solar-lesson-preview" data-current="true" data-solar-fit={fit}
     style={{'--ba-solar-border-color':params.borderColor} as CSSProperties}
     data-solar-status={runtime==='active'&&enabled?'active':'fallback'}
-    data-shine={enabled?'on':'off'}>
+    data-shine={shineOn?'on':'off'}>
       {children}
-      <SolarBorderCanvas params={params} enabled={enabled} onRuntime={setRuntime}/>
+      <SolarBorderCanvas params={params} enabled={enabled} onRuntime={setRuntime} fit={fit}/>
     </div>;
 }

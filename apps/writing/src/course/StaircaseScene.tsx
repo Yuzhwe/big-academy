@@ -458,12 +458,31 @@ export function StaircaseScene({
         <img src={hillFront} alt="" width={HILL_WIDTH} height={HILL_HEIGHT} />
         {HILL_FRONT_TREES.map(tree => {
           const color = hillTreeColor(levelId, tree.id);
-          return <img key={tree.id} className="path-tree"
-            src={color === 'green' ? '/assets/trees/tree-green.webp' : '/assets/trees/tree-orange.webp'}
-            alt="" aria-hidden="true" draggable={false}
-            data-testid="staircase-tree" data-tree-id={tree.id} data-tree-color={color}
-            data-anchor-x={tree.x} data-anchor-y={tree.baseline}
-            style={hillTreeStyle(tree, frame.height)} />;
+          return (
+            <span
+              key={tree.id}
+              className="path-tree"
+              style={hillTreeStyle(tree, frame.height)}
+              aria-hidden="true"
+            >
+              <span
+                className="path-tree-shadow"
+                data-testid="staircase-tree-shadow"
+                data-tree-id={tree.id}
+              />
+              <img
+                className="path-tree__sprite"
+                src={color === 'green' ? '/assets/trees/tree-green.webp' : '/assets/trees/tree-orange.webp'}
+                alt=""
+                draggable={false}
+                data-testid="staircase-tree"
+                data-tree-id={tree.id}
+                data-tree-color={color}
+                data-anchor-x={tree.x}
+                data-anchor-y={tree.baseline}
+              />
+            </span>
+          );
         })}
       </div>
       <div className="r2-sun" aria-hidden="true" />

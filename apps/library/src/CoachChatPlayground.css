@@ -1,0 +1,112 @@
+/* BA-WR-018 · CoachChatPlayground — Library-only MessageScroller-inspired chrome. */
+
+.coach-chat-playground {
+  width: min(100%, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.coach-chat-playground__chrome {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.coach-chat-playground__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.coach-chat-playground__btn {
+  appearance: none;
+  border: 1px solid var(--ba-library-border, #d8d2c8);
+  background: #fff;
+  color: var(--ba-brand-dark, #133547);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: 600 12px/1.2 var(--ba-font-body-en, "Jost", sans-serif);
+  cursor: pointer;
+}
+
+.coach-chat-playground__btn:hover {
+  background: color-mix(in srgb, #fff 70%, #f0ebe3);
+}
+
+.coach-chat-playground__btn:focus-visible {
+  outline: 2px solid #2364db;
+  outline-offset: 2px;
+}
+
+.coach-chat-playground__meta {
+  font: 600 11px/1.3 var(--ba-font-body-en, "Jost", sans-serif);
+  color: var(--ba-color-content-muted, #656565);
+  margin-left: auto;
+}
+
+.coach-chat-playground__stage {
+  position: relative;
+  width: 100%;
+}
+
+.coach-chat-playground__viewport {
+  height: min(52vh, 420px);
+  min-height: 280px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--ba-library-border, #d8d2c8);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--ba-paper, #fff) 92%, #f3eee6);
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.coach-chat-playground__content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+}
+
+.coach-chat-playground__item {
+  width: 100%;
+}
+
+.coach-chat-playground__item .lesson-workspace__message {
+  margin-bottom: 0;
+}
+
+.coach-chat-playground__item .coach-note {
+  width: 100%;
+}
+
+.coach-chat-playground__jump {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2;
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font: 700 12px/1.2 var(--ba-font-body-en, "Jost", sans-serif);
+  color: #fff;
+  background: var(--ba-brand-dark, #133547);
+  box-shadow: 0 8px 20px rgba(19, 53, 71, 0.28);
+  cursor: pointer;
+}
+
+.coach-chat-playground__jump:focus-visible {
+  outline: 2px solid #2364db;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coach-chat-playground__jump {
+    box-shadow: none;
+  }
+}

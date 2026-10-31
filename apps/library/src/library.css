@@ -203,3 +203,195 @@ body { margin: 0; }
 .color-comparison small { font-size:var(--ba-library-caption-size); }
 .controls-bar input { min-height:var(--ba-hit-min); min-width:0; max-width:100%; }
 [data-reduce='true'] .word-grid__card,[data-reduce='true'] .ba-segmented__content { transform:none !important; }
+
+/* Start Point × StairLevelIntroCard / Level card combo (Library 6008) */
+.start-point-level-combo {
+  --sp-combo-tilt: -6deg;
+  --sp-combo-scale: 0.75;
+  --sp-combo-shift-x: -10px;
+  --sp-combo-shift-y: 10px;
+  /* Level card top padding in combo — clearance so SP does not crush body copy. */
+  --sp-level-combo-padding-top: 48px;
+  position: relative;
+  width: 320px;
+  max-width: 100%;
+  /* Room above card so SP can ride/overlap the top border. */
+  padding-top: 36px;
+  box-sizing: border-box;
+}
+.start-point-level-combo__level {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+/* Extra top padding on the Level card itself (default .course-intro is 16px). */
+.start-point-level-combo__level .course-intro {
+  padding-top: var(--sp-level-combo-padding-top);
+  box-sizing: border-box;
+}
+.start-point-level-combo__sp {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 10px;
+  /* Combo-only: 0.75× prior wrapper size; +10px left via translateX; +10px down via translateY (Level card untouched). */
+  --sp-combo-scale: 0.75;
+  --sp-combo-shift-x: -10px;
+  --sp-combo-shift-y: 10px;
+  /* Tip toward upper-right: CCW tilt lifts the right end. */
+  transform: translate(var(--sp-combo-shift-x), var(--sp-combo-shift-y)) rotate(var(--sp-combo-tilt)) scale(var(--sp-combo-scale));
+  transform-origin: 18% 60%;
+  pointer-events: auto;
+}
+
+/* Library notebook preview: hide editor hint in compare fold (do not touch NotebookEditor.css) */
+[data-testid="notebook-editor-preview"] .notebook-editor__hint { display: none; }
+
+
+/* NotebookShell Library specimen (BA-WR-016 primary) */
+.preview-example--notebook { width: 100%; max-width: none; align-items: stretch; }
+.notebook-shell-frame {
+  width: min(100%, 560px);
+  height: min(70vh, 640px);
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  margin-inline: auto;
+}
+.notebook-shell-frame[data-orientation='landscape'] {
+  height: min(56vh, 480px);
+  min-height: 300px;
+  width: min(100%, 720px);
+}
+.notebook-shell-demo__field { display: flex; flex-direction: column; gap: 0; flex: 0 0 auto; }
+.notebook-shell-demo__label {
+  font: 600 12px/1.3 ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif;
+  color: #8a8476;
+}
+/* Beat .library textarea (border/padding) — keep paper chrome free of darker underline. */
+.library textarea.notebook-shell-demo__input,
+textarea.notebook-shell-demo__input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-radius: 0;
+  background: transparent;
+  /* Zero chrome: no darker underline; line box = shell --ns-line-h so baseline sits on ruled stroke. */
+  padding: 0 !important;
+  margin: 0;
+  min-height: calc(var(--ns-line-h, 43.2px) * 4);
+  height: auto;
+  resize: none;
+  overflow: auto;
+  /* Demo input inherits paper stack: Latin → Jost, CJK → Noto Sans SC. No Douyin. */
+  font-family: "Jost", var(--ba-font-body-zh), sans-serif;
+  font-weight: 600;
+  font-size: var(--ns-font-size, 24px);
+  line-height: var(--ns-line-h, 43.2px);
+  color: #2c2920;
+  text-decoration: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+/* Joe: no colored focus ring/outline/box-shadow on notebook demo input. */
+.library textarea.notebook-shell-demo__input:focus,
+.library textarea.notebook-shell-demo__input:focus-visible,
+textarea.notebook-shell-demo__input:focus,
+textarea.notebook-shell-demo__input:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+.notebook-shell-demo__words { margin-top: auto; padding-top: 10px; flex: 0 0 auto; }
+/* Scope-only: pull WordGrid pink panel closer to NotebookShell paper edge (do not change WordGrid globally). */
+.notebook-shell-demo__words .word-grid__panel,
+.notebook-shell-demo__words .word-grid[data-tabs='off'] .word-grid__cards {
+  padding: 8px;
+}
+.notebook-shell-demo__label { display: none; }
+.notebook-editor-compare {
+  width: min(100%, 560px);
+  margin: 8px auto 0;
+  font: 600 12px/1.4 ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif;
+  color: #9a9486;
+}
+.notebook-editor-compare summary { cursor: pointer; }
+
+
+/* Tapword · WordChip Library demo chrome (layout only; pill visuals live in WordChip.css). */
+.word-playground__tapword-heading {
+  margin: 12px 0 6px;
+  font: 600 13px/1.3 var(--ba-font-body-en, "Jost", sans-serif);
+  color: var(--ba-color-content-muted, #656565);
+}
+.word-playground__tapword-subheading {
+  margin: 10px 0 6px;
+  font: 700 12px/1.3 var(--ba-font-body-en, "Jost", sans-serif);
+  color: var(--ba-brand-dark, #133547);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.word-playground__tapword-live {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 10px;
+  align-items: flex-start;
+}
+.word-playground__tapword-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 148px;
+}
+.word-playground__tapword-label {
+  font: 600 11px/1.2 var(--ba-font-body-en, "Jost", sans-serif);
+  color: var(--ba-brand-dark, #133547);
+}
+.word-playground__tapword-caption {
+  font: 500 10px/1.35 var(--ba-font-body-zh, "Noto Sans SC", sans-serif);
+  color: var(--ba-color-content-muted, #656565);
+  text-align: center;
+}
+
+/* Coach combined Library specimen (coach-note page): CoachMessage above CoachNote */
+.coach-combined-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.coach-combined-preview__section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+.coach-combined-preview__heading {
+  margin: 0;
+  font: 700 12px/1.3 var(--ba-font-body-en, "Jost", sans-serif);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ba-color-content-muted, #656565);
+}
+.coach-combined-preview__messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+.coach-combined-preview__messages .lesson-workspace__message:last-child {
+  margin-bottom: 0;
+}
+.coach-combined-preview .coach-note-stack {
+  max-width: none;
+}
+.coach-combined-preview .review04-caption a {
+  color: var(--ba-brand-dark, #133547);
+  font-weight: 600;
+}

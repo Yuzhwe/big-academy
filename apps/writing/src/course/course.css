@@ -65,6 +65,19 @@
   text-transform: uppercase;
 }
 
+/* Visually hidden label text for assistive tech (must not take layout space). */
+.course-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .course-title {
   margin: 0 0 12px;
   font-family: var(--ba-font-en-title);
@@ -200,34 +213,12 @@
   gap: 8px;
 }
 
-.course-word {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 8px 10px;
-  border: var(--ba-border-weight, 0.5px) solid var(--ba-brand-dark, #133547);
-  border-radius: 10px;
-  background: var(--ba-paper, #ffffff);
-  color: var(--ba-brand-dark, #133547);
-  font: inherit;
-  cursor: pointer;
-}
-
-.course-word[data-selected='true'] {
-  border-color: var(--ba-color-warm-9);
-  box-shadow: inset 0 0 0 2px var(--ba-color-warm-9);
-}
-
-.course-word[data-wrong='true'] {
-  border-color: var(--ba-brand-dark, #133547);
-}
-
-.course-word[data-revealed='true'] {
-  box-shadow: inset 0 0 0 2px #14ae5c;
-}
-
-.course-word:focus-visible {
-  outline: 2px solid var(--ba-brand-dark, #133547);
-  outline-offset: 2px;
+/* Writing-only temporary: light tinted neutral WordChip under .course-words.
+   Shared WordChip.css / Library unevaluated specimens stay white.
+   WordChip always writes data-evaluation="neutral" for unevaluated chips. */
+.course-words .word-chip[data-evaluation='neutral']:not([data-selected='true']):not([data-disabled='true']):not(:disabled),
+.course-words .word-chip[data-selection='default']:not([data-evaluation]):not([data-selected='true']):not([data-disabled='true']):not(:disabled) {
+  background: color-mix(in srgb, var(--ba-writing-accent, #b25415) 10%, #ffffff);
 }
 
 .course-feedback {
@@ -263,6 +254,13 @@
   place-items: center;
   background: color-mix(in srgb, var(--ba-brand-dark, #133547) 28%, transparent);
   z-index: 20;
+}
+
+/* Confetti-only receipt: no dim overlay / story dialog (Review 07). */
+.course-celebration--confetti-only {
+  display: none;
+  pointer-events: none;
+  background: transparent;
 }
 
 .course-celebration__card {
@@ -341,6 +339,12 @@
   border-radius: 16px;
   background: var(--ba-paper, #ffffff);
   color: var(--ba-brand-dark, #133547);
+}
+
+/* Frame Fill: fixed sentence copy matches student-entry input scale (24px). */
+.course-frame {
+  font-size: var(--ba-writing-input-font-size, 24px);
+  line-height: 1.45;
 }
 
 .course-frame input {
@@ -474,10 +478,6 @@
   to { transform: translateY(-8px) scale(1); opacity: 1; }
 }
 
-.course-word[data-correct='true'] { background:var(--ba-success); color:var(--ba-paper); border-color:var(--ba-success); }
-.course-word[data-revealed='true'] { background:var(--ba-paper); color:var(--ba-brand-dark); border-color:var(--ba-color-success-6); box-shadow:inset 0 0 0 2px var(--ba-color-success-6); }
-.course-word { display:inline-flex; align-items:center; gap:var(--ba-space-1); }
-
 /* Question-dot visuals stay 16px; their separate hit targets are 44px. */
 .course-dot { width:var(--ba-hit-min); height:var(--ba-hit-min); border:0; background:transparent; display:grid; place-items:center; outline:none; }
 .course-dot::before { content:''; display:block; box-sizing:border-box; width:var(--ba-check-dot-size); height:var(--ba-check-dot-size); border:2px solid var(--ba-brand-dark); border-radius:50%; }
@@ -547,28 +547,6 @@
 .course-examples__better { display: block; }
 .course-examples__better .ba-icon { display: none; }
 
-/* A student's genuinely correct tapword is a full Success fill without a
- * redundant icon or visible border; shown answers stay outlined separately. */
-.course-word[data-correct='true'] {
-  background: var(--ba-color-success-6, #14ae5c);
-  color: var(--ba-color-surface-canvas, #ffffff);
-  border-color: transparent;
-  box-shadow: none;
-}
-.course-word[data-revealed='true'] {
-  background: var(--ba-color-surface-canvas, #ffffff);
-  color: var(--ba-color-content-primary, #133547);
-  border-color: var(--ba-color-success-6, #14ae5c);
-  box-shadow: inset 0 0 0 1px var(--ba-color-success-6, #14ae5c);
-  animation: course-tapword-reveal 800ms ease-in-out 2;
-}
-@keyframes course-tapword-reveal {
-  0%, 100% { box-shadow: inset 0 0 0 1px var(--ba-color-success-6, #14ae5c); }
-  50% { box-shadow: inset 0 0 0 4px var(--ba-color-success-6, #14ae5c); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .course-word[data-revealed='true'] { animation: none; }
-}
 /* One neutral outlined pill for the Unit's total lesson count and duration.
  * No status-dependent count, about/约 or appended unit-type label. */
 .course-unit__meta {
@@ -588,27 +566,16 @@
 }
 .course-app[lang='zh-CN'] .course-unit__meta { font-family: var(--ba-font-body-zh, "Noto Sans SC", sans-serif); }
 
-/* Paper lines only in P5 Apply. Text, caret and lines scroll together inside
- * the existing non-resizable editor without shifting the docked WordGrid. */
-.course-activity[data-kind='apply'] .course-canvas textarea {
-  line-height: 36px;
-  background-color: var(--ba-paper, #ffffff);
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 35px,
-    var(--ba-writing-editor-ruled-line, #eaedeb) 35px,
-    var(--ba-writing-editor-ruled-line, #eaedeb) 36px
-  );
-  background-position: 0 12px;
-  background-attachment: local;
-}
+/* Q6 Apply: ruled paper + coil chrome live on NotebookShell.
+ * Page textarea is a transparent child — do not keep a hand-rolled paper face. */
 
 /* Review 06: student-entered text has a deliberately larger reading scale. */
 .course-frame input,
-.course-canvas textarea { font-size: var(--ba-writing-input-font-size, 22px); line-height: 1.45; }
+.course-canvas textarea { font-size: var(--ba-writing-input-font-size, 24px); line-height: 1.45; }
 .course-frame input {
+  /* Grow the underline with typed/inserted content; JSX sets width in ch (+ size= fallback). */
   min-width: 8ch;
+  max-width: 100%;
   padding-inline: 0;
   padding-block: 4px 2px;
   border: 0;
@@ -621,10 +588,7 @@
   outline-offset: 4px;
   border-bottom-color: var(--ba-color-writing-7, #b25415);
 }
-.course-activity[data-kind='apply'] .course-canvas textarea {
-  font-size: var(--ba-writing-apply-input-font-size, 24px);
-  font-weight: 600;
-}
+/* Apply input type scale owned by .course-answer-notebook__input (shell children). */
 
 
 /* Unit identity is the same in Storybook and real Staircase. */
@@ -679,6 +643,211 @@
 .course-activity[data-writing='true'] > .word-grid {
  margin-top:auto; padding-top:24px;
 }
+
+/*
+ * Q6 Apply (Joe): NotebookShell is the OUTER container.
+ * - Strip lesson-paper card chrome (bg/border/extra pad) so shell is the visible face.
+ * - Title + play-audio + textarea + WordGrid live inside shell content.
+ * - Padding owned by shell only (--ns-content-pad-*). No stacked exterior/child pad.
+ * - Input transparent over ruled paper; WordGrid pinned bottom.
+ * Do not mount NotebookEditor wholesale. Do not edit NotebookShell visual lock.
+ */
+.lesson-workspace__paper:has(.course-activity[data-kind='apply']) {
+  /*
+   * Shadow room (Joe visual): NotebookShell box-shadow was clipped flush.
+   * Approach = BOTH:
+   *   1) overflow: visible — release paper clip so blur can paint past shell edges
+   *   2) padding inset — vertical room for blur (0 18px 40px ≈ ~58px bottom);
+   *      horizontal pad = 0 so page-edge→shell matches page-edge→Coach rail
+   *      (paper/rail outer margins already 16px). Shadow paints into that margin
+   *      + column-gap via overflow:visible.
+   * Shell content pad (--ns-content-pad-*) unchanged — this is exterior room only.
+   */
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+  padding: 28px 0 56px;
+}
+.lesson-workspace__paper:has(.course-activity[data-kind='apply']) > .ba-page-transition,
+.lesson-workspace__paper:has(.course-activity[data-kind='apply']) .ba-page-transition__content,
+.lesson-workspace__paper:has(.course-activity[data-kind='apply']) .course-activity[data-kind='apply'],
+.lesson-workspace__paper:has(.course-activity[data-kind='apply']) .course-apply,
+.lesson-workspace__paper:has(.course-activity[data-kind='apply']) .course-answer-region {
+  overflow: visible; /* do not re-clip shell shadow on the flex chain */
+}
+.lesson-workspace__paper:has(.course-activity[data-kind='apply']) > .ba-page-transition {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.lesson-workspace__paper:has(.course-activity[data-kind='apply']) .ba-page-transition__content {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.lesson-workspace__paper:has(.course-activity[data-kind='apply']) .course-activity[data-kind='apply'] {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /* No activity-level pad — shell owns inset. */
+  padding: 0;
+  margin: 0;
+  gap: 0;
+}
+.course-apply {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+}
+.course-answer-region {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+}
+/* Shell fills answer region as the outer visual container.
+ * Joe: lift whole shell 10px (U-ring vs coach height). margin-top only —
+ * does not touch shell content pad / ruled metrics. */
+.course-answer-region > .course-answer-notebook.notebook-shell,
+.course-answer-region > .notebook-shell.course-answer-notebook {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  margin-top: -51px; /* Refinement 08: existing -10px + Joe's additional -41px */
+}
+.course-activity[data-kind='apply'] .course-answer-notebook .notebook-shell__content {
+  overflow: hidden; /* textarea scrolls; WordGrid stays pinned */
+}
+/*
+ * Title + audio inside shell: use shell line metrics so line-boxes stay on the
+ * ruled grid. Speaker is out-of-flow so its 50px hit target does not skew height.
+ * No margin/padding that would stack on shell content pad.
+ */
+.course-activity[data-kind='apply'] .course-answer-notebook .course-activity__heading {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 0;
+  padding-right: 62px; /* clear absolute 50px speaker + gap; not shell pad */
+  column-gap: 0;
+  grid-template-columns: none;
+  flex: 0 0 auto;
+  /* Match shell line box so title rows land on ruled strokes. */
+  font-size: var(--ns-font-size, 24px);
+  line-height: var(--ns-line-h, 43.2px);
+  color: var(--ns-ink, #2c2920);
+}
+.course-activity[data-kind='apply'] .course-answer-notebook .course-activity__heading > .course-title {
+  margin: 0;
+  padding: 0;
+  font-family: "Jost", var(--ba-font-body-zh), sans-serif;
+  font-weight: 700;
+  font-size: var(--ns-font-size, 24px);
+  line-height: var(--ns-line-h, 43.2px);
+  color: var(--ns-ink, #2c2920);
+}
+.course-activity[data-kind='apply'] .course-answer-notebook .course-activity__heading .course-listen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  float: none;
+  margin: 0;
+  width: 50px;
+  height: 50px;
+  justify-self: auto;
+  align-self: auto;
+}
+.course-activity[data-kind='apply'] .course-answer-notebook__field.course-canvas,
+.course-answer-notebook__field {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  margin: 0 !important; /* beat .course-canvas { margin-top: 12px } — no stacked gap before input */
+  padding: 0;
+  gap: 0;
+  position: relative; /* anchor absolute .course-sr */
+}
+.course-activity[data-kind='apply'] .course-answer-notebook__input,
+.course-activity[data-kind='apply'] textarea.course-answer-notebook__input {
+  display: block;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  resize: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  background-image: none !important;
+  /* Zero child pad — shell content pad is the only inset. */
+  padding: 0 !important;
+  margin: 0;
+  font-family: "Jost", var(--ba-font-body-zh), sans-serif;
+  font-weight: 600;
+  font-size: var(--ns-font-size, 24px);
+  line-height: var(--ns-line-h, 43.2px);
+  color: var(--ns-ink, #2c2920);
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.course-activity[data-kind='apply'] .course-answer-notebook__input:focus,
+.course-activity[data-kind='apply'] .course-answer-notebook__input:focus-visible,
+.course-activity[data-kind='apply'] textarea.course-answer-notebook__input:focus,
+.course-activity[data-kind='apply'] textarea.course-answer-notebook__input:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+.course-answer-notebook__words {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  padding-top: 24px; /* separation above WordGrid only; not shell content pad */
+}
+.course-activity[data-kind='apply'] .course-answer-notebook__words .word-grid {
+  margin-top: 0;
+}
+/*
+ * Q6 Apply Check notes live in the coach rail (Joe follow-up).
+ * Card chrome owned by BA-WR-017 CoachNote (.coach-note / .coach-note-stack).
+ */
+.course-apply-coach-notes {
+  margin: 0 0 12px;
+}
+.course-activity[data-kind='apply'] > .ba-button {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  align-self: flex-start;
+}
 .lesson-workspace__coach-actions {
   display: flex;
   flex-direction: column;
@@ -694,7 +863,8 @@
 .course-test-banner { position:fixed; top:0; left:0; right:0; z-index:var(--ba-test-banner-z); height:var(--ba-test-banner-height); box-sizing:border-box; display:flex; align-items:center; justify-content:center; gap:var(--ba-space-3); padding:var(--ba-space-1) var(--ba-space-4); background:var(--ba-color-warning-2); color:var(--ba-color-warning-10); font-size:var(--ba-type-supporting-size); }
 .course-app[data-test-mode='true'] { padding-top:var(--ba-test-banner-height); }
 .course-app[data-test-mode='true'] .course-lesson { height:calc(100dvh - var(--ba-test-banner-height)); min-height:calc(100dvh - var(--ba-test-banner-height)); }
-.lesson-test-tools { margin-bottom:var(--ba-space-3); }
+.lesson-test-tools { display:flex; align-items:center; justify-content:flex-end; }
+.lesson-workspace__tools .lesson-test-tools { margin-bottom:var(--ba-space-3); }
 .lesson-test-overlay { position:fixed; inset:0; z-index:var(--ba-test-overlay-z); background:var(--ba-test-overlay-surface); display:grid; place-items:center; padding:var(--ba-space-4); }
 .lesson-test-modal { width:min(100%,var(--ba-test-modal-max-width)); box-sizing:border-box; border-radius:var(--ba-radius-16); background:var(--ba-paper); color:var(--ba-color-content-primary); padding:var(--ba-space-6); font-family:var(--ba-type-body-family); }
 .lesson-test-modal h2 { font-family:var(--ba-type-heading-family); font-weight:800; margin-top:0; }

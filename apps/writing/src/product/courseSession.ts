@@ -58,8 +58,12 @@ export interface TaskProgress {
   sel?: number | null;
   bad?: number | null;
   miss?: number;
-  /** Ordered-build wrong taps, one count per word tile. */
+  /** Ordered-build wrong taps, one count per word tile (legacy / inspect). */
   wrongTaps?: Record<string, number>;
+  /** Wrong taps while waiting on the current next target (ordered build). */
+  buildMissStreak?: number;
+  /** Hint currently shown on the current next-target card (ordered build). */
+  buildHint?: boolean;
   built?: string[];
   /** Stable card identity aligns with built, including duplicate text. */
   builtCardIds?: string[];
@@ -234,6 +238,8 @@ export interface ActivityModel {
     active: string;
   };
   applyMoveOn?: boolean;
+  /** Apply margin notes (highlight + improvement). No score. */
+  applyNotes?: { highlight?: string; improvement?: string };
   check?: {
     phase: 'answer' | 'results' | 'graded';
     number: number;
@@ -442,8 +448,92 @@ export class CourseSession {
     return test;
   }
 
-  /** Decorative flag state uses real unit completion, never the L0/L1 fixtures. */
+  /** Formal lesson reset (designer Reset Lesson). Clears this lesson's answer
+   * records/progress in the live session and restarts at question 1 in the
+   * normal lesson flow. Also clears this lesson's practice celebration
+   * receipts (`item:` / `lesson:` keys) so finish(done) can celebrate again
+   * like a first-time answer. Does not enter Test Mode; other lessons and
+   * unrelated practice receipts stay intact. buildTap / in_order used-lock
+   * behavior is untouched.
+   */
+  resetCurrentLesson(): void {
+    this.flush();
+    const index = this.curLesson();
+    const indexes = this.liveIdx(index);
+    if (!indexes.length) return;
+    const refs = indexes.map(i => this.screens[i]);
+    const pages = new Set(refs.map(ref => ref.screen.page));
+    const ids = new Set(refs.map(ref => ref.screen.id));
+    const lessonId = this.config.lessons[index].id ?? refs[0].screen.page.split('.')[0];
+    const roots = new Set([
+      lessonId,
+      ...refs.map(ref => ref.screen.page.split('.')[0]),
+      ...refs.map(ref => ref.step.skill).filter((id): id is string => !!id),
+    ]);
+    refs.forEach(ref => {
+      ids.add(ref.step.id);
+      if (ref.screen.task) ids.add(ref.screen.task);
+    });
+    const inLesson = (key: string) =>
+      ids.has(key) ||
+      pages.has(key) ||
+      [...roots].some(root => key === root || key.startsWith(root + '.') || key.startsWith(root + ':'));
+    for (const records of [
+      this.state.seen,
+      this.state.done,
+      this.state.tasks,
+      this.state.regions,
+      this.state.checks,
+      this.state.applies,
+      this.state.feedbackByScreen,
+      this.state.grid.tab,
+      this.state.grid.open,
+      this.state.skills,
+      this.state.skipChoice,
+    ]) {
+      if (records) for (const key of Object.keys(records)) if (inLesson(key)) delete records[key as keyof typeof records];
+    }
+    this.state.events = this.state.events.filter(
+      event => !(event.page && inLesson(event.page)) && !indexes.includes(event.screen ?? -1),
+    );
+    // Practice celebration receipts are keyed item:<taskId> / lesson:<id>.
+    // Clear only THIS lesson's keys so Reset feels like first-time answering.
+    let practiceDirty = false;
+    for (const key of Object.keys(this.receipt.practice)) {
+      const bare = key.startsWith('item:')
+        ? key.slice('item:'.length)
+        : key.startsWith('lesson:')
+          ? key.slice('lesson:'.length)
+          : key;
+      if (inLesson(bare)) {
+        delete this.receipt.practice[key];
+        practiceDirty = true;
+      }
+    }
+    if (practiceDirty) this.writeReceipt();
+    this.state.unlockAll = false;
+    this.state.stoppedAt = null;
+    this.state.welcomePending = false;
+    this.state.overlay = 'none';
+    this.state.screen = indexes[0];
+    this.state.page = this.pageIndex(refs[0].screen.page);
+    this.celebration = null;
+    this.practiceBurst = null;
+    this.shakeCard = null;
+    this.feedback = '';
+    this.message = '';
+    this.view = 'lesson';
+    this.say('');
+    this.openLesson(this.playUnit().id, index + 1);
+    this.save();
+    this.emit();
+  }
+
+  /** Decorative Level flag cloth: yellow completed when every unit is done.
+   * L0/L1 high-fidelity preview seed also shows completed (same visual fixture as
+   * lessons/milestones) without writing progress, unlocks, or mastery. */
   levelRewardDone(levelId = this.levelId): boolean {
+    if (this.showsPreviewSeed(levelId)) return true;
     const level = this.level(levelId);
     return level.units.length > 0 && level.units.every(unit => this.unitMilestoneDone(unit, !!level.current));
   }
@@ -1014,11 +1104,7 @@ export class CourseSession {
           hintAction,
           pick: {
             multi: !!task.multi,
-            hint: task.multi
-              ? this.zh
-                ? `选择 ${task.answers.length} 项 · 已选 ${picked.length}`
-                : `Choose ${task.answers.length} · ${picked.length} chosen`
-              : '',
+            hint: '',
             options: task.lines.map((line, index) => ({
               index,
               letter: this.engine.choiceLetter(index),
@@ -1138,7 +1224,8 @@ export class CourseSession {
       return {
         backLabel,
         backDisabled,
-        primaryLabel: record.tries ? (this.zh ? '再检查一次' : 'Check again') : this.zh ? '检查我的写作' : 'Check my writing',
+        // Joe Q6: re-check copy is "Check" (not "Check again").
+        primaryLabel: record.tries ? (this.zh ? '检查' : 'Check') : this.zh ? '检查我的写作' : 'Check my writing',
         primaryTestId: 'check-writing',
         primaryDisabled: !this.primaryReady(index),
       };
@@ -1385,6 +1472,9 @@ export class CourseSession {
     if (taskState.status !== 'open') return;
     taskState.built = [];
     taskState.builtCardIds = [];
+    taskState.buildMissStreak = 0;
+    taskState.buildHint = false;
+    taskState.wrongTaps = {};
     delete this.state.regions[this.taskKey(screen)];
     this.shakeCard = null;
     this.save();
@@ -1563,12 +1653,26 @@ export class CourseSession {
     const built = taskState.built ?? [];
     const bench = this.benchFrom(built);
     const selectedIds = new Set(this.buildCardIds(task, taskState));
-    const cards = this.setCards(task).map((text, index) => ({
-      text,
-      used: selectedIds.has(`${text}-${index}`),
-      hint: !!task.in_order && (taskState.wrongTaps?.[text] ?? 0) >= 2,
-      shake: this.shakeCard === text,
-    }));
+    // After 3 wrong taps toward the current next target, attach the hint to that
+    // next-target card (not the wrongly tapped card). Joe BA brief Q4 frequency.
+    const nextTarget = task.in_order ? task.target?.[built.length] : undefined;
+    const showNextHint = !!task.in_order && !!taskState.buildHint;
+    let hintAttached = false;
+    const cards = this.setCards(task).map((text, index) => {
+      const id = `${text}-${index}`;
+      const used = selectedIds.has(id);
+      let hint = false;
+      if (showNextHint && !used && !hintAttached && text === nextTarget) {
+        hint = true;
+        hintAttached = true;
+      }
+      return {
+        text,
+        used,
+        hint,
+        shake: this.shakeCard === text,
+      };
+    });
     const taskWords = cards.map((card, index) => ({
       id: `${card.text}-${index}`,
       text: card.text,
@@ -1621,7 +1725,7 @@ export class CourseSession {
     };
   }
 
-  private applyModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'canvas' | 'wordGrid' | 'applyMoveOn' | 'feedback' | 'feedbackTone' | 'hints' | 'hintAction'> {
+  private applyModel(screen: AlexScreen): Pick<ActivityModel, 'ask' | 'canvas' | 'wordGrid' | 'applyMoveOn' | 'applyNotes' | 'feedback' | 'feedbackTone' | 'hints' | 'hintAction'> {
     const page = this.pageOf(screen.page);
     const task = page?.task ? this.task(page.task) : null;
     const record = this.applyRecord(screen);
@@ -1641,12 +1745,30 @@ export class CourseSession {
           .filter(Boolean)
           .join(' ')
       : this.feedback;
+    const glowRaw = record.result && !record.safety ? (record.result.glow || '').trim() : '';
+    const highlight = glowRaw
+      ? /^["“]/.test(glowRaw)
+        ? (this.zh ? `我喜欢这句：${glowRaw}` : `I like this: ${glowRaw}`)
+        : glowRaw
+      : undefined;
+    const improvement = record.result
+      ? remembered
+      : this.feedback
+        ? this.feedback
+        : undefined;
     return {
       ask: this.text(task?.ask),
       hints: (task?.coach?.hints ?? []).slice(0, this.state.tasks[screen.page + ':hints']?.hintLv ?? 0).map(hint => this.text(hint)),
       hintAction: (this.state.tasks[screen.page + ':hints']?.hintLv ?? 0) < (task?.coach?.hints?.length ?? 0) ? (this.state.tasks[screen.page + ':hints']?.hintLv ? 'another' : 'hint') : null,
       feedback: remembered,
       feedbackTone: record.result ? (record.passed && !record.safety ? 'correct' : 'wrong') : this.feedbackTone,
+      applyNotes:
+        highlight || improvement
+          ? {
+              ...(highlight ? { highlight } : {}),
+              ...(improvement ? { improvement } : {}),
+            }
+          : undefined,
       canvas: {
         text: regionText(this.state.regions[screen.page]),
         tip: this.text(task?.tip),
@@ -2005,7 +2127,13 @@ export class CourseSession {
     const ids = this.buildCardIds(task, taskState);
     const selectedIndex = cardId ? ids.indexOf(cardId) : -1;
     if (selectedIndex >= 0) {
-      // A selected tile remains operable until Check. Remove only its own slot.
+      // Guided ordered-build: used chips are locked before Check (PRODUCT §12.7).
+      // Free build and other retractable surfaces still remove only this slot.
+      if (task.in_order) {
+        this.shakeCard = null;
+        this.emit();
+        return;
+      }
       taskState.built.splice(selectedIndex, 1);
       ids.splice(selectedIndex, 1);
       taskState.builtCardIds = ids;
@@ -2015,23 +2143,6 @@ export class CourseSession {
       this.emit();
       return;
     }
-    // Re-selecting a card removed from the middle of an ordered answer
-    // restores its original slot if the surviving suffix still matches.
-    if (task.in_order && cardId && task.target) {
-      const insertion = task.target.findIndex((word, index) =>
-        word === cellText && index < taskState.built!.length &&
-        taskState.built!.slice(index).every((present, offset) => task.target![index + offset + 1] === present));
-      if (insertion >= 0) {
-        taskState.built.splice(insertion, 0, cellText);
-        ids.splice(insertion, 0, cardId);
-        taskState.builtCardIds = ids;
-        this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
-        this.shakeCard = null;
-        this.save();
-        this.emit();
-        return;
-      }
-    }
     if (task.in_order) {
       const want = task.target?.[taskState.built.length];
       if (cellText !== want) {
@@ -2039,12 +2150,25 @@ export class CourseSession {
         taps[cellText] = (taps[cellText] ?? 0) + 1;
         taskState.wrongTaps = taps;
         taskState.miss = (taskState.miss ?? 0) + 1;
+        const streak = (taskState.buildMissStreak ?? 0) + 1;
+        taskState.buildMissStreak = streak;
         this.shakeCard = cellText;
-        const hinted = taps[cellText] >= 2;
+        // Threshold 3; when hint fires, zero the streak so another 3 are needed to re-hint.
+        const hinted = streak >= 3;
+        if (hinted) {
+          taskState.buildMissStreak = 0;
+          taskState.buildHint = true;
+          taskState.wrongTaps = {};
+        }
         const why = this.text(task.why);
+        // Point coach at the correct next word (words[next] / hints / why), not the wrong tile.
+        const nextCoach =
+          (want ? this.text(task.coach?.words?.[want]) : '') ||
+          this.text(task.coach?.hints?.[0]) ||
+          why;
         this.say(
-          hinted && (task.coach?.words?.[cellText] || why)
-            ? this.text(task.coach?.words?.[cellText]) || why
+          hinted && nextCoach
+            ? nextCoach
             : this.zh
               ? '这个词还不是下一个。'
               : 'That word does not come next.',
@@ -2056,6 +2180,8 @@ export class CourseSession {
       }
     }
     this.shakeCard = null;
+    taskState.buildMissStreak = 0;
+    taskState.buildHint = false;
     taskState.built.push(cellText);
     const available = this.setCards(task).map((text, index) => ({ text, id: `${text}-${index}` }));
     const nextId = cardId ?? available.find(card => card.text === cellText && !ids.includes(card.id))?.id ?? `legacy-${ids.length}`;
@@ -2561,7 +2687,17 @@ export class CourseSession {
       .map((item) => this.text(item))
       .join(' ');
     const why = rightNotes || this.text(task.why);
-    if (correct) return (this.zh ? `对。你选了 ${you}。${why}` : `Right. You chose ${you}. ${why}`).trim();
+    if (correct) {
+      // Multi-pick (e.g. ts3): after finish(done), list ALL correct items like the shown path.
+      if (task.multi || answers.length > 1) {
+        return (
+          this.zh
+            ? `对。你选了 ${you}。正确答案是 ${answerText}。${why}`
+            : `Right. You chose ${you}. The right answer is ${answerText}. ${why}`
+        ).trim();
+      }
+      return (this.zh ? `对。你选了 ${you}。${why}` : `Right. You chose ${you}. ${why}`).trim();
+    }
     const bad = picked.find((index) => !(task.answers ?? []).includes(index));
     const badNote = bad != null ? this.text(task.coach?.options?.[bad]) : '';
     if (!picked.length) {

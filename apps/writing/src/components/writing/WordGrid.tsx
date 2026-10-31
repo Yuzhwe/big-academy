@@ -1,9 +1,10 @@
-import { Button, Tabs, TabList, Tab, TabPanel } from 'react-aria-components';
+import { Tabs, TabList, Tab, TabPanel } from 'react-aria-components';
 import type { BALocale } from '@big-academy/design-system';
+import { WordChip, type WordEvaluation } from './WordChip';
 import './WordGrid.css';
 
+export type { WordEvaluation } from './WordChip';
 export type WordSelection = 'default' | 'selected' | 'used';
-export type WordEvaluation = 'neutral' | 'correct' | 'correctUnselected' | 'incorrect' | 'hint' | 'shown';
 export interface WordGridWord {
   id: string;
   text: string;
@@ -46,16 +47,24 @@ export function WordGrid({ groups, activeGroup, presentation='docked', tabs='aut
       const evaluation = word.evaluation ?? (word.hint ? 'hint' : 'neutral');
       const extended = word.selection !== undefined || word.evaluation !== undefined || word.kind === 'sentence';
       const status = [selection!=='default' ? labels[locale][selection] : '', evaluation!=='neutral' ? labels[locale][evaluation] : '', word.disabled ? labels[locale].disabled : ''].filter(Boolean).join(' · ');
-      return <Button key={word.id} className={`word-grid__card${word.shake ? ' shake' : ''}`} lang={word.lang ?? 'en'}
-        data-extended={extended ? 'true' : undefined} data-kind={word.kind ?? 'word'} data-selection={selection} data-evaluation={evaluation}
-        data-used={selection==='used' ? 'true' : undefined} data-hint={evaluation==='hint' ? 'true' : undefined}
-        data-shake={word.shake ? 'true' : undefined} isDisabled={word.disabled}
-        aria-pressed={word.selection !== undefined ? selection==='selected' : undefined}
-        aria-label={extended && status ? `${word.text} · ${status}` : word.text}
-        onMouseDown={event=>event.preventDefault()}
-        onPress={()=>{ if(onWordAction) onWordAction(word,current.id); else onInsert?.(word.text); }}>
-        <span className="word-grid__text">{word.text}</span>
-      </Button>;
+      return (
+        <WordChip
+          key={word.id}
+          className={`word-grid__card${word.shake ? ' shake' : ''}`}
+          lang={word.lang ?? 'en'}
+          kind={word.kind ?? 'word'}
+          selected={selection === 'selected'}
+          used={selection === 'used'}
+          disabled={word.disabled}
+          shake={word.shake}
+          evaluation={evaluation}
+          aria-label={extended && status ? `${word.text} · ${status}` : word.text}
+          aria-pressed={word.selection !== undefined ? selection === 'selected' : undefined}
+          onClick={() => { if (onWordAction) onWordAction(word, current.id); else onInsert?.(word.text); }}
+        >
+          {word.text}
+        </WordChip>
+      );
     }) : <p className="word-grid__empty">{locale==='zh'?'这里还没有词。':'Nothing here yet.'}</p>}
   </div>;
   const review = groups.some(g=>g.words.some(w=>w.selection || w.evaluation || w.kind==='sentence')) ? 'candidate' : 'approved';

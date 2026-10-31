@@ -1,0 +1,101 @@
+.start-point {
+  /* Unit-title typography tokens (BA brief 6008): Dosis 800 / 24 / 30 */
+  --start-point-fill: #ffc24e;
+  --start-point-stroke: #715146;
+  --start-point-ink: #2f0f04;
+  --text-width: 199px;
+  /* Geometry scale for 24px text vs original 30px silhouette; paths not redrawn. */
+  --start-point-geom-scale: 0.8;
+  --start-point-native-height: 82px;
+  --start-point-native-label-height: 80px;
+  --start-point-native-right: 91px;
+  position: relative;
+  display: block;
+  width: calc((var(--text-width) + var(--start-point-native-right)) * var(--start-point-geom-scale));
+  height: calc(var(--start-point-native-height) * var(--start-point-geom-scale));
+  flex: 0 0 auto;
+  color: var(--start-point-ink);
+}
+
+.start-point__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--text-width) * var(--start-point-geom-scale));
+  height: calc(var(--start-point-native-label-height) * var(--start-point-geom-scale));
+  padding: calc(19px * var(--start-point-geom-scale)) calc(20px * var(--start-point-geom-scale)) calc(19px * var(--start-point-geom-scale)) calc(40px * var(--start-point-geom-scale));
+  overflow: hidden;
+  border: 0;
+  border-radius: calc(20px * var(--start-point-geom-scale)) 0 0 calc(20px * var(--start-point-geom-scale));
+  background: transparent;
+  color: var(--start-point-ink);
+  box-sizing: border-box;
+}
+
+.start-point__text {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--ba-font-heading-en, Dosis, "Arial Narrow", sans-serif);
+  font-weight: 800;
+  font-size: var(--ba-writing-lesson-card-title-size, 24px);
+  line-height: var(--ba-writing-lesson-title-line-height, 30px);
+  letter-spacing: 0;
+}
+
+.start-point[data-locale='zh'] .start-point__text {
+  font-family: var(--ba-font-heading-zh, "Douyin Sans", "PingFang SC", "Noto Sans SC", sans-serif);
+}
+
+.start-point__geometry {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: block;
+  width: calc(var(--text-width) + var(--start-point-native-right));
+  height: var(--start-point-native-height);
+  overflow: visible;
+  transform: scale(var(--start-point-geom-scale));
+  transform-origin: top left;
+}
+
+.start-point__geometry .start-point__fill {
+  fill: var(--start-point-fill);
+}
+
+.start-point__geometry .start-point__stroke {
+  stroke: var(--start-point-stroke);
+}
+
+input.start-point__text {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  text-align: center;
+  /* Explicit — inputs do not reliably inherit; match Unit title tokens. */
+  font-family: var(--ba-font-heading-en, Dosis, "Arial Narrow", sans-serif);
+  font-weight: 800;
+  font-size: var(--ba-writing-lesson-card-title-size, 24px);
+  line-height: var(--ba-writing-lesson-title-line-height, 30px);
+  letter-spacing: 0;
+}
+
+.start-point[data-locale='zh'] input.start-point__text {
+  font-family: var(--ba-font-heading-zh, "Douyin Sans", "PingFang SC", "Noto Sans SC", sans-serif);
+}
+
+input.start-point__text:focus-visible {
+  outline: 2px solid #2364db;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
