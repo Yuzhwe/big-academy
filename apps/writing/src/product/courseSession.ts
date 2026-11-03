@@ -67,6 +67,8 @@ export interface TaskProgress {
   built?: string[];
   /** Stable card identity aligns with built, including duplicate text. */
   builtCardIds?: string[];
+  /** Stable authored target indices parallel to builtCardIds; keeps duplicate text distinct. */
+  builtTargetSlots?: number[];
   /** Editable frame word placements are answer data, not a separate UI selection. */
   frameCardPlacements?: { id: string; blank: number; start: number; end: number; text: string }[];
   /** R12: immutable card IDs per blank, authoritative for pure-card input. */
@@ -1495,6 +1497,7 @@ export class CourseSession {
     if (taskState.status !== 'open') return;
     taskState.built = [];
     taskState.builtCardIds = [];
+    taskState.builtTargetSlots = [];
     taskState.buildMissStreak = 0;
     taskState.buildHint = false;
     taskState.wrongTaps = {};
@@ -1689,7 +1692,7 @@ export class CourseSession {
     const selectedIds = new Set(this.buildCardIds(task, taskState));
     // After 3 wrong taps toward the current next target, attach the hint to that
     // next-target card (not the wrongly tapped card). Joe BA brief Q4 frequency.
-    const nextTarget = task.in_order ? task.target?.[this.firstMissingTarget(task, built)] : undefined;
+    const nextTarget = task.in_order ? task.target?.[this.firstMissingTarget(task, taskState)] : undefined;
     const showNextHint = !!task.in_order && !!taskState.buildHint;
     let hintAttached = false;
     const cards = this.setCards(task).map((text, index) => {
@@ -2168,22 +2171,26 @@ export class CourseSession {
     });
   }
 
-  /** Earliest missing target, not built.length: permits mid-bench undo/refill. */
-  private firstMissingTarget(task: AlexTask, built: string[]): number {
-    let cursor = 0;
-    for (const token of built) {
-      while (cursor < (task.target?.length ?? 0) && task.target?.[cursor] !== token) cursor++;
-      if (cursor < (task.target?.length ?? 0)) cursor++;
-    }
-    const matched = new Set<number>();
-    let next = 0;
-    for (const token of built) {
-      while (next < (task.target?.length ?? 0) && task.target?.[next] !== token) next++;
-      if (next < (task.target?.length ?? 0)) matched.add(next++);
-    }
-    return (task.target ?? []).findIndex((_, index) => !matched.has(index)) < 0
-      ? (task.target?.length ?? 0)
-      : (task.target ?? []).findIndex((_, index) => !matched.has(index));
+  /** R12 guided-order slots are persisted beside card IDs: same-text tiles stay distinct. */
+  private buildTargetSlots(task: AlexTask, taskState: TaskProgress): number[] {
+    const built = taskState.built ?? [];
+    const stored = taskState.builtTargetSlots;
+    if (stored?.length === built.length &&
+      stored.every((slot,index) => task.target?.[slot] === built[index]) &&
+      new Set(stored).size === stored.length) return stored;
+    // Migrate older text-only builds by matching each occurrence once in order.
+    const used = new Set<number>();
+    return built.map(token => {
+      const index = (task.target ?? []).findIndex((value,slot)=>value===token&&!used.has(slot));
+      if (index>=0) used.add(index);
+      return index;
+    });
+  }
+
+  private firstMissingTarget(task: AlexTask, taskState: TaskProgress): number {
+    const used=new Set(this.buildTargetSlots(task,taskState));
+    const index=(task.target ?? []).findIndex((_,slot)=>!used.has(slot));
+    return index<0?(task.target?.length ?? 0):index;
   }
 
   /** Answer tiles share the same stable card identity as WordGrid. */
@@ -2197,9 +2204,12 @@ export class CourseSession {
     const ids = this.buildCardIds(task, state);
     const at = ids.indexOf(cardId);
     if (at < 0) return;
+    const slots=this.buildTargetSlots(task,state);
     state.built?.splice(at, 1);
     ids.splice(at, 1);
+    slots.splice(at,1);
     state.builtCardIds = ids;
+    state.builtTargetSlots=slots;
     state.buildHint = false;
     state.buildMissStreak = 0;
     this.state.regions[this.taskKey(screen)] = [{ t: this.benchFrom(state.built ?? []), s: 'set' }];
@@ -2212,12 +2222,15 @@ export class CourseSession {
     if (taskState.status !== 'open') return;
     taskState.built = taskState.built ?? [];
     const ids = this.buildCardIds(task, taskState);
+    const slots=this.buildTargetSlots(task,taskState);
     const selectedIndex = cardId ? ids.indexOf(cardId) : -1;
     if (selectedIndex >= 0) {
       // All build variants now permit removing only the selected placed tile.
       taskState.built.splice(selectedIndex, 1);
       ids.splice(selectedIndex, 1);
+      slots.splice(selectedIndex, 1);
       taskState.builtCardIds = ids;
+      taskState.builtTargetSlots=slots;
       this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
       this.shakeCard = null;
       this.save();
@@ -2225,7 +2238,7 @@ export class CourseSession {
       return;
     }
     if (task.in_order) {
-      const want = task.target?.[this.firstMissingTarget(task, taskState.built)];
+      const want = task.target?.[this.firstMissingTarget(task, taskState)];
       if (cellText !== want) {
         const taps = { ...(taskState.wrongTaps ?? {}) };
         taps[cellText] = (taps[cellText] ?? 0) + 1;
@@ -2263,16 +2276,15 @@ export class CourseSession {
     this.shakeCard = null;
     taskState.buildMissStreak = 0;
     taskState.buildHint = false;
-    const missing = this.firstMissingTarget(task, taskState.built);
-    const position = task.in_order
-      ? (task.target ?? []).slice(0, missing).filter((_, i) => i < (task.target?.length ?? 0))
-          .length - (task.target ?? []).slice(0, missing).filter((word) => !taskState.built?.includes(word)).length
-      : taskState.built.length;
+    const missing = this.firstMissingTarget(task, taskState);
+    const position = task.in_order ? slots.filter(slot=>slot<missing).length : taskState.built.length;
     const available = this.setCards(task).map((text, index) => ({ text, id: `${text}-${index}` }));
     const nextId = cardId ?? available.find(card => card.text === cellText && !ids.includes(card.id))?.id ?? `legacy-${ids.length}`;
     taskState.built.splice(position, 0, cellText);
     ids.splice(position, 0, nextId);
+    slots.splice(position, 0, missing);
     taskState.builtCardIds = ids;
+    taskState.builtTargetSlots = slots;
     this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
     this.save();
     this.emit();
