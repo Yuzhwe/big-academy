@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BAButton, BAIcon } from '@big-academy/design-system';
-import { SolarLessonPreview, SOLAR_DEFAULTS } from './SolarLessonPreview';
+import { SolarLessonPreview, SOLAR_DEFAULTS, type SolarParameters } from './SolarLessonPreview';
 import type { Scene } from './catalog';
 import './PathBackToCurrentPlayground.css';
 
@@ -15,7 +15,13 @@ export function PathBackToCurrentPlayground({ scene, update }: {
   update?: (patch: Partial<Scene>) => void;
 }) {
   const viewMode = scene.pathCurrentView;
-  const forceFallback = scene.pathSolarFallback || scene.motion === 'reduce';
+  // R12: all knobs are local to this specimen, never shared with Lesson Current.
+  const [solarParams,setSolarParams] = useState<SolarParameters>(()=>({...SOLAR_DEFAULTS}));
+  const CSS_DEFAULT = {edge:2,blur:7,spread:2,opacity:.42,color:'#FFA82E'};
+  const [cssGlow,setCssGlow] = useState(CSS_DEFAULT);
+  const [renderMode,setRenderMode] = useState<'auto'|'webgl'|'fallback'>('auto');
+  const [reducedOverride,setReducedOverride] = useState(false);
+  const forceFallback = renderMode==='fallback' || scene.pathSolarFallback || scene.motion==='reduce' || reducedOverride;
   const [autoOffscreen, setAutoOffscreen] = useState(false);
   const [notice, setNotice] = useState('');
   const currentRef = useRef<HTMLDivElement>(null);
@@ -51,17 +57,26 @@ export function PathBackToCurrentPlayground({ scene, update }: {
     scroller.scrollLeft = 0;
   }, [viewMode]);
 
-  const solarParams = useMemo(() => ({
-    rayIntensity: scene.solarRayIntensity,
-    rayLength: scene.solarRayLength,
-    rayCount: scene.solarRayCount,
-    bokeh: scene.solarBokeh,
-    rimBoost: scene.solarRimBoost,
-    glowSpread: scene.solarGlowSpread,
-    brightness: scene.solarBrightness,
-    borderColor: scene.solarBorderColor,
-    glowColor: scene.solarGlowColor,
-  }), [scene]);
+  const changeSolar = (key:keyof SolarParameters,value:string|number) =>
+    setSolarParams(previous=>({...previous,[key]:value}));
+  const changeCSS = (key:keyof typeof CSS_DEFAULT,value:string|number) =>
+    setCssGlow(previous=>({...previous,[key]:value}));
+  const slider=(name:string,value:number,min:number,max:number,step:number,change:(value:number)=>void)=>(
+    <label className="path-back-tuner__field" key={name}>
+      <span>{name} <output>{value}</output></span>
+      <input type="range" min={min} max={max} step={step} value={value}
+        aria-label={name} onChange={event=>change(Number(event.target.value))}/>
+    </label>
+  );
+  const copySettings=async()=>{
+    const text=JSON.stringify({solar:solarParams,css:cssGlow,renderMode,reducedOverride},null,2);
+    try {
+      await navigator.clipboard.writeText(text);
+      setNotice(label(scene.locale,'已复制独立光效参数','BackToCurrent settings copied'));
+    } catch {
+      setNotice(text);
+    }
+  };
 
   const setView = (pathCurrentView: ViewMode) => update?.({ pathCurrentView });
   const setFallback = (pathSolarFallback: boolean) => update?.({ pathSolarFallback });
@@ -133,6 +148,7 @@ export function PathBackToCurrentPlayground({ scene, update }: {
             <SolarLessonPreview
               fit="control"
               hybridControlGlow
+              controlCssGlow={cssGlow}
               forceFallback={forceFallback}
               motionEnabled={scene.motion === 'system' && !forceFallback}
               params={solarParams}
@@ -199,6 +215,46 @@ export function PathBackToCurrentPlayground({ scene, update }: {
           {label(scene.locale, '切换 Solar 描边回退', 'Toggle Solar stroke fallback')}
         </button>
       </div>
+
+      <section className="path-back-tuner" aria-label="BackToCurrent independent glow controls"
+        data-testid="path-back-tuner">
+        <h3>BackToCurrent · Solar + CSS Hybrid</h3>
+        <p>Library-only visual candidate · Lesson Current parameters remain unchanged.</p>
+        <div className="path-back-tuner__modes" role="group" aria-label="Render comparison">
+          {(['auto','webgl','fallback'] as const).map(mode=>
+            <button type="button" key={mode} aria-pressed={renderMode===mode}
+              data-testid={`path-back-render-${mode}`}
+              onClick={()=>{setRenderMode(mode);if(mode==='webgl')setFallback(false);}}>{mode}</button>)}
+          <button type="button" aria-pressed={reducedOverride} onClick={()=>setReducedOverride(!reducedOverride)}
+            data-testid="path-back-reduced">Reduced Motion</button>
+        </div>
+        <div className="path-back-tuner__grid">
+          <fieldset><legend>WebGL / Solar</legend>
+            {slider('Ray Intensity',solarParams.rayIntensity,0,2.5,.01,v=>changeSolar('rayIntensity',v))}
+            {slider('Ray Length',solarParams.rayLength,.2,2.5,.01,v=>changeSolar('rayLength',v))}
+            {slider('Ray Count',solarParams.rayCount,4,64,1,v=>changeSolar('rayCount',v))}
+            {slider('Bokeh',solarParams.bokeh,0,2.5,.01,v=>changeSolar('bokeh',v))}
+            {slider('Rim / Glow',solarParams.rimBoost,0,2.5,.01,v=>changeSolar('rimBoost',v))}
+            {slider('Brightness',solarParams.brightness,0,2.5,.01,v=>changeSolar('brightness',v))}
+            <label>Solar Color <input type="color" aria-label="Solar Color" value={solarParams.glowColor}
+              onChange={event=>changeSolar('glowColor',event.target.value)}/></label>
+          </fieldset>
+          <fieldset><legend>CSS Hybrid</legend>
+            {slider('CSS Edge Glow',cssGlow.edge,0,6,.1,v=>changeCSS('edge',v))}
+            {slider('CSS Blur Radius',cssGlow.blur,0,30,.5,v=>changeCSS('blur',v))}
+            {slider('CSS Spread',cssGlow.spread,0,16,.5,v=>changeCSS('spread',v))}
+            {slider('CSS Opacity',cssGlow.opacity,0,1,.01,v=>changeCSS('opacity',v))}
+            <label>CSS Glow Color <input type="color" aria-label="CSS Glow Color"
+              value={cssGlow.color} onChange={event=>changeCSS('color',event.target.value)}/></label>
+          </fieldset>
+        </div>
+        <div className="path-back-tuner__actions">
+          <button type="button" onClick={()=>{setSolarParams({...SOLAR_DEFAULTS});setCssGlow({...CSS_DEFAULT});setRenderMode('auto');setReducedOverride(false);}}
+            data-testid="path-back-reset-settings">Reset to Default</button>
+          <button type="button" onClick={()=>void copySettings()}
+            data-testid="path-back-copy-settings">Copy Settings</button>
+        </div>
+      </section>
 
       <p className="path-back-caption">
         {label(
