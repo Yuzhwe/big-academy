@@ -738,7 +738,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
                         {activity.frame!.tiles[index]?.length ? '' : '___'}
                         <span className="course-sr">{session.zh ? '当前填空' : 'Answer slot'}</span>
                       </button>
-                      {activity.frame!.tiles[index]?.map((tile,j)=>(
+                      {activity.frame!.tiles[index]?.map(tile=>(
                         <button key={tile.id} type="button" className="course-frame__tile"
                           data-testid="frame-tile" disabled={session.currentTaskClosed()}
                           aria-label={session.zh ? `撤回词块：${tile.text}` : `Remove phrase: ${tile.text}`}
