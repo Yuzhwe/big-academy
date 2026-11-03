@@ -340,7 +340,7 @@ describe('Lesson 1 screens 5–8', () => {
     await user.click(screen.getByRole('button', { name: /^our(?: ·.*)?$/ }));
     expect(screen.getByTestId('bench-text')).toHaveTextContent(/our/i);
     expect(screen.getAllByTestId('bench-blank')).toHaveLength(10);
-    expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
+    expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(1);
     expect(course.inspect().tasks[taskKey]?.built).toEqual(['our']);
     expect(course.inspect().tasks[taskKey]?.buildHint).toBe(false);
     expect(course.inspect().tasks[taskKey]?.buildMissStreak).toBe(0);
@@ -398,8 +398,17 @@ describe('integration v1 recovery and assessment boundaries',()=>{
   const storage=createMemoryStorage();const course=session('',storage);course.openLesson('G2-O',1);course.pressPrimary();course.pick(0);course.pressPrimary();const feedback=course.feedback;
   const restored=session('',storage);restored.openLesson('G2-O',1);expect(restored.activity()?.feedback).toBe(feedback);expect(restored.inspect().tasks['L2-04.skill:ts1'].tries).toBe(1);
  });
- it('inserts in a focused frame blank at the caret',()=>{
-  const course=session();reach(course,s=>s.task==='ts8');course.setBlank(1,'kids play');course.focusBlank(1);course.setCaret(5,5);course.placeCard('need');expect(course.activity()?.frame?.blanks[1].value).toBe('kids need play');
+ it('composes two independent Q5 blanks from stable WordGrid cards',()=>{
+   const course=session();reach(course,s=>s.task==='ts8');
+   const words=course.activity()?.wordGrid?.groups.flatMap(group=>group.words)??[];
+   const card=(text:string)=>words.find(word=>word.text===text)!;
+   expect(course.activity()?.frame?.pureCards).toBe(true);
+   course.placeCard('be longer',card('be longer').id);
+   course.focusBlank(1);
+   course.placeCard('kids need',card('kids need').id);
+   expect(course.activity()?.frame?.blanks.map(blank=>blank.value)).toEqual(['be longer','kids need']);
+   course.removeFrameCard(card('kids need').id);
+   expect(course.activity()?.frame?.blanks.map(blank=>blank.value)).toEqual(['be longer','']);
  });
  it('preserves pasted and word-grid source spans while typing elsewhere',()=>{
   const course=session();reach(course,s=>s.kind==='apply');course.markPaste();course.setCanvas('Our garden.');course.setCaret(4,4);course.placeCard('school');course.setCanvas('Our school garden. More');
@@ -704,7 +713,7 @@ describe('Review 06 acceptance gates', () => {
 
 
 describe('Review 06 final refinement: reversible WordGrid and correct-target semantics', () => {
-  it('locks used ordered-build tiles before Check (re-tap is a no-op)', () => {
+  it('retracts ordered-build tiles by stable ID and restores target order', () => {
     const course = session();
     reach(course, screen => screen.task === 'ss.L2-04');
     const group = course.activity()?.wordGrid?.groups[0];
@@ -716,11 +725,12 @@ describe('Review 06 final refinement: reversible WordGrid and correct-target sem
     course.placeCard(school!.text, school!.id);
     expect(course.activity()?.build?.bench).toMatch(/our school/i);
     expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(true);
-    // Re-tap used chip must NOT retract from the bench.
+    course.removeBuildCard(our!.id);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['school']);
+    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(false);
     course.placeCard(our!.text, our!.id);
     expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['our', 'school']);
     expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(true);
-    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === school!.id)?.used).toBe(true);
   });
 
   it('removes only the corresponding frame fill when reselecting its stable card ID', () => {
