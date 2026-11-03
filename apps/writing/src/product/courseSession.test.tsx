@@ -689,6 +689,70 @@ describe('Reset confirm-formal',()=>{
   });
 });
 
+describe('R12 pending-product interaction contracts', () => {
+  it('treats one/two correct Q3 picks as non-grading discovery, then completes A+C+E', () => {
+    const course=session();reach(course,ref=>ref.task==='ts3');
+    const key='L2-04.skill:ts3';
+    expect(course.footer().primaryDisabled).toBe(true);
+    course.pick(0);course.pressPrimary();
+    expect(course.inspect().tasks[key].tries).toBe(0);
+    expect(course.inspect().tasks[key].status).toBe('open');
+    expect(course.activity()?.pick?.options.filter(x=>x.state==='correctUnselected')).toHaveLength(0);
+    const events=course.inspect().events.filter(e=>e.type==='pick_partial').length;
+    course.pressPrimary();
+    expect(course.inspect().events.filter(e=>e.type==='pick_partial')).toHaveLength(events);
+    course.pick(2);course.pressPrimary();
+    expect(course.inspect().tasks[key].tries).toBe(0);
+    course.pick(4);course.pressPrimary();
+    expect(course.inspect().tasks[key].status).toBe('done');
+    expect(course.inspect().tasks[key].tries).toBe(1);
+  });
+  it('Q3 wrong picks reset on edit, and third wrong Check reveals without correct credit', () => {
+    const course=session();reach(course,ref=>ref.task==='ts3');
+    const key='L2-04.skill:ts3';
+    course.pick(0);course.pick(1);course.pressPrimary();
+    expect(course.inspect().tasks[key].tries).toBe(1);
+    expect(course.activity()?.pick?.options[1].state).toBe('wrong');
+    expect(course.activity()?.pick?.options[0].state).toBe('selected');
+    course.pick(1);
+    expect(course.inspect().tasks[key].picked).toEqual([0]);
+    expect(course.activity()?.pick?.options[1].state).toBe('default');
+    course.pick(1);course.pressPrimary();
+    expect(course.inspect().tasks[key].tries).toBe(2);
+    course.pressPrimary();
+    expect(course.inspect().tasks[key].status).toBe('shown');
+    expect(course.inspect().tasks[key].tries).toBe(3);
+    expect(course.canNext(course.inspect().screen)).toBe(true);
+    expect(course.activity()?.pick?.options.filter(x=>x.state==='correctUnselected')).toHaveLength(3);
+    expect(course.practiceBurst).toBeNull();
+  });
+  it('Q3 hint followed by explicit Show answers reveals without granting mastery', () => {
+    const course=session();reach(course,ref=>ref.task==='ts3');
+    course.pick(0);course.pressPrimary();
+    expect(course.activity()?.showAnswers).toBe(false);
+    course.openHint();
+    expect(course.activity()?.showAnswers).toBe(true);
+    expect(course.inspect().tasks['L2-04.skill:ts3'].tries).toBe(0);
+    course.showGuidedAnswers();
+    expect(course.inspect().tasks['L2-04.skill:ts3'].status).toBe('shown');
+    expect(course.practiceBurst).toBeNull();
+  });
+  it('Q5 pure word cards can produce a legitimate authored frameFill answer', () => {
+    const course=session();reach(course,ref=>ref.task==='ts8');
+    const words=course.activity()?.wordGrid?.groups.flatMap(group=>group.words)??[];
+    const add=(text:string)=>{ const word=words.find(w=>w.text===text);
+      expect(word,text).toBeDefined();course.placeCard(word!.text,word!.id); };
+    add('be longer');
+    course.focusBlank(1);
+    add('kids need');add('time to run');add('and play');
+    expect(course.activity()?.frame?.blanks.map(x=>x.value))
+      .toEqual(['be longer','kids need time to run and play']);
+    expect(course.primaryReady()).toBe(true);
+    course.pressPrimary();
+    expect(course.inspect().tasks['L2-04.skill:ts8']?.status).toBe('done');
+  });
+});
+
 describe('Review 06 acceptance gates', () => {
   it('keeps every runtime lesson free from standalone P2/P7 while preserving all nine lesson records', () => {
     const course = session();
