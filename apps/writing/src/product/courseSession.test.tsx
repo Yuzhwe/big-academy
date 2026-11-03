@@ -797,7 +797,7 @@ describe('Review 06 final refinement: reversible WordGrid and correct-target sem
     expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(true);
   });
 
-  it('removes only the corresponding frame fill when reselecting its stable card ID', () => {
+  it('removes only the corresponding Q5 answer tile via its stable card ID', () => {
     const course = session();
     reach(course, screen => screen.task === 'ts8');
     const word = course.activity()?.wordGrid?.groups[0].words[0];
@@ -808,7 +808,9 @@ describe('Review 06 final refinement: reversible WordGrid and correct-target sem
     // Sentence-initial capitalization is intentional: compare the card text case-insensitively.
     expect(course.activity()?.frame?.blanks[0].value.toLocaleLowerCase()).toContain(word!.text.trim().toLocaleLowerCase());
     expect(course.activity()?.wordGrid?.groups[0].words[0].used).toBe(true);
-    course.placeCard(word!.text, word!.id);
+    course.placeCard(word!.text, word!.id); // Used grid chip remains inert.
+    expect(course.activity()?.frame?.blanks[0].value).not.toBe('');
+    course.removeFrameCard(word!.id);
     expect(course.activity()?.frame?.blanks[0].value).toBe('');
     expect(course.activity()?.wordGrid?.groups[0].words[0].used).toBe(false);
   });
