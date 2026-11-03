@@ -2225,7 +2225,8 @@ export class CourseSession {
     const slots=this.buildTargetSlots(task,taskState);
     const selectedIndex = cardId ? ids.indexOf(cardId) : -1;
     if (selectedIndex >= 0) {
-      // All build variants now permit removing only the selected placed tile.
+      // Guided bank keeps Used chips locked; the answer bench owns retract.
+      if (task.in_order) return;
       taskState.built.splice(selectedIndex, 1);
       ids.splice(selectedIndex, 1);
       slots.splice(selectedIndex, 1);
@@ -2327,10 +2328,10 @@ export class CourseSession {
     const screen = this.screens[this.state.screen]?.screen;
     if (screen?.id !== 'L2-04.t.ts8' || !screen.task) return;
     const task = this.task(screen.task);
-    this.toggleFrameCard(this.taskKey(screen),cardId,this.frameTokenText(task,cardId) ?? '');
+    this.toggleFrameCard(this.taskKey(screen),cardId,this.frameTokenText(task,cardId) ?? '',true);
   }
 
-  private toggleFrameCard(key: string, cardId: string, text: string): void {
+  private toggleFrameCard(key: string, cardId: string, text: string, fromAnswer = false): void {
     const state = this.taskState(key);
     if (state.status !== 'open') return;
     const screen = this.screens[this.state.screen]?.screen;
@@ -2342,6 +2343,8 @@ export class CourseSession {
           .sort((a,b)=>a.start-b.start).map(p=>p.id));
       const at = ids.findIndex(row=>row.includes(cardId));
       if (at>=0) {
+        // Used grid chips stay locked. Only answer-area tile buttons can undo.
+        if (!fromAnswer) return;
         ids[at] = ids[at].filter(id=>id!==cardId);
         state.focusBlank = at;
       } else {
