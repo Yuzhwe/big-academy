@@ -13,7 +13,7 @@ async function reachQ3(page:Page){
   await page.goto('/?start=lesson');
   await pick(page).nth(1).click();await check(page);await check(page);
   await page.getByRole('button',{name:'believe',exact:true}).click();await check(page);await check(page);
-  await expect(page.locator('.ba-choice__option')).toHaveCount(5);
+  await expect(page.locator('.ba-choice__option')).toHaveCount(6);
 }
 async function reachQ4(page:Page){
   await reachQ3(page);
