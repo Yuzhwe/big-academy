@@ -69,6 +69,10 @@ export interface TaskProgress {
   builtCardIds?: string[];
   /** Editable frame word placements are answer data, not a separate UI selection. */
   frameCardPlacements?: { id: string; blank: number; start: number; end: number; text: string }[];
+  /** R12: immutable card IDs per blank, authoritative for pure-card input. */
+  frameTileIds?: string[][];
+  /** Debounce authored partial-correct teaching feedback across Check taps. */
+  lastPartialSignature?: string;
   blanks?: string[];
   focusBlank?: number;
 }
@@ -257,6 +261,7 @@ export interface ActivityModel {
   skip: SkipOffer | null;
   hints: string[];
   hintAction: 'hint' | 'another' | null;
+  showAnswers?: boolean;
   coach: string[];
   coachMore: boolean;
   feedback: string;
@@ -1104,6 +1109,8 @@ export class CourseSession {
           ask: this.text(task.ask),
           hints,
           hintAction,
+          showAnswers: task.id === 'ts3' && screen.id === 'L2-04.t.ts3' && taskState.status === 'open' &&
+            (taskState.hintLv ?? 0) > 0 && (taskState.picked?.length ?? 0) > 0,
           pick: {
             multi: !!task.multi,
             hint: '',
@@ -1401,6 +1408,18 @@ export class CourseSession {
     return;
   }
 
+  /** R12: explicit opt-in reveal after a hint for guided Lesson 1 Q3 only. */
+  showGuidedAnswers(): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.id !== 'L2-04.t.ts3' || !screen.task) return;
+    const task = this.task(screen.task);
+    const state = this.taskState(this.taskKey(screen));
+    if (state.status !== 'open' || (state.hintLv ?? 0) < 1 || !(state.picked?.length)) return;
+    state.wrong = [];
+    this.finish(task, this.taskKey(screen), 'shown');
+    this.log('pick_show_answers', { task: task.id });
+  }
+
   showAnother(): void {
     const screen = this.screens[this.state.screen]?.screen;
     if (!screen?.coach) return;
@@ -1606,14 +1625,24 @@ export class CourseSession {
   private selectPick(task: AlexTask, taskState: TaskProgress, index: number): void {
     if (taskState.status !== 'open') return;
     taskState.picked = taskState.picked ?? [];
-    taskState.wrong = [];
+    const previousWrong = taskState.wrong ?? [];
+    taskState.wrong = previousWrong;
     if (task.multi) {
+      // R12 guided ts3: on the first subsequent edit remove previous wrong picks,
+      // preserving correctly chosen options and stable persisted choice state.
+      const guided = task.id === 'ts3' && this.screens[this.state.screen]?.screen.id === 'L2-04.t.ts3';
+      if (guided && (taskState.wrong?.length ?? 0) > 0) {
+        const wrong = new Set(taskState.wrong);
+        taskState.picked = taskState.picked.filter(item => !wrong.has(item));
+      }
       const found = taskState.picked.indexOf(index);
       if (found >= 0) taskState.picked.splice(found, 1);
       else taskState.picked.push(index);
+      taskState.lastPartialSignature = undefined;
     } else {
       taskState.picked = [index];
     }
+    taskState.wrong = [];
     this.log('pick', { task: task.id });
     this.save(true);
     this.emit();
@@ -2602,13 +2631,30 @@ export class CourseSession {
       this.emit();
       return;
     }
+    const guided = task.id === 'ts3' && this.screens[this.state.screen]?.screen.id === 'L2-04.t.ts3';
+    if (guided) {
+      const answers = task.answers ?? [];
+      const hasWrong = picked.some(index => !answers.includes(index));
+      if (!hasWrong && picked.length < answers.length) {
+        const signature = picked.slice().sort((a,b)=>a-b).join(',');
+        if (taskState.lastPartialSignature === signature) return;
+        taskState.lastPartialSignature = signature;
+        this.say(this.zh
+          ? '找得不错！你已经找到一个观点句了。还能再找到其他观点句吗？'
+          : 'Great start! You found an opinion. Can you find any more?', 'correct');
+        this.log('pick_partial', { task: task.id });
+        this.save();
+        this.emit();
+        return;
+      }
+    }
     const grade = this.engine.choiceGrade(task, picked);
     taskState.tries += 1;
     if (grade.correct) {
       this.finish(task, key, 'done');
       return;
     }
-    if (taskState.tries >= 2) {
+    if (taskState.tries >= (guided ? 3 : 2)) {
       taskState.wrong = picked.filter((index) => !(task.answers ?? []).includes(index));
       this.finish(task, key, 'shown');
       return;
