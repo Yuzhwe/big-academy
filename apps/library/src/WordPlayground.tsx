@@ -180,7 +180,7 @@ export function WordPlayground({scene,update}:{scene:Scene;update?:(patch:Partia
     <section aria-label="Selected 状态对照" data-testid="selected-visual-parity">
       <h3>Selected · BAChoice / WordGrid / TapWord</h3>
       <div style={{display:'flex',flexWrap:'wrap',gap:16,alignItems:'center'}}>
-        <div><strong>BAChoice</strong><BAChoice choiceMode="single"
+        <div><strong>BAChoice</strong><BAChoice aria-label="BAChoice selected visual comparison" choiceMode="single"
           selectedKeys={['a']} options={[{id:'a',letter:'A',text:'Opinion',state:'selected'}]}
           onChange={()=>{}}/></div>
         <div><strong>WordGrid</strong><WordGrid locale="en" groups={[{id:'selected',label:'Selected',
