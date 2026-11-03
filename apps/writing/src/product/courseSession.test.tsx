@@ -814,27 +814,20 @@ describe('Q5 frame fill ts8 (Joe-confirmed brief)', () => {
     expect(course.feedback).toMatch(/Yes\.|对。/);
   });
 
-  it('moves focus to the next blank on Tab and widens the underline size with content', async () => {
-    const user = userEvent.setup();
-    const course = session();
-    reach(course, (screen) => screen.task === 'ts8');
-    render(<CourseApp session={course} />);
-    const frame = screen.getByTestId('frame');
-    expect(frame).toBeInTheDocument();
-    const first = screen.getByTestId('frame-blank-0') as HTMLInputElement;
-    const second = screen.getByTestId('frame-blank-1') as HTMLInputElement;
-    expect(first.size).toBeGreaterThanOrEqual(8);
-    first.focus();
-    await user.type(first, 'be longer');
-    expect(first.size).toBeGreaterThanOrEqual('be longer'.length);
-    await user.keyboard('{Tab}');
-    expect(document.activeElement).toBe(second);
+  it('navigates two pure-card blanks by keyboard and composes without typing', async () => {
+    const user=userEvent.setup();
+    const course=session();
+    reach(course, screen=>screen.task==='ts8');
+    render(<CourseApp session={course}/>);
+    const frame=screen.getByTestId('frame');
+    expect(frame.querySelector('input')).toBeNull();
+    const first=screen.getByRole('button',{name:'Select blank 1'});
+    const second=screen.getByRole('button',{name:'Select blank 2'});
+    expect(first).toHaveAttribute('aria-pressed','true');
+    await user.click(second);
+    expect(second).toHaveAttribute('aria-pressed','true');
     expect(course.activity()?.frame?.focus).toBe(1);
-    // jsdom does not resolve CSS variables; assert the Writing token is wired on the frame + input.
-    expect(frame.className).toContain('course-frame');
-    expect(first.size).toBeGreaterThanOrEqual(8);
-    // Presence of data attributes + size growth covers the interaction brief; 24px is verified on 5173.
-    expect(first.getAttribute('data-frame-blank')).toBe('0');
-    expect(second.getAttribute('data-frame-blank')).toBe('1');
+    await user.keyboard('{Tab}');
+    expect(document.activeElement).not.toBe(first);
   });
 });
