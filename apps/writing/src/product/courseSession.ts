@@ -1637,9 +1637,10 @@ export class CourseSession {
         const wrong = new Set(taskState.wrong);
         taskState.picked = taskState.picked.filter(item => !wrong.has(item));
       }
+      const correctingWrong = guided && previousWrong.includes(index);
       const found = taskState.picked.indexOf(index);
       if (found >= 0) taskState.picked.splice(found, 1);
-      else taskState.picked.push(index);
+      else if (!correctingWrong) taskState.picked.push(index);
       taskState.lastPartialSignature = undefined;
     } else {
       taskState.picked = [index];
@@ -2339,14 +2340,10 @@ export class CourseSession {
       state.frameTileIds=ids;
       // Reconstruct the authored string from actual token text (not tile count).
       // Whitespace and multiword cards are handled by the same existing smartInsert.
-      state.blanks=ids.map(row=>{
-        let value='';
-        for (const id of row) {
-          const token=this.frameTokenText(task,id);
-          if (token) value=this.engine.smartInsert(value,value.length,value.length,token,'grid').value;
-        }
-        return value.trim();
-      });
+      state.blanks=ids.map(row=>row
+        .map(id=>this.frameTokenText(task,id) ?? '')
+        .filter(Boolean).reduce((text,part)=>/^[.,!?]$/.test(part)
+          ? text.replace(/\s+$/,'')+part : text ? text+' '+part : part,'').trim());
       state.frameCardPlacements=[];
       this.save(true);
       this.emit();
