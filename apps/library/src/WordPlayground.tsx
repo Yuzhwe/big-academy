@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { BAButton } from '@big-academy/design-system';
+import { BAButton, BAChoice } from '@big-academy/design-system';
 import { WordGrid, type WordSelection } from '../../writing/src/components/writing/WordGrid';
 import { WordChip, type WordEvaluation } from '../../writing/src/components/writing/WordChip';
 import { wordGroups } from './wordScenarios';
@@ -177,6 +177,20 @@ export function WordPlayground({scene,update}:{scene:Scene;update?:(patch:Partia
 
   return <div className="preview-example word-playground">
     <p className="demo-notice">{zh?'组件示例数据，不计学习成绩。新增反馈外观为 Candidate / Pending Approval。':'Component demo only · No learner score. New feedback visuals are candidates.'}</p>
+    <section aria-label="Selected 状态对照" data-testid="selected-visual-parity">
+      <h3>Selected · BAChoice / WordGrid / TapWord</h3>
+      <div style={{display:'flex',flexWrap:'wrap',gap:16,alignItems:'center'}}>
+        <div><strong>BAChoice</strong><BAChoice aria-label="BAChoice selected visual comparison" choiceMode="single"
+          selectedKeys={['a']} options={[{id:'a',letter:'A',text:'Opinion',state:'selected'}]}
+          onChange={()=>{}}/></div>
+        <div><strong>WordGrid</strong><WordGrid locale="en" groups={[{id:'selected',label:'Selected',
+          words:[{id:'parity-word',text:'Opinion',selection:'selected',evaluation:'neutral'}]}]}
+          activeGroup="selected" tabs="hide"/></div>
+        <div><strong>TapWord</strong><WordChip selected evaluation="neutral">Opinion</WordChip></div>
+      </div>
+      <p className="review04-caption">R12 candidate · same #9B4F36 Selected fill, white lettering, white border; independent component geometry.</p>
+    </section>
+
     <section aria-label="选词题 tapword" className="word-playground__tapword" data-testid="tapword-course-word-preview">
       <h3>{zh ? '选词题 · course-word（对齐 WordGrid 词卡）' : 'Tapword · course-word (aligned to WordGrid cards)'}</h3>
       <p className="word-playground__tapword-heading">{zh

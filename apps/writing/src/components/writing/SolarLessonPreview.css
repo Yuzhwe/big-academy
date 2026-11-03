@@ -85,9 +85,11 @@
 .solar-lesson-preview[data-solar-fit='control'][data-solar-hybrid-control='true'][data-solar-status='active'] [data-solar-target] .ba-button__assembly {
   border-color: var(--ba-solar-border-color, #b25415);
   box-shadow:
-    0 0 0 2px var(--ba-solar-border-color, #b25415),
-    0 0 7px 2px rgb(255 168 46 / 42%),
-    0 0 18px 5px rgb(255 168 46 / 16%);
+    0 0 0 calc(var(--ba-control-css-edge,2) * 1px) var(--ba-solar-border-color, #b25415),
+    0 0 var(--ba-control-css-blur,7px) var(--ba-control-css-spread,2px)
+      color-mix(in srgb, var(--ba-control-css-color,#ffa82e) calc(var(--ba-control-css-opacity,.42) * 100%), transparent),
+    0 0 calc(var(--ba-control-css-blur,7px) * 2.5) calc(var(--ba-control-css-spread,2px) * 2.5)
+      color-mix(in srgb, var(--ba-control-css-color,#ffa82e) calc(var(--ba-control-css-opacity,.42) * 38%), transparent);
 }
 /* Fallback retains the existing static border; no GPU or second glow shell.
  * Only the button assembly paints and handles pointer/focus. */

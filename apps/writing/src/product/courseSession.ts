@@ -67,8 +67,14 @@ export interface TaskProgress {
   built?: string[];
   /** Stable card identity aligns with built, including duplicate text. */
   builtCardIds?: string[];
+  /** Stable authored target indices parallel to builtCardIds; keeps duplicate text distinct. */
+  builtTargetSlots?: number[];
   /** Editable frame word placements are answer data, not a separate UI selection. */
   frameCardPlacements?: { id: string; blank: number; start: number; end: number; text: string }[];
+  /** R12: immutable card IDs per blank, authoritative for pure-card input. */
+  frameTileIds?: string[][];
+  /** Debounce authored partial-correct teaching feedback across Check taps. */
+  lastPartialSignature?: string;
   blanks?: string[];
   focusBlank?: number;
 }
@@ -225,12 +231,16 @@ export interface ActivityModel {
     revealed?: string;
     ordered?: boolean;
     remaining?: number;
-    cards: { text: string; used: boolean; hint: boolean; shake: boolean }[];
+    cards: { id: string; text: string; used: boolean; hint: boolean; shake: boolean }[];
+    /** Placed tiles are stable-ID interactive tokens in the target reading order. */
+    placed: { id: string; text: string }[];
   };
   frame?: {
     parts: string[];
     blanks: { label: string; value: string; minWords: number }[];
     focus: number;
+    tiles: { id: string; text: string }[][];
+    pureCards?: boolean;
   };
   canvas?: { text: string; tip: string; label: string };
   wordGrid?: {
@@ -255,6 +265,7 @@ export interface ActivityModel {
   skip: SkipOffer | null;
   hints: string[];
   hintAction: 'hint' | 'another' | null;
+  showAnswers?: boolean;
   coach: string[];
   coachMore: boolean;
   feedback: string;
@@ -1102,6 +1113,8 @@ export class CourseSession {
           ask: this.text(task.ask),
           hints,
           hintAction,
+          showAnswers: task.id === 'ts3' && screen.id === 'L2-04.t.ts3' && taskState.status === 'open' &&
+            (taskState.hintLv ?? 0) > 0 && (taskState.picked?.length ?? 0) > 0,
           pick: {
             multi: !!task.multi,
             hint: '',
@@ -1399,6 +1412,18 @@ export class CourseSession {
     return;
   }
 
+  /** R12: explicit opt-in reveal after a hint for guided Lesson 1 Q3 only. */
+  showGuidedAnswers(): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.id !== 'L2-04.t.ts3' || !screen.task) return;
+    const task = this.task(screen.task);
+    const state = this.taskState(this.taskKey(screen));
+    if (state.status !== 'open' || (state.hintLv ?? 0) < 1 || !(state.picked?.length)) return;
+    state.wrong = [];
+    this.finish(task, this.taskKey(screen), 'shown');
+    this.log('pick_show_answers', { task: task.id });
+  }
+
   showAnother(): void {
     const screen = this.screens[this.state.screen]?.screen;
     if (!screen?.coach) return;
@@ -1472,6 +1497,7 @@ export class CourseSession {
     if (taskState.status !== 'open') return;
     taskState.built = [];
     taskState.builtCardIds = [];
+    taskState.builtTargetSlots = [];
     taskState.buildMissStreak = 0;
     taskState.buildHint = false;
     taskState.wrongTaps = {};
@@ -1604,14 +1630,25 @@ export class CourseSession {
   private selectPick(task: AlexTask, taskState: TaskProgress, index: number): void {
     if (taskState.status !== 'open') return;
     taskState.picked = taskState.picked ?? [];
-    taskState.wrong = [];
+    const previousWrong = taskState.wrong ?? [];
+    taskState.wrong = previousWrong;
     if (task.multi) {
+      // R12 guided ts3: on the first subsequent edit remove previous wrong picks,
+      // preserving correctly chosen options and stable persisted choice state.
+      const guided = task.id === 'ts3' && this.screens[this.state.screen]?.screen.id === 'L2-04.t.ts3';
+      if (guided && (taskState.wrong?.length ?? 0) > 0) {
+        const wrong = new Set(taskState.wrong);
+        taskState.picked = taskState.picked.filter(item => !wrong.has(item));
+      }
+      const correctingWrong = guided && previousWrong.includes(index);
       const found = taskState.picked.indexOf(index);
       if (found >= 0) taskState.picked.splice(found, 1);
-      else taskState.picked.push(index);
+      else if (!correctingWrong) taskState.picked.push(index);
+      taskState.lastPartialSignature = undefined;
     } else {
       taskState.picked = [index];
     }
+    taskState.wrong = [];
     this.log('pick', { task: task.id });
     this.save(true);
     this.emit();
@@ -1655,7 +1692,7 @@ export class CourseSession {
     const selectedIds = new Set(this.buildCardIds(task, taskState));
     // After 3 wrong taps toward the current next target, attach the hint to that
     // next-target card (not the wrongly tapped card). Joe BA brief Q4 frequency.
-    const nextTarget = task.in_order ? task.target?.[built.length] : undefined;
+    const nextTarget = task.in_order ? task.target?.[this.firstMissingTarget(task, taskState)] : undefined;
     const showNextHint = !!task.in_order && !!taskState.buildHint;
     let hintAttached = false;
     const cards = this.setCards(task).map((text, index) => {
@@ -1667,7 +1704,7 @@ export class CourseSession {
         hintAttached = true;
       }
       return {
-        text,
+        id, text,
         used,
         hint,
         shake: this.shakeCard === text,
@@ -1687,6 +1724,7 @@ export class CourseSession {
         remaining: task.in_order ? Math.max(0, (task.target?.length ?? 0) - built.length) : 0,
         revealed: taskState.status === 'shown' ? task.answer_text : undefined,
         cards,
+        placed: built.map((text, index) => ({ id: this.buildCardIds(task, taskState)[index], text })),
       },
       wordGrid: {
         groups: [{ id: 'set', label: this.zh ? '本题词块' : 'Sentence set', words: taskWords }],
@@ -1697,11 +1735,17 @@ export class CourseSession {
 
   private frameModel(task: AlexTask, key: string, taskState: TaskProgress): Pick<ActivityModel, 'frame' | 'wordGrid'> {
     const parts = (task.frameFill?.frame ?? '').split('___');
+    const pureCards = task.id === 'ts8' && this.screens[this.state.screen]?.screen.id === 'L2-04.t.ts8';
     const blanks = (task.frameFill?.blanks ?? []).map((blank, index) => ({
       label: blank.label,
       value: taskState.blanks?.[index] ?? '',
       minWords: blank.min_words,
     }));
+    const savedTiles = taskState.frameTileIds ?? (taskState.frameCardPlacements
+      ? blanks.map((_, index) => taskState.frameCardPlacements!
+          .filter(placement => placement.blank === index)
+          .sort((a,b)=>a.start-b.start).map(placement=>placement.id))
+      : blanks.map(()=>[]));
     const page = this.pageOf(this.screens[this.state.screen].screen.page);
     const level = page?.grid?.level && page.grid.level !== 'off' ? page.grid.level : 'chunks';
     return {
@@ -1709,6 +1753,11 @@ export class CourseSession {
         parts,
         blanks,
         focus: taskState.focusBlank ?? 0,
+        pureCards,
+        tiles: savedTiles.map((ids, index) => ids.map(id => ({
+          id,
+          text: this.frameTokenText(task, id) || (taskState.blanks?.[index] ?? ''),
+        }))),
       },
       wordGrid: (() => {
         const grid = this.trioGrid(
@@ -1717,9 +1766,11 @@ export class CourseSession {
           level,
           task,
         );
-        const used = new Set((taskState.frameCardPlacements ?? []).map(placement => placement.id));
+        const used = new Set(savedTiles.flat());
         return { ...grid, groups: grid.groups.map(group => ({
-          ...group, words: group.words.map(word => ({ ...word, used: used.has(word.id) })),
+          ...group, words: group.words
+            .filter(word => !pureCards || word.text.trim().toLowerCase() !== 'because')
+            .map(word => ({ ...word, used: used.has(word.id) })),
         })) };
       })(),
     };
@@ -2120,23 +2171,67 @@ export class CourseSession {
     });
   }
 
+  /** R12 guided-order slots are persisted beside card IDs: same-text tiles stay distinct. */
+  private buildTargetSlots(task: AlexTask, taskState: TaskProgress): number[] {
+    const built = taskState.built ?? [];
+    const stored = taskState.builtTargetSlots;
+    if (stored?.length === built.length &&
+      stored.every((slot,index) => task.target?.[slot] === built[index]) &&
+      new Set(stored).size === stored.length) return stored;
+    // Migrate older text-only builds by matching each occurrence once in order.
+    const used = new Set<number>();
+    return built.map(token => {
+      const index = (task.target ?? []).findIndex((value,slot)=>value===token&&!used.has(slot));
+      if (index>=0) used.add(index);
+      return index;
+    });
+  }
+
+  private firstMissingTarget(task: AlexTask, taskState: TaskProgress): number {
+    const used=new Set(this.buildTargetSlots(task,taskState));
+    const index=(task.target ?? []).findIndex((_,slot)=>!used.has(slot));
+    return index<0?(task.target?.length ?? 0):index;
+  }
+
+  /** Answer tiles share the same stable card identity as WordGrid. */
+  removeBuildCard(cardId: string): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (!screen?.task) return;
+    const task = this.task(screen.task);
+    if (task.type !== 'build') return;
+    const state = this.taskState(this.taskKey(screen));
+    if (state.status !== 'open') return;
+    const ids = this.buildCardIds(task, state);
+    const at = ids.indexOf(cardId);
+    if (at < 0) return;
+    const slots=this.buildTargetSlots(task,state);
+    state.built?.splice(at, 1);
+    ids.splice(at, 1);
+    slots.splice(at,1);
+    state.builtCardIds = ids;
+    state.builtTargetSlots=slots;
+    state.buildHint = false;
+    state.buildMissStreak = 0;
+    this.state.regions[this.taskKey(screen)] = [{ t: this.benchFrom(state.built ?? []), s: 'set' }];
+    this.save();
+    this.emit();
+  }
+
   private buildTap(task: AlexTask, key: string, cellText: string, cardId?: string): void {
     const taskState = this.taskState(key);
     if (taskState.status !== 'open') return;
     taskState.built = taskState.built ?? [];
     const ids = this.buildCardIds(task, taskState);
+    const slots=this.buildTargetSlots(task,taskState);
     const selectedIndex = cardId ? ids.indexOf(cardId) : -1;
     if (selectedIndex >= 0) {
-      // Guided ordered-build: used chips are locked before Check (PRODUCT §12.7).
-      // Free build and other retractable surfaces still remove only this slot.
-      if (task.in_order) {
-        this.shakeCard = null;
-        this.emit();
-        return;
-      }
+      // Guided bank keeps Used chips locked; the answer bench owns retract.
+      if (task.in_order) return;
       taskState.built.splice(selectedIndex, 1);
       ids.splice(selectedIndex, 1);
+      slots.splice(selectedIndex, 1);
       taskState.builtCardIds = ids;
+      taskState.builtTargetSlots=slots;
       this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
       this.shakeCard = null;
       this.save();
@@ -2144,7 +2239,7 @@ export class CourseSession {
       return;
     }
     if (task.in_order) {
-      const want = task.target?.[taskState.built.length];
+      const want = task.target?.[this.firstMissingTarget(task, taskState)];
       if (cellText !== want) {
         const taps = { ...(taskState.wrongTaps ?? {}) };
         taps[cellText] = (taps[cellText] ?? 0) + 1;
@@ -2182,10 +2277,15 @@ export class CourseSession {
     this.shakeCard = null;
     taskState.buildMissStreak = 0;
     taskState.buildHint = false;
-    taskState.built.push(cellText);
+    const missing = this.firstMissingTarget(task, taskState);
+    const position = task.in_order ? slots.filter(slot=>slot<missing).length : taskState.built.length;
     const available = this.setCards(task).map((text, index) => ({ text, id: `${text}-${index}` }));
     const nextId = cardId ?? available.find(card => card.text === cellText && !ids.includes(card.id))?.id ?? `legacy-${ids.length}`;
-    taskState.builtCardIds = [...ids, nextId];
+    taskState.built.splice(position, 0, cellText);
+    ids.splice(position, 0, nextId);
+    slots.splice(position, 0, missing);
+    taskState.builtCardIds = ids;
+    taskState.builtTargetSlots = slots;
     this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
     this.save();
     this.emit();
@@ -2214,9 +2314,56 @@ export class CourseSession {
 
   /** Frame text and selected-card appearance share this one persisted task record.
    * Each placement points to a stable card ID and exact current blank substring. */
-  private toggleFrameCard(key: string, cardId: string, text: string): void {
+  private frameTokenText(task: AlexTask, cardId: string): string | null {
+    const page = this.pageOf(this.screens[this.state.screen].screen.page);
+    const level = page?.grid?.level && page.grid.level !== 'off' ? page.grid.level : 'chunks';
+    const words = this.trioGrid('lookup', (task.cells ?? []).map((cell,index)=>({
+      id:`task-${index}-${this.cellText(cell)}`,text:this.cellText(cell),
+    })), level, task).groups.flatMap(group=>group.words);
+    return words.find(word=>word.id===cardId)?.text ?? null;
+  }
+
+  /** Pure Q5 word-card placement uses stable IDs and two independent sequences. */
+  removeFrameCard(cardId: string): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.id !== 'L2-04.t.ts8' || !screen.task) return;
+    const task = this.task(screen.task);
+    this.toggleFrameCard(this.taskKey(screen),cardId,this.frameTokenText(task,cardId) ?? '',true);
+  }
+
+  private toggleFrameCard(key: string, cardId: string, text: string, fromAnswer = false): void {
     const state = this.taskState(key);
     if (state.status !== 'open') return;
+    const screen = this.screens[this.state.screen]?.screen;
+    const task = screen?.task ? this.task(screen.task) : null;
+    if (task?.id === 'ts8' && screen?.id === 'L2-04.t.ts8') {
+      const blankCount = task.frameFill?.blanks.length ?? 2;
+      const ids = state.frameTileIds ?? Array.from({length:blankCount},(_,index)=>
+        (state.frameCardPlacements ?? []).filter(p=>p.blank===index)
+          .sort((a,b)=>a.start-b.start).map(p=>p.id));
+      const at = ids.findIndex(row=>row.includes(cardId));
+      if (at>=0) {
+        // Used grid chips stay locked. Only answer-area tile buttons can undo.
+        if (!fromAnswer) return;
+        ids[at] = ids[at].filter(id=>id!==cardId);
+        state.focusBlank = at;
+      } else {
+        if (text.trim().toLowerCase()==='because') return;
+        const target = Math.min(Math.max(0,state.focusBlank??0),blankCount-1);
+        ids[target] = [...ids[target],cardId];
+      }
+      state.frameTileIds=ids;
+      // Reconstruct the authored string from actual token text (not tile count).
+      // Whitespace and multiword cards are handled by the same existing smartInsert.
+      state.blanks=ids.map(row=>row
+        .map(id=>this.frameTokenText(task,id) ?? '')
+        .filter(Boolean).reduce((text,part)=>/^[.,!?]$/.test(part)
+          ? text.replace(/\s+$/,'')+part : text ? text+' '+part : part,'').trim());
+      state.frameCardPlacements=[];
+      this.save(true);
+      this.emit();
+      return;
+    }
     const blanks = state.blanks ?? [];
     const placements = state.frameCardPlacements ?? [];
     const existing = placements.find(card => card.id === cardId);
@@ -2560,13 +2707,30 @@ export class CourseSession {
       this.emit();
       return;
     }
+    const guided = task.id === 'ts3' && this.screens[this.state.screen]?.screen.id === 'L2-04.t.ts3';
+    if (guided) {
+      const answers = task.answers ?? [];
+      const hasWrong = picked.some(index => !answers.includes(index));
+      if (!hasWrong && picked.length < answers.length) {
+        const signature = picked.slice().sort((a,b)=>a-b).join(',');
+        if (taskState.lastPartialSignature === signature) return;
+        taskState.lastPartialSignature = signature;
+        this.say(this.zh
+          ? '找得不错！你已经找到一个观点句了。还能再找到其他观点句吗？'
+          : 'Great start! You found an opinion. Can you find any more?', 'correct');
+        this.log('pick_partial', { task: task.id });
+        this.save();
+        this.emit();
+        return;
+      }
+    }
     const grade = this.engine.choiceGrade(task, picked);
     taskState.tries += 1;
     if (grade.correct) {
       this.finish(task, key, 'done');
       return;
     }
-    if (taskState.tries >= 2) {
+    if (taskState.tries >= (guided ? 3 : 2)) {
       taskState.wrong = picked.filter((index) => !(task.answers ?? []).includes(index));
       this.finish(task, key, 'shown');
       return;

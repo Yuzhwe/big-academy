@@ -205,7 +205,7 @@ function SolarBorderCanvas({params,enabled,onRuntime,fit,hybridControlGlow}:{
   return <canvas className="solar-border-canvas" ref={canvasRef} aria-hidden="true"/>;
 }
 
-export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled=true,fit='card',forceFallback=false,hybridControlGlow=false}:{
+export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled=true,fit='card',forceFallback=false,hybridControlGlow=false,controlCssGlow}:{
   children:ReactNode;params?:SolarParameters;motionEnabled?:boolean;
   /** card = lesson Current glow (default). control = path-controls pill / button wrap. */
   fit?:'card'|'control';
@@ -213,6 +213,8 @@ export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled
   forceFallback?:boolean;
   /** R11 · library-only candidate. Never enabled by the Writing page before Joe approval. */
   hybridControlGlow?:boolean;
+  /** Library experimental CSS edge-glow knobs. Not supplied in Writing. */
+  controlCssGlow?: { edge:number; blur:number; spread:number; opacity:number; color:string };
 }){
   const [runtime,setRuntime]=useState<SolarRuntime>('paused');
   const [systemReduced,setSystemReduced]=useState(()=>typeof window!=='undefined'&&
@@ -227,7 +229,13 @@ export function SolarLessonPreview({children,params=SOLAR_DEFAULTS,motionEnabled
   const enabled=motionEnabled&&!forceFallback&&!systemReduced&&runtime!=='fallback';
   const shineOn=enabled&&fit==='card';
   return <div className="solar-lesson-preview" data-current="true" data-solar-fit={fit}
-    style={{'--ba-solar-border-color':params.borderColor} as CSSProperties}
+    style={{'--ba-solar-border-color':params.borderColor,
+      '--ba-control-css-edge':controlCssGlow?.edge ?? 2,
+      '--ba-control-css-blur':`${controlCssGlow?.blur ?? 7}px`,
+      '--ba-control-css-spread':`${controlCssGlow?.spread ?? 2}px`,
+      '--ba-control-css-opacity':controlCssGlow?.opacity ?? .42,
+      '--ba-control-css-color':controlCssGlow?.color ?? '#FFA82E',
+    } as CSSProperties}
     data-solar-hybrid-control={fit==='control'&&hybridControlGlow?'true':'false'}
     data-solar-status={runtime==='active'&&enabled?'active':'fallback'}
     data-shine={shineOn?'on':'off'}>

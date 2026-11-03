@@ -177,3 +177,21 @@
   font-size: 13px;
   color: #743c1e;
 }
+
+/* R12-02 · independent candidate controls; no shared Lesson Current tokens. */
+.path-back-tuner {
+  margin-top:22px; padding:18px; border:1px solid #d9cbb8; border-radius:16px;
+  background:#fff; color:#133547; width:100%; box-sizing:border-box;
+}
+.path-back-tuner h3 { margin:0 0 8px; font:800 20px/1.3 Dosis,sans-serif; }
+.path-back-tuner p { margin:0 0 14px; font:400 13px/1.5 Jost,sans-serif; }
+.path-back-tuner__modes,.path-back-tuner__actions { display:flex;flex-wrap:wrap;gap:8px;margin:12px 0; }
+.path-back-tuner__modes button[aria-pressed='true'] {background:#9b4f36;color:#fff; }
+.path-back-tuner__grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+.path-back-tuner__grid fieldset {min-width:0;border:1px solid #d9cbb8;border-radius:12px;padding:12px;}
+.path-back-tuner__field {display:flex;flex-direction:column;gap:5px;margin:9px 0;}
+.path-back-tuner__field span {display:flex;justify-content:space-between;gap:12px;font-size:12px;}
+.path-back-tuner__field output {font-variant-numeric:tabular-nums;}
+.path-back-tuner__field input[type='range'] {width:100%;accent-color:#9b4f36;}
+.path-back-tuner button:focus-visible,.path-back-tuner input:focus-visible {outline:2px solid #b25415;outline-offset:3px;}
+@media(max-width:490px){.path-back-tuner {padding:12px;} }

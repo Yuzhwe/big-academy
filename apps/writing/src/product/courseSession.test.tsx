@@ -340,7 +340,7 @@ describe('Lesson 1 screens 5–8', () => {
     await user.click(screen.getByRole('button', { name: /^our(?: ·.*)?$/ }));
     expect(screen.getByTestId('bench-text')).toHaveTextContent(/our/i);
     expect(screen.getAllByTestId('bench-blank')).toHaveLength(10);
-    expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(0);
+    expect(screen.getByTestId('build-bench').querySelectorAll('button')).toHaveLength(1);
     expect(course.inspect().tasks[taskKey]?.built).toEqual(['our']);
     expect(course.inspect().tasks[taskKey]?.buildHint).toBe(false);
     expect(course.inspect().tasks[taskKey]?.buildMissStreak).toBe(0);
@@ -398,8 +398,17 @@ describe('integration v1 recovery and assessment boundaries',()=>{
   const storage=createMemoryStorage();const course=session('',storage);course.openLesson('G2-O',1);course.pressPrimary();course.pick(0);course.pressPrimary();const feedback=course.feedback;
   const restored=session('',storage);restored.openLesson('G2-O',1);expect(restored.activity()?.feedback).toBe(feedback);expect(restored.inspect().tasks['L2-04.skill:ts1'].tries).toBe(1);
  });
- it('inserts in a focused frame blank at the caret',()=>{
-  const course=session();reach(course,s=>s.task==='ts8');course.setBlank(1,'kids play');course.focusBlank(1);course.setCaret(5,5);course.placeCard('need');expect(course.activity()?.frame?.blanks[1].value).toBe('kids need play');
+ it('composes two independent Q5 blanks from stable WordGrid cards',()=>{
+   const course=session();reach(course,s=>s.task==='ts8');
+   const words=course.activity()?.wordGrid?.groups.flatMap(group=>group.words)??[];
+   const card=(text:string)=>words.find(word=>word.text===text)!;
+   expect(course.activity()?.frame?.pureCards).toBe(true);
+   course.placeCard('be longer',card('be longer').id);
+   course.focusBlank(1);
+   course.placeCard('kids need',card('kids need').id);
+   expect(course.activity()?.frame?.blanks.map(blank=>blank.value)).toEqual(['be longer','kids need']);
+   course.removeFrameCard(card('kids need').id);
+   expect(course.activity()?.frame?.blanks.map(blank=>blank.value)).toEqual(['be longer','']);
  });
  it('preserves pasted and word-grid source spans while typing elsewhere',()=>{
   const course=session();reach(course,s=>s.kind==='apply');course.markPaste();course.setCanvas('Our garden.');course.setCaret(4,4);course.placeCard('school');course.setCanvas('Our school garden. More');
@@ -680,6 +689,70 @@ describe('Reset confirm-formal',()=>{
   });
 });
 
+describe('R12 pending-product interaction contracts', () => {
+  it('treats one/two correct Q3 picks as non-grading discovery, then completes A+C+E', () => {
+    const course=session();reach(course,ref=>ref.task==='ts3');
+    const key='L2-04.skill:ts3';
+    expect(course.footer().primaryDisabled).toBe(true);
+    course.pick(0);course.pressPrimary();
+    expect(course.inspect().tasks[key].tries).toBe(0);
+    expect(course.inspect().tasks[key].status).toBe('open');
+    expect(course.activity()?.pick?.options.filter(x=>x.state==='correctUnselected')).toHaveLength(0);
+    const events=course.inspect().events.filter(e=>e.type==='pick_partial').length;
+    course.pressPrimary();
+    expect(course.inspect().events.filter(e=>e.type==='pick_partial')).toHaveLength(events);
+    course.pick(2);course.pressPrimary();
+    expect(course.inspect().tasks[key].tries).toBe(0);
+    course.pick(4);course.pressPrimary();
+    expect(course.inspect().tasks[key].status).toBe('done');
+    expect(course.inspect().tasks[key].tries).toBe(1);
+  });
+  it('Q3 wrong picks reset on edit, and third wrong Check reveals without correct credit', () => {
+    const course=session();reach(course,ref=>ref.task==='ts3');
+    const key='L2-04.skill:ts3';
+    course.pick(0);course.pick(1);course.pressPrimary();
+    expect(course.inspect().tasks[key].tries).toBe(1);
+    expect(course.activity()?.pick?.options[1].state).toBe('wrong');
+    expect(course.activity()?.pick?.options[0].state).toBe('selected');
+    course.pick(1);
+    expect(course.inspect().tasks[key].picked).toEqual([0]);
+    expect(course.activity()?.pick?.options[1].state).toBe('default');
+    course.pick(1);course.pressPrimary();
+    expect(course.inspect().tasks[key].tries).toBe(2);
+    course.pressPrimary();
+    expect(course.inspect().tasks[key].status).toBe('shown');
+    expect(course.inspect().tasks[key].tries).toBe(3);
+    expect(course.canNext(course.inspect().screen)).toBe(true);
+    expect(course.activity()?.pick?.options.filter(x=>x.state==='correctUnselected')).toHaveLength(3);
+    expect(course.practiceBurst).toBeNull();
+  });
+  it('Q3 hint followed by explicit Show answers reveals without granting mastery', () => {
+    const course=session();reach(course,ref=>ref.task==='ts3');
+    course.pick(0);course.pressPrimary();
+    expect(course.activity()?.showAnswers).toBe(false);
+    course.openHint();
+    expect(course.activity()?.showAnswers).toBe(true);
+    expect(course.inspect().tasks['L2-04.skill:ts3'].tries).toBe(0);
+    course.showGuidedAnswers();
+    expect(course.inspect().tasks['L2-04.skill:ts3'].status).toBe('shown');
+    expect(course.practiceBurst).toBeNull();
+  });
+  it('Q5 pure word cards can produce a legitimate authored frameFill answer', () => {
+    const course=session();reach(course,ref=>ref.task==='ts8');
+    const words=course.activity()?.wordGrid?.groups.flatMap(group=>group.words)??[];
+    const add=(text:string)=>{ const word=words.find(w=>w.text===text);
+      expect(word,text).toBeDefined();course.placeCard(word!.text,word!.id); };
+    add('be longer');
+    course.focusBlank(1);
+    add('kids need');add('time to run');add('and play');
+    expect(course.activity()?.frame?.blanks.map(x=>x.value))
+      .toEqual(['be longer','kids need time to run and play']);
+    expect(course.primaryReady()).toBe(true);
+    course.pressPrimary();
+    expect(course.inspect().tasks['L2-04.skill:ts8']?.status).toBe('done');
+  });
+});
+
 describe('Review 06 acceptance gates', () => {
   it('keeps every runtime lesson free from standalone P2/P7 while preserving all nine lesson records', () => {
     const course = session();
@@ -704,7 +777,7 @@ describe('Review 06 acceptance gates', () => {
 
 
 describe('Review 06 final refinement: reversible WordGrid and correct-target semantics', () => {
-  it('locks used ordered-build tiles before Check (re-tap is a no-op)', () => {
+  it('retracts ordered-build tiles by stable ID and restores target order', () => {
     const course = session();
     reach(course, screen => screen.task === 'ss.L2-04');
     const group = course.activity()?.wordGrid?.groups[0];
@@ -716,14 +789,15 @@ describe('Review 06 final refinement: reversible WordGrid and correct-target sem
     course.placeCard(school!.text, school!.id);
     expect(course.activity()?.build?.bench).toMatch(/our school/i);
     expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(true);
-    // Re-tap used chip must NOT retract from the bench.
+    course.removeBuildCard(our!.id);
+    expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['school']);
+    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(false);
     course.placeCard(our!.text, our!.id);
     expect(course.inspect().tasks['L2-04.skill:ss.L2-04']?.built).toEqual(['our', 'school']);
     expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === our!.id)?.used).toBe(true);
-    expect(course.activity()?.wordGrid?.groups[0].words.find(word => word.id === school!.id)?.used).toBe(true);
   });
 
-  it('removes only the corresponding frame fill when reselecting its stable card ID', () => {
+  it('removes only the corresponding Q5 answer tile via its stable card ID', () => {
     const course = session();
     reach(course, screen => screen.task === 'ts8');
     const word = course.activity()?.wordGrid?.groups[0].words[0];
@@ -734,7 +808,9 @@ describe('Review 06 final refinement: reversible WordGrid and correct-target sem
     // Sentence-initial capitalization is intentional: compare the card text case-insensitively.
     expect(course.activity()?.frame?.blanks[0].value.toLocaleLowerCase()).toContain(word!.text.trim().toLocaleLowerCase());
     expect(course.activity()?.wordGrid?.groups[0].words[0].used).toBe(true);
-    course.placeCard(word!.text, word!.id);
+    course.placeCard(word!.text, word!.id); // Used grid chip remains inert.
+    expect(course.activity()?.frame?.blanks[0].value).not.toBe('');
+    course.removeFrameCard(word!.id);
     expect(course.activity()?.frame?.blanks[0].value).toBe('');
     expect(course.activity()?.wordGrid?.groups[0].words[0].used).toBe(false);
   });
@@ -804,27 +880,20 @@ describe('Q5 frame fill ts8 (Joe-confirmed brief)', () => {
     expect(course.feedback).toMatch(/Yes\.|对。/);
   });
 
-  it('moves focus to the next blank on Tab and widens the underline size with content', async () => {
-    const user = userEvent.setup();
-    const course = session();
-    reach(course, (screen) => screen.task === 'ts8');
-    render(<CourseApp session={course} />);
-    const frame = screen.getByTestId('frame');
-    expect(frame).toBeInTheDocument();
-    const first = screen.getByTestId('frame-blank-0') as HTMLInputElement;
-    const second = screen.getByTestId('frame-blank-1') as HTMLInputElement;
-    expect(first.size).toBeGreaterThanOrEqual(8);
-    first.focus();
-    await user.type(first, 'be longer');
-    expect(first.size).toBeGreaterThanOrEqual('be longer'.length);
-    await user.keyboard('{Tab}');
-    expect(document.activeElement).toBe(second);
+  it('navigates two pure-card blanks by keyboard and composes without typing', async () => {
+    const user=userEvent.setup();
+    const course=session();
+    reach(course, screen=>screen.task==='ts8');
+    render(<CourseApp session={course}/>);
+    const frame=screen.getByTestId('frame');
+    expect(frame.querySelector('input')).toBeNull();
+    const first=screen.getByRole('button',{name:'Select blank 1'});
+    const second=screen.getByRole('button',{name:'Select blank 2'});
+    expect(first).toHaveAttribute('aria-pressed','true');
+    await user.click(second);
+    expect(second).toHaveAttribute('aria-pressed','true');
     expect(course.activity()?.frame?.focus).toBe(1);
-    // jsdom does not resolve CSS variables; assert the Writing token is wired on the frame + input.
-    expect(frame.className).toContain('course-frame');
-    expect(first.size).toBeGreaterThanOrEqual(8);
-    // Presence of data attributes + size growth covers the interaction brief; 24px is verified on 5173.
-    expect(first.getAttribute('data-frame-blank')).toBe('0');
-    expect(second.getAttribute('data-frame-blank')).toBe('1');
+    await user.keyboard('{Tab}');
+    expect(document.activeElement).not.toBe(first);
   });
 });

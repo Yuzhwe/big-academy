@@ -339,6 +339,11 @@ function LessonView({ session,lowMotion,onResetLesson }: { session: CourseSessio
                   {hintLabel}
                 </BAButton>
               ) : null}
+              {activity.showAnswers ? (
+                <BAButton variant="secondary" locale={session.locale} onPress={() => session.showGuidedAnswers()}>
+                  {session.zh ? '展示答案' : 'Show answers'}
+                </BAButton>
+              ) : null}
             </div>
           </div>
         }
@@ -686,7 +691,17 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
             </p>
           ) : (
             <p className="course-bench" lang="en" data-testid="build-bench" data-ordered={activity.build.ordered ? 'true' : undefined}>
-              {activity.build.bench ? <span data-testid="bench-text">{activity.build.bench}</span> : null}
+              {activity.build.placed.length ? (
+                <span className="course-bench__tiles" data-testid="bench-text" aria-label={activity.build.bench}>
+                  {activity.build.placed.map((tile,index) => (
+                    <button key={tile.id} type="button" data-testid="bench-tile"
+                      className="course-bench__tile"
+                      disabled={session.currentTaskClosed()}
+                      aria-label={session.zh ? `撤回第 ${index+1} 个词块：${tile.text}` : `Remove word ${index+1}: ${tile.text}`}
+                      onClick={() => session.removeBuildCard(tile.id)}>{tile.text}</button>
+                  ))}
+                </span>
+              ) : null}
               {activity.build.ordered
                 ? Array.from({ length: activity.build.remaining ?? 0 }, (_, index) => (
                     <span key={index} className="course-bench__blank" data-testid="bench-blank" />
@@ -711,34 +726,39 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
               <span key={`${part}-${index}`}>
                 {part}
                 {index < activity.frame!.blanks.length ? (
-                  <input
-                    data-testid={`frame-blank-${index}`}
-                    data-frame-blank={index}
-                    aria-label={activity.frame!.blanks[index].label || (session.zh ? `空 ${index + 1}` : `Blank ${index + 1}`)}
-                    value={activity.frame!.blanks[index].value}
-                    size={Math.max(8, (activity.frame!.blanks[index].value.length || 0) + 2)}
-                    style={{ width: `${Math.max(8, (activity.frame!.blanks[index].value.length || 0) + 2)}ch` }}
-                    readOnly={session.currentTaskClosed()}
-                    onFocus={(event) => { session.focusBlank(index); rememberCaret(event.currentTarget); }}
-                    onSelect={(event) => rememberCaret(event.currentTarget)}
-                    onChange={(event) => session.setBlank(index, event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'Tab' || event.altKey || event.ctrlKey || event.metaKey) return;
-                      const blankCount = activity.frame!.blanks.length;
-                      const next = event.shiftKey ? index - 1 : index + 1;
-                      if (next < 0 || next >= blankCount) return;
-                      event.preventDefault();
-                      session.focusBlank(next);
-                      const root = event.currentTarget.closest('[data-testid="frame"]');
-                      const target = root?.querySelector<HTMLInputElement>(`[data-frame-blank="${next}"]`);
-                      if (target) {
-                        target.focus();
-                        const caret = target.value.length;
-                        target.setSelectionRange(caret, caret);
-                        rememberCaret(target);
-                      }
-                    }}
-                  />
+                  activity.frame!.pureCards ? (
+                    <span className="course-frame__blank" data-testid={`frame-blank-${index}`}
+                      data-active={activity.frame!.focus===index}
+                      data-blank={index}>
+                      <button type="button" className="course-frame__blank-select"
+                        aria-label={session.zh ? `选择空 ${index+1}` : `Select blank ${index+1}`}
+                        aria-pressed={activity.frame!.focus===index}
+                        disabled={session.currentTaskClosed()}
+                        onClick={()=>session.focusBlank(index)}>
+                        {activity.frame!.tiles[index]?.length ? '' : '___'}
+                        <span className="course-sr">{session.zh ? '当前填空' : 'Answer slot'}</span>
+                      </button>
+                      {activity.frame!.tiles[index]?.map(tile=>(
+                        <button key={tile.id} type="button" className="course-frame__tile"
+                          data-testid="frame-tile" disabled={session.currentTaskClosed()}
+                          aria-label={session.zh ? `撤回词块：${tile.text}` : `Remove phrase: ${tile.text}`}
+                          onClick={()=>session.removeFrameCard(tile.id)}>{tile.text}</button>
+                      ))}
+                    </span>
+                  ) : (
+                    <input
+                      data-testid={`frame-blank-${index}`}
+                      data-frame-blank={index}
+                      aria-label={activity.frame!.blanks[index].label || (session.zh ? `空 ${index+1}` : `Blank ${index+1}`)}
+                      value={activity.frame!.blanks[index].value}
+                      size={Math.max(8,(activity.frame!.blanks[index].value.length || 0)+2)}
+                      style={{width:`${Math.max(8,(activity.frame!.blanks[index].value.length || 0)+2)}ch`}}
+                      readOnly={session.currentTaskClosed()}
+                      onFocus={event=>{session.focusBlank(index);rememberCaret(event.currentTarget);}}
+                      onSelect={event=>rememberCaret(event.currentTarget)}
+                      onChange={event=>session.setBlank(index,event.target.value)}
+                    />
+                  )
                 ) : null}
               </span>
             ))}
@@ -764,7 +784,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
               onChange={text => session.setCanvas(text)}
               wordGrid={activity.wordGrid ? (
                 <WordGrid
-                  groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() })) }))}
+                  groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() || Boolean(word.used) })) }))}
                   activeGroup={activity.wordGrid.active}
                   locale={session.locale}
                   onGroupChange={key => session.selectGrid(key)}
@@ -796,7 +816,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.kind !== 'apply' && activity.wordGrid ? (
         <WordGrid
-          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() })) }))}
+          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() || Boolean(word.used) })) }))}
           activeGroup={activity.wordGrid.active}
           locale={session.locale}
           onGroupChange={(key) => session.selectGrid(key)}
