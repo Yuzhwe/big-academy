@@ -784,7 +784,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
               onChange={text => session.setCanvas(text)}
               wordGrid={activity.wordGrid ? (
                 <WordGrid
-                  groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() })) }))}
+                  groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() || Boolean(word.used) })) }))}
                   activeGroup={activity.wordGrid.active}
                   locale={session.locale}
                   onGroupChange={key => session.selectGrid(key)}
@@ -816,7 +816,7 @@ function ActivityBody({ session, activity }: { session: CourseSession; activity:
       ) : null}
       {activity.kind !== 'apply' && activity.wordGrid ? (
         <WordGrid
-          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() })) }))}
+          groups={activity.wordGrid.groups.map(group => ({ ...group, words: group.words.map(word => ({ ...word, selection: word.used ? (activity.build ? 'used' as const : 'selected' as const) : 'default' as const, disabled: session.currentTaskClosed() || Boolean(word.used) })) }))}
           activeGroup={activity.wordGrid.active}
           locale={session.locale}
           onGroupChange={(key) => session.selectGrid(key)}
