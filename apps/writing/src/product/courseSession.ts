@@ -225,7 +225,9 @@ export interface ActivityModel {
     revealed?: string;
     ordered?: boolean;
     remaining?: number;
-    cards: { text: string; used: boolean; hint: boolean; shake: boolean }[];
+    cards: { id: string; text: string; used: boolean; hint: boolean; shake: boolean }[];
+    /** Placed tiles are stable-ID interactive tokens in the target reading order. */
+    placed: { id: string; text: string }[];
   };
   frame?: {
     parts: string[];
@@ -1655,7 +1657,7 @@ export class CourseSession {
     const selectedIds = new Set(this.buildCardIds(task, taskState));
     // After 3 wrong taps toward the current next target, attach the hint to that
     // next-target card (not the wrongly tapped card). Joe BA brief Q4 frequency.
-    const nextTarget = task.in_order ? task.target?.[built.length] : undefined;
+    const nextTarget = task.in_order ? task.target?.[this.firstMissingTarget(task, built)] : undefined;
     const showNextHint = !!task.in_order && !!taskState.buildHint;
     let hintAttached = false;
     const cards = this.setCards(task).map((text, index) => {
@@ -1667,7 +1669,7 @@ export class CourseSession {
         hintAttached = true;
       }
       return {
-        text,
+        id, text,
         used,
         hint,
         shake: this.shakeCard === text,
@@ -1687,6 +1689,7 @@ export class CourseSession {
         remaining: task.in_order ? Math.max(0, (task.target?.length ?? 0) - built.length) : 0,
         revealed: taskState.status === 'shown' ? task.answer_text : undefined,
         cards,
+        placed: built.map((text, index) => ({ id: this.buildCardIds(task, taskState)[index], text })),
       },
       wordGrid: {
         groups: [{ id: 'set', label: this.zh ? '本题词块' : 'Sentence set', words: taskWords }],
@@ -2120,6 +2123,45 @@ export class CourseSession {
     });
   }
 
+  /** Earliest missing target, not built.length: permits mid-bench undo/refill. */
+  private firstMissingTarget(task: AlexTask, built: string[]): number {
+    let cursor = 0;
+    for (const token of built) {
+      while (cursor < (task.target?.length ?? 0) && task.target?.[cursor] !== token) cursor++;
+      if (cursor < (task.target?.length ?? 0)) cursor++;
+    }
+    const matched = new Set<number>();
+    let next = 0;
+    for (const token of built) {
+      while (next < (task.target?.length ?? 0) && task.target?.[next] !== token) next++;
+      if (next < (task.target?.length ?? 0)) matched.add(next++);
+    }
+    return (task.target ?? []).findIndex((_, index) => !matched.has(index)) < 0
+      ? (task.target?.length ?? 0)
+      : (task.target ?? []).findIndex((_, index) => !matched.has(index));
+  }
+
+  /** Answer tiles share the same stable card identity as WordGrid. */
+  removeBuildCard(cardId: string): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (!screen?.task) return;
+    const task = this.task(screen.task);
+    if (task.type !== 'build') return;
+    const state = this.taskState(this.taskKey(screen));
+    if (state.status !== 'open') return;
+    const ids = this.buildCardIds(task, state);
+    const at = ids.indexOf(cardId);
+    if (at < 0) return;
+    state.built?.splice(at, 1);
+    ids.splice(at, 1);
+    state.builtCardIds = ids;
+    state.buildHint = false;
+    state.buildMissStreak = 0;
+    this.state.regions[this.taskKey(screen)] = [{ t: this.benchFrom(state.built ?? []), s: 'set' }];
+    this.save();
+    this.emit();
+  }
+
   private buildTap(task: AlexTask, key: string, cellText: string, cardId?: string): void {
     const taskState = this.taskState(key);
     if (taskState.status !== 'open') return;
@@ -2127,13 +2169,7 @@ export class CourseSession {
     const ids = this.buildCardIds(task, taskState);
     const selectedIndex = cardId ? ids.indexOf(cardId) : -1;
     if (selectedIndex >= 0) {
-      // Guided ordered-build: used chips are locked before Check (PRODUCT §12.7).
-      // Free build and other retractable surfaces still remove only this slot.
-      if (task.in_order) {
-        this.shakeCard = null;
-        this.emit();
-        return;
-      }
+      // All build variants now permit removing only the selected placed tile.
       taskState.built.splice(selectedIndex, 1);
       ids.splice(selectedIndex, 1);
       taskState.builtCardIds = ids;
@@ -2144,7 +2180,7 @@ export class CourseSession {
       return;
     }
     if (task.in_order) {
-      const want = task.target?.[taskState.built.length];
+      const want = task.target?.[this.firstMissingTarget(task, taskState.built)];
       if (cellText !== want) {
         const taps = { ...(taskState.wrongTaps ?? {}) };
         taps[cellText] = (taps[cellText] ?? 0) + 1;
@@ -2182,10 +2218,16 @@ export class CourseSession {
     this.shakeCard = null;
     taskState.buildMissStreak = 0;
     taskState.buildHint = false;
-    taskState.built.push(cellText);
+    const missing = this.firstMissingTarget(task, taskState.built);
+    const position = task.in_order
+      ? (task.target ?? []).slice(0, missing).filter((_, i) => i < (task.target?.length ?? 0))
+          .length - (task.target ?? []).slice(0, missing).filter((word) => !taskState.built?.includes(word)).length
+      : taskState.built.length;
     const available = this.setCards(task).map((text, index) => ({ text, id: `${text}-${index}` }));
     const nextId = cardId ?? available.find(card => card.text === cellText && !ids.includes(card.id))?.id ?? `legacy-${ids.length}`;
-    taskState.builtCardIds = [...ids, nextId];
+    taskState.built.splice(position, 0, cellText);
+    ids.splice(position, 0, nextId);
+    taskState.builtCardIds = ids;
     this.state.regions[key] = [{ t: this.benchFrom(taskState.built), s: 'set' }];
     this.save();
     this.emit();
