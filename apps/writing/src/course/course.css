@@ -970,3 +970,37 @@
 .lesson-test-modal h2 { font-family:var(--ba-type-heading-family); font-weight:800; margin-top:0; }
 .lesson-test-actions { display:flex; justify-content:flex-end; gap:var(--ba-space-3); }
 @media(max-width:600px) { .course-test-banner span { display:none; } }
+
+/* R12-04/05 · Candidate answer-token interactions; preserve existing sentence
+ * typography/underline geometry, with sufficient touch and keyboard targets. */
+.course-bench__tiles { display:inline; }
+.course-bench__tile,.course-frame__tile {
+  appearance:none; display:inline-block; min-height:44px; margin:0 2px 4px 0;
+  padding:4px 7px; border:1px solid transparent; border-radius:8px;
+  background:transparent; color:inherit; font:inherit; line-height:inherit;
+  cursor:pointer; vertical-align:baseline; white-space:normal;
+}
+.course-bench__tile:hover:not(:disabled),.course-frame__tile:hover:not(:disabled) {
+  border-color:#9b4f36; background:rgba(155,79,54,.08);
+}
+.course-bench__tile:focus-visible,.course-frame__tile:focus-visible,
+.course-frame__blank-select:focus-visible { outline:2px solid #9b4f36; outline-offset:2px; }
+.course-bench__tile:disabled,.course-frame__tile:disabled { cursor:default; }
+.course-frame__blank {
+  display:inline-flex; flex-wrap:wrap; align-items:center; vertical-align:middle;
+  min-width:9ch; min-height:48px; padding:0 2px;
+  border-bottom:2px solid var(--ba-color-content-primary,#133547);
+}
+.course-frame__blank[data-active='true'] {
+  border-bottom-color:#b25415; border-bottom-width:3px;
+}
+.course-frame__blank-select {
+  appearance:none; min-width:34px; min-height:44px; padding:0 4px;
+  background:transparent; border:0; color:inherit; font:inherit;
+  cursor:pointer;
+}
+.course-frame__blank-select[aria-pressed='true'] { font-weight:700; }
+.course-frame__blank-select:disabled { cursor:default; }
+@media(prefers-reduced-motion:reduce) {
+  .course-bench__tile,.course-frame__tile,.course-frame__blank { transition:none;animation:none; }
+}
