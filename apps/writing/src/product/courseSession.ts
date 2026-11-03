@@ -237,6 +237,8 @@ export interface ActivityModel {
     parts: string[];
     blanks: { label: string; value: string; minWords: number }[];
     focus: number;
+    tiles: { id: string; text: string }[][];
+    pureCards?: boolean;
   };
   canvas?: { text: string; tip: string; label: string };
   wordGrid?: {
@@ -1729,11 +1731,17 @@ export class CourseSession {
 
   private frameModel(task: AlexTask, key: string, taskState: TaskProgress): Pick<ActivityModel, 'frame' | 'wordGrid'> {
     const parts = (task.frameFill?.frame ?? '').split('___');
+    const pureCards = task.id === 'ts8' && this.screens[this.state.screen]?.screen.id === 'L2-04.t.ts8';
     const blanks = (task.frameFill?.blanks ?? []).map((blank, index) => ({
       label: blank.label,
       value: taskState.blanks?.[index] ?? '',
       minWords: blank.min_words,
     }));
+    const savedTiles = taskState.frameTileIds ?? (taskState.frameCardPlacements
+      ? blanks.map((_, index) => taskState.frameCardPlacements!
+          .filter(placement => placement.blank === index)
+          .sort((a,b)=>a.start-b.start).map(placement=>placement.id))
+      : blanks.map(()=>[]));
     const page = this.pageOf(this.screens[this.state.screen].screen.page);
     const level = page?.grid?.level && page.grid.level !== 'off' ? page.grid.level : 'chunks';
     return {
@@ -1741,6 +1749,11 @@ export class CourseSession {
         parts,
         blanks,
         focus: taskState.focusBlank ?? 0,
+        pureCards,
+        tiles: savedTiles.map((ids, index) => ids.map(id => ({
+          id,
+          text: this.frameTokenText(task, id) || (taskState.blanks?.[index] ?? ''),
+        }))),
       },
       wordGrid: (() => {
         const grid = this.trioGrid(
@@ -1749,9 +1762,11 @@ export class CourseSession {
           level,
           task,
         );
-        const used = new Set((taskState.frameCardPlacements ?? []).map(placement => placement.id));
+        const used = new Set(savedTiles.flat());
         return { ...grid, groups: grid.groups.map(group => ({
-          ...group, words: group.words.map(word => ({ ...word, used: used.has(word.id) })),
+          ...group, words: group.words
+            .filter(word => !pureCards || word.text.trim().toLowerCase() !== 'because')
+            .map(word => ({ ...word, used: used.has(word.id) })),
         })) };
       })(),
     };
@@ -2285,9 +2300,58 @@ export class CourseSession {
 
   /** Frame text and selected-card appearance share this one persisted task record.
    * Each placement points to a stable card ID and exact current blank substring. */
+  private frameTokenText(task: AlexTask, cardId: string): string | null {
+    const page = this.pageOf(this.screens[this.state.screen].screen.page);
+    const level = page?.grid?.level && page.grid.level !== 'off' ? page.grid.level : 'chunks';
+    const words = this.trioGrid('lookup', (task.cells ?? []).map((cell,index)=>({
+      id:`task-${index}-${this.cellText(cell)}`,text:this.cellText(cell),
+    })), level, task).groups.flatMap(group=>group.words);
+    return words.find(word=>word.id===cardId)?.text ?? null;
+  }
+
+  /** Pure Q5 word-card placement uses stable IDs and two independent sequences. */
+  removeFrameCard(cardId: string): void {
+    const screen = this.screens[this.state.screen]?.screen;
+    if (screen?.id !== 'L2-04.t.ts8' || !screen.task) return;
+    const task = this.task(screen.task);
+    this.toggleFrameCard(this.taskKey(screen),cardId,this.frameTokenText(task,cardId) ?? '');
+  }
+
   private toggleFrameCard(key: string, cardId: string, text: string): void {
     const state = this.taskState(key);
     if (state.status !== 'open') return;
+    const screen = this.screens[this.state.screen]?.screen;
+    const task = screen?.task ? this.task(screen.task) : null;
+    if (task?.id === 'ts8' && screen?.id === 'L2-04.t.ts8') {
+      const blankCount = task.frameFill?.blanks.length ?? 2;
+      const ids = state.frameTileIds ?? Array.from({length:blankCount},(_,index)=>
+        (state.frameCardPlacements ?? []).filter(p=>p.blank===index)
+          .sort((a,b)=>a.start-b.start).map(p=>p.id));
+      const at = ids.findIndex(row=>row.includes(cardId));
+      if (at>=0) {
+        ids[at] = ids[at].filter(id=>id!==cardId);
+        state.focusBlank = at;
+      } else {
+        if (text.trim().toLowerCase()==='because') return;
+        const target = Math.min(Math.max(0,state.focusBlank??0),blankCount-1);
+        ids[target] = [...ids[target],cardId];
+      }
+      state.frameTileIds=ids;
+      // Reconstruct the authored string from actual token text (not tile count).
+      // Whitespace and multiword cards are handled by the same existing smartInsert.
+      state.blanks=ids.map(row=>{
+        let value='';
+        for (const id of row) {
+          const token=this.frameTokenText(task,id);
+          if (token) value=this.engine.smartInsert(value,value.length,value.length,token,'grid').value;
+        }
+        return value.trim();
+      });
+      state.frameCardPlacements=[];
+      this.save(true);
+      this.emit();
+      return;
+    }
     const blanks = state.blanks ?? [];
     const placements = state.frameCardPlacements ?? [];
     const existing = placements.find(card => card.id === cardId);
